@@ -6,7 +6,15 @@ import { SectionHeading } from '@/components/general/SectionHeading';
 import { Card, CardContent } from '@/components/ui/card';
 import { RegularBtn } from '@/components/atoms/RegularBtn';
 import { GhostBtn } from '@/components/atoms/GhostBtn';
-import { ShoppingBag, Store, MessageCircle, CreditCard, UserPlus, Package, ArrowRight } from 'lucide-react';
+import {
+  ShoppingBag,
+  Store,
+  MessageCircle,
+  CreditCard,
+  UserPlus,
+  Package,
+  ArrowRight,
+} from 'lucide-react';
 import Link from 'next/link';
 
 export const MarketplacePageClient = () => {
@@ -171,7 +179,9 @@ export const MarketplacePageClient = () => {
               </div>
               <h3 className="font-semibold text-foreground mb-2">My Orders / Cart</h3>
               <p className="text-sm text-muted-foreground mb-4">View your orders and cart items</p>
-              <GhostBtn linkProps={{ href: '/marketplace/orders' }} className="text-sm text-[#5730D5]">
+              <GhostBtn
+                linkProps={{ href: '/marketplace/orders' }}
+                className="text-sm text-[#5730D5]">
                 View Orders
               </GhostBtn>
             </Card>
@@ -192,8 +202,12 @@ export const MarketplacePageClient = () => {
                 <CreditCard className="w-6 h-6 text-[#5730D5]" />
               </div>
               <h3 className="font-semibold text-foreground mb-2">My Account</h3>
-              <p className="text-sm text-muted-foreground mb-4">Login or register to manage your account</p>
-              <GhostBtn linkProps={{ href: '/marketplace/account' }} className="text-sm text-[#5730D5]">
+              <p className="text-sm text-muted-foreground mb-4">
+                Login or register to manage your account
+              </p>
+              <GhostBtn
+                linkProps={{ href: '/marketplace/account' }}
+                className="text-sm text-[#5730D5]">
                 Manage Account
               </GhostBtn>
             </Card>
@@ -203,4 +217,3 @@ export const MarketplacePageClient = () => {
     </MainLayout>
   );
 };
-

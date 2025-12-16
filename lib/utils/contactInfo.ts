@@ -1,50 +1,48 @@
-import { ContactInfo, OfficeHours } from '@/app/_server/lib/types/constants';
-import { FooterContactRowProps } from '@/components/layout/Footer';
-import { MapPin, Phone, Mail } from 'lucide-react';
+import { OfficeHours } from '@/app/_server/lib/types/constants';
 
 /**
  * Transform contact info from site settings to footer contact cards format
  */
-export const transformContactInfoToFooterCards = (
-  contactInfo: ContactInfo | undefined
-): FooterContactRowProps[] => {
-  if (!contactInfo) return [];
+// export const transformContactInfoToFooterCards = (
+//   contactInfo: ContactInfo | undefined
+// ): FooterContactRowProps[] => {
+//   if (!contactInfo) return [];
 
-  const cards: FooterContactRowProps[] = [];
+//   const cards: FooterContactRowProps[] = [];
 
-  // Address
-  if (contactInfo.address && contactInfo.address.length > 0) {
-    cards.push({
-      LucideIcon: MapPin,
-      href: contactInfo.locationUrl || undefined,
-      texts: contactInfo.address.map(text => ({ text })),
-    });
-  }
+//   // Address
+//   if (contactInfo.address && contactInfo.address.length > 0) {
+//     cards.push({
+//       LucideIcon: MapPin,
+//       href: contactInfo.locationUrl || undefined,
+//       texts: contactInfo.address.map(text => ({ text })),
+//     });
+//   }
 
-  // Phone
-  if (contactInfo.tel && contactInfo.tel.length > 0) {
-    cards.push({
-      LucideIcon: Phone,
-      texts: contactInfo.tel.map(phone => ({
-        text: phone,
-        link: `tel:${phone.replaceAll(' ', '')}`,
-      })),
-    });
-  }
+//   // Phone
+//   if (contactInfo.tel && contactInfo.tel.length > 0) {
+//     cards.push({
+//       LucideIcon: Phone,
+//       texts: contactInfo.tel.map(phone => ({
+//         text: phone,
+//         link: `tel:${phone.replaceAll(' ', '')}`,
+//       })),
+//     });
+//   }
 
-  // Email
-  if (contactInfo.email && contactInfo.email.length > 0) {
-    cards.push({
-      LucideIcon: Mail,
-      texts: contactInfo.email.map(mail => ({
-        text: mail,
-        link: `mailto:${mail}`,
-      })),
-    });
-  }
+//   // Email
+//   if (contactInfo.email && contactInfo.email.length > 0) {
+//     cards.push({
+//       LucideIcon: Mail,
+//       texts: contactInfo.email.map(mail => ({
+//         text: mail,
+//         link: `mailto:${mail}`,
+//       })),
+//     });
+//   }
 
-  return cards;
-};
+//   return cards;
+// };
 
 /**
  * Format office hours from the site settings structure to display format

@@ -16,7 +16,9 @@ export const PromotePageClient = () => {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#5730D5]/10 mb-6">
             <Star className="w-8 h-8 text-[#5730D5]" />
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">Promote Your Content</h1>
+          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+            Promote Your Content
+          </h1>
           <p className="text-lg text-muted-foreground mb-8">
             Share your music or sermons with our community. Get featured and reach a wider audience.
           </p>
@@ -124,8 +126,8 @@ export const PromotePageClient = () => {
           <Card>
             <CardContent className="p-8">
               <p className="text-muted-foreground mb-6">
-                Interested in getting featured, sponsoring content, or forming a partnership? We'd love to
-                hear from you. Contact us to discuss opportunities.
+                Interested in getting featured, sponsoring content, or forming a partnership? We'd
+                love to hear from you. Contact us to discuss opportunities.
               </p>
               <RegularBtn
                 linkProps={{ href: '/contact' }}
@@ -141,4 +143,3 @@ export const PromotePageClient = () => {
     </MainLayout>
   );
 };
-

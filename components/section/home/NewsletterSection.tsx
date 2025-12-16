@@ -25,6 +25,7 @@ export const NewsletterSection = () => {
       toast.success('Successfully subscribed to newsletter!');
       setEmail('');
     } catch (error) {
+      console.error(error);
       toast.error('Failed to subscribe. Please try again.');
     } finally {
       setLoading(false);
@@ -65,4 +66,3 @@ export const NewsletterSection = () => {
     </SectionContainer>
   );
 };
-

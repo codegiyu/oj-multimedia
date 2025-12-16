@@ -2,7 +2,6 @@
 
 import { RegularBtn } from '@/components/atoms/RegularBtn';
 import { Heart } from 'lucide-react';
-import Link from 'next/link';
 
 export const PrayerRequestButton = () => {
   return (
@@ -16,4 +15,3 @@ export const PrayerRequestButton = () => {
     </div>
   );
 };
-

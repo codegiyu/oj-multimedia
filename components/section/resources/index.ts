@@ -1,2 +1,1 @@
 export { ResourcesPageClient } from './ResourcesPageClient';
-

@@ -50,12 +50,13 @@ export const StorySection = () => {
           <div className="grid gap-4 text-muted-foreground">
             <p>
               OJ Multimedia is a Christian multimedia platform dedicated to spreading the Gospel and
-              strengthening the faith of believers worldwide. We provide a comprehensive resource for
-              gospel music, sermons, devotionals, news, and Christian content.
+              strengthening the faith of believers worldwide. We provide a comprehensive resource
+              for gospel music, sermons, devotionals, news, and Christian content.
             </p>
             <p>
               Our mission is to make quality Christian content accessible to everyone, supporting
-              artists, pastors, and content creators while building a vibrant community of believers.
+              artists, pastors, and content creators while building a vibrant community of
+              believers.
             </p>
             <p>
               Through our platform, we connect the Christian community, share testimonies, provide
