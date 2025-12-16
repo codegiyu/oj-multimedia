@@ -1,0 +1,2 @@
+export { MusicPageClient } from './MusicPageClient';
+

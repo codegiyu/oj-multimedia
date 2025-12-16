@@ -1,0 +1,2 @@
+export { NewsPageClient } from './NewsPageClient';
+
