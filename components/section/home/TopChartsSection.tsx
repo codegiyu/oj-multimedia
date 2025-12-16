@@ -4,7 +4,7 @@ import { SectionContainer } from '@/components/general/SectionContainer';
 import { SectionHeading } from '@/components/general/SectionHeading';
 import { Card } from '@/components/ui/card';
 import { GhostBtn } from '@/components/atoms/GhostBtn';
-import { Music, Play, TrendingUp, ArrowRight } from 'lucide-react';
+import { Play, TrendingUp, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
 export const TopChartsSection = () => {
@@ -24,7 +24,7 @@ export const TopChartsSection = () => {
           <SectionHeading
             title="Top 5 Weekly Charts"
             text="Most played gospel songs this week"
-            icon={TrendingUp}
+            Icon={TrendingUp}
           />
           <GhostBtn
             linkProps={{ href: '/music' }}
@@ -74,4 +74,3 @@ export const TopChartsSection = () => {
     </SectionContainer>
   );
 };
-

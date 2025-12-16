@@ -6,7 +6,17 @@ import { SectionHeading } from '@/components/general/SectionHeading';
 import { Card } from '@/components/ui/card';
 import { RegularBtn } from '@/components/atoms/RegularBtn';
 import { GhostBtn } from '@/components/atoms/GhostBtn';
-import { Music, Play, Download, User, FileText, Video, Headphones, Upload, ArrowRight } from 'lucide-react';
+import {
+  Music,
+  Play,
+  Download,
+  User,
+  FileText,
+  Video,
+  Headphones,
+  Upload,
+  ArrowRight,
+} from 'lucide-react';
 import Link from 'next/link';
 
 export const MusicPageClient = () => {
@@ -33,7 +43,8 @@ export const MusicPageClient = () => {
           </div>
           <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">Gospel Music</h1>
           <p className="text-lg text-muted-foreground mb-8">
-            Discover the latest gospel music, download MP3s, watch music videos, and explore artist profiles.
+            Discover the latest gospel music, download MP3s, watch music videos, and explore artist
+            profiles.
           </p>
           <RegularBtn
             linkProps={{ href: '/promote' }}
@@ -48,7 +59,11 @@ export const MusicPageClient = () => {
       {/* Latest Music */}
       <SectionContainer className="py-16 md:py-20">
         <div className="max-w-7xl mx-auto">
-          <SectionHeading title="Latest Music" text="Fresh releases from gospel artists" icon={Music} />
+          <SectionHeading
+            title="Latest Music"
+            text="Fresh releases from gospel artists"
+            Icon={Music}
+          />
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
             {latestMusic.map((song, idx) => (
               <Card key={idx} className="group hover:shadow-lg transition-shadow">
@@ -85,7 +100,7 @@ export const MusicPageClient = () => {
       <SectionContainer className="py-16 md:py-20 bg-muted/30">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-8">
-            <SectionHeading title="Artist Profiles" text="Meet the gospel artists" icon={User} />
+            <SectionHeading title="Artist Profiles" text="Meet the gospel artists" Icon={User} />
             <GhostBtn
               linkProps={{ href: '/music?tab=artists' }}
               className="hidden md:flex items-center gap-2 text-[#5730D5]">
@@ -117,7 +132,7 @@ export const MusicPageClient = () => {
           <SectionHeading
             title="Explore More"
             text="Everything you need for your gospel music journey"
-            icon={Headphones}
+            Icon={Headphones}
           />
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
             <Card className="p-6 text-center hover:shadow-lg transition-shadow">
@@ -125,7 +140,9 @@ export const MusicPageClient = () => {
                 <FileText className="w-6 h-6 text-[#5730D5]" />
               </div>
               <h3 className="font-semibold text-foreground mb-2">Lyrics & Meaning</h3>
-              <p className="text-sm text-muted-foreground">Read song lyrics and their spiritual meanings</p>
+              <p className="text-sm text-muted-foreground">
+                Read song lyrics and their spiritual meanings
+              </p>
             </Card>
             <Card className="p-6 text-center hover:shadow-lg transition-shadow">
               <div className="w-12 h-12 rounded-full bg-[#5730D5]/10 mx-auto mb-4 flex items-center justify-center">
@@ -139,7 +156,9 @@ export const MusicPageClient = () => {
                 <Headphones className="w-6 h-6 text-[#5730D5]" />
               </div>
               <h3 className="font-semibold text-foreground mb-2">Instrumentals</h3>
-              <p className="text-sm text-muted-foreground">Download beats and instrumental tracks</p>
+              <p className="text-sm text-muted-foreground">
+                Download beats and instrumental tracks
+              </p>
             </Card>
             <Card className="p-6 text-center hover:shadow-lg transition-shadow">
               <div className="w-12 h-12 rounded-full bg-[#5730D5]/10 mx-auto mb-4 flex items-center justify-center">
@@ -154,4 +173,3 @@ export const MusicPageClient = () => {
     </MainLayout>
   );
 };
-

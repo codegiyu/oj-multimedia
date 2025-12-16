@@ -6,7 +6,6 @@ import { Card } from '@/components/ui/card';
 import { GhostBtn } from '@/components/atoms/GhostBtn';
 import { Mic, Play, Clock, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
-import Image from 'next/image';
 
 export const LatestSermonsSection = () => {
   // TODO: Fetch latest sermons from API
@@ -38,7 +37,7 @@ export const LatestSermonsSection = () => {
     <SectionContainer className="py-16 md:py-20">
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-8">
-          <SectionHeading title="Latest Sermons" text="Fresh messages to inspire you" icon={Mic} />
+          <SectionHeading title="Latest Sermons" text="Fresh messages to inspire you" Icon={Mic} />
           <GhostBtn
             linkProps={{ href: '/sermons' }}
             className="hidden md:flex items-center gap-2 text-[#5730D5] hover:text-[#8A2BE2]">
@@ -84,4 +83,3 @@ export const LatestSermonsSection = () => {
     </SectionContainer>
   );
 };
-

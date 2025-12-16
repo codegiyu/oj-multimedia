@@ -16,6 +16,7 @@ next.config.ts
 postcss.config.mjs
 tailwind.config.ts
 tsconfig.json
+*.webmanifest
 
 # CSS files
 app/globals.css

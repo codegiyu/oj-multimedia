@@ -5,7 +5,6 @@ import { SectionHeading } from '@/components/general/SectionHeading';
 import { Card } from '@/components/ui/card';
 import { RegularBtn } from '@/components/atoms/RegularBtn';
 import { BookOpen, ArrowRight, Calendar } from 'lucide-react';
-import Link from 'next/link';
 
 export const DailyDevotionalSection = () => {
   // TODO: Fetch daily devotional from API
@@ -13,7 +12,11 @@ export const DailyDevotionalSection = () => {
     title: 'Walking in Faith',
     excerpt:
       'Faith is not the absence of doubt, but the decision to trust God even when circumstances seem uncertain...',
-    date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+    date: new Date().toLocaleDateString('en-US', {
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric',
+    }),
     slug: 'walking-in-faith',
   };
 
@@ -23,7 +26,7 @@ export const DailyDevotionalSection = () => {
         <SectionHeading
           title="Daily Devotional"
           text="Start your day with God's Word"
-          icon={BookOpen}
+          Icon={BookOpen}
         />
         <Card className="p-8 md:p-10">
           <div className="flex items-start gap-2 mb-4">
@@ -33,9 +36,7 @@ export const DailyDevotionalSection = () => {
           <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
             {devotional.title}
           </h3>
-          <p className="text-lg text-muted-foreground leading-relaxed mb-6">
-            {devotional.excerpt}
-          </p>
+          <p className="text-lg text-muted-foreground leading-relaxed mb-6">{devotional.excerpt}</p>
           <RegularBtn
             linkProps={{ href: `/devotionals/${devotional.slug}` }}
             text="Read Full Devotional"
@@ -48,4 +49,3 @@ export const DailyDevotionalSection = () => {
     </SectionContainer>
   );
 };
-

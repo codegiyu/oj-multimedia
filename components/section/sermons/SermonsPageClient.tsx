@@ -5,15 +5,24 @@ import { SectionContainer } from '@/components/general/SectionContainer';
 import { SectionHeading } from '@/components/general/SectionHeading';
 import { Card } from '@/components/ui/card';
 import { RegularBtn } from '@/components/atoms/RegularBtn';
-import { GhostBtn } from '@/components/atoms/GhostBtn';
-import { Mic, Play, Video, Headphones, Upload, User, TrendingUp, ArrowRight } from 'lucide-react';
+import { Mic, Play, Video, Headphones, Upload, User, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
 
 export const SermonsPageClient = () => {
   // TODO: Fetch data from API
   const latestSermons = [
-    { title: 'The Power of Faith', pastor: 'Pastor John Doe', duration: '45:30', slug: 'power-of-faith' },
-    { title: 'Walking in Purpose', pastor: 'Pastor Jane Smith', duration: '38:15', slug: 'walking-in-purpose' },
+    {
+      title: 'The Power of Faith',
+      pastor: 'Pastor John Doe',
+      duration: '45:30',
+      slug: 'power-of-faith',
+    },
+    {
+      title: 'Walking in Purpose',
+      pastor: 'Pastor Jane Smith',
+      duration: '38:15',
+      slug: 'walking-in-purpose',
+    },
   ];
 
   const topics = ['Faith', 'Family', 'Healing', 'Purpose', 'Prayer', 'Worship'];
@@ -43,7 +52,7 @@ export const SermonsPageClient = () => {
       {/* Latest Sermons */}
       <SectionContainer className="py-16 md:py-20">
         <div className="max-w-7xl mx-auto">
-          <SectionHeading title="Latest Sermons" text="Fresh messages to inspire you" icon={Mic} />
+          <SectionHeading title="Latest Sermons" text="Fresh messages to inspire you" Icon={Mic} />
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
             {latestSermons.map((sermon, idx) => (
               <Card key={idx} className="group hover:shadow-lg transition-shadow">
@@ -76,7 +85,7 @@ export const SermonsPageClient = () => {
           <SectionHeading
             title="Sermons by Topic"
             text="Explore messages by theme"
-            icon={Headphones}
+            Icon={Headphones}
           />
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mt-8">
             {topics.map((topic, idx) => (
@@ -98,7 +107,7 @@ export const SermonsPageClient = () => {
           <SectionHeading
             title="Explore More"
             text="Everything you need for spiritual growth"
-            icon={TrendingUp}
+            Icon={TrendingUp}
           />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
             <Card className="p-6 text-center hover:shadow-lg transition-shadow">
@@ -120,7 +129,9 @@ export const SermonsPageClient = () => {
                 <User className="w-6 h-6 text-[#5730D5]" />
               </div>
               <h3 className="font-semibold text-foreground mb-2">Pastor Spotlight</h3>
-              <p className="text-sm text-muted-foreground">Discover sermons from featured pastors</p>
+              <p className="text-sm text-muted-foreground">
+                Discover sermons from featured pastors
+              </p>
             </Card>
           </div>
         </div>
@@ -128,4 +139,3 @@ export const SermonsPageClient = () => {
     </MainLayout>
   );
 };
-

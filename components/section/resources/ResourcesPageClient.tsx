@@ -6,8 +6,15 @@ import { SectionHeading } from '@/components/general/SectionHeading';
 import { Card, CardContent } from '@/components/ui/card';
 import { RegularBtn } from '@/components/atoms/RegularBtn';
 import { GhostBtn } from '@/components/atoms/GhostBtn';
-import { Download, BookOpen, FileText, Headphones, Image, ShoppingBag, ArrowDown } from 'lucide-react';
-import Link from 'next/link';
+import {
+  Download,
+  BookOpen,
+  FileText,
+  Headphones,
+  Image,
+  ShoppingBag,
+  ArrowDown,
+} from 'lucide-react';
 
 export const ResourcesPageClient = () => {
   // TODO: Fetch data from API
@@ -56,7 +63,8 @@ export const ResourcesPageClient = () => {
           </div>
           <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">Resources</h1>
           <p className="text-lg text-muted-foreground mb-8">
-            Free downloads, e-books, templates, beats, wallpapers, and more to support your ministry.
+            Free downloads, e-books, templates, beats, wallpapers, and more to support your
+            ministry.
           </p>
         </div>
       </SectionContainer>
@@ -86,7 +94,9 @@ export const ResourcesPageClient = () => {
                         className="flex items-center justify-between p-4 bg-muted/50 rounded-lg hover:bg-muted transition-colors">
                         <div className="flex-1">
                           <h4 className="font-semibold text-foreground mb-1">{item.title}</h4>
-                          <p className="text-sm text-muted-foreground">{item.downloads} downloads</p>
+                          <p className="text-sm text-muted-foreground">
+                            {item.downloads} downloads
+                          </p>
                         </div>
                         <GhostBtn className="text-[#5730D5] hover:text-[#8A2BE2]">
                           <ArrowDown className="w-4 h-4" />
@@ -131,4 +141,3 @@ export const ResourcesPageClient = () => {
     </MainLayout>
   );
 };
-

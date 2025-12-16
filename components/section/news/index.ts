@@ -1,2 +1,1 @@
 export { NewsPageClient } from './NewsPageClient';
-

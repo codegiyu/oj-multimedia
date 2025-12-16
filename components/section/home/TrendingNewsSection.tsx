@@ -40,7 +40,7 @@ export const TrendingNewsSection = () => {
           <SectionHeading
             title="Trending Gospel News"
             text="Stay updated with the latest in Christian media"
-            icon={Newspaper}
+            Icon={Newspaper}
           />
           <GhostBtn
             linkProps={{ href: '/news' }}
@@ -84,4 +84,3 @@ export const TrendingNewsSection = () => {
     </SectionContainer>
   );
 };
-

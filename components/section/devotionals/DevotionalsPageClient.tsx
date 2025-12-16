@@ -4,7 +4,6 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { SectionContainer } from '@/components/general/SectionContainer';
 import { SectionHeading } from '@/components/general/SectionHeading';
 import { Card, CardContent } from '@/components/ui/card';
-import { RegularBtn } from '@/components/atoms/RegularBtn';
 import { GhostBtn } from '@/components/atoms/GhostBtn';
 import { BookOpen, Calendar, Heart, Users, ArrowRight, FileText } from 'lucide-react';
 import Link from 'next/link';
@@ -13,7 +12,7 @@ export const DevotionalsPageClient = () => {
   // TODO: Fetch data from API
   const dailyDevotionals = [
     { title: 'Walking in Faith', date: 'Today', slug: 'walking-in-faith' },
-    { title: 'God\'s Promises', date: 'Yesterday', slug: 'gods-promises' },
+    { title: "God's Promises", date: 'Yesterday', slug: 'gods-promises' },
     { title: 'Finding Peace', date: '2 days ago', slug: 'finding-peace' },
   ];
 
@@ -53,7 +52,9 @@ export const DevotionalsPageClient = () => {
                   <Link href={`/devotionals/${devotional.slug}`}>
                     <div className="flex items-center gap-2 mb-4">
                       <Calendar className="w-4 h-4 text-[#5730D5]" />
-                      <span className="text-sm font-medium text-muted-foreground">{devotional.date}</span>
+                      <span className="text-sm font-medium text-muted-foreground">
+                        {devotional.date}
+                      </span>
                     </div>
                     <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-[#5730D5] transition-colors">
                       {devotional.title}
@@ -111,14 +112,18 @@ export const DevotionalsPageClient = () => {
                 <Heart className="w-6 h-6 text-[#5730D5]" />
               </div>
               <h3 className="font-semibold text-foreground mb-2">Prayer Points</h3>
-              <p className="text-sm text-muted-foreground">Daily prayer points for spiritual growth</p>
+              <p className="text-sm text-muted-foreground">
+                Daily prayer points for spiritual growth
+              </p>
             </Card>
             <Card className="p-6 text-center hover:shadow-lg transition-shadow">
               <div className="w-12 h-12 rounded-full bg-[#5730D5]/10 mx-auto mb-4 flex items-center justify-center">
                 <BookOpen className="w-6 h-6 text-[#5730D5]" />
               </div>
               <h3 className="font-semibold text-foreground mb-2">Christian Living Tips</h3>
-              <p className="text-sm text-muted-foreground">Practical advice for daily Christian living</p>
+              <p className="text-sm text-muted-foreground">
+                Practical advice for daily Christian living
+              </p>
             </Card>
             <Card className="p-6 text-center hover:shadow-lg transition-shadow">
               <div className="w-12 h-12 rounded-full bg-[#5730D5]/10 mx-auto mb-4 flex items-center justify-center">
@@ -133,4 +138,3 @@ export const DevotionalsPageClient = () => {
     </MainLayout>
   );
 };
-

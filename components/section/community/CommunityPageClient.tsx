@@ -7,7 +7,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { RegularBtn } from '@/components/atoms/RegularBtn';
 import { GhostBtn } from '@/components/atoms/GhostBtn';
 import { Heart, MessageSquare, User, Mail, BarChart3, ArrowRight } from 'lucide-react';
-import Link from 'next/link';
 
 export const CommunityPageClient = () => {
   // TODO: Fetch data from API
@@ -36,7 +35,8 @@ export const CommunityPageClient = () => {
           </div>
           <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">Community</h1>
           <p className="text-lg text-muted-foreground mb-8">
-            Share testimonies, submit prayer requests, ask questions, and connect with fellow believers.
+            Share testimonies, submit prayer requests, ask questions, and connect with fellow
+            believers.
           </p>
         </div>
       </SectionContainer>
@@ -53,7 +53,9 @@ export const CommunityPageClient = () => {
             <CardContent className="p-8">
               <form className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">Your Name</label>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    Your Name
+                  </label>
                   <input
                     type="text"
                     className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5730D5]"
@@ -101,7 +103,9 @@ export const CommunityPageClient = () => {
             {testimonies.map((testimony, idx) => (
               <Card key={idx} className="hover:shadow-lg transition-shadow">
                 <CardContent className="p-6">
-                  <p className="text-muted-foreground mb-4 italic">&ldquo;{testimony.testimony}&rdquo;</p>
+                  <p className="text-muted-foreground mb-4 italic">
+                    &ldquo;{testimony.testimony}&rdquo;
+                  </p>
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="font-semibold text-foreground">{testimony.name}</p>
@@ -172,4 +176,3 @@ export const CommunityPageClient = () => {
     </MainLayout>
   );
 };
-

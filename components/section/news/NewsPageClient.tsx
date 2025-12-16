@@ -5,7 +5,15 @@ import { SectionContainer } from '@/components/general/SectionContainer';
 import { SectionHeading } from '@/components/general/SectionHeading';
 import { Card, CardContent } from '@/components/ui/card';
 import { GhostBtn } from '@/components/atoms/GhostBtn';
-import { Newspaper, Calendar, Star, Briefcase, Film, GraduationCap, ArrowRight } from 'lucide-react';
+import {
+  Newspaper,
+  Calendar,
+  Star,
+  Briefcase,
+  Film,
+  GraduationCap,
+  ArrowRight,
+} from 'lucide-react';
 import Link from 'next/link';
 
 export const NewsPageClient = () => {
@@ -53,7 +61,8 @@ export const NewsPageClient = () => {
           </div>
           <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">News & Lifestyle</h1>
           <p className="text-lg text-muted-foreground mb-8">
-            Stay updated with Christian celebrity news, church announcements, inspirational stories, and more.
+            Stay updated with Christian celebrity news, church announcements, inspirational stories,
+            and more.
           </p>
         </div>
       </SectionContainer>
@@ -127,4 +136,3 @@ export const NewsPageClient = () => {
     </MainLayout>
   );
 };
-
