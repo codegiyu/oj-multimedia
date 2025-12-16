@@ -1,0 +1,2 @@
+export { DevotionalsPageClient } from './DevotionalsPageClient';
+

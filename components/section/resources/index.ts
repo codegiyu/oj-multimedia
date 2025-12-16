@@ -1,0 +1,2 @@
+export { ResourcesPageClient } from './ResourcesPageClient';
+

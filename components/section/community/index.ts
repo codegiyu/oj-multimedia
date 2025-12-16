@@ -1,0 +1,2 @@
+export { CommunityPageClient } from './CommunityPageClient';
+

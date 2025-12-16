@@ -1,0 +1,2 @@
+export { MarketplacePageClient } from './MarketplacePageClient';
+

@@ -1,0 +1,2 @@
+export { SermonsPageClient } from './SermonsPageClient';
+
