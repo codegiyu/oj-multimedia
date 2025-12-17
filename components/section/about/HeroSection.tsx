@@ -17,7 +17,7 @@ export const HeroSection = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={siteLoading ? {} : { opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="inline-block px-4 py-1.5 mb-6 text-sm font-medium text-[#5730D5] bg-[#5730D5]/10 rounded-full">
+          className="inline-block px-4 py-1.5 mb-6 text-sm font-medium text-[#2563EB] bg-[#2563EB]/10 rounded-full">
           About Us
         </motion.span>
 
@@ -26,7 +26,7 @@ export const HeroSection = () => {
           animate={siteLoading ? {} : { opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
           className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 font-sans">
-          About OJ Multimedia
+          About OHEJUIRA-Multimedia
         </motion.h1>
 
         <motion.p
@@ -34,8 +34,8 @@ export const HeroSection = () => {
           animate={siteLoading ? {} : { opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
           className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-          Your trusted source for gospel music, inspiring sermons, daily devotionals, and Christian
-          resources to strengthen your faith journey.
+          Serving humanity through innovation in entertainment and technology. We create, produce,
+          and distribute impactful multimedia content across various formats.
         </motion.p>
       </div>
     </SectionContainer>

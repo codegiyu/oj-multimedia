@@ -43,7 +43,7 @@ export const LoadAnimationScreen = () => {
           animate={pageLoaded ? { opacity: 0 } : {}}
           transition={{ duration: TRANSITION_DURATION, ease: 'easeInOut' }}
           onAnimationComplete={() => setSiteLoading(false)}
-          className="w-full h-screen bg-gradient-to-br from-[#5730D5] via-[#8A2BE2] to-[#5730D5] grid place-items-center fixed inset-0 z-[99]">
+          className="w-full h-screen bg-gradient-to-br from-[#2563EB] via-[#3B82F6] to-[#2563EB] grid place-items-center fixed inset-0 z-[99]">
           <div className="text-center">
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}

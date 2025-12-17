@@ -1,0 +1,1 @@
+export { TermsConditionsClient } from './TermsConditionsClient';

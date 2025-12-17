@@ -95,12 +95,12 @@ export const ENVIRONMENT: IEnvironment = {
   },
   COMPANIES: {
     oj: {
-      name: 'OJ Multimedia',
+      name: 'OHEJUIRA-Multimedia',
       logo: '/images/logo.png',
       fullLogo: '/images/full-logo.png',
       primaryUrl: process.env.APP_URL || 'https://ojmultimedia.com',
-      supportEmail: 'hello@ojmultimedia.com',
-      primaryColor: '#5730D5',
+      supportEmail: 'ohemultimedia@gmail.com',
+      primaryColor: '#2563EB',
       secondaryColor: '#404040',
       fontFamily: 'Poppins',
       socialMedia: {

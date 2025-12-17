@@ -17,7 +17,7 @@ export const ContactHeroSection = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={siteLoading ? {} : { opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="inline-block px-4 py-1.5 mb-6 text-sm font-medium text-[#5730D5] bg-[#5730D5]/10 rounded-full">
+          className="inline-block px-4 py-1.5 mb-6 text-sm font-medium text-[#2563EB] bg-[#2563EB]/10 rounded-full">
           Get In Touch
         </motion.span>
 

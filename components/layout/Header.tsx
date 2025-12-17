@@ -30,7 +30,7 @@ export const Header = ({ className, ...props }: HeaderProps) => {
   return (
     <header
       className={cn(
-        'sticky top-0 z-50 bg-white/95 backdrop-blur-md shadow-md border-b border-[#5730D5]/20',
+        'sticky top-0 z-50 bg-white/95 backdrop-blur-md shadow-md border-b border-[#2563EB]/20',
         className
       )}
       {...props}>
@@ -151,8 +151,8 @@ const HeaderLink = ({
       {children ? (
         <div className="relative group">
           <GhostBtn
-            className={`w-fit flex items-center font-semibold transition-smooth hover:text-[#5730D5] ${
-              activePath?.startsWith(basePath) ? 'text-[#5730D5]' : 'text-foreground'
+            className={`w-fit flex items-center font-semibold transition-smooth hover:text-[#2563EB] ${
+              activePath?.startsWith(basePath) ? 'text-[#2563EB]' : 'text-foreground'
             }`}
             onMouseEnter={() => setDropdownOpen?.(true)}
             onMouseLeave={() => setDropdownOpen?.(false)}>
@@ -186,9 +186,9 @@ const HeaderLink = ({
           }}>
           <div className="w-full lg:w-fit px-0 relative">
             <p
-              className={`transition-smooth hover:text-[#5730D5] ${
+              className={`transition-smooth hover:text-[#2563EB] ${
                 activePath === href
-                  ? 'font-semibold text-[#5730D5]'
+                  ? 'font-semibold text-[#2563EB]'
                   : 'font-semibold text-foreground'
               }`}>
               {text}
@@ -215,7 +215,7 @@ const MobileHeaderLink = ({ text, href, children, afterClick, activePath }: Head
               text={text}
               className={`w-full justify-start px-4 py-2 ${
                 activePath === href ? 'bg-gradient-primary text-white' : 'text-muted-foreground'
-              } hover:bg-[#5730D5]/10`}
+              } hover:bg-[#2563EB]/10`}
               wrapClassName="w-full"
               onClick={() => afterClick?.()}
             />
@@ -229,7 +229,7 @@ const MobileHeaderLink = ({ text, href, children, afterClick, activePath }: Head
           text={text}
           className={`w-full justify-start px-4 py-2 ${
             activePath === href ? 'bg-gradient-primary text-white' : 'text-foreground'
-          } hover:bg-[#5730D5]/10`}
+          } hover:bg-[#2563EB]/10`}
           wrapClassName="w-full"
           onClick={() => afterClick?.()}
         />

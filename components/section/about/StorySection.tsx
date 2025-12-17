@@ -41,26 +41,26 @@ export const StorySection = () => {
           transition={{ duration: 0.7 }}
           viewport={{ once: true }}>
           <SectionHeading
-            title="Our Vision"
-            text="Strengthening faith through multimedia content"
+            title="Our Purpose"
+            text="Transforming lives through creative expression and technology-driven storytelling"
             className="text-start mb-8"
             Icon={BookOpen}
           />
 
           <div className="grid gap-4 text-muted-foreground">
             <p>
-              OJ Multimedia is a Christian multimedia platform dedicated to spreading the Gospel and
-              strengthening the faith of believers worldwide. We provide a comprehensive resource
-              for gospel music, sermons, devotionals, news, and Christian content.
+              OHEJUIRA-Multimedia is a dynamic, innovation-driven creative company established with
+              a clear purpose: Serving humanity through innovation in entertainment and technology.
             </p>
             <p>
-              Our mission is to make quality Christian content accessible to everyone, supporting
-              artists, pastors, and content creators while building a vibrant community of
-              believers.
+              We specialize in creating, producing, and distributing impactful multimedia content
+              across various formats—Audio, Video, Graphics, Text, and Interactive Media. Our
+              commitment is to empower creators, inspire audiences, and elevate storytelling through
+              excellence, innovation, and technology.
             </p>
             <p>
-              Through our platform, we connect the Christian community, share testimonies, provide
-              prayer support, and offer resources that help believers grow in their faith journey.
+              Our purpose is to transform lives through creative expression and technology-driven
+              storytelling while offering world class production, design, and distribution services.
             </p>
           </div>
         </motion.div>

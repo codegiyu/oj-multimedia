@@ -14,7 +14,7 @@ export const HeroSection = () => {
     <section className="relative min-h-[95vh] flex items-center overflow-hidden">
       {/* Colorful Gradient Background */}
       <div className="absolute inset-0 bg-gradient-primary opacity-90" />
-      <div className="absolute inset-0 bg-gradient-to-br from-[#5730D5]/95 via-[#8A2BE2]/90 to-[#5730D5]/95" />
+      <div className="absolute inset-0 bg-gradient-to-br from-[#2563EB]/95 via-[#3B82F6]/90 to-[#2563EB]/95" />
 
       {/* Animated Gradient Overlay */}
       <motion.div
@@ -26,7 +26,7 @@ export const HeroSection = () => {
           repeat: Infinity,
           repeatType: 'reverse',
         }}
-        className="absolute inset-0 bg-gradient-to-br from-[#8A2BE2]/20 via-transparent to-[#5730D5]/20 bg-[length:200%_200%]"
+        className="absolute inset-0 bg-gradient-to-br from-[#3B82F6]/20 via-transparent to-[#2563EB]/20 bg-[length:200%_200%]"
       />
 
       {/* Floating Elements with Color */}
@@ -112,7 +112,7 @@ export const HeroSection = () => {
             className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
             <RegularBtn
               linkProps={{ href: '/music' }}
-              className="px-10 py-6 text-lg bg-white text-[#5730D5] hover:bg-white/90 font-semibold shadow-xl hover:shadow-2xl transition-all group"
+              className="px-10 py-6 text-lg bg-white text-[#2563EB] hover:bg-white/90 font-semibold shadow-xl hover:shadow-2xl transition-all group"
               RightIcon={ArrowRight}
               rightIconProps={{
                 className: 'size-5 group-hover:translate-x-1 transition-transform',

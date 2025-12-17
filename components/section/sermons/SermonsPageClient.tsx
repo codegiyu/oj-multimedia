@@ -30,10 +30,10 @@ export const SermonsPageClient = () => {
   return (
     <MainLayout>
       {/* Hero Section */}
-      <SectionContainer className="py-16 md:py-20 bg-gradient-to-br from-[#5730D5]/5 to-[#8A2BE2]/5">
+      <SectionContainer className="py-16 md:py-20 bg-gradient-to-br from-[#2563EB]/5 to-[#3B82F6]/5">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#5730D5]/10 mb-6">
-            <Mic className="w-8 h-8 text-[#5730D5]" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#2563EB]/10 mb-6">
+            <Mic className="w-8 h-8 text-[#2563EB]" />
           </div>
           <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">Sermons</h1>
           <p className="text-lg text-muted-foreground mb-8">
@@ -44,7 +44,7 @@ export const SermonsPageClient = () => {
             text="Upload Your Sermon"
             RightIcon={Upload}
             rightIconProps={{ className: 'size-4' }}
-            className="bg-gradient-to-r from-[#5730D5] to-[#8A2BE2] text-white"
+            className="bg-gradient-to-r from-[#2563EB] to-[#3B82F6] text-white"
           />
         </div>
       </SectionContainer>
@@ -58,15 +58,15 @@ export const SermonsPageClient = () => {
               <Card key={idx} className="group hover:shadow-lg transition-shadow">
                 <Link href={`/sermons/${sermon.slug}`}>
                   <div className="relative aspect-video bg-muted overflow-hidden rounded-t-lg">
-                    <div className="absolute inset-0 bg-gradient-to-br from-[#5730D5]/20 to-[#8A2BE2]/20" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#2563EB]/20 to-[#3B82F6]/20" />
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div className="w-16 h-16 rounded-full bg-white/90 flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <Play className="w-6 h-6 text-[#5730D5] ml-1" />
+                        <Play className="w-6 h-6 text-[#2563EB] ml-1" />
                       </div>
                     </div>
                   </div>
                   <div className="p-6">
-                    <h3 className="text-xl font-bold text-foreground mb-2 group-hover:text-[#5730D5] transition-colors">
+                    <h3 className="text-xl font-bold text-foreground mb-2 group-hover:text-[#2563EB] transition-colors">
                       {sermon.title}
                     </h3>
                     <p className="text-muted-foreground mb-3">{sermon.pastor}</p>
@@ -91,7 +91,7 @@ export const SermonsPageClient = () => {
             {topics.map((topic, idx) => (
               <Card key={idx} className="p-6 text-center hover:shadow-lg transition-shadow group">
                 <Link href={`/sermons?topic=${topic.toLowerCase()}`}>
-                  <h3 className="font-semibold text-foreground group-hover:text-[#5730D5] transition-colors">
+                  <h3 className="font-semibold text-foreground group-hover:text-[#2563EB] transition-colors">
                     {topic}
                   </h3>
                 </Link>
@@ -111,22 +111,22 @@ export const SermonsPageClient = () => {
           />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
             <Card className="p-6 text-center hover:shadow-lg transition-shadow">
-              <div className="w-12 h-12 rounded-full bg-[#5730D5]/10 mx-auto mb-4 flex items-center justify-center">
-                <Headphones className="w-6 h-6 text-[#5730D5]" />
+              <div className="w-12 h-12 rounded-full bg-[#2563EB]/10 mx-auto mb-4 flex items-center justify-center">
+                <Headphones className="w-6 h-6 text-[#2563EB]" />
               </div>
               <h3 className="font-semibold text-foreground mb-2">Audio Sermons</h3>
               <p className="text-sm text-muted-foreground">Listen to inspiring audio messages</p>
             </Card>
             <Card className="p-6 text-center hover:shadow-lg transition-shadow">
-              <div className="w-12 h-12 rounded-full bg-[#5730D5]/10 mx-auto mb-4 flex items-center justify-center">
-                <Video className="w-6 h-6 text-[#5730D5]" />
+              <div className="w-12 h-12 rounded-full bg-[#2563EB]/10 mx-auto mb-4 flex items-center justify-center">
+                <Video className="w-6 h-6 text-[#2563EB]" />
               </div>
               <h3 className="font-semibold text-foreground mb-2">Video Sermons</h3>
               <p className="text-sm text-muted-foreground">Watch powerful video messages</p>
             </Card>
             <Card className="p-6 text-center hover:shadow-lg transition-shadow">
-              <div className="w-12 h-12 rounded-full bg-[#5730D5]/10 mx-auto mb-4 flex items-center justify-center">
-                <User className="w-6 h-6 text-[#5730D5]" />
+              <div className="w-12 h-12 rounded-full bg-[#2563EB]/10 mx-auto mb-4 flex items-center justify-center">
+                <User className="w-6 h-6 text-[#2563EB]" />
               </div>
               <h3 className="font-semibold text-foreground mb-2">Pastor Spotlight</h3>
               <p className="text-sm text-muted-foreground">
