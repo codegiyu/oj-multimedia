@@ -123,7 +123,7 @@ export const ContactFormSection = () => {
 
           <RegularBtn
             type="submit"
-            className="w-full sm:w-auto bg-gradient-to-r from-[#5730D5] to-[#8A2BE2] text-white"
+            className="w-full sm:w-auto bg-gradient-to-r from-[#2563EB] to-[#3B82F6] text-white"
             disabled={loading}
             RightIcon={Send}
             rightIconProps={{ className: 'size-4' }}

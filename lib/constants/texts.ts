@@ -4,13 +4,13 @@ const liveUrl = process.env.live_url || 'https://example.com';
 
 export const SEO_DETAILS = {
   title: {
-    default: 'OJ Multimedia - Christian Multimedia Blog',
-    template: '%s | OJ Multimedia',
+    default: 'OHEJUIRA - Christian Multimedia Platform',
+    template: '%s | OHEJUIRA',
   },
   description:
-    'Your trusted source for gospel music, inspiring sermons, daily devotionals, Christian news, and resources to strengthen your faith journey. Discover the latest gospel content and connect with a vibrant Christian community.',
+    'OHEJUIRA is a Christian-based multimedia platform offering gospel music downloads, inspirational music, sermons, devotionals, gospel news, resources, promotional services, and a vendor marketplace. Serving humanity through innovation in entertainment and technology.',
   ogDesc:
-    'Strengthen your faith through gospel music, sermons, devotionals, and Christian resources. Join OJ Multimedia for daily inspiration and spiritual growth.',
+    'Transform lives through creative expression and technology-driven storytelling. Access gospel music, sermons, devotionals, and Christian resources on OHEJUIRA.',
   metadataBase: new URL(liveUrl),
   alternates: {
     canonical: liveUrl,
@@ -27,10 +27,12 @@ export const SEO_DETAILS = {
       'max-video-preview': -1,
     },
   },
-  authors: [{ name: 'OJ Multimedia', url: liveUrl }],
+  authors: [{ name: 'OHEJUIRA-Multimedia', url: liveUrl }],
   keywords: [
-    'OJ Multimedia',
+    'OHEJUIRA',
+    'OHEJUIRA-Multimedia',
     'Gospel Music',
+    'Inspirational Music',
     'Christian Sermons',
     'Daily Devotionals',
     'Gospel News',
@@ -44,12 +46,15 @@ export const SEO_DETAILS = {
     'Faith Resources',
     'Spiritual Growth',
     'Christian Content',
+    'Multimedia Platform',
+    'Content Creation',
+    'Production Services',
   ],
   generator: 'Next.js',
-  publisher: 'OJ Multimedia',
+  publisher: 'OHEJUIRA-Multimedia',
   category: 'Christian Media & Resources',
   classification:
-    'Christian multimedia platform for gospel music, sermons, devotionals, and faith resources',
+    'Christian multimedia platform for gospel music, sermons, devotionals, and faith resources. Serving humanity through innovation in entertainment and technology.',
 };
 
 export const NAV_LINKS: HeaderLinkProps[] = [

@@ -18,7 +18,7 @@ export default {
       backgroundImage: {
         'gradient-accent': 'var(--gradient-accent)',
         'gradient-hero': 'var(--gradient-hero)',
-        'gradient-primary': 'linear-gradient(110deg, #5730D5 0%, #8A2BE2 100%)',
+        'gradient-primary': 'linear-gradient(110deg, #2563EB 0%, #3B82F6 100%)',
       },
       fontFamily: {
         sans: ['Poppins', 'sans-serif'],

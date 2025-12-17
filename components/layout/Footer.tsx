@@ -46,7 +46,7 @@ export const Footer = () => {
   );
 
   return (
-    <footer className="bg-[#3D1F8F] text-white pt-16 md:pt-16 lg:pt-20 2xl:pt-28">
+    <footer className="bg-[#1E3A8A] text-white pt-16 md:pt-16 lg:pt-20 2xl:pt-28">
       <div className="regular-container">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-[0.9375rem] mb-12">
           {/* Company Info */}
@@ -97,10 +97,15 @@ export const Footer = () => {
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-white/20 py-6 flex flex-col md:flex-row justify-between items-center text-white/60">
+        <div className="border-t border-white/20 py-6 flex flex-col md:flex-row justify-between items-center gap-4 text-white/60">
           <p className="text-[0.9375rem]">
             &copy; {currentYear} {appName || 'OJ Multimedia'}. All rights reserved.
           </p>
+          <div className="flex items-center gap-4">
+            <FooterLink text="Privacy Policy" href="/privacy" />
+            <span className="text-white/40"></span>
+            <FooterLink text="Terms & Conditions" href="/terms" />
+          </div>
         </div>
       </div>
     </footer>

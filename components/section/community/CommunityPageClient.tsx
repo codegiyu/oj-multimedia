@@ -28,10 +28,10 @@ export const CommunityPageClient = () => {
   return (
     <MainLayout>
       {/* Hero Section */}
-      <SectionContainer className="py-16 md:py-20 bg-gradient-to-br from-[#5730D5]/5 to-[#8A2BE2]/5">
+      <SectionContainer className="py-16 md:py-20 bg-gradient-to-br from-[#2563EB]/5 to-[#3B82F6]/5">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#5730D5]/10 mb-6">
-            <Heart className="w-8 h-8 text-[#5730D5]" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#2563EB]/10 mb-6">
+            <Heart className="w-8 h-8 text-[#2563EB]" />
           </div>
           <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">Community</h1>
           <p className="text-lg text-muted-foreground mb-8">
@@ -58,7 +58,7 @@ export const CommunityPageClient = () => {
                   </label>
                   <input
                     type="text"
-                    className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5730D5]"
+                    className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2563EB]"
                     placeholder="Enter your name"
                   />
                 </div>
@@ -68,14 +68,14 @@ export const CommunityPageClient = () => {
                   </label>
                   <textarea
                     rows={6}
-                    className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5730D5]"
+                    className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2563EB]"
                     placeholder="Share your prayer request..."
                   />
                 </div>
                 <RegularBtn
                   type="submit"
                   text="Submit Prayer Request"
-                  className="w-full bg-gradient-to-r from-[#5730D5] to-[#8A2BE2] text-white"
+                  className="w-full bg-gradient-to-r from-[#2563EB] to-[#3B82F6] text-white"
                 />
               </form>
             </CardContent>
@@ -94,7 +94,7 @@ export const CommunityPageClient = () => {
             />
             <GhostBtn
               linkProps={{ href: '/community?tab=testimonies' }}
-              className="hidden md:flex items-center gap-2 text-[#5730D5] hover:text-[#8A2BE2]">
+              className="hidden md:flex items-center gap-2 text-[#2563EB] hover:text-[#3B82F6]">
               <span>View All</span>
               <ArrowRight className="w-4 h-4" />
             </GhostBtn>
@@ -129,8 +129,8 @@ export const CommunityPageClient = () => {
           />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <Card className="p-6 text-center hover:shadow-lg transition-shadow">
-              <div className="w-12 h-12 rounded-full bg-[#5730D5]/10 mx-auto mb-4 flex items-center justify-center">
-                <User className="w-6 h-6 text-[#5730D5]" />
+              <div className="w-12 h-12 rounded-full bg-[#2563EB]/10 mx-auto mb-4 flex items-center justify-center">
+                <User className="w-6 h-6 text-[#2563EB]" />
               </div>
               <h3 className="font-semibold text-foreground mb-2">Ask A Pastor</h3>
               <p className="text-sm text-muted-foreground mb-4">
@@ -138,13 +138,13 @@ export const CommunityPageClient = () => {
               </p>
               <GhostBtn
                 linkProps={{ href: '/community?tab=ask-pastor' }}
-                className="text-sm text-[#5730D5]">
+                className="text-sm text-[#2563EB]">
                 Ask Question
               </GhostBtn>
             </Card>
             <Card className="p-6 text-center hover:shadow-lg transition-shadow">
-              <div className="w-12 h-12 rounded-full bg-[#5730D5]/10 mx-auto mb-4 flex items-center justify-center">
-                <Mail className="w-6 h-6 text-[#5730D5]" />
+              <div className="w-12 h-12 rounded-full bg-[#2563EB]/10 mx-auto mb-4 flex items-center justify-center">
+                <Mail className="w-6 h-6 text-[#2563EB]" />
               </div>
               <h3 className="font-semibold text-foreground mb-2">Newsletter Archive</h3>
               <p className="text-sm text-muted-foreground mb-4">
@@ -152,13 +152,13 @@ export const CommunityPageClient = () => {
               </p>
               <GhostBtn
                 linkProps={{ href: '/community?tab=newsletter' }}
-                className="text-sm text-[#5730D5]">
+                className="text-sm text-[#2563EB]">
                 View Archive
               </GhostBtn>
             </Card>
             <Card className="p-6 text-center hover:shadow-lg transition-shadow">
-              <div className="w-12 h-12 rounded-full bg-[#5730D5]/10 mx-auto mb-4 flex items-center justify-center">
-                <BarChart3 className="w-6 h-6 text-[#5730D5]" />
+              <div className="w-12 h-12 rounded-full bg-[#2563EB]/10 mx-auto mb-4 flex items-center justify-center">
+                <BarChart3 className="w-6 h-6 text-[#2563EB]" />
               </div>
               <h3 className="font-semibold text-foreground mb-2">Polls & Voting</h3>
               <p className="text-sm text-muted-foreground mb-4">
@@ -166,7 +166,7 @@ export const CommunityPageClient = () => {
               </p>
               <GhostBtn
                 linkProps={{ href: '/community?tab=polls' }}
-                className="text-sm text-[#5730D5]">
+                className="text-sm text-[#2563EB]">
                 View Polls
               </GhostBtn>
             </Card>

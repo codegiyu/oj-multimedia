@@ -168,40 +168,52 @@ export const seedSiteSettings = async () => {
     name: 'settings',
     appDetails: {
       logo: '/images/logo.png',
-      appName: 'Crelyst',
+      appName: 'OJ Multimedia',
       description:
-        'Crelyst is a full-service design and branding agency specializing in photography, brand design, product design, packaging, and visual identity. Where ideas take shape and colors speak.',
+        'Your trusted source for gospel music, inspiring sermons, daily devotionals, and Christian resources to strengthen your faith journey.',
     },
     seo: {
-      metaTitleTemplate: '%s | Crelyst',
+      metaTitleTemplate: '%s | OHEJUIRA',
       metaDescription:
-        'Crelyst is a full-service design and branding agency specializing in photography, brand design, product design, packaging, and visual identity. Where ideas take shape and colors speak.',
+        'OHEJUIRA is a Christian-based multimedia platform offering gospel music downloads, inspirational music, sermons, devotionals, gospel news, resources, promotional services, and a vendor marketplace. Serving humanity through innovation in entertainment and technology.',
       keywords: [
-        'Crelyst',
-        'Design Agency',
-        'Branding',
-        'Photography',
-        'Product Design',
-        'Packaging Design',
-        'Visual Identity',
-        'Creative Agency',
+        'OHEJUIRA',
+        'OHEJUIRA-Multimedia',
+        'Gospel Music',
+        'Inspirational Music',
+        'Christian Sermons',
+        'Daily Devotionals',
+        'Gospel News',
+        'Christian Resources',
+        'Prayer Requests',
+        'Bible Study',
+        'Christian Community',
+        'Gospel Artists',
+        'Pastors',
+        'Christian Blog',
+        'Faith Resources',
+        'Spiritual Growth',
+        'Christian Content',
+        'Multimedia Platform',
+        'Content Creation',
+        'Production Services',
       ],
       ogImageUrl: '/og-image.png',
-      faviconUrl: '/favicon.png',
-      canonicalUrlBase: process.env.APP_URL || 'https://crelyst.com',
+      faviconUrl: '/favicon.ico',
+      canonicalUrlBase: process.env.APP_URL || 'https://ojmultimedia.com',
       robotsIndex: true,
       robotsFollow: true,
     },
     legal: {
-      termsOfServiceUrl: '/legal/terms-of-service',
-      privacyPolicyUrl: '/legal/privacy-policy',
-      cookiePolicyUrl: '/legal/cookie-policy',
+      termsOfServiceUrl: '/terms',
+      privacyPolicyUrl: '/privacy',
+      cookiePolicyUrl: '',
       disclaimerText: '',
     },
     email: {
-      fromEmail: 'hello@crelyst.com',
-      fromName: 'Crelyst',
-      replyToEmail: 'hello@crelyst.com',
+      fromEmail: 'ohemultimedia@gmail.com',
+      fromName: 'OHEJUIRA',
+      replyToEmail: 'ohemultimedia@gmail.com',
     },
     features: {
       maintenanceMode: false,
@@ -220,14 +232,14 @@ export const seedSiteSettings = async () => {
       defaultCurrency: 'NGN',
     },
     branding: {
-      faviconUrl: '/favicon.png',
-      primaryBrandColor: '#F27B35',
+      faviconUrl: '/favicon.ico',
+      primaryBrandColor: '#2563EB',
       secondaryBrandColor: '#404040',
     },
     contactInfo: {
       address: [],
-      tel: [],
-      email: ['hello@crelyst.com'],
+      tel: ['+234 705 692 3436', '+234 913 667 0466', '+234 707 324 4801'],
+      email: ['ohemultimedia@gmail.com'],
       whatsapp: '',
       locationUrl: '',
       officeHours: {
@@ -240,7 +252,16 @@ export const seedSiteSettings = async () => {
         sunday: null,
       },
     },
-    socials: [],
+    socials: [
+      {
+        platform: 'youtube',
+        href: 'https://youtube.com/@ojm-p9h?si=Ag6UH4fk3M437kfg',
+      },
+      {
+        platform: 'facebook',
+        href: 'https://web.facebook.com/profile.php?id=61570489011885&sk=photos',
+      },
+    ],
   };
 
   const rawResult = await SiteSettings.findOneAndUpdate(
@@ -286,8 +307,5 @@ export const seedDb = async () => {
   // Add seed functions here
   // await seedRolesAndPermissions();
   // await seedSuperAdmin();
-  await seedSiteSettings();
-  // await seedProjects();
-  // await seedTestimonials();
-  // await seedBrands();
+  // await seedSiteSettings();
 };

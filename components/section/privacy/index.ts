@@ -1,0 +1,1 @@
+export { PrivacyPolicyClient } from './PrivacyPolicyClient';

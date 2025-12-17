@@ -21,17 +21,17 @@ export const FeaturedVerseSection = () => {
           text="Daily inspiration from God's Word"
           Icon={BookOpen}
         />
-        <Card className="p-8 md:p-12 bg-gradient-to-br from-[#5730D5]/5 to-[#8A2BE2]/5 border-[#5730D5]/20">
+        <Card className="p-8 md:p-12 bg-gradient-to-br from-[#2563EB]/5 to-[#3B82F6]/5 border-[#2563EB]/20">
           <div className="flex items-start gap-4">
-            <div className="p-3 rounded-full bg-[#5730D5]/10 shrink-0">
-              <Heart className="w-6 h-6 text-[#5730D5]" />
+            <div className="p-3 rounded-full bg-[#2563EB]/10 shrink-0">
+              <Heart className="w-6 h-6 text-[#2563EB]" />
             </div>
             <div className="flex-1">
               <p className="text-xl md:text-2xl font-medium text-foreground leading-relaxed mb-4 italic">
                 &ldquo;{verse.text}&rdquo;
               </p>
               <div className="flex items-center justify-between flex-wrap gap-4">
-                <p className="text-lg font-semibold text-[#5730D5]">{verse.reference}</p>
+                <p className="text-lg font-semibold text-[#2563EB]">{verse.reference}</p>
                 <span className="text-sm text-muted-foreground">{verse.translation}</span>
               </div>
             </div>

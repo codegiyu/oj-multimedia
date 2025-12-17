@@ -30,7 +30,7 @@ export const DailyDevotionalSection = () => {
         />
         <Card className="p-8 md:p-10">
           <div className="flex items-start gap-2 mb-4">
-            <Calendar className="w-5 h-5 text-[#5730D5]" />
+            <Calendar className="w-5 h-5 text-[#2563EB]" />
             <span className="text-sm font-medium text-muted-foreground">{devotional.date}</span>
           </div>
           <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-4">

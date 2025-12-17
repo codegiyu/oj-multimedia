@@ -35,7 +35,7 @@ export const NewsletterSection = () => {
   return (
     <SectionContainer className="py-16 md:py-20">
       <div className="max-w-4xl mx-auto">
-        <Card className="p-8 md:p-12 bg-gradient-to-br from-[#5730D5] to-[#8A2BE2] text-white">
+        <Card className="p-8 md:p-12 bg-gradient-to-br from-[#2563EB] to-[#3B82F6] text-white">
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/20 mb-4">
               <Mail className="w-8 h-8 text-white" />
@@ -58,7 +58,7 @@ export const NewsletterSection = () => {
               type="submit"
               text="Subscribe"
               loading={loading}
-              className="bg-white text-[#5730D5] hover:bg-white/90 font-semibold px-8"
+              className="bg-white text-[#2563EB] hover:bg-white/90 font-semibold px-8"
             />
           </form>
         </Card>

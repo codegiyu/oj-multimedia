@@ -28,7 +28,7 @@ export const TopChartsSection = () => {
           />
           <GhostBtn
             linkProps={{ href: '/music' }}
-            className="hidden md:flex items-center gap-2 text-[#5730D5] hover:text-[#8A2BE2]">
+            className="hidden md:flex items-center gap-2 text-[#2563EB] hover:text-[#3B82F6]">
             <span>View All</span>
             <ArrowRight className="w-4 h-4" />
           </GhostBtn>
@@ -40,11 +40,11 @@ export const TopChartsSection = () => {
                 key={idx}
                 href={`/music/${song.title.toLowerCase().replace(/\s+/g, '-')}`}
                 className="flex items-center gap-4 p-4 rounded-lg hover:bg-muted/50 transition-colors group">
-                <div className="flex items-center justify-center w-12 h-12 rounded-full bg-[#5730D5]/10 text-[#5730D5] font-bold shrink-0">
+                <div className="flex items-center justify-center w-12 h-12 rounded-full bg-[#2563EB]/10 text-[#2563EB] font-bold shrink-0">
                   {song.rank}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-foreground group-hover:text-[#5730D5] transition-colors truncate">
+                  <h3 className="font-semibold text-foreground group-hover:text-[#2563EB] transition-colors truncate">
                     {song.title}
                   </h3>
                   <p className="text-sm text-muted-foreground truncate">{song.artist}</p>
@@ -54,7 +54,7 @@ export const TopChartsSection = () => {
                     <p className="text-sm font-medium text-foreground">{song.plays}</p>
                     <p className="text-xs text-muted-foreground">plays</p>
                   </div>
-                  <div className="w-10 h-10 rounded-full bg-[#5730D5]/10 flex items-center justify-center group-hover:bg-[#5730D5] group-hover:text-white transition-colors">
+                  <div className="w-10 h-10 rounded-full bg-[#2563EB]/10 flex items-center justify-center group-hover:bg-[#2563EB] group-hover:text-white transition-colors">
                     <Play className="w-4 h-4 ml-0.5" />
                   </div>
                 </div>
@@ -65,7 +65,7 @@ export const TopChartsSection = () => {
         <div className="mt-8 md:hidden">
           <GhostBtn
             linkProps={{ href: '/music' }}
-            className="w-full flex items-center justify-center gap-2 text-[#5730D5]">
+            className="w-full flex items-center justify-center gap-2 text-[#2563EB]">
             <span>View All Music</span>
             <ArrowRight className="w-4 h-4" />
           </GhostBtn>

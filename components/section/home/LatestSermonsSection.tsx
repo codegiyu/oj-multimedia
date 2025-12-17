@@ -40,7 +40,7 @@ export const LatestSermonsSection = () => {
           <SectionHeading title="Latest Sermons" text="Fresh messages to inspire you" Icon={Mic} />
           <GhostBtn
             linkProps={{ href: '/sermons' }}
-            className="hidden md:flex items-center gap-2 text-[#5730D5] hover:text-[#8A2BE2]">
+            className="hidden md:flex items-center gap-2 text-[#2563EB] hover:text-[#3B82F6]">
             <span>View All</span>
             <ArrowRight className="w-4 h-4" />
           </GhostBtn>
@@ -50,15 +50,15 @@ export const LatestSermonsSection = () => {
             <Card key={idx} className="group overflow-hidden hover:shadow-lg transition-shadow">
               <Link href={`/sermons/${sermon.slug}`}>
                 <div className="relative aspect-video bg-muted overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#5730D5]/20 to-[#8A2BE2]/20" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#2563EB]/20 to-[#3B82F6]/20" />
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="w-16 h-16 rounded-full bg-white/90 flex items-center justify-center group-hover:scale-110 transition-transform">
-                      <Play className="w-6 h-6 text-[#5730D5] ml-1" />
+                      <Play className="w-6 h-6 text-[#2563EB] ml-1" />
                     </div>
                   </div>
                 </div>
                 <div className="p-6">
-                  <h3 className="text-xl font-bold text-foreground mb-2 group-hover:text-[#5730D5] transition-colors">
+                  <h3 className="text-xl font-bold text-foreground mb-2 group-hover:text-[#2563EB] transition-colors">
                     {sermon.title}
                   </h3>
                   <p className="text-muted-foreground mb-3">{sermon.pastor}</p>
@@ -74,7 +74,7 @@ export const LatestSermonsSection = () => {
         <div className="mt-8 md:hidden">
           <GhostBtn
             linkProps={{ href: '/sermons' }}
-            className="w-full flex items-center justify-center gap-2 text-[#5730D5]">
+            className="w-full flex items-center justify-center gap-2 text-[#2563EB]">
             <span>View All Sermons</span>
             <ArrowRight className="w-4 h-4" />
           </GhostBtn>

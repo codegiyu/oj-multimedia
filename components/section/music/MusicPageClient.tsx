@@ -36,10 +36,10 @@ export const MusicPageClient = () => {
   return (
     <MainLayout>
       {/* Hero Section */}
-      <SectionContainer className="py-16 md:py-20 bg-gradient-to-br from-[#5730D5]/5 to-[#8A2BE2]/5">
+      <SectionContainer className="py-16 md:py-20 bg-gradient-to-br from-[#2563EB]/5 to-[#3B82F6]/5">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#5730D5]/10 mb-6">
-            <Music className="w-8 h-8 text-[#5730D5]" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#2563EB]/10 mb-6">
+            <Music className="w-8 h-8 text-[#2563EB]" />
           </div>
           <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">Gospel Music</h1>
           <p className="text-lg text-muted-foreground mb-8">
@@ -51,7 +51,7 @@ export const MusicPageClient = () => {
             text="Submit Your Song"
             RightIcon={Upload}
             rightIconProps={{ className: 'size-4' }}
-            className="bg-gradient-to-r from-[#5730D5] to-[#8A2BE2] text-white"
+            className="bg-gradient-to-r from-[#2563EB] to-[#3B82F6] text-white"
           />
         </div>
       </SectionContainer>
@@ -69,20 +69,20 @@ export const MusicPageClient = () => {
               <Card key={idx} className="group hover:shadow-lg transition-shadow">
                 <Link href={`/music/${song.slug}`}>
                   <div className="relative aspect-video bg-muted overflow-hidden rounded-t-lg">
-                    <div className="absolute inset-0 bg-gradient-to-br from-[#5730D5]/20 to-[#8A2BE2]/20" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#2563EB]/20 to-[#3B82F6]/20" />
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div className="w-16 h-16 rounded-full bg-white/90 flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <Play className="w-6 h-6 text-[#5730D5] ml-1" />
+                        <Play className="w-6 h-6 text-[#2563EB] ml-1" />
                       </div>
                     </div>
                   </div>
                   <div className="p-6">
-                    <h3 className="text-xl font-bold text-foreground mb-2 group-hover:text-[#5730D5] transition-colors">
+                    <h3 className="text-xl font-bold text-foreground mb-2 group-hover:text-[#2563EB] transition-colors">
                       {song.title}
                     </h3>
                     <p className="text-muted-foreground mb-3">{song.artist}</p>
                     <div className="flex items-center gap-4">
-                      <GhostBtn className="text-sm text-[#5730D5] hover:text-[#8A2BE2]">
+                      <GhostBtn className="text-sm text-[#2563EB] hover:text-[#3B82F6]">
                         <Download className="w-4 h-4 mr-1" />
                         Download MP3
                       </GhostBtn>
@@ -103,7 +103,7 @@ export const MusicPageClient = () => {
             <SectionHeading title="Artist Profiles" text="Meet the gospel artists" Icon={User} />
             <GhostBtn
               linkProps={{ href: '/music?tab=artists' }}
-              className="hidden md:flex items-center gap-2 text-[#5730D5]">
+              className="hidden md:flex items-center gap-2 text-[#2563EB]">
               <span>View All Artists</span>
               <ArrowRight className="w-4 h-4" />
             </GhostBtn>
@@ -113,8 +113,8 @@ export const MusicPageClient = () => {
               <Card key={idx} className="text-center group hover:shadow-lg transition-shadow">
                 <Link href={`/music/artists/${artist.slug}`}>
                   <div className="p-6">
-                    <div className="w-24 h-24 rounded-full bg-[#5730D5]/10 mx-auto mb-4 flex items-center justify-center group-hover:bg-[#5730D5]/20 transition-colors">
-                      <User className="w-12 h-12 text-[#5730D5]" />
+                    <div className="w-24 h-24 rounded-full bg-[#2563EB]/10 mx-auto mb-4 flex items-center justify-center group-hover:bg-[#2563EB]/20 transition-colors">
+                      <User className="w-12 h-12 text-[#2563EB]" />
                     </div>
                     <h3 className="text-xl font-bold text-foreground mb-2">{artist.name}</h3>
                     <p className="text-muted-foreground">{artist.songs} songs</p>
@@ -136,8 +136,8 @@ export const MusicPageClient = () => {
           />
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
             <Card className="p-6 text-center hover:shadow-lg transition-shadow">
-              <div className="w-12 h-12 rounded-full bg-[#5730D5]/10 mx-auto mb-4 flex items-center justify-center">
-                <FileText className="w-6 h-6 text-[#5730D5]" />
+              <div className="w-12 h-12 rounded-full bg-[#2563EB]/10 mx-auto mb-4 flex items-center justify-center">
+                <FileText className="w-6 h-6 text-[#2563EB]" />
               </div>
               <h3 className="font-semibold text-foreground mb-2">Lyrics & Meaning</h3>
               <p className="text-sm text-muted-foreground">
@@ -145,15 +145,15 @@ export const MusicPageClient = () => {
               </p>
             </Card>
             <Card className="p-6 text-center hover:shadow-lg transition-shadow">
-              <div className="w-12 h-12 rounded-full bg-[#5730D5]/10 mx-auto mb-4 flex items-center justify-center">
-                <Video className="w-6 h-6 text-[#5730D5]" />
+              <div className="w-12 h-12 rounded-full bg-[#2563EB]/10 mx-auto mb-4 flex items-center justify-center">
+                <Video className="w-6 h-6 text-[#2563EB]" />
               </div>
               <h3 className="font-semibold text-foreground mb-2">Music Videos</h3>
               <p className="text-sm text-muted-foreground">Watch official music videos</p>
             </Card>
             <Card className="p-6 text-center hover:shadow-lg transition-shadow">
-              <div className="w-12 h-12 rounded-full bg-[#5730D5]/10 mx-auto mb-4 flex items-center justify-center">
-                <Headphones className="w-6 h-6 text-[#5730D5]" />
+              <div className="w-12 h-12 rounded-full bg-[#2563EB]/10 mx-auto mb-4 flex items-center justify-center">
+                <Headphones className="w-6 h-6 text-[#2563EB]" />
               </div>
               <h3 className="font-semibold text-foreground mb-2">Instrumentals</h3>
               <p className="text-sm text-muted-foreground">
@@ -161,8 +161,8 @@ export const MusicPageClient = () => {
               </p>
             </Card>
             <Card className="p-6 text-center hover:shadow-lg transition-shadow">
-              <div className="w-12 h-12 rounded-full bg-[#5730D5]/10 mx-auto mb-4 flex items-center justify-center">
-                <Upload className="w-6 h-6 text-[#5730D5]" />
+              <div className="w-12 h-12 rounded-full bg-[#2563EB]/10 mx-auto mb-4 flex items-center justify-center">
+                <Upload className="w-6 h-6 text-[#2563EB]" />
               </div>
               <h3 className="font-semibold text-foreground mb-2">Submit Your Song</h3>
               <p className="text-sm text-muted-foreground">Share your music with the world</p>

@@ -54,10 +54,10 @@ export const NewsPageClient = () => {
   return (
     <MainLayout>
       {/* Hero Section */}
-      <SectionContainer className="py-16 md:py-20 bg-gradient-to-br from-[#5730D5]/5 to-[#8A2BE2]/5">
+      <SectionContainer className="py-16 md:py-20 bg-gradient-to-br from-[#2563EB]/5 to-[#3B82F6]/5">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#5730D5]/10 mb-6">
-            <Newspaper className="w-8 h-8 text-[#5730D5]" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#2563EB]/10 mb-6">
+            <Newspaper className="w-8 h-8 text-[#2563EB]" />
           </div>
           <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">News & Lifestyle</h1>
           <p className="text-lg text-muted-foreground mb-8">
@@ -79,10 +79,10 @@ export const NewsPageClient = () => {
             {categories.map((category, idx) => (
               <Card key={idx} className="p-6 text-center hover:shadow-lg transition-shadow group">
                 <Link href={`/news?category=${category.slug}`}>
-                  <div className="w-12 h-12 rounded-full bg-[#5730D5]/10 mx-auto mb-3 flex items-center justify-center group-hover:bg-[#5730D5]/20 transition-colors">
-                    <category.icon className="w-6 h-6 text-[#5730D5]" />
+                  <div className="w-12 h-12 rounded-full bg-[#2563EB]/10 mx-auto mb-3 flex items-center justify-center group-hover:bg-[#2563EB]/20 transition-colors">
+                    <category.icon className="w-6 h-6 text-[#2563EB]" />
                   </div>
-                  <h3 className="font-semibold text-foreground text-sm group-hover:text-[#5730D5] transition-colors">
+                  <h3 className="font-semibold text-foreground text-sm group-hover:text-[#2563EB] transition-colors">
                     {category.name}
                   </h3>
                 </Link>
@@ -103,7 +103,7 @@ export const NewsPageClient = () => {
             />
             <GhostBtn
               linkProps={{ href: '/news?sort=latest' }}
-              className="hidden md:flex items-center gap-2 text-[#5730D5] hover:text-[#8A2BE2]">
+              className="hidden md:flex items-center gap-2 text-[#2563EB] hover:text-[#3B82F6]">
               <span>View All</span>
               <ArrowRight className="w-4 h-4" />
             </GhostBtn>
@@ -114,7 +114,7 @@ export const NewsPageClient = () => {
                 <CardContent className="p-6">
                   <Link href={`/news/${item.slug}`}>
                     <div className="flex items-center gap-3 mb-3">
-                      <span className="px-3 py-1 text-xs font-semibold bg-[#5730D5]/10 text-[#5730D5] rounded-full">
+                      <span className="px-3 py-1 text-xs font-semibold bg-[#2563EB]/10 text-[#2563EB] rounded-full">
                         {item.category}
                       </span>
                       <div className="flex items-center gap-1 text-xs text-muted-foreground">
@@ -122,7 +122,7 @@ export const NewsPageClient = () => {
                         <span>{item.date}</span>
                       </div>
                     </div>
-                    <h3 className="text-xl font-bold text-foreground mb-2 group-hover:text-[#5730D5] transition-colors">
+                    <h3 className="text-xl font-bold text-foreground mb-2 group-hover:text-[#2563EB] transition-colors">
                       {item.title}
                     </h3>
                     <p className="text-muted-foreground leading-relaxed">{item.excerpt}</p>

@@ -44,7 +44,7 @@ export const TrendingNewsSection = () => {
           />
           <GhostBtn
             linkProps={{ href: '/news' }}
-            className="hidden md:flex items-center gap-2 text-[#5730D5] hover:text-[#8A2BE2]">
+            className="hidden md:flex items-center gap-2 text-[#2563EB] hover:text-[#3B82F6]">
             <span>View All News</span>
             <ArrowRight className="w-4 h-4" />
           </GhostBtn>
@@ -55,7 +55,7 @@ export const TrendingNewsSection = () => {
               <Link href={`/news/${item.slug}`}>
                 <div className="p-6">
                   <div className="flex items-center gap-3 mb-3">
-                    <span className="px-3 py-1 text-xs font-semibold bg-[#5730D5]/10 text-[#5730D5] rounded-full">
+                    <span className="px-3 py-1 text-xs font-semibold bg-[#2563EB]/10 text-[#2563EB] rounded-full">
                       {item.category}
                     </span>
                     <div className="flex items-center gap-1 text-xs text-muted-foreground">
@@ -63,7 +63,7 @@ export const TrendingNewsSection = () => {
                       <span>{item.date}</span>
                     </div>
                   </div>
-                  <h3 className="text-xl font-bold text-foreground mb-2 group-hover:text-[#5730D5] transition-colors">
+                  <h3 className="text-xl font-bold text-foreground mb-2 group-hover:text-[#2563EB] transition-colors">
                     {item.title}
                   </h3>
                   <p className="text-muted-foreground leading-relaxed">{item.excerpt}</p>
@@ -75,7 +75,7 @@ export const TrendingNewsSection = () => {
         <div className="mt-8 md:hidden">
           <GhostBtn
             linkProps={{ href: '/news' }}
-            className="w-full flex items-center justify-center gap-2 text-[#5730D5]">
+            className="w-full flex items-center justify-center gap-2 text-[#2563EB]">
             <span>View All News</span>
             <ArrowRight className="w-4 h-4" />
           </GhostBtn>

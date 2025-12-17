@@ -25,10 +25,10 @@ export const DevotionalsPageClient = () => {
   return (
     <MainLayout>
       {/* Hero Section */}
-      <SectionContainer className="py-16 md:py-20 bg-gradient-to-br from-[#5730D5]/5 to-[#8A2BE2]/5">
+      <SectionContainer className="py-16 md:py-20 bg-gradient-to-br from-[#2563EB]/5 to-[#3B82F6]/5">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#5730D5]/10 mb-6">
-            <BookOpen className="w-8 h-8 text-[#5730D5]" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#2563EB]/10 mb-6">
+            <BookOpen className="w-8 h-8 text-[#2563EB]" />
           </div>
           <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">Devotionals</h1>
           <p className="text-lg text-muted-foreground mb-8">
@@ -51,15 +51,15 @@ export const DevotionalsPageClient = () => {
                 <CardContent className="p-6">
                   <Link href={`/devotionals/${devotional.slug}`}>
                     <div className="flex items-center gap-2 mb-4">
-                      <Calendar className="w-4 h-4 text-[#5730D5]" />
+                      <Calendar className="w-4 h-4 text-[#2563EB]" />
                       <span className="text-sm font-medium text-muted-foreground">
                         {devotional.date}
                       </span>
                     </div>
-                    <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-[#5730D5] transition-colors">
+                    <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-[#2563EB] transition-colors">
                       {devotional.title}
                     </h3>
-                    <GhostBtn className="text-sm text-[#5730D5] hover:text-[#8A2BE2]">
+                    <GhostBtn className="text-sm text-[#2563EB] hover:text-[#3B82F6]">
                       Read More <ArrowRight className="w-4 h-4 ml-1 inline" />
                     </GhostBtn>
                   </Link>
@@ -83,11 +83,11 @@ export const DevotionalsPageClient = () => {
               <Card key={idx} className="group hover:shadow-lg transition-shadow">
                 <CardContent className="p-6">
                   <Link href={`/devotionals/series/${series.slug}`}>
-                    <h3 className="text-xl font-bold text-foreground mb-2 group-hover:text-[#5730D5] transition-colors">
+                    <h3 className="text-xl font-bold text-foreground mb-2 group-hover:text-[#2563EB] transition-colors">
                       {series.title}
                     </h3>
                     <p className="text-muted-foreground mb-4">{series.lessons} lessons</p>
-                    <GhostBtn className="text-sm text-[#5730D5] hover:text-[#8A2BE2]">
+                    <GhostBtn className="text-sm text-[#2563EB] hover:text-[#3B82F6]">
                       Start Study <ArrowRight className="w-4 h-4 ml-1 inline" />
                     </GhostBtn>
                   </Link>
@@ -108,8 +108,8 @@ export const DevotionalsPageClient = () => {
           />
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
             <Card className="p-6 text-center hover:shadow-lg transition-shadow">
-              <div className="w-12 h-12 rounded-full bg-[#5730D5]/10 mx-auto mb-4 flex items-center justify-center">
-                <Heart className="w-6 h-6 text-[#5730D5]" />
+              <div className="w-12 h-12 rounded-full bg-[#2563EB]/10 mx-auto mb-4 flex items-center justify-center">
+                <Heart className="w-6 h-6 text-[#2563EB]" />
               </div>
               <h3 className="font-semibold text-foreground mb-2">Prayer Points</h3>
               <p className="text-sm text-muted-foreground">
@@ -117,8 +117,8 @@ export const DevotionalsPageClient = () => {
               </p>
             </Card>
             <Card className="p-6 text-center hover:shadow-lg transition-shadow">
-              <div className="w-12 h-12 rounded-full bg-[#5730D5]/10 mx-auto mb-4 flex items-center justify-center">
-                <BookOpen className="w-6 h-6 text-[#5730D5]" />
+              <div className="w-12 h-12 rounded-full bg-[#2563EB]/10 mx-auto mb-4 flex items-center justify-center">
+                <BookOpen className="w-6 h-6 text-[#2563EB]" />
               </div>
               <h3 className="font-semibold text-foreground mb-2">Christian Living Tips</h3>
               <p className="text-sm text-muted-foreground">
@@ -126,8 +126,8 @@ export const DevotionalsPageClient = () => {
               </p>
             </Card>
             <Card className="p-6 text-center hover:shadow-lg transition-shadow">
-              <div className="w-12 h-12 rounded-full bg-[#5730D5]/10 mx-auto mb-4 flex items-center justify-center">
-                <Users className="w-6 h-6 text-[#5730D5]" />
+              <div className="w-12 h-12 rounded-full bg-[#2563EB]/10 mx-auto mb-4 flex items-center justify-center">
+                <Users className="w-6 h-6 text-[#2563EB]" />
               </div>
               <h3 className="font-semibold text-foreground mb-2">Marriage & Family</h3>
               <p className="text-sm text-muted-foreground">Biblical guidance for relationships</p>
