@@ -9,14 +9,21 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: 'bg-primary text-primary-foreground hover:bg-primary/90',
-        destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
-        outline: 'border border-input bg-background hover:bg-accent hover:text-accent-foreground',
-        secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
-        ghost: 'hover:bg-accent hover:text-accent-foreground',
+        default: 'bg-primary border-2 border-primary text-primary-foreground hover:bg-primary/90',
+        destructive:
+          'bg-destructive border-2 border-destructive text-destructive-foreground hover:bg-destructive/90',
+        outline:
+          'border-2 border-primary bg-transparent text-primary hover:bg-primary hover:text-primary-foreground',
+        secondary:
+          'bg-secondary border-2 border-secondary text-secondary-foreground hover:bg-secondary/80',
+        ghost:
+          'bg-trasparent border-2 border-transparent hover:border-accent hover:bg-accent hover:text-accent-foreground',
         link: 'text-primary underline-offset-4 hover:underline',
-        hero: 'bg-primary hover:bg-primary-light text-primary-foreground shadow-elegant hover:shadow-gold hover:-translate-y-0.5 duration-300',
-        accent: 'bg-accent hover:bg-accent/90 text-accent-foreground shadow-gold duration-300',
+        hero: 'bg-primary border-2 border-primary hover:bg-primary-light hover:border-primary-light text-primary-foreground shadow-elegant hover:shadow-gold hover:-translate-y-0.5 duration-300',
+        accent:
+          'bg-accent border-2 border-accent hover:bg-accent/90 text-accent-foreground shadow-gold duration-300',
+        cta: 'bg-card text-foreground border-2 border-border hover:border-primary hover:bg-primary/5 hover:-translate-y-0.5',
+        play: 'bg-primary text-primary-foreground rounded-full shadow-hero hover:scale-110 animate-pulse-glow',
         none: '',
       },
       size: {
@@ -24,7 +31,9 @@ const buttonVariants = cva(
         sm: 'w-fit py-2 px-4',
         lg: 'w-fit py-3 px-8',
         xl: 'w-fit py-4.5 px-10',
-        icon: '',
+        icon: 'size-10 p-0',
+        iconLg: 'size-14 p-0',
+        iconXl: 'size-20 p-0',
         full: 'w-full py-3 px-8',
       },
       typo: {

@@ -1,12 +1,12 @@
 import type { Metadata } from 'next';
-import { SermonsPageClient } from '@/components/section/sermons/SermonsPageClient';
+import { NewSermonsPageClient } from '@/components/section/sermons/new/NewSermonsPageClient';
 
 export const metadata: Metadata = {
-  title: 'Sermons - Audio & Video Messages',
+  title: 'Audio & Video Content - Messages & Talks',
   description:
-    'Listen to audio sermons, watch video messages, and explore sermons by topic and pastor.',
+    'Listen to audio content, watch video messages, and explore content by topic and speaker. Discover trending audio and video content with download metrics.',
 };
 
 export default function SermonsPage() {
-  return <SermonsPageClient />;
+  return <NewSermonsPageClient />;
 }

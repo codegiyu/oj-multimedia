@@ -50,14 +50,14 @@ export const LoginForm = () => {
   });
 
   return (
-    <form onSubmit={handleSubmit} className="mt-8 space-y-6">
+    <form onSubmit={handleSubmit} className="mt-8 grid gap-6">
       {errorsVisible && formErrors.root && formErrors.root.length > 0 && (
         <div className="bg-destructive/10 border border-destructive/30 text-destructive px-4 py-3 rounded-lg text-sm">
           {formErrors.root[0]}
         </div>
       )}
 
-      <div className="space-y-4">
+      <div className="grid gap-4">
         <RegularInput
           label="Email address"
           name="email"

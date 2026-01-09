@@ -1,11 +1,11 @@
-import { HomePageClient } from '@/components/section/home';
+import { NewHomePageClient } from '@/components/section/home/new/NewHomePageClient';
 
 export const metadata = {
-  title: 'Home - Christian Multimedia Blog',
+  title: 'Home - Discover Music, Charts & Latest Content',
   description:
-    'Featured Gospel Song, Verse of the Day, Devotionals, Latest Sermons, Trending Gospel News, and more.',
+    'Explore our dynamic homepage featuring music categories, top charts, recent uploads, download metrics, trending content, and discover new music and audio content. Stay engaged with our lively, ever-updating platform.',
 };
 
 export default function Home() {
-  return <HomePageClient />;
+  return <NewHomePageClient />;
 }

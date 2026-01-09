@@ -13,19 +13,19 @@ export const getSession = withRequestContext({ protect: true, accessType: 'conso
       return sendResponse(
         200,
         {
-          admin: null,
+          user: null,
         },
         'No active session'
       );
     }
 
     // Remove sensitive fields before returning
-    const sanitizedAdmin = await deleteFields(user, unselectedFields);
+    const sanitizedUser = await deleteFields(user, unselectedFields);
 
     return sendResponse(
       200,
       {
-        admin: sanitizedAdmin,
+        user: sanitizedUser,
       },
       'Session retrieved successfully'
     );

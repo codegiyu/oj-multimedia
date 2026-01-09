@@ -1,12 +1,12 @@
 import type { Metadata } from 'next';
-import { DevotionalsPageClient } from '@/components/section/devotionals/DevotionalsPageClient';
+import { NewDevotionalsPageClient } from '@/components/section/devotionals/new/NewDevotionalsPageClient';
 
 export const metadata: Metadata = {
-  title: 'Devotionals - Daily Bible Study',
+  title: 'Devotionals - Daily Inspiration & Study Content',
   description:
-    'Read daily devotionals, Bible study series, prayer points, and Christian living tips.',
+    'Discover daily devotionals, study series, inspirational content, lifestyle tips, family guidance, and inspiring stories. Explore trending and recent devotional content.',
 };
 
 export default function DevotionalsPage() {
-  return <DevotionalsPageClient />;
+  return <NewDevotionalsPageClient />;
 }

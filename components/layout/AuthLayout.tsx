@@ -22,10 +22,10 @@ export default function AuthLayout({ children, subtitle = 'Admin Dashboard' }: A
       </div>
 
       {/* Content */}
-      <div className="w-full max-w-md space-y-8">{children}</div>
+      <div className="w-full max-w-md grid gap-8">{children}</div>
 
       {/* Footer */}
-      <div className="w-full space-y-8">
+      <div className="w-full grid gap-8">
         <p className="text-center text-sm text-muted-foreground">
           © {new Date().getFullYear()} All rights reserved.
         </p>

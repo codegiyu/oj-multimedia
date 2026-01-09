@@ -7,15 +7,18 @@ import { updateCacheToken } from '../seed';
 const MAX_RETRIES = 10;
 const RETRY_DELAY_MS = 3000; // 3 seconds
 
-let _redisCache: IORedis | null = null;
+// Global variable declaration to prevent Next.js hot reload from creating multiple Redis instances
+declare global {
+  var _redisCache: IORedis | undefined;
+}
 
 /**
  * Get or create Redis cache instance (lazy initialization)
  * Validation only happens when Redis is actually accessed, not at module load time
  */
 function getRedisCache(): IORedis {
-  if (_redisCache) {
-    return _redisCache;
+  if (global._redisCache) {
+    return global._redisCache;
   }
 
   // Validate Redis configuration only when actually needed
@@ -26,30 +29,31 @@ function getRedisCache(): IORedis {
     throw new Error(errorMsg);
   }
 
-  _redisCache = new IORedis(ENVIRONMENT.REDIS.URL, {
-    maxRetriesPerRequest: null,
-    enableOfflineQueue: false,
-    offlineQueue: false,
-    retryStrategy: times => {
+  const redisInstance = new IORedis(ENVIRONMENT.REDIS.URL, {
+    enableOfflineQueue: true, // REQUIRED for BullMQ
+    maxRetriesPerRequest: null, // BullMQ requirement
+    retryStrategy(times) {
       if (times >= MAX_RETRIES) {
-        // Give up after MAX_RETRIES
         logger.error('Unable to connect to Redis after maximum retries');
         return null;
       }
-      // Retry after RETRY_DELAY_MS milliseconds
       return RETRY_DELAY_MS;
     },
   });
 
-  _redisCache.on('connect', () => {
+  redisInstance.on('connect', () => {
     logger.info('Connected to Main Redis cluster');
   });
 
-  _redisCache.on('error', err => {
+  redisInstance.on('error', err => {
     logger.error('Redis error', err);
   });
 
-  return _redisCache;
+  // Always set global cache to reuse the same instance across all environments
+  // This prevents multiple Redis connections during builds and runtime
+  global._redisCache = redisInstance;
+
+  return redisInstance;
 }
 
 // Lazy Redis cache - only initializes when actually accessed
@@ -217,14 +221,24 @@ export const flushCache = async ({
  */
 export async function disconnectRedis(): Promise<void> {
   try {
-    if (_redisCache) {
-      await _redisCache.quit();
-      _redisCache = null;
+    const redisInstance = global._redisCache;
+    if (redisInstance) {
+      await redisInstance.quit();
+      global._redisCache = undefined;
       logger.info('Redis disconnected');
     }
   } catch (error) {
     logger.error('Error disconnecting from Redis:', error);
     // Reset cache even if disconnect fails
-    _redisCache = null;
+    global._redisCache = undefined;
   }
 }
+
+// Gracefully close Redis connection on SIGTERM
+process.on('SIGTERM', async () => {
+  const redisInstance = global._redisCache;
+  if (redisInstance) {
+    await redisInstance.quit();
+    logger.info('Redis disconnected on SIGTERM');
+  }
+});

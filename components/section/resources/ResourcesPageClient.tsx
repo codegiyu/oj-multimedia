@@ -87,7 +87,7 @@ export const ResourcesPageClient = () => {
                     </div>
                     <h3 className="text-xl font-bold text-foreground">{resource.category}</h3>
                   </div>
-                  <div className="space-y-4">
+                  <div className="grid gap-4">
                     {resource.items.map((item, itemIdx) => (
                       <div
                         key={itemIdx}

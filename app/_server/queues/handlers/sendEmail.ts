@@ -1,46 +1,54 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Job } from 'bullmq';
 import nodemailer from 'nodemailer';
-import { render } from '@react-email/render';
 import { type JSX } from 'react';
-import { OTPCode } from '../templates/OTP';
 import { logger } from '../../lib/utils/logger';
 import { ENVIRONMENT } from '../../lib/config/environment';
 import { JOB_TYPE } from '../../lib/types/queues';
-import { ChangePasswordLink } from '../templates/ResetPassword';
-import { NotificationEmail } from '../templates/NotificationEmail';
-import { InviteAdmin } from '../templates/InviteAdmin';
 import { validateCompany, getCompanyBranding, getCompanySender } from '../../lib/utils/branding';
 import { createEmailLog, updateEmailStatus } from '../../lib/utils/emailTracking';
 import { updateNotificationEmailDelivery } from '../../lib/utils/notificationEmailDelivery';
 import { EmailLog } from '../../models/emailLog';
+import { renderEmailComponent } from './renderEmail';
 
-const TEMPLATES: Partial<
-  Record<
-    JOB_TYPE,
-    {
-      subject: string;
-      template: (data: any) => JSX.Element;
+// Lazy-load email templates to avoid importing @react-email/render at module load time
+// This prevents React 19 compatibility issues during build
+async function loadTemplate(
+  type: JOB_TYPE
+): Promise<{ subject: string; template: (data: any) => JSX.Element }> {
+  switch (type) {
+    case 'verificationCode': {
+      const { OTPCode } = await import('../templates/OTP');
+      return {
+        subject: 'Account verification code',
+        template: OTPCode,
+      };
     }
-  >
-> = {
-  verificationCode: {
-    subject: 'Account verification code',
-    template: OTPCode,
-  },
-  resetPassword: {
-    subject: 'Your password has been reset',
-    template: ChangePasswordLink,
-  },
-  notificationEmail: {
-    subject: 'You have a new notification',
-    template: NotificationEmail,
-  },
-  inviteAdmin: {
-    subject: 'Your Invitation to Company Name Admin Dashboard',
-    template: InviteAdmin,
-  },
-};
+    case 'resetPassword': {
+      const { ChangePasswordLink } = await import('../templates/ResetPassword');
+      return {
+        subject: 'Your password has been reset',
+        template: ChangePasswordLink,
+      };
+    }
+    case 'notificationEmail': {
+      const { NotificationEmail } = await import('../templates/NotificationEmail');
+      return {
+        subject: 'You have a new notification',
+        template: NotificationEmail,
+      };
+    }
+    case 'inviteAdmin': {
+      const { InviteAdmin } = await import('../templates/InviteAdmin');
+      return {
+        subject: 'Your Invitation to Company Name Admin Dashboard',
+        template: InviteAdmin,
+      };
+    }
+    default:
+      throw new Error(`No template found for type: ${type}`);
+  }
+}
 
 export const sendEmail = async (job: Job) => {
   const { type, to, company } = job.data;
@@ -59,8 +67,8 @@ export const sendEmail = async (job: Job) => {
   const branding = getCompanyBranding(company);
   const senderName = getCompanySender(company);
 
-  // Get template options
-  const options = TEMPLATES[type as JOB_TYPE];
+  // Lazy-load template to avoid React 19 compatibility issues during build
+  const options = await loadTemplate(type as JOB_TYPE);
 
   logger.info(`Processing email job: ${job.id} of type ${type}`, { to, type, company });
 
@@ -182,7 +190,8 @@ export const sendEmail = async (job: Job) => {
       branding,
     };
 
-    const htmlContent = await render(options.template(templateData));
+    // Use isolated renderEmailComponent to avoid React 19 compatibility issues
+    const htmlContent = await renderEmailComponent(options.template(templateData));
 
     const mailOptions = {
       from: senderName,

@@ -20,7 +20,7 @@ export const PrivacyPolicyClient = () => {
           </p>
 
           <Card>
-            <CardContent className="p-8 md:p-12 space-y-8">
+            <CardContent className="p-8 md:p-12 grid gap-8">
               <p className="text-muted-foreground leading-relaxed">
                 This Privacy Policy explains how OHEJUIRA collects, uses, stores, and protects your
                 information when you use our platform.
@@ -30,7 +30,7 @@ export const PrivacyPolicyClient = () => {
                 <h2 className="text-2xl font-bold text-foreground mb-4">
                   1. Information We Collect
                 </h2>
-                <div className="space-y-4">
+                <div className="grid gap-4">
                   <div>
                     <h3 className="text-xl font-semibold text-foreground mb-2">
                       A. Personal Information
@@ -38,7 +38,7 @@ export const PrivacyPolicyClient = () => {
                     <p className="text-muted-foreground leading-relaxed mb-2">
                       When you create an account or use our services, we may collect:
                     </p>
-                    <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-4">
+                    <ul className="list-disc list-inside grid gap-1 text-muted-foreground ml-4">
                       <li>Name</li>
                       <li>Email address</li>
                       <li>Phone number</li>
@@ -54,7 +54,7 @@ export const PrivacyPolicyClient = () => {
                     <p className="text-muted-foreground leading-relaxed mb-2">
                       We automatically collect:
                     </p>
-                    <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-4">
+                    <ul className="list-disc list-inside grid gap-1 text-muted-foreground ml-4">
                       <li>IP address</li>
                       <li>Device information</li>
                       <li>Browsing behavior</li>
@@ -69,7 +69,7 @@ export const PrivacyPolicyClient = () => {
                     <p className="text-muted-foreground leading-relaxed mb-2">
                       For vendors and buyers:
                     </p>
-                    <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-4">
+                    <ul className="list-disc list-inside grid gap-1 text-muted-foreground ml-4">
                       <li>Product listings</li>
                       <li>Order details</li>
                       <li>Chat communication</li>
@@ -85,7 +85,7 @@ export const PrivacyPolicyClient = () => {
                 <p className="text-muted-foreground leading-relaxed mb-2">
                   We use collected data for:
                 </p>
-                <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-4">
+                <ul className="list-disc list-inside grid gap-1 text-muted-foreground ml-4">
                   <li>Managing your account</li>
                   <li>Displaying uploaded content</li>
                   <li>Processing promotions and submissions</li>
@@ -100,7 +100,7 @@ export const PrivacyPolicyClient = () => {
               <section>
                 <h2 className="text-2xl font-bold text-foreground mb-4">3. Cookies & Tracking</h2>
                 <p className="text-muted-foreground leading-relaxed mb-2">We use cookies to:</p>
-                <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-4">
+                <ul className="list-disc list-inside grid gap-1 text-muted-foreground ml-4">
                   <li>Keep you logged in</li>
                   <li>Save your preferences</li>
                   <li>Personalize your experience</li>
@@ -121,7 +121,7 @@ export const PrivacyPolicyClient = () => {
                 <p className="text-muted-foreground leading-relaxed mb-2">
                   However, we may share information with:
                 </p>
-                <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-4">
+                <ul className="list-disc list-inside grid gap-1 text-muted-foreground ml-4">
                   <li>Marketplace vendors (when you chat or place orders)</li>
                   <li>Payment processors (Flutterwave/Paystack if connected)</li>
                   <li>Developers managing the platform</li>
@@ -139,7 +139,7 @@ export const PrivacyPolicyClient = () => {
                 <p className="text-muted-foreground leading-relaxed mb-2">
                   We are not responsible for:
                 </p>
-                <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-4">
+                <ul className="list-disc list-inside grid gap-1 text-muted-foreground ml-4">
                   <li>Vendor delivery</li>
                   <li>Vendor product quality</li>
                   <li>Scams from direct payments</li>
@@ -154,7 +154,7 @@ export const PrivacyPolicyClient = () => {
                 <p className="text-muted-foreground leading-relaxed mb-2">
                   We take reasonable measures to protect user data, including:
                 </p>
-                <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-4">
+                <ul className="list-disc list-inside grid gap-1 text-muted-foreground ml-4">
                   <li>Encrypted passwords</li>
                   <li>Secure server configurations</li>
                   <li>Admin-level access control</li>
@@ -176,7 +176,7 @@ export const PrivacyPolicyClient = () => {
               <section>
                 <h2 className="text-2xl font-bold text-foreground mb-4">8. Your Rights</h2>
                 <p className="text-muted-foreground leading-relaxed mb-2">Users may request:</p>
-                <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-4">
+                <ul className="list-disc list-inside grid gap-1 text-muted-foreground ml-4">
                   <li>Account deletion</li>
                   <li>Removal of uploaded content</li>
                   <li>Correction of personal information</li>
@@ -189,7 +189,7 @@ export const PrivacyPolicyClient = () => {
                 <p className="text-muted-foreground leading-relaxed mb-2">
                   We retain data as long as necessary for:
                 </p>
-                <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-4">
+                <ul className="list-disc list-inside grid gap-1 text-muted-foreground ml-4">
                   <li>Account activity</li>
                   <li>Legal compliance</li>
                   <li>Platform functionality</li>
@@ -214,7 +214,7 @@ export const PrivacyPolicyClient = () => {
                 <p className="text-muted-foreground leading-relaxed mb-2">
                   For privacy or data concerns:
                 </p>
-                <ul className="list-none space-y-2 text-muted-foreground">
+                <ul className="list-none grid gap-2 text-muted-foreground">
                   <li>
                     <strong>Email:</strong>{' '}
                     <a

@@ -32,7 +32,7 @@ export const PromotePageClient = () => {
 
       {/* Pricing Tables */}
       <SectionContainer className="py-16 md:py-20">
-        <div className="max-w-7xl mx-auto space-y-12">
+        <div className="max-w-7xl mx-auto grid gap-12">
           {/* Music Upload & Promotions */}
           <div>
             <SectionHeading
@@ -279,11 +279,11 @@ export const PromotePageClient = () => {
                     discuss your specific needs and see if we can work out a custom pricing
                     arrangement.
                   </p>
-                  <div className="mt-6 space-y-2">
+                  <div className="mt-6 grid gap-2">
                     <p className="text-muted-foreground">
                       <strong>For more info, contact us:</strong>
                     </p>
-                    <ul className="list-none space-y-2 text-muted-foreground">
+                    <ul className="list-none grid gap-2 text-muted-foreground">
                       <li>
                         <strong>Email:</strong>{' '}
                         <a
