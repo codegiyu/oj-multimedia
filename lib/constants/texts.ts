@@ -4,13 +4,13 @@ const liveUrl = process.env.live_url || 'https://example.com';
 
 export const SEO_DETAILS = {
   title: {
-    default: 'OHEJUIRA - Christian Multimedia Platform',
+    default: 'OHEJUIRA - Multimedia Platform & Content Hub',
     template: '%s | OHEJUIRA',
   },
   description:
-    'OHEJUIRA is a Christian-based multimedia platform offering gospel music downloads, inspirational music, sermons, devotionals, gospel news, resources, promotional services, and a vendor marketplace. Serving humanity through innovation in entertainment and technology.',
+    'OHEJUIRA is a dynamic multimedia platform featuring music categories, top charts, recent uploads, download metrics, and diverse content. Explore music, audio content, resources, promotional services, and a vendor marketplace. Serving humanity through innovation in entertainment and technology.',
   ogDesc:
-    'Transform lives through creative expression and technology-driven storytelling. Access gospel music, sermons, devotionals, and Christian resources on OHEJUIRA.',
+    'Discover a vibrant multimedia platform with music categories, trending charts, recent uploads, and download metrics. Explore diverse content, connect with creators, and access resources on OHEJUIRA.',
   metadataBase: new URL(liveUrl),
   alternates: {
     canonical: liveUrl,
@@ -31,30 +31,30 @@ export const SEO_DETAILS = {
   keywords: [
     'OHEJUIRA',
     'OHEJUIRA-Multimedia',
-    'Gospel Music',
-    'Inspirational Music',
-    'Christian Sermons',
-    'Daily Devotionals',
-    'Gospel News',
-    'Christian Resources',
-    'Prayer Requests',
-    'Bible Study',
-    'Christian Community',
-    'Gospel Artists',
-    'Pastors',
-    'Christian Blog',
-    'Faith Resources',
-    'Spiritual Growth',
-    'Christian Content',
+    'Music Platform',
+    'Music Categories',
+    'Top Charts',
+    'Music Downloads',
+    'Audio Content',
     'Multimedia Platform',
+    'Content Hub',
+    'Music Streaming',
+    'Download Metrics',
+    'Recent Uploads',
+    'Music Discovery',
     'Content Creation',
     'Production Services',
+    'Vendor Marketplace',
+    'Entertainment',
+    'Digital Media',
+    'Creative Platform',
+    'Content Distribution',
   ],
   generator: 'Next.js',
   publisher: 'OHEJUIRA-Multimedia',
-  category: 'Christian Media & Resources',
+  category: 'Multimedia & Entertainment',
   classification:
-    'Christian multimedia platform for gospel music, sermons, devotionals, and faith resources. Serving humanity through innovation in entertainment and technology.',
+    'Dynamic multimedia platform featuring music categories, charts, recent uploads, and download metrics. Serving humanity through innovation in entertainment and technology.',
 };
 
 export const NAV_LINKS: HeaderLinkProps[] = [

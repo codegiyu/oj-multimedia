@@ -8,7 +8,7 @@ import { catchAsync } from '../../middlewares/catchAsync';
 import { sendResponse } from '../../lib/utils/appResponse';
 import { RequestContext, withRequestContext } from '../../lib/context/withRequestContext';
 
-// Login controller (public endpoint)
+// Admin login controller (public endpoint - admin only)
 export const login = withRequestContext({ protect: false })(
   catchAsync(async context => {
     const { req, body } = context as RequestContext;
@@ -65,7 +65,7 @@ export const login = withRequestContext({ protect: false })(
     return sendResponse(
       200,
       {
-        admin: sanitizedAdmin,
+        user: sanitizedAdmin,
       },
       'Login successful'
     );

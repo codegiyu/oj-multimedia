@@ -27,7 +27,7 @@ export const DashboardHomeClient = () => {
   return (
     <div className="grid gap-8">
       {/* Welcome Section */}
-      <div className="space-y-2">
+      <div className="grid gap-2">
         <h1 className="text-3xl font-bold tracking-tight text-foreground">
           {greeting()}, {user?.firstName || 'Admin'}!
         </h1>

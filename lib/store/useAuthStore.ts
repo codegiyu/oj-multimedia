@@ -3,7 +3,7 @@ import { create } from 'zustand';
 import type { SelectorFn } from '../types/general';
 import { useShallow } from 'zustand/react/shallow';
 import type { Permission } from '@/app/_server/lib/types/constants';
-import type { ClientAdmin } from '../constants/endpoints';
+import type { ClientAdmin, ClientUser } from '../constants/endpoints';
 import { callApi } from '../services/callApi';
 import { getRouter } from '../utils/navigation';
 
@@ -11,11 +11,11 @@ export interface AuthStore {
   initLoading: boolean;
   loginLoading: boolean;
   pauseNavigatingAwayFromAuth: boolean;
-  user: ClientAdmin | null;
+  user: ClientAdmin | ClientUser | null;
   permissions: Permission[];
   actions: {
     setUser: (
-      user: ClientAdmin | null,
+      user: ClientAdmin | ClientUser | null,
       options?: {
         permissions?: Permission[];
         initLoading?: boolean;
@@ -26,6 +26,7 @@ export interface AuthStore {
     initSession: () => Promise<void>;
     clearSession: () => void;
     login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+    googleLogin: (googleCode: string) => Promise<{ success: boolean; error?: string }>;
     logout: () => Promise<void>;
   };
 }
@@ -68,7 +69,7 @@ export const useInitAuthStore = create<AuthStore>()((set, get) => ({
           return;
         }
 
-        setUser(data.admin);
+        setUser(data.user?._id ? data.user : null);
       } catch (error) {
         console.error('Failed to initialize session:', error);
         setUser(null, {});
@@ -95,13 +96,44 @@ export const useInitAuthStore = create<AuthStore>()((set, get) => ({
           };
         }
 
-        setUser(data.admin, {
+        setUser(data.user, {
           pauseNavigatingAwayFromAuth: true,
         });
 
         return { success: true };
       } catch (error) {
         console.error('Login failed:', error);
+        return {
+          success: false,
+          error: 'An unexpected error occurred',
+        };
+      } finally {
+        set({ loginLoading: false });
+      }
+    },
+    googleLogin: async (googleCode: string) => {
+      set({ loginLoading: true });
+      const { setUser } = get().actions;
+
+      try {
+        const { data, error } = await callApi('AUTH_GOOGLE_LOGIN', {
+          payload: { googleCode },
+        });
+
+        if (error || !data) {
+          return {
+            success: false,
+            error: error?.message || 'Google login failed',
+          };
+        }
+
+        setUser(data.user, {
+          pauseNavigatingAwayFromAuth: true,
+        });
+
+        return { success: true };
+      } catch (error) {
+        console.error('Google login failed:', error);
         return {
           success: false,
           error: 'An unexpected error occurred',

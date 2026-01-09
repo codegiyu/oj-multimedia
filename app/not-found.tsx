@@ -1,5 +1,5 @@
 import { Btns404Page } from '@/components/general/Btns404Page';
-import { MainLayout } from '@/components/layout/MainLayout';
+import { NewLayout } from '@/components/layout/NewLayout';
 import { SectionContainer } from '@/components/general/SectionContainer';
 import { Metadata } from 'next';
 
@@ -10,12 +10,12 @@ export const metadata: Metadata = {
 
 export default function NoPage() {
   return (
-    <MainLayout>
+    <NewLayout>
       <div className="min-h-screen bg-background flex items-center justify-center px-4">
         <SectionContainer>
           <div className="text-center grid gap-8 mx-auto">
             <div className="grid gap-4">
-              <h1 className="text-6xl md:text-8xl font-bold text-accent">404</h1>
+              <h1 className="text-6xl md:text-8xl font-bold text-orange">404</h1>
               <h2 className="text-2xl md:text-3xl font-bold font-heading text-primary">
                 Page Not Found
               </h2>
@@ -30,6 +30,6 @@ export default function NoPage() {
           </div>
         </SectionContainer>
       </div>
-    </MainLayout>
+    </NewLayout>
   );
 }

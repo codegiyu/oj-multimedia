@@ -1,5 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ISiteSettings, IAdmin, UploadIntent, EntityType } from '@/app/_server/lib/types/constants';
+import {
+  ISiteSettings,
+  IAdmin,
+  IUser,
+  UploadIntent,
+  EntityType,
+} from '@/app/_server/lib/types/constants';
 import mongoose from 'mongoose';
 
 export type HttpMethods = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
@@ -29,6 +35,7 @@ export type ClientFriendly<T> = T extends mongoose.Types.ObjectId
 // Client-friendly type aliases for backend types
 export type ClientSiteSettings = ClientFriendly<ISiteSettings>;
 export type ClientAdmin = ClientFriendly<IAdmin>;
+export type ClientUser = ClientFriendly<IUser>;
 
 export type EndpointDefinition<
   Payload extends Record<string, any> | undefined = undefined,
@@ -55,6 +62,7 @@ export type EndpointDetails = {
 export interface AllEndpoints {
   // Authentication
   AUTH_LOGIN: EndpointDefinition<IAuthLoginPayload, IAuthLoginRes, undefined>;
+  AUTH_GOOGLE_LOGIN: EndpointDefinition<IAuthGoogleLoginPayload, IAuthGoogleLoginRes, undefined>;
   AUTH_LOGOUT: EndpointDefinition<undefined, { success: boolean }, undefined>;
   AUTH_SESSION: EndpointDefinition<undefined, IAuthSessionRes, undefined>;
 
@@ -91,6 +99,11 @@ export const ENDPOINTS: Record<keyof AllEndpoints, EndpointDetails> = {
   // Authentication
   AUTH_LOGIN: {
     path: '/auth/login',
+    method: 'POST',
+    isNotAuthenticated: true,
+  },
+  AUTH_GOOGLE_LOGIN: {
+    path: '/auth/google-login',
     method: 'POST',
     isNotAuthenticated: true,
   },
@@ -280,9 +293,17 @@ export interface IAuthLoginPayload {
 }
 
 export interface IAuthLoginRes {
-  admin: ClientAdmin;
+  user: ClientAdmin;
+}
+
+export interface IAuthGoogleLoginPayload {
+  googleCode: string;
+}
+
+export interface IAuthGoogleLoginRes {
+  user: ClientUser;
 }
 
 export interface IAuthSessionRes {
-  admin: ClientAdmin | null;
+  user: ClientAdmin | ClientUser | null;
 }

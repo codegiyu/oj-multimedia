@@ -45,6 +45,10 @@ interface IEnvironment {
     URL: string;
     CACHE_EXPIRY: number;
   };
+  GOOGLE: {
+    CLIENT_ID: string;
+    CLIENT_SECRET: string;
+  };
   COMPANIES: CompanyBrandingConfig;
 }
 
@@ -92,6 +96,10 @@ export const ENVIRONMENT: IEnvironment = {
   REDIS: {
     URL: process.env.REDIS_URL!,
     CACHE_EXPIRY: Number(process.env.CACHE_EXPIRY!),
+  },
+  GOOGLE: {
+    CLIENT_ID: process.env.GOOGLE_CLIENT_ID || '',
+    CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET || '',
   },
   COMPANIES: {
     oj: {

@@ -115,7 +115,7 @@ export const BrandingTab = ({ settings }: BrandingTabProps) => {
         />
 
         <div className="grid gap-6 sm:grid-cols-2">
-          <div className="space-y-2">
+          <div className="grid gap-2">
             <Label className="text-sm font-medium">Primary Brand Color</Label>
             <div className="flex gap-3 items-center">
               <input
@@ -135,7 +135,7 @@ export const BrandingTab = ({ settings }: BrandingTabProps) => {
             </div>
           </div>
 
-          <div className="space-y-2">
+          <div className="grid gap-2">
             <Label className="text-sm font-medium">Secondary Brand Color</Label>
             <div className="flex gap-3 items-center">
               <input
@@ -157,7 +157,7 @@ export const BrandingTab = ({ settings }: BrandingTabProps) => {
         </div>
 
         {/* Preview */}
-        <div className="space-y-2">
+        <div className="grid gap-2">
           <Label className="text-sm font-medium">Preview</Label>
           <div className="p-4 border rounded-lg bg-muted/30">
             <div className="flex gap-4 items-center">

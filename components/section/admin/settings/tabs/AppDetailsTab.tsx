@@ -126,7 +126,7 @@ export const AppDetailsTab = ({ settings }: AppDetailsTabProps) => {
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="p-6 space-y-6">
+      <form onSubmit={handleSubmit} className="p-6 grid gap-6">
         {errorsVisible && formErrors.root && formErrors.root.length > 0 && (
           <div className="bg-destructive/10 border border-destructive/30 text-destructive px-4 py-3 rounded-lg text-sm">
             {formErrors.root[0]}

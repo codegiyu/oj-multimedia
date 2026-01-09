@@ -22,7 +22,7 @@ export const TermsConditionsClient = () => {
           </p>
 
           <Card>
-            <CardContent className="p-8 md:p-12 space-y-8">
+            <CardContent className="p-8 md:p-12 grid gap-8">
               <p className="text-muted-foreground leading-relaxed">
                 Welcome to OHEJUIRA. By accessing or using this website, mobile site, or any of our
                 services, you agree to these Terms & Conditions. Please read them carefully before
@@ -45,7 +45,7 @@ export const TermsConditionsClient = () => {
                 <p className="text-muted-foreground leading-relaxed mb-2">
                   OHEJUIRA is a Christian-based multimedia platform offering:
                 </p>
-                <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-4">
+                <ul className="list-disc list-inside grid gap-1 text-muted-foreground ml-4">
                   <li>Gospel music downloads</li>
                   <li>Inspirational Music downloads</li>
                   <li>Sermons (audio/video)</li>
@@ -67,7 +67,7 @@ export const TermsConditionsClient = () => {
                   3. User Responsibilities
                 </h2>
                 <p className="text-muted-foreground leading-relaxed mb-2">Users agree to:</p>
-                <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-4">
+                <ul className="list-disc list-inside grid gap-1 text-muted-foreground ml-4">
                   <li>Provide accurate information during registration</li>
                   <li>Not upload harmful, defamatory, or illegal content</li>
                   <li>Not misuse downloads, music, or sermons</li>
@@ -87,7 +87,7 @@ export const TermsConditionsClient = () => {
                 <p className="text-muted-foreground leading-relaxed mb-2">
                   When you upload any content (song, sermon, video, or article), you confirm that:
                 </p>
-                <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-4">
+                <ul className="list-disc list-inside grid gap-1 text-muted-foreground ml-4">
                   <li>You own the rights or have permission to upload it</li>
                   <li>Your content does not infringe copyright, trademarks, or privacy</li>
                   <li>
@@ -109,7 +109,7 @@ export const TermsConditionsClient = () => {
                   The marketplace allows vendors to sell general products (fashion, cosmetics, food,
                   etc.). Vendors agree that:
                 </p>
-                <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-4">
+                <ul className="list-disc list-inside grid gap-1 text-muted-foreground ml-4">
                   <li>They are fully responsible for the quality of items they list</li>
                   <li>They must provide accurate descriptions and pricing</li>
                   <li>They must deliver products as promised</li>
@@ -128,7 +128,7 @@ export const TermsConditionsClient = () => {
                   6. Downloads & Use of Materials
                 </h2>
                 <p className="text-muted-foreground leading-relaxed mb-2">Users may:</p>
-                <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-4">
+                <ul className="list-disc list-inside grid gap-1 text-muted-foreground ml-4">
                   <li>Download/Inspirational gospel songs</li>
                   <li>Download sermons</li>
                   <li>Access devotionals and resources</li>
@@ -136,7 +136,7 @@ export const TermsConditionsClient = () => {
                 <p className="text-muted-foreground leading-relaxed mt-4 mb-2">
                   However, users may NOT:
                 </p>
-                <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-4">
+                <ul className="list-disc list-inside grid gap-1 text-muted-foreground ml-4">
                   <li>Resell or redistribute content commercially</li>
                   <li>Modify copyrighted materials</li>
                   <li>Upload pirated content</li>
@@ -153,7 +153,7 @@ export const TermsConditionsClient = () => {
                 <p className="text-muted-foreground leading-relaxed mb-2">
                   Certain services require payment:
                 </p>
-                <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-4">
+                <ul className="list-disc list-inside grid gap-1 text-muted-foreground ml-4">
                   <li>Promote Your Song</li>
                   <li>Upload Your Sermon</li>
                   <li>Vendor Registration Fees</li>
@@ -171,7 +171,7 @@ export const TermsConditionsClient = () => {
                 <p className="text-muted-foreground leading-relaxed mb-2">
                   By subscribing to our newsletter, you agree to receive:
                 </p>
-                <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-4">
+                <ul className="list-disc list-inside grid gap-1 text-muted-foreground ml-4">
                   <li>Daily devotionals</li>
                   <li>New music alerts</li>
                   <li>Sermon updates</li>
@@ -188,7 +188,7 @@ export const TermsConditionsClient = () => {
                 <p className="text-muted-foreground leading-relaxed mb-2">
                   We may suspend or terminate accounts that:
                 </p>
-                <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-4">
+                <ul className="list-disc list-inside grid gap-1 text-muted-foreground ml-4">
                   <li>Violate the Terms</li>
                   <li>Abuse the platform</li>
                   <li>Post offensive or unchristian content</li>
@@ -203,7 +203,7 @@ export const TermsConditionsClient = () => {
                 <p className="text-muted-foreground leading-relaxed mb-2">
                   We are not responsible for:
                 </p>
-                <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-4">
+                <ul className="list-disc list-inside grid gap-1 text-muted-foreground ml-4">
                   <li>Loss caused by vendor transactions</li>
                   <li>Errors in user-submitted content</li>
                   <li>Incorrect devotional or news information from third-party sources</li>
@@ -227,7 +227,7 @@ export const TermsConditionsClient = () => {
                 <p className="text-muted-foreground leading-relaxed mb-2">
                   For questions or concerns:
                 </p>
-                <ul className="list-none space-y-2 text-muted-foreground">
+                <ul className="list-none grid gap-2 text-muted-foreground">
                   <li>
                     <strong>Email:</strong>{' '}
                     <a

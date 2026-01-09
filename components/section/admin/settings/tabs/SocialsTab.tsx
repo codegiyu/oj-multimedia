@@ -86,14 +86,14 @@ export const SocialsTab = ({ settings }: SocialsTabProps) => {
         <p className="text-sm text-muted-foreground mt-1">Connect your social media profiles</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="p-6 space-y-6">
+      <form onSubmit={handleSubmit} className="p-6 grid gap-6">
         {error && (
           <div className="bg-destructive/10 border border-destructive/30 text-destructive px-4 py-3 rounded-lg text-sm">
             {error}
           </div>
         )}
 
-        <div className="space-y-4">
+        <div className="grid gap-4">
           <div className="flex items-center justify-between">
             <label className="text-sm font-medium text-foreground">Social Profiles</label>
             <Button type="button" variant="outline" size="sm" onClick={handleAdd}>
@@ -110,7 +110,7 @@ export const SocialsTab = ({ settings }: SocialsTabProps) => {
               </Button>
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="grid gap-3">
               {socials.map((social, index) => (
                 <div key={index} className="flex gap-3 items-start">
                   <RegularSelect

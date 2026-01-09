@@ -34,7 +34,7 @@ export const TopChartsSection = () => {
           </GhostBtn>
         </div>
         <Card className="p-6">
-          <div className="space-y-4">
+          <div className="grid gap-4">
             {charts.map((song, idx) => (
               <Link
                 key={idx}

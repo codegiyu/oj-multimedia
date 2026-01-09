@@ -51,7 +51,7 @@ export const CommunityPageClient = () => {
           />
           <Card>
             <CardContent className="p-8">
-              <form className="space-y-6">
+              <form className="grid gap-6">
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-2">
                     Your Name
