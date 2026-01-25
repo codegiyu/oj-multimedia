@@ -1,17 +1,12 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import {
-  Play,
-  Heart,
-  Download,
-  MoreHorizontal,
-  ChevronLeft,
-  ChevronRight,
-  Flame,
-} from 'lucide-react';
+import { Play, ChevronLeft, ChevronRight, Flame } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useRef } from 'react';
+import Link from 'next/link';
+import { MusicCardOptions } from './MusicCardOptions';
+import { MUSIC_ITEMS } from '@/lib/constants/music';
 
 export interface TrendingSong {
   id: number;
@@ -21,6 +16,7 @@ export interface TrendingSong {
   plays: string;
   duration: string;
   isNew: boolean;
+  category?: string;
 }
 
 interface TrendingSongsProps {
@@ -69,8 +65,8 @@ export const TrendingSongs = ({ songs: trendingSongs }: TrendingSongsProps) => {
               className="hidden md:flex">
               <ChevronRight className="w-5 h-5" />
             </Button>
-            <Button variant="ghost" className="text-muted-foreground hover:text-primary">
-              View All
+            <Button variant="ghost" className="text-muted-foreground hover:text-primary" asChild>
+              <Link href="/music/trending">View All</Link>
             </Button>
           </div>
         </div>
@@ -79,81 +75,74 @@ export const TrendingSongs = ({ songs: trendingSongs }: TrendingSongsProps) => {
         <div
           ref={scrollRef}
           className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
-          {trendingSongs.map((song, index) => (
-            <motion.div
-              key={song.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.05 }}
-              whileHover={{ y: -8 }}
-              className="group relative min-w-[200px] md:min-w-[240px] snap-start">
-              <div className="bg-card rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow">
-                {/* Cover */}
-                <div className="relative aspect-square overflow-hidden">
-                  <img
-                    src={song.cover}
-                    alt={song.title}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
+          {trendingSongs.map((song, index) => {
+            const musicItem = MUSIC_ITEMS.find(item => item.id === song.id);
+            return (
+              <motion.div
+                key={song.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.05 }}
+                whileHover={{ y: -8 }}
+                className="group relative min-w-[200px] md:min-w-[240px] snap-start">
+                <Link href={`/music/${song.id}`}>
+                  <div className="bg-card rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow">
+                    {/* Cover */}
+                    <div className="relative aspect-square overflow-hidden">
+                      <img
+                        src={song.cover}
+                        alt={song.title}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
 
-                  {/* Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      {/* Overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-                  {/* Play Button */}
-                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <Button variant="play" size="icon-lg" className="shadow-glow">
-                      <Play className="w-6 h-6 fill-current ml-1" />
-                    </Button>
-                  </div>
+                      {/* Play Button */}
+                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <Button variant="play" size="icon-lg" className="shadow-glow">
+                          <Play className="w-6 h-6 fill-current ml-1" />
+                        </Button>
+                      </div>
 
-                  {/* New Badge */}
-                  {song.isNew && (
-                    <span className="absolute top-3 left-3 px-2 py-1 bg-primary text-primary-foreground text-xs font-bold rounded-full">
-                      NEW
-                    </span>
-                  )}
+                      {/* New Badge */}
+                      {song.isNew && (
+                        <span className="absolute top-3 left-3 px-2 py-1 bg-primary text-primary-foreground text-xs font-bold rounded-full">
+                          NEW
+                        </span>
+                      )}
 
-                  {/* Quick Actions */}
-                  <div className="absolute top-3 right-3 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Button
-                      variant="ghost"
-                      size="icon-sm"
-                      className="bg-card/80 backdrop-blur-sm hover:bg-card">
-                      <Heart className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon-sm"
-                      className="bg-card/80 backdrop-blur-sm hover:bg-card">
-                      <Download className="w-4 h-4" />
-                    </Button>
-                  </div>
+                      {/* Quick Actions */}
+                      <div
+                        className="absolute top-3 right-3 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={e => e.preventDefault()}>
+                        {musicItem && <MusicCardOptions musicItem={musicItem} />}
+                      </div>
 
-                  {/* Duration */}
-                  <span className="absolute bottom-3 right-3 px-2 py-1 bg-foreground/80 text-background text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity">
-                    {song.duration}
-                  </span>
-                </div>
-
-                {/* Info */}
-                <div className="p-4">
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="min-w-0">
-                      <h3 className="font-semibold truncate group-hover:text-primary transition-colors">
-                        {song.title}
-                      </h3>
-                      <p className="text-sm text-muted-foreground truncate">{song.artist}</p>
+                      {/* Duration */}
+                      <span className="absolute bottom-3 right-3 px-2 py-1 bg-foreground/80 text-background text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity">
+                        {song.duration}
+                      </span>
                     </div>
-                    <Button variant="ghost" size="icon-sm" className="shrink-0">
-                      <MoreHorizontal className="w-4 h-4" />
-                    </Button>
+
+                    {/* Info */}
+                    <div className="p-4">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0">
+                          <h3 className="font-semibold truncate group-hover:text-primary transition-colors">
+                            {song.title}
+                          </h3>
+                          <p className="text-sm text-muted-foreground truncate">{song.artist}</p>
+                        </div>
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-2">{song.plays} plays</p>
+                    </div>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-2">{song.plays} plays</p>
-                </div>
-              </div>
-            </motion.div>
-          ))}
+                </Link>
+              </motion.div>
+            );
+          })}
         </div>
       </div>
     </section>

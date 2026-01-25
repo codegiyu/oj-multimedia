@@ -7,3 +7,4 @@ export { RecentVideoUploads } from './RecentVideoUploads';
 export { ShortFormVideos } from './ShortFormVideos';
 export { CreatorSpotlight } from './CreatorSpotlight';
 export { VideoUploadCTA } from './VideoUploadCTA';
+export { VideoPlayer } from './VideoPlayer';

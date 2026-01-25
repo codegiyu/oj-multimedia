@@ -12,6 +12,7 @@ export interface FeaturedArtist {
   followers: string;
   verified: boolean;
   songs: number;
+  category?: string;
 }
 
 interface FeaturedArtistsProps {
@@ -33,8 +34,8 @@ export const FeaturedArtists = ({ artists: featuredArtists }: FeaturedArtistsPro
               <p className="text-sm text-muted-foreground">Creators you should know</p>
             </div>
           </div>
-          <Button variant="ghost" className="text-muted-foreground hover:text-primary">
-            View All
+          <Button variant="ghost" className="text-muted-foreground hover:text-primary" asChild>
+            <a href="/music/artists">View All</a>
           </Button>
         </div>
 

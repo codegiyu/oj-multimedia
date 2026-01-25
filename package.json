@@ -68,6 +68,7 @@
     "libphonenumber-js": "^1.11.14",
     "lodash": "^4.17.21",
     "lucide-react": "^0.544.0",
+    "media-chrome": "^4.17.2",
     "mongoose": "^8.19.1",
     "mongoose-autopopulate": "^1.1.0",
     "morgan": "^1.10.1",

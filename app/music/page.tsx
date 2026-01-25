@@ -8,6 +8,8 @@ import type { TrendingSong } from '@/components/section/music/TrendingSongs';
 import type { ChartSong } from '@/components/section/music/TopMusicCharts';
 import type { RecentUpload } from '@/components/section/music/RecentUploads';
 import type { FeaturedArtist } from '@/components/section/music/FeaturedArtists';
+import { MUSIC_ITEMS } from '@/lib/constants/music';
+import { filterByCategory } from '@/lib/utils/music';
 
 export const metadata: Metadata = {
   title: 'Music - Latest Songs & Downloads',
@@ -15,285 +17,85 @@ export const metadata: Metadata = {
     'Discover the latest music across multiple categories, download MP3s, watch music videos, explore artist profiles, and check out top charts and download metrics.',
 };
 
-// Generate music data (in a real app, this would come from an API or database)
-async function generateMusicData() {
+// Force dynamic rendering to ensure searchParams changes trigger re-renders
+export const dynamic = 'force-dynamic';
+
+// Generate music data from central constants
+async function generateMusicData(category: string = 'all', period: string = 'weekly') {
   // Simulate API delay
   await new Promise(resolve => setTimeout(resolve, 1500));
-  const trendingSongs: TrendingSong[] = [
-    {
-      id: 1,
-      title: 'Sunset Vibes',
-      artist: 'DJ Flame',
-      cover: '/images/album-1.jpg',
-      plays: '2.4M',
-      duration: '3:45',
-      isNew: true,
-    },
-    {
-      id: 2,
-      title: 'City Lights',
-      artist: 'Luna Belle',
-      cover: '/images/album-2.jpg',
-      plays: '1.8M',
-      duration: '4:12',
-      isNew: false,
-    },
-    {
-      id: 3,
-      title: 'Midnight Dreams',
-      artist: 'The Wave',
-      cover: '/images/album-3.jpg',
-      plays: '1.2M',
-      duration: '3:28',
-      isNew: true,
-    },
-    {
-      id: 4,
-      title: 'Electric Soul',
-      artist: 'Marcus Jay',
-      cover: '/images/artist-1.jpg',
-      plays: '980K',
-      duration: '3:55',
-      isNew: false,
-    },
-    {
-      id: 5,
-      title: 'Golden Hour',
-      artist: 'Aria Rose',
-      cover: '/images/artist-2.jpg',
-      plays: '756K',
-      duration: '4:08',
-      isNew: false,
-    },
-    {
-      id: 6,
-      title: 'Street Dreams',
-      artist: 'King Vibe',
-      cover: '/images/artist-3.jpg',
-      plays: '654K',
-      duration: '3:32',
-      isNew: true,
-    },
-    {
-      id: 7,
-      title: 'Ocean Waves',
-      artist: 'Crystal',
-      cover: '/images/album-1.jpg',
-      plays: '543K',
-      duration: '3:18',
-      isNew: false,
-    },
-    {
-      id: 8,
-      title: 'Neon Nights',
-      artist: 'Summer',
-      cover: '/images/album-2.jpg',
-      plays: '432K',
-      duration: '3:50',
-      isNew: false,
-    },
-  ];
 
-  const chartSongs: ChartSong[] = [
-    {
-      rank: 1,
-      title: 'Sunset Vibes',
-      artist: 'DJ Flame',
-      cover: '/images/album-1.jpg',
-      plays: '2.4M',
-      trend: 'up',
-      change: 12,
-    },
-    {
-      rank: 2,
-      title: 'City Lights',
-      artist: 'Luna Belle',
-      cover: '/images/album-2.jpg',
-      plays: '1.8M',
-      trend: 'up',
-      change: 8,
-    },
-    {
-      rank: 3,
-      title: 'Midnight Dreams',
-      artist: 'The Wave',
-      cover: '/images/album-3.jpg',
-      plays: '1.2M',
-      trend: 'same',
-      change: 0,
-    },
-    {
-      rank: 4,
-      title: 'Electric Soul',
-      artist: 'Marcus Jay',
-      cover: '/images/artist-1.jpg',
-      plays: '980K',
-      trend: 'down',
-      change: 3,
-    },
-    {
-      rank: 5,
-      title: 'Golden Hour',
-      artist: 'Aria Rose',
-      cover: '/images/artist-2.jpg',
-      plays: '756K',
-      trend: 'up',
-      change: 15,
-    },
-    {
-      rank: 6,
-      title: 'Street Dreams',
-      artist: 'King Vibe',
-      cover: '/images/artist-3.jpg',
-      plays: '654K',
-      trend: 'up',
-      change: 5,
-    },
-    {
-      rank: 7,
-      title: 'Neon Nights',
-      artist: 'Crystal',
-      cover: '/images/album-1.jpg',
-      plays: '543K',
-      trend: 'down',
-      change: 2,
-    },
-    {
-      rank: 8,
-      title: 'Ocean Breeze',
-      artist: 'Summer',
-      cover: '/images/album-2.jpg',
-      plays: '432K',
-      trend: 'up',
-      change: 20,
-    },
-    {
-      rank: 9,
-      title: 'Rhythm Flow',
-      artist: 'Beat Master',
-      cover: '/images/album-3.jpg',
-      plays: '398K',
-      trend: 'up',
-      change: 11,
-    },
-    {
-      rank: 10,
-      title: 'Dancing Stars',
-      artist: 'Nova',
-      cover: '/images/artist-1.jpg',
-      plays: '356K',
-      trend: 'same',
-      change: 0,
-    },
-  ];
+  // Filter MUSIC_ITEMS by category first
+  const filteredItems = filterByCategory(MUSIC_ITEMS, category);
 
-  const recentUploads: RecentUpload[] = [
-    {
-      id: 1,
-      title: 'Morning Light',
-      artist: 'Sarah Grace',
-      cover: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300&fit=crop',
-      uploadedAt: '2 hours ago',
-      genre: 'Acoustic',
-    },
-    {
-      id: 2,
-      title: 'Urban Flow',
-      artist: 'Metro Kid',
-      cover: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop',
-      uploadedAt: '4 hours ago',
-      genre: 'Hip-Hop',
-    },
-    {
-      id: 3,
-      title: 'Peaceful Mind',
-      artist: 'Zen Beats',
-      cover: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300&fit=crop',
-      uploadedAt: '6 hours ago',
-      genre: 'Instrumental',
-    },
-    {
-      id: 4,
-      title: 'Rise Up',
-      artist: 'Victory Sound',
-      cover: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop',
-      uploadedAt: '8 hours ago',
-      genre: 'Inspirational',
-    },
-    {
-      id: 5,
-      title: 'Summer Feels',
-      artist: 'Beach Vibes',
-      cover: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300&fit=crop',
-      uploadedAt: '12 hours ago',
-      genre: 'Pop',
-    },
-    {
-      id: 6,
-      title: 'Heart & Soul',
-      artist: 'Melody Grace',
-      cover: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop',
-      uploadedAt: '1 day ago',
-      genre: 'R&B',
-    },
-  ];
+  // Filter and transform trending songs (limit to 8)
+  const trendingSongs: TrendingSong[] = filteredItems
+    .filter(item => item.isTrending && item.plays !== undefined && item.duration !== undefined)
+    .slice(0, 8)
+    .map(item => ({
+      id: item.id,
+      title: item.title,
+      artist: item.artist,
+      cover: item.cover,
+      plays: item.plays!,
+      duration: item.duration!,
+      isNew: item.isNew || false,
+    }));
 
-  const featuredArtists: FeaturedArtist[] = [
-    {
-      id: 1,
-      name: 'DJ Flame',
-      genre: 'Afrobeats',
-      image: '/images/artist-1.jpg',
-      followers: '125K',
-      verified: true,
-      songs: 45,
-    },
-    {
-      id: 2,
-      name: 'Luna Belle',
-      genre: 'Pop',
-      image: '/images/artist-2.jpg',
-      followers: '98K',
-      verified: true,
-      songs: 32,
-    },
-    {
-      id: 3,
-      name: 'Marcus Jay',
-      genre: 'Hip-Hop',
-      image: '/images/artist-1.jpg',
-      followers: '87K',
-      verified: false,
-      songs: 28,
-    },
-    {
-      id: 4,
-      name: 'Aria Rose',
-      genre: 'R&B',
-      image: '/images/album-1.jpg',
-      followers: '76K',
-      verified: true,
-      songs: 41,
-    },
-    {
-      id: 5,
-      name: 'The Wave',
-      genre: 'Instrumental',
-      image: '/images/album-2.jpg',
-      followers: '64K',
-      verified: false,
-      songs: 53,
-    },
-    {
-      id: 6,
-      name: 'King Vibe',
-      genre: 'Gospel',
-      image: '/images/artist-3.jpg',
-      followers: '58K',
-      verified: true,
-      songs: 22,
-    },
-  ];
+  // Filter and transform chart songs by period (limit to 10, sorted by rank)
+  const chartSongs: ChartSong[] = filteredItems
+    .filter(
+      item =>
+        item.isChart &&
+        item.rank !== undefined &&
+        item.trend !== undefined &&
+        (item.chartPeriod || 'weekly') === period
+    )
+    .sort((a, b) => (a.rank || 0) - (b.rank || 0))
+    .slice(0, 10)
+    .map(item => ({
+      id: item.id,
+      rank: item.rank!,
+      title: item.title,
+      artist: item.artist,
+      cover: item.cover,
+      plays: item.plays || '0',
+      trend: item.trend!,
+      change: item.change || 0,
+    }));
+
+  // Filter and transform recent uploads (limit to 6)
+  const recentUploads: RecentUpload[] = filteredItems
+    .filter(item => item.isRecent && item.uploadedAt !== undefined && item.genre !== undefined)
+    .slice(0, 6)
+    .map(item => ({
+      id: item.id,
+      title: item.title,
+      artist: item.artist,
+      cover: item.cover,
+      uploadedAt: item.uploadedAt!,
+      genre: item.genre!,
+    }));
+
+  // Filter and transform featured artists (limit to 6)
+  const featuredArtists: FeaturedArtist[] = filteredItems
+    .filter(
+      item =>
+        item.isFeaturedArtist &&
+        item.name !== undefined &&
+        item.followers !== undefined &&
+        item.songs !== undefined
+    )
+    .slice(0, 6)
+    .map(item => ({
+      id: item.id,
+      name: item.name || item.artist,
+      genre: item.genre || '',
+      image: item.image || item.cover,
+      followers: item.followers!,
+      verified: item.verified || false,
+      songs: item.songs!,
+    }));
 
   return {
     trendingSongs,
@@ -303,8 +105,15 @@ async function generateMusicData() {
   };
 }
 
-export default async function NewMusicPage() {
-  const musicData = await generateMusicData();
+interface MusicPageProps {
+  searchParams: Promise<{ category?: string; period?: string }>;
+}
+
+export default async function NewMusicPage({ searchParams }: MusicPageProps) {
+  const params = await searchParams;
+  const category = params.category || 'all';
+  const period = params.period || 'weekly';
+  const musicData = await generateMusicData(category, period);
 
   return (
     <MainLayout>
