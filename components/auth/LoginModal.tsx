@@ -54,7 +54,6 @@ export function LoginModal({
 
   // Load Google Identity Services script
   useEffect(() => {
-    console.log({ open });
     if (!open || isGoogleScriptLoaded) return;
 
     const script = document.createElement('script');
@@ -129,20 +128,20 @@ export function LoginModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl md:max-w-4xl p-0 overflow-hidden">
+      <DialogContent className="sm:max-w-2xl md:max-w-4xl p-0 overflow-hidden border-border">
         <div className="grid md:grid-cols-2 min-h-[500px]">
-          {/* Left Section - Decorative with animated patterns */}
-          <div className="hidden md:flex relative bg-gradient-to-br from-blue-600 via-blue-500 to-indigo-600 overflow-hidden">
-            {/* Animated gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 via-indigo-500/30 to-purple-600/20 animate-pulse" />
+          {/* Left Section - Decorative with brand colors */}
+          <div className="hidden md:flex relative bg-gradient-to-br from-primary via-primary/90 to-accent overflow-hidden">
+            {/* Subtle gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/80 via-primary/70 to-accent/60" />
 
-            {/* Animated circles */}
-            <div className="absolute top-10 left-10 w-72 h-72 bg-blue-400/20 rounded-full blur-3xl animate-pulse" />
-            <div className="absolute bottom-20 right-10 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl animate-pulse delay-1000" />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-purple-500/15 rounded-full blur-3xl animate-pulse delay-500" />
+            {/* Subtle animated circles */}
+            <div className="absolute top-10 left-10 w-72 h-72 bg-primary/20 rounded-full blur-3xl animate-pulse" />
+            <div className="absolute bottom-20 right-10 w-96 h-96 bg-accent/20 rounded-full blur-3xl animate-pulse delay-1000" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-primary/15 rounded-full blur-3xl animate-pulse delay-500" />
 
-            {/* Animated grid pattern */}
-            <div className="absolute inset-0 opacity-10">
+            {/* Subtle grid pattern */}
+            <div className="absolute inset-0 opacity-5">
               <div
                 className="absolute inset-0"
                 style={{
@@ -151,7 +150,6 @@ export function LoginModal({
                     linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)
                   `,
                   backgroundSize: '50px 50px',
-                  animation: 'gridMove 20s linear infinite',
                 }}
               />
             </div>
@@ -162,40 +160,44 @@ export function LoginModal({
 
             {/* Content overlay */}
             <div className="relative z-10 flex flex-col items-center justify-center p-12 text-white">
-              <div className="w-24 h-24 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-2xl mb-8">
+              <div className="w-24 h-24 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-elegant mb-8">
                 <LogIn className="w-12 h-12 text-white" />
               </div>
-              <h2 className="text-3xl font-bold mb-4 text-center">{title}</h2>
-              <p className="text-blue-100 text-center text-lg max-w-sm">{description}</p>
+              <h2 className="text-3xl font-bold mb-4 text-center font-display">{title}</h2>
+              <p className="text-white/90 text-center text-lg max-w-sm">{description}</p>
             </div>
           </div>
 
           {/* Right Section - Login Form */}
-          <div className="flex flex-col justify-between py-10 px-8 md:px-12">
+          <div className="flex flex-col justify-between py-10 px-8 md:px-12 bg-card">
             {/* Mobile header - only shown on mobile */}
-            <DialogHeader className="h-fit grid gap-12 text-center md:hidden mb-6">
-              <div className="mx-auto w-16 h-16 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg mb-6">
+            <DialogHeader className="h-fit grid gap-6 text-center md:hidden mb-6">
+              <div className="mx-auto w-16 h-16 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-elegant mb-4">
                 <LogIn className="w-8 h-8 text-primary-foreground" />
               </div>
               <div className="grid gap-2">
-                <DialogTitle className="text-2xl font-bold">{title}</DialogTitle>
-                <DialogDescription className="text-base">{description}</DialogDescription>
+                <DialogTitle className="text-2xl font-bold font-display">{title}</DialogTitle>
+                <DialogDescription className="text-base text-muted-foreground">
+                  {description}
+                </DialogDescription>
               </div>
             </DialogHeader>
 
             {/* Desktop header - only shown on desktop */}
-            <DialogHeader className="h-fit hidden md:grid gap-8 text-center mb-4">
+            <DialogHeader className="h-fit hidden md:grid gap-4 text-center mb-6">
               <div className="grid gap-2">
-                <DialogTitle className="text-2xl font-bold">{title}</DialogTitle>
-                <DialogDescription className="text-base">{description}</DialogDescription>
+                <DialogTitle className="text-2xl font-bold font-display">{title}</DialogTitle>
+                <DialogDescription className="text-base text-muted-foreground">
+                  {description}
+                </DialogDescription>
               </div>
             </DialogHeader>
 
-            <div className="">
+            <div className="flex-1 flex items-center">
               <Button
                 onClick={handleGoogleLogin}
                 disabled={loginLoading || !isGoogleScriptLoaded}
-                className="w-full h-12 text-base font-medium relative group"
+                className="w-full h-12 text-base font-medium border-border hover:bg-muted transition-colors"
                 variant="outline">
                 {loginLoading ? (
                   <>
@@ -232,19 +234,19 @@ export function LoginModal({
               </Button>
             </div>
 
-            <div className="h-fit grid gap-6 py-8">
+            <div className="h-fit grid gap-6 pt-8">
               <div className="relative py-2">
                 <div className="absolute inset-0 flex items-center">
                   <span className="w-full border-t border-border" />
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-background px-2 text-muted-foreground">
+                  <span className="bg-card px-2 text-muted-foreground font-medium">
                     Secure authentication
                   </span>
                 </div>
               </div>
 
-              <p className="text-xs text-center text-muted-foreground pt-2">
+              <p className="text-xs text-center text-muted-foreground">
                 By continuing, you agree to our Terms of Service and Privacy Policy
               </p>
             </div>

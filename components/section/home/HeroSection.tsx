@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 
 export const HeroSection = () => {
   return (
-    <section className="relative min-h-[90vh] flex items-center overflow-hidden pt-20">
+    <section className="relative min-h-[90vh] flex items-center overflow-hidden pt-[11.25rem]">
       {/* Background */}
       <div className="absolute inset-0 z-0">
         {/* Colorful gradient base */}

@@ -1,7 +1,5 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
-import { useEffect } from 'react';
 import { GhostBtn } from '../atoms/GhostBtn';
 import { Logo } from '../atoms/Logo';
 import { useSiteSettingsStore } from '@/lib/store/useSiteSettingsStore';
@@ -51,17 +49,17 @@ const socialLinks = [
 export const Footer = () => {
   const currentYear = new Date().getFullYear();
 
-  const { settings, fetchSettings } = useSiteSettingsStore(state => ({
+  const { settings } = useSiteSettingsStore(state => ({
     settings: state.settings,
     isLoading: state.isLoading,
     fetchSettings: state.actions.fetchSettings,
   }));
 
-  useEffect(() => {
-    // Fetch socials and app details
-    fetchSettings('socials');
-    fetchSettings('appDetails');
-  }, []);
+  // useEffect(() => {
+  //   // Fetch socials and app details
+  //   fetchSettings('socials');
+  //   fetchSettings('appDetails');
+  // }, []);
 
   // const socials =
   //   settings?.socials?.map(social => ({

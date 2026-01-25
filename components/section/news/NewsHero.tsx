@@ -5,7 +5,7 @@ import { TrendingUp, Sparkles } from 'lucide-react';
 
 export const NewsHero = () => {
   return (
-    <section className="relative py-16 md:py-24 overflow-hidden">
+    <section className="relative pt-[10.25rem] md:pt-[12.25rem] pb-16 md:pb-24 overflow-hidden">
       {/* Animated Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-secondary/5" />
       <div className="absolute top-20 right-20 w-64 h-64 bg-primary/10 rounded-full blur-3xl animate-pulse" />

@@ -5,7 +5,7 @@ import { Mail, MessageCircle, Phone } from 'lucide-react';
 
 export const ContactHero = () => {
   return (
-    <section className="relative min-h-[50vh] flex items-center overflow-hidden pt-24 pb-12">
+    <section className="relative min-h-[50vh] flex items-center overflow-hidden pt-[12.25rem] pb-12">
       {/* Background */}
       <div className="absolute inset-0 z-0">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/15 via-secondary/10 to-accent/15" />
