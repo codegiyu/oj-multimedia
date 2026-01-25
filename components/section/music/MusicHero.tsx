@@ -1,8 +1,9 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Play, Upload, Headphones } from 'lucide-react';
+import { Play, Upload, Headphones, Music } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 export const MusicHero = () => {
   return (
@@ -45,13 +46,23 @@ export const MusicHero = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
             className="flex flex-wrap justify-center gap-4">
-            <Button variant="hero" size="lg" className="gap-2">
-              <Play className="w-5 h-5 fill-current" />
-              Play Trending Songs
+            <Button variant="hero" size="lg" className="gap-2" asChild>
+              <Link href="/music/trending">
+                <Play className="w-5 h-5 fill-current" />
+                Play Trending Songs
+              </Link>
             </Button>
-            <Button variant="hero-outline" size="lg" className="gap-2">
-              <Upload className="w-5 h-5" />
-              Upload Your Song
+            <Button variant="hero-outline" size="lg" className="gap-2" asChild>
+              <Link href="/music/upload">
+                <Upload className="w-5 h-5" />
+                Upload Your Song
+              </Link>
+            </Button>
+            <Button variant="hero-outline" size="lg" className="gap-2" asChild>
+              <Link href="/music/submit-beats">
+                <Music className="w-5 h-5" />
+                Submit Beats
+              </Link>
             </Button>
           </motion.div>
 
