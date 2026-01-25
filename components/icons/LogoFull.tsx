@@ -1,3 +1,5 @@
+'use client';
+
 import type { SVGProps } from 'react';
 const SvgLogoFull = (props: SVGProps<SVGSVGElement>) => (
   <svg

@@ -1,10 +1,8 @@
 export { HomePageClient } from './HomePageClient';
 export { HeroSection } from './HeroSection';
-export { CTASection } from './CTASection';
-export { FeaturedVerseSection } from './FeaturedVerseSection';
-export { DailyDevotionalSection } from './DailyDevotionalSection';
-export { LatestSermonsSection } from './LatestSermonsSection';
-export { TrendingNewsSection } from './TrendingNewsSection';
-export { TopChartsSection } from './TopChartsSection';
-export { NewsletterSection } from './NewsletterSection';
-export { PrayerRequestButton } from './PrayerRequestButton';
+export { TrendingMusicSection, type TrendingMusicItem } from './TrendingMusicSection';
+export { TrendingVideosSection, type TrendingVideoItem } from './TrendingVideosSection';
+export { TopChartsSection, type ChartItem, type RisingArtist } from './TopChartsSection';
+export { NewsSection, type NewsArticle } from './NewsSection';
+export { MarketplaceSection, type MarketplaceProduct } from './MarketplaceSection';
+export { CommunitySection, type CommunityPost, type PollOption } from './CommunitySection';

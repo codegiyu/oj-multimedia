@@ -1,3 +1,5 @@
+'use client';
+
 import { Upload, DollarSign, Mic, Video, CheckCircle, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';

@@ -1,178 +1,180 @@
 'use client';
 
-import { MainLayout } from '@/components/layout/MainLayout';
-import { SectionContainer } from '@/components/general/SectionContainer';
-import { SectionHeading } from '@/components/general/SectionHeading';
-import { Card, CardContent } from '@/components/ui/card';
-import { RegularBtn } from '@/components/atoms/RegularBtn';
-import { GhostBtn } from '@/components/atoms/GhostBtn';
-import { Heart, MessageSquare, User, Mail, BarChart3, ArrowRight } from 'lucide-react';
+import { motion } from 'framer-motion';
+import {
+  BookOpen,
+  Video,
+  Heart,
+  HandHeart,
+  HelpCircle,
+  BarChart3,
+  FolderOpen,
+  Megaphone,
+  type LucideIcon,
+} from 'lucide-react';
+import { CategoryCard } from '@/components/cards/CommunityCategoryCard';
+import { FeaturedTestimonies, type Testimony } from './FeaturedTestimonies';
+import { TrendingDevotionals, type Devotional } from './TrendingDevotionals';
+import { ActiveDiscussions, type Discussion } from './ActiveDiscussions';
+import { CommunityCTA } from '../shared';
 
-export const CommunityPageClient = () => {
-  // TODO: Fetch data from API
-  const testimonies = [
-    {
-      name: 'Sarah Johnson',
-      testimony:
-        'This platform has been a blessing to my spiritual journey. The devotionals and sermons have transformed my life.',
-      date: '2 days ago',
-    },
-    {
-      name: 'Michael Brown',
-      testimony:
-        'I found my calling through the inspiring messages here. Thank you for this amazing resource.',
-      date: '5 days ago',
-    },
-  ];
+export interface CommunityCategory {
+  icon: string;
+  title: string;
+  description: string;
+  color: 'primary' | 'secondary' | 'accent';
+  count: number;
+  href: string;
+}
+
+// Icon map to convert string identifiers to actual icon components
+const iconMap: Record<string, LucideIcon> = {
+  BookOpen,
+  Video,
+  Heart,
+  HandHeart,
+  HelpCircle,
+  BarChart3,
+  FolderOpen,
+  Megaphone,
+};
+
+// Static category definitions - hardcoded on the client side
+// Each category has a key that matches the server's categoryCounts keys
+const categoryDefinitions: Array<Omit<CommunityCategory, 'count'> & { key: string }> = [
+  {
+    key: 'devotionals',
+    icon: 'BookOpen',
+    title: 'Devotionals',
+    description: 'Daily inspiration and reflections for your journey',
+    color: 'secondary',
+    href: '/community/devotionals',
+  },
+  {
+    key: 'sermons',
+    icon: 'Video',
+    title: 'Sermons & Talks',
+    description: 'Powerful messages and teachings from trusted voices',
+    color: 'primary',
+    href: '/community/sermons',
+  },
+  {
+    key: 'testimonies',
+    icon: 'Heart',
+    title: 'Testimonies',
+    description: 'Real stories of hope, transformation and breakthrough',
+    color: 'primary',
+    href: '/community/testimonies',
+  },
+  {
+    key: 'prayerRequests',
+    icon: 'HandHeart',
+    title: 'Prayer Requests',
+    description: 'Share your needs and pray for others in the community',
+    color: 'accent',
+    href: '/community/prayer-requests',
+  },
+  {
+    key: 'askAPastor',
+    icon: 'HelpCircle',
+    title: 'Ask a Pastor',
+    description: 'Get guidance and answers to your questions',
+    color: 'secondary',
+    href: '/community/ask-a-pastor',
+  },
+  {
+    key: 'polls',
+    icon: 'BarChart3',
+    title: 'Polls & Voting',
+    description: 'Share your opinion and see what the community thinks',
+    color: 'accent',
+    href: '/community/polls-and-voting',
+  },
+  {
+    key: 'resources',
+    icon: 'FolderOpen',
+    title: 'Resources',
+    description: 'Free downloads, templates, beats, and more',
+    color: 'primary',
+    href: '/community/resources',
+  },
+  {
+    key: 'promoteYourContent',
+    icon: 'Megaphone',
+    title: 'Promote Your Content',
+    description: 'Get your content featured and reach a wider audience',
+    color: 'secondary',
+    href: '/community/promote-your-content',
+  },
+];
+
+interface CommunityPageClientProps {
+  categoryCounts: Record<string, number>;
+  testimonies: Testimony[];
+  devotionals: Devotional[];
+  discussions: Discussion[];
+}
+
+export const CommunityPageClient = ({
+  categoryCounts,
+  testimonies,
+  devotionals,
+  discussions,
+}: CommunityPageClientProps) => {
+  // Merge static category definitions with dynamic counts from server
+  const categories: CommunityCategory[] = categoryDefinitions.map(def => ({
+    icon: def.icon,
+    title: def.title,
+    description: def.description,
+    color: def.color,
+    count: categoryCounts[def.key] ?? 0,
+    href: def.href,
+  }));
 
   return (
-    <MainLayout>
-      {/* Hero Section */}
-      <SectionContainer className="py-16 md:py-20 bg-gradient-to-br from-[#2563EB]/5 to-[#3B82F6]/5">
-        <div className="max-w-4xl mx-auto text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#2563EB]/10 mb-6">
-            <Heart className="w-8 h-8 text-[#2563EB]" />
-          </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">Community</h1>
-          <p className="text-lg text-muted-foreground mb-8">
-            Share testimonies, submit prayer requests, ask questions, and connect with fellow
-            believers.
+    <section className="container mx-auto px-4 pb-16">
+      <section className="py-12">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-center mb-10">
+          <h2 className="text-2xl md:text-3xl font-display font-bold mb-3">
+            Explore the Community
+          </h2>
+          <p className="text-muted-foreground max-w-lg mx-auto">
+            Find what speaks to you — from daily inspiration to open discussions
           </p>
-        </div>
-      </SectionContainer>
+        </motion.div>
 
-      {/* Prayer Request Form */}
-      <SectionContainer className="py-16 md:py-20">
-        <div className="max-w-2xl mx-auto">
-          <SectionHeading
-            title="Prayer Request"
-            text="Submit your prayer requests and our community will pray with you"
-            Icon={Heart}
-          />
-          <Card>
-            <CardContent className="p-8">
-              <form className="grid gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
-                    Your Name
-                  </label>
-                  <input
-                    type="text"
-                    className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2563EB]"
-                    placeholder="Enter your name"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
-                    Prayer Request
-                  </label>
-                  <textarea
-                    rows={6}
-                    className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2563EB]"
-                    placeholder="Share your prayer request..."
-                  />
-                </div>
-                <RegularBtn
-                  type="submit"
-                  text="Submit Prayer Request"
-                  className="w-full bg-gradient-to-r from-[#2563EB] to-[#3B82F6] text-white"
-                />
-              </form>
-            </CardContent>
-          </Card>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {categories.map((category, index) => {
+            const IconComponent = iconMap[category.icon];
+            if (!IconComponent) {
+              console.warn(`Icon "${category.icon}" not found in iconMap`);
+              return null;
+            }
+            return (
+              <motion.div
+                key={category.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.05 }}>
+                <CategoryCard {...category} icon={IconComponent} />
+              </motion.div>
+            );
+          })}
         </div>
-      </SectionContainer>
+      </section>
 
-      {/* Testimonies */}
-      <SectionContainer className="py-16 md:py-20 bg-muted/30">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between mb-8">
-            <SectionHeading
-              title="Testimonies from Readers"
-              text="Stories of transformation and blessing"
-              Icon={MessageSquare}
-            />
-            <GhostBtn
-              linkProps={{ href: '/community?tab=testimonies' }}
-              className="hidden md:flex items-center gap-2 text-[#2563EB] hover:text-[#3B82F6]">
-              <span>View All</span>
-              <ArrowRight className="w-4 h-4" />
-            </GhostBtn>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {testimonies.map((testimony, idx) => (
-              <Card key={idx} className="hover:shadow-lg transition-shadow">
-                <CardContent className="p-6">
-                  <p className="text-muted-foreground mb-4 italic">
-                    &ldquo;{testimony.testimony}&rdquo;
-                  </p>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-semibold text-foreground">{testimony.name}</p>
-                      <p className="text-sm text-muted-foreground">{testimony.date}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </SectionContainer>
+      <FeaturedTestimonies testimonies={testimonies} />
 
-      {/* Other Features */}
-      <SectionContainer className="py-16 md:py-20">
-        <div className="max-w-7xl mx-auto">
-          <SectionHeading
-            title="More Community Features"
-            text="Engage with our community in various ways"
-            Icon={Heart}
-          />
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card className="p-6 text-center hover:shadow-lg transition-shadow">
-              <div className="w-12 h-12 rounded-full bg-[#2563EB]/10 mx-auto mb-4 flex items-center justify-center">
-                <User className="w-6 h-6 text-[#2563EB]" />
-              </div>
-              <h3 className="font-semibold text-foreground mb-2">Ask A Pastor</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                Get answers to your spiritual questions from experienced pastors
-              </p>
-              <GhostBtn
-                linkProps={{ href: '/community?tab=ask-pastor' }}
-                className="text-sm text-[#2563EB]">
-                Ask Question
-              </GhostBtn>
-            </Card>
-            <Card className="p-6 text-center hover:shadow-lg transition-shadow">
-              <div className="w-12 h-12 rounded-full bg-[#2563EB]/10 mx-auto mb-4 flex items-center justify-center">
-                <Mail className="w-6 h-6 text-[#2563EB]" />
-              </div>
-              <h3 className="font-semibold text-foreground mb-2">Newsletter Archive</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                Browse past newsletters and stay updated with our content
-              </p>
-              <GhostBtn
-                linkProps={{ href: '/community?tab=newsletter' }}
-                className="text-sm text-[#2563EB]">
-                View Archive
-              </GhostBtn>
-            </Card>
-            <Card className="p-6 text-center hover:shadow-lg transition-shadow">
-              <div className="w-12 h-12 rounded-full bg-[#2563EB]/10 mx-auto mb-4 flex items-center justify-center">
-                <BarChart3 className="w-6 h-6 text-[#2563EB]" />
-              </div>
-              <h3 className="font-semibold text-foreground mb-2">Polls & Voting</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                Participate in community polls and share your opinions
-              </p>
-              <GhostBtn
-                linkProps={{ href: '/community?tab=polls' }}
-                className="text-sm text-[#2563EB]">
-                View Polls
-              </GhostBtn>
-            </Card>
-          </div>
-        </div>
-      </SectionContainer>
-    </MainLayout>
+      <TrendingDevotionals devotionals={devotionals} />
+
+      <ActiveDiscussions discussions={discussions} />
+
+      <CommunityCTA />
+    </section>
   );
 };

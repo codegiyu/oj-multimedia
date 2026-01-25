@@ -3,17 +3,55 @@
 
 import { useEffect } from 'react';
 import { GhostBtn } from '../atoms/GhostBtn';
-import { NAV_LINKS } from '@/lib/constants/texts';
-import { HeaderLinkProps } from './Header';
-import { IconComp } from '@/lib/types/general';
+import { Logo } from '../atoms/Logo';
 import { useSiteSettingsStore } from '@/lib/store/useSiteSettingsStore';
-import { getSocialIcon, formatSocialLabel } from '@/lib/utils/socials';
-import { Skeleton } from '@/components/ui/skeleton';
+// import { getSocialIcon, formatSocialLabel } from '@/lib/utils/socials';
+import { Mail } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { FaInstagram, FaTwitter, FaYoutube, FaFacebook } from 'react-icons/fa';
+
+const footerLinks = {
+  platform: [
+    { label: 'Music', href: '/music' },
+    { label: 'Videos', href: '/videos' },
+    { label: 'News', href: '/news' },
+    { label: 'Marketplace', href: '/marketplace' },
+    { label: 'Community', href: '/community' },
+  ],
+  creators: [
+    { label: 'Upload Music', href: '#' },
+    { label: 'Upload Video', href: '#' },
+    { label: 'Start Podcast', href: '#' },
+    { label: 'Become a Vendor', href: '#' },
+    { label: 'Artist Portal', href: '#' },
+  ],
+  resources: [
+    { label: 'Daily Devotionals', href: '#' },
+    { label: 'Sermons', href: '#' },
+    { label: 'Bible Study', href: '#' },
+    { label: 'Help Center', href: '#' },
+    { label: 'Guidelines', href: '#' },
+  ],
+  company: [
+    { label: 'About Us', href: '/about' },
+    { label: 'Contact', href: '/contact' },
+    // { label: 'Careers', href: '/careers' },
+    { label: 'Privacy Policy', href: '/privacy-policy' },
+    { label: 'Terms of Service', href: '/terms-of-service' },
+  ],
+};
+
+const socialLinks = [
+  { icon: FaInstagram, href: 'https://www.instagram.com', label: 'Instagram' },
+  { icon: FaTwitter, href: 'https://www.x.com', label: 'Twitter' },
+  { icon: FaYoutube, href: 'https://www.youtube.com', label: 'YouTube' },
+  { icon: FaFacebook, href: 'https://www.facebook.com', label: 'Facebook' },
+];
 
 export const Footer = () => {
   const currentYear = new Date().getFullYear();
 
-  const { settings, isLoading, fetchSettings } = useSiteSettingsStore(state => ({
+  const { settings, fetchSettings } = useSiteSettingsStore(state => ({
     settings: state.settings,
     isLoading: state.isLoading,
     fetchSettings: state.actions.fetchSettings,
@@ -25,86 +63,127 @@ export const Footer = () => {
     fetchSettings('appDetails');
   }, []);
 
-  const socials =
-    settings?.socials?.map(social => ({
-      Icon: getSocialIcon(social.platform),
-      href: social.href,
-      label: formatSocialLabel(social.platform),
-    })) || [];
+  // const socials =
+  //   settings?.socials?.map(social => ({
+  //     Icon: getSocialIcon(social.platform),
+  //     href: social.href,
+  //     label: formatSocialLabel(social.platform),
+  //   })) || [];
 
-  const appName = settings?.appDetails?.appName || 'OJ Multimedia';
   const appDescription =
     settings?.appDetails?.description ||
-    'Your trusted source for gospel music, inspiring sermons, daily devotionals, and Christian resources to strengthen your faith journey.';
-
-  // Split navigation links into two groups
-  const contentLinks = NAV_LINKS.filter(
-    item => !item.showInHeaderOnly && ['Music', 'Sermons', 'Devotionals'].includes(item.text)
-  );
-  const pageLinks = NAV_LINKS.filter(
-    item => !item.showInHeaderOnly && !['Music', 'Sermons', 'Devotionals'].includes(item.text)
-  );
+    'Your platform for fresh music, creative videos, and inspiring stories.';
 
   return (
-    <footer className="bg-[#1E3A8A] text-white pt-16 md:pt-16 lg:pt-20 2xl:pt-28">
-      <div className="regular-container">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-[0.9375rem] mb-12">
-          {/* Company Info */}
-          <div className="h-fit grid gap-4">
-            <div className="flex items-center">
-              <GhostBtn linkProps={{ href: '/' }} className="group">
-                <span className="text-3xl font-bold font-sans text-white group-hover:opacity-80 transition-opacity">
-                  OJ Multimedia
-                </span>
-              </GhostBtn>
-            </div>
-            <p className="text-white/80 text-[0.9375rem] leading-[1.6]">
-              {appDescription ||
-                'Your trusted source for gospel music, inspiring sermons, daily devotionals, and Christian resources to strengthen your faith journey.'}
+    <footer className="bg-card border-t border-border">
+      {/* Newsletter */}
+      <div className="border-b border-border">
+        <div className="container mx-auto px-4 py-12">
+          <div className="max-w-2xl mx-auto text-center">
+            <h3 className="text-2xl font-display font-bold mb-2">Stay in the Loop</h3>
+            <p className="text-muted-foreground mb-6">
+              Get the latest updates on new releases, trending content, and community news.
             </p>
-            <div className="w-full flex items-center gap-4">
-              {isLoading && socials.length === 0 ? (
-                <>
-                  <Skeleton className="size-10 rounded-full" />
-                  <Skeleton className="size-10 rounded-full" />
-                  <Skeleton className="size-10 rounded-full" />
-                </>
-              ) : (
-                socials.map((social, idx) => <SocialBtn key={idx} {...social} />)
-              )}
+            <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+              <input
+                type="email"
+                placeholder="Enter your email"
+                className="flex-1 px-4 py-3 rounded-full border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+              />
+              <Button variant="hero" size="lg" className="gap-2">
+                <Mail className="w-4 h-4" />
+                Subscribe
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Links */}
+      <div className="container mx-auto px-4 py-12">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
+          {/* Brand */}
+          <div className="col-span-2 md:col-span-1">
+            <Logo showText={true} hideTextOnMobile={false} className="mb-4" />
+            <p className="text-sm text-muted-foreground mb-4">{appDescription}</p>
+            <div className="flex gap-2">
+              {socialLinks.map(social => (
+                <SocialBtn
+                  key={social.label}
+                  Icon={social.icon}
+                  href={social.href}
+                  label={social.label}
+                />
+              ))}
             </div>
           </div>
 
-          {/* Content Links */}
-          <div className="h-fit grid gap-4">
-            <h3 className="text-lg font-bold text-white">Content</h3>
-            <ul className="grid gap-3">
-              {contentLinks.map((item, idx) => (
-                <FooterLink key={idx} {...item} />
+          {/* Platform */}
+          <div>
+            <h4 className="font-semibold mb-4">Platform</h4>
+            <ul className="space-y-2">
+              {footerLinks.platform.map(link => (
+                <li key={link.label}>
+                  <a
+                    href={link.href}
+                    className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                    {link.label}
+                  </a>
+                </li>
               ))}
             </ul>
           </div>
 
-          {/* Page Links */}
-          <div className="h-fit grid gap-4">
-            <h3 className="text-lg font-bold text-white">Pages</h3>
-            <ul className="grid gap-3">
-              {pageLinks.map((item, idx) => (
-                <FooterLink key={idx} {...item} />
+          {/* Creators */}
+          <div>
+            <h4 className="font-semibold mb-4">For Creators</h4>
+            <ul className="space-y-2">
+              {footerLinks.creators.map(link => (
+                <li key={link.label}>
+                  <a
+                    href={link.href}
+                    className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                    {link.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Resources */}
+          <div>
+            <h4 className="font-semibold mb-4">Resources</h4>
+            <ul className="space-y-2">
+              {footerLinks.resources.map(link => (
+                <li key={link.label}>
+                  <a
+                    href={link.href}
+                    className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                    {link.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Company */}
+          <div>
+            <h4 className="font-semibold mb-4">Company</h4>
+            <ul className="space-y-2">
+              {footerLinks.company.map(link => (
+                <FooterLink key={link.label} label={link.label} href={link.href} />
               ))}
             </ul>
           </div>
         </div>
+      </div>
 
-        {/* Bottom Bar */}
-        <div className="border-t border-white/20 py-6 flex flex-col md:flex-row justify-between items-center gap-4 text-white/60">
-          <p className="text-[0.9375rem]">
-            &copy; {currentYear} {appName || 'OJ Multimedia'}. All rights reserved.
-          </p>
-          <div className="flex items-center gap-4">
-            <FooterLink text="Privacy Policy" href="/privacy" />
-            <span className="text-white/40"></span>
-            <FooterLink text="Terms & Conditions" href="/terms" />
+      {/* Copyright */}
+      <div className="border-t border-border">
+        <div className="container mx-auto px-4 py-6">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
+            <p>© {currentYear} OJ Multimedia. All rights reserved.</p>
+            <p>Made with ❤️ for creators everywhere</p>
           </div>
         </div>
       </div>
@@ -112,7 +191,13 @@ export const Footer = () => {
   );
 };
 
-const FooterLink = ({ text, href = '#', footerOnlySuffix = '', afterClick }: HeaderLinkProps) => {
+interface FooterLinkProps {
+  label: string;
+  href: string;
+  afterClick?: () => void;
+}
+
+const FooterLink = ({ label, href = '#', afterClick }: FooterLinkProps) => {
   return (
     <li className={``}>
       <GhostBtn
@@ -123,8 +208,9 @@ const FooterLink = ({ text, href = '#', footerOnlySuffix = '', afterClick }: Hea
           afterClick?.();
         }}>
         <div className="w-fit px-0 relative">
-          <p className={`text-white/70 hover:text-white transition-smooth font-medium`}>
-            {text + footerOnlySuffix}
+          <p
+            className={`text-sm text-muted-foreground hover:text-primary transition-colors transition-smooth`}>
+            {label}
           </p>
         </div>
       </GhostBtn>
@@ -133,7 +219,7 @@ const FooterLink = ({ text, href = '#', footerOnlySuffix = '', afterClick }: Hea
 };
 
 export interface SocialBtnProps {
-  Icon: IconComp;
+  Icon: React.ElementType;
   href: string;
   label: string;
 }
@@ -141,12 +227,10 @@ export interface SocialBtnProps {
 export function SocialBtn({ Icon, href, label }: SocialBtnProps) {
   return (
     <GhostBtn
-      className="size-10 bg-white/10 grid place-items-center rounded-full hover:bg-white/20 hover:scale-110 transition-all transition-smooth backdrop-blur-sm"
+      className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
       linkProps={{ href, target: '_blank', rel: 'noopener noreferrer' }}
       aria-label={label}>
-      <i className="text-xl text-white">
-        <Icon />
-      </i>
+      <Icon className="size-5" />
     </GhostBtn>
   );
 }

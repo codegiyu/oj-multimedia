@@ -1,3 +1,5 @@
+'use client';
+
 import { Heart, Users, Sparkles, Target, Shield, BookOpen, Flame, Crown } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 

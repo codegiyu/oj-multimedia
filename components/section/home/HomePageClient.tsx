@@ -1,26 +1,59 @@
 'use client';
 
-import { MainLayout } from '@/components/layout/MainLayout';
-import { HeroSection } from './HeroSection';
-import { FeaturedVerseSection } from './FeaturedVerseSection';
-import { DailyDevotionalSection } from './DailyDevotionalSection';
-import { LatestSermonsSection } from './LatestSermonsSection';
-import { TrendingNewsSection } from './TrendingNewsSection';
-import { TopChartsSection } from './TopChartsSection';
-import { NewsletterSection } from './NewsletterSection';
-import { PrayerRequestButton } from './PrayerRequestButton';
+import {
+  CommunitySection,
+  MarketplaceSection,
+  NewsSection,
+  TopChartsSection,
+  TrendingMusicSection,
+  TrendingVideosSection,
+  type TrendingMusicItem,
+  type TrendingVideoItem,
+  type ChartItem,
+  type RisingArtist,
+  type NewsArticle,
+  type MarketplaceProduct,
+  type CommunityPost,
+  type PollOption,
+} from '.';
+import { UploadCTA } from '../shared';
 
-export const HomePageClient = () => {
+interface HomePageClientProps {
+  trendingMusic: TrendingMusicItem[];
+  trendingVideos: TrendingVideoItem[];
+  chartData: ChartItem[];
+  risingArtists: RisingArtist[];
+  newsArticles: NewsArticle[];
+  marketplaceProducts: MarketplaceProduct[];
+  communityPosts: CommunityPost[];
+  pollOptions: PollOption[];
+  pollTotalVotes: number;
+}
+
+export const HomePageClient = ({
+  trendingMusic,
+  trendingVideos,
+  chartData,
+  risingArtists,
+  newsArticles,
+  marketplaceProducts,
+  communityPosts,
+  pollOptions,
+  pollTotalVotes,
+}: HomePageClientProps) => {
   return (
-    <MainLayout>
-      <HeroSection />
-      <FeaturedVerseSection />
-      <DailyDevotionalSection />
-      <LatestSermonsSection />
-      <TrendingNewsSection />
-      <TopChartsSection />
-      <NewsletterSection />
-      <PrayerRequestButton />
-    </MainLayout>
+    <>
+      <TrendingMusicSection music={trendingMusic} />
+      <TrendingVideosSection videos={trendingVideos} />
+      <TopChartsSection chartData={chartData} risingArtists={risingArtists} />
+      <NewsSection articles={newsArticles} />
+      <MarketplaceSection products={marketplaceProducts} />
+      <CommunitySection
+        posts={communityPosts}
+        pollOptions={pollOptions}
+        pollTotalVotes={pollTotalVotes}
+      />
+      <UploadCTA />
+    </>
   );
 };

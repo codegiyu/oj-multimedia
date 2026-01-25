@@ -1,3 +1,5 @@
+'use client';
+
 import { cn } from '@/lib/utils';
 import { RegularBtn, RegularBtnProps } from './RegularBtn';
 import { IconComp, LucideIconComp } from '@/lib/types/general';

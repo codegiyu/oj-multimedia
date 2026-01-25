@@ -205,8 +205,8 @@ export const seedSiteSettings = async () => {
       robotsFollow: true,
     },
     legal: {
-      termsOfServiceUrl: '/terms',
-      privacyPolicyUrl: '/privacy',
+      termsOfServiceUrl: '/terms-and-conditions',
+      privacyPolicyUrl: '/privacy-policy',
       cookiePolicyUrl: '',
       disclaimerText: '',
     },

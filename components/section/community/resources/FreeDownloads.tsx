@@ -1,0 +1,113 @@
+'use client';
+
+import { motion } from 'framer-motion';
+import { Download, ArrowDown, CheckCircle } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+
+const downloadCategories = [
+  {
+    title: 'Free E-books',
+    count: '12+',
+    description: 'Free Christian e-books and guides',
+    icon: '📚',
+  },
+  {
+    title: 'Sermon Templates',
+    count: '25+',
+    description: 'Professional templates and flyers',
+    icon: '📄',
+  },
+  {
+    title: 'Free Beats',
+    count: '50+',
+    description: 'Worship beats and instrumentals',
+    icon: '🎵',
+  },
+  {
+    title: 'Wallpapers',
+    count: '100+',
+    description: 'Beautiful Christian wallpapers',
+    icon: '🖼️',
+  },
+];
+
+export const FreeDownloads = () => {
+  return (
+    <section id="free-downloads" className="py-12">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        className="text-center mb-10">
+        <div className="flex items-center justify-center mb-4">
+          <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
+            <Download className="w-5 h-5 text-accent" />
+          </div>
+        </div>
+        <h2 className="section-header mb-3">Free Downloads</h2>
+        <p className="text-muted-foreground max-w-lg mx-auto">
+          Access all our free resources in one place. Everything you need for your ministry.
+        </p>
+      </motion.div>
+
+      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        {downloadCategories.map((category, index) => (
+          <motion.div
+            key={index}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: index * 0.1 }}>
+            <Card className="card-interactive">
+              <CardContent className="p-6 text-center">
+                <div className="text-5xl mb-4">{category.icon}</div>
+                <h3 className="font-bold text-foreground mb-2">{category.title}</h3>
+                <p className="text-2xl font-bold text-primary mb-2">{category.count}</p>
+                <p className="text-sm text-muted-foreground mb-4">{category.description}</p>
+                <Button className="w-full" variant="outline" size="sm">
+                  Browse
+                  <ArrowDown className="w-4 h-4 ml-2" />
+                </Button>
+              </CardContent>
+            </Card>
+          </motion.div>
+        ))}
+      </div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}>
+        <Card className="bg-gradient-to-r from-primary/10 to-secondary/10 border-primary/20">
+          <CardContent className="p-8">
+            <div className="max-w-2xl mx-auto text-center">
+              <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-primary/10 flex items-center justify-center">
+                <Download className="w-8 h-8 text-primary" />
+              </div>
+              <h3 className="text-2xl font-bold text-foreground mb-4">All Resources Are Free</h3>
+              <p className="text-muted-foreground mb-6">
+                We believe in supporting the ministry community. All our resources are completely
+                free to download and use for your ministry needs.
+              </p>
+              <div className="grid sm:grid-cols-3 gap-4 text-sm">
+                <div className="flex items-center gap-2 justify-center">
+                  <CheckCircle className="w-5 h-5 text-primary" />
+                  <span className="text-foreground">100% Free</span>
+                </div>
+                <div className="flex items-center gap-2 justify-center">
+                  <CheckCircle className="w-5 h-5 text-primary" />
+                  <span className="text-foreground">No Sign-up Required</span>
+                </div>
+                <div className="flex items-center gap-2 justify-center">
+                  <CheckCircle className="w-5 h-5 text-primary" />
+                  <span className="text-foreground">Regular Updates</span>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
+    </section>
+  );
+};

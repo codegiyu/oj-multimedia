@@ -1,3 +1,5 @@
+'use client';
+
 import { RegularBtn } from '@/components/atoms/RegularBtn';
 import { Input } from '@/components/ui/input';
 import { Headphones, Play, Search, Video } from 'lucide-react';

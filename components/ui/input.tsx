@@ -1,3 +1,5 @@
+'use client';
+
 import { ComponentPropsWithRef, forwardRef } from 'react';
 
 import { cn } from '@/lib/utils';

@@ -1,4 +1,6 @@
-import { ContactPageClient } from '@/components/section/contact';
+import { MainLayout } from '@/components/layout/MainLayout';
+import { ContactHero } from '@/components/section/public/contact/ContactHero';
+import { ContactPageClient } from '@/components/section/public/contact';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -8,5 +10,10 @@ export const metadata: Metadata = {
 };
 
 export default function ContactPage() {
-  return <ContactPageClient />;
+  return (
+    <MainLayout>
+      <ContactHero />
+      <ContactPageClient />
+    </MainLayout>
+  );
 }

@@ -1,0 +1,9 @@
+export { VideoPageClient } from './VideoPageClient';
+export { VideoHero } from './VideoHero';
+export { VideoCategories } from './VideoCategories';
+export { TrendingVideos } from './TrendingVideos';
+export { FeaturedVideos } from './FeaturedVideos';
+export { RecentVideoUploads } from './RecentVideoUploads';
+export { ShortFormVideos } from './ShortFormVideos';
+export { CreatorSpotlight } from './CreatorSpotlight';
+export { VideoUploadCTA } from './VideoUploadCTA';

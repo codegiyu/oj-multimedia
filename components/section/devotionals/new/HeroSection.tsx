@@ -1,3 +1,5 @@
+'use client';
+
 import { RegularBtn } from '@/components/atoms/RegularBtn';
 import { Input } from '@/components/ui/input';
 import { BookOpen, Play, Search, Heart } from 'lucide-react';

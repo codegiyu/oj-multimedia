@@ -1,3 +1,5 @@
+'use client';
+
 import * as React from 'react';
 import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
@@ -19,11 +21,14 @@ const buttonVariants = cva(
         ghost:
           'bg-trasparent border-2 border-transparent hover:border-accent hover:bg-accent hover:text-accent-foreground',
         link: 'text-primary underline-offset-4 hover:underline',
-        hero: 'bg-primary border-2 border-primary hover:bg-primary-light hover:border-primary-light text-primary-foreground shadow-elegant hover:shadow-gold hover:-translate-y-0.5 duration-300',
-        accent:
-          'bg-accent border-2 border-accent hover:bg-accent/90 text-accent-foreground shadow-gold duration-300',
         cta: 'bg-card text-foreground border-2 border-border hover:border-primary hover:bg-primary/5 hover:-translate-y-0.5',
-        play: 'bg-primary text-primary-foreground rounded-full shadow-hero hover:scale-110 animate-pulse-glow',
+        hero: 'bg-primary text-primary-foreground font-semibold shadow-glow hover:shadow-lg hover:-translate-y-1 hover:bg-primary/95',
+        'hero-outline':
+          'border-2 border-foreground/20 bg-card/80 backdrop-blur-sm text-foreground font-semibold hover:border-primary hover:text-primary shadow-sm hover:shadow-md',
+        accent:
+          'bg-accent text-accent-foreground font-semibold hover:bg-accent/90 shadow-md hover:shadow-lg',
+        muted: 'bg-muted text-muted-foreground hover:bg-muted/80',
+        play: 'bg-primary text-primary-foreground rounded-full shadow-glow hover:scale-110',
         none: '',
       },
       size: {
@@ -32,8 +37,9 @@ const buttonVariants = cva(
         lg: 'w-fit py-3 px-8',
         xl: 'w-fit py-4.5 px-10',
         icon: 'size-10 p-0',
-        iconLg: 'size-14 p-0',
-        iconXl: 'size-20 p-0',
+        'icon-sm': 'size-8 p-0',
+        'icon-lg': 'size-14 p-0',
+        'icon-xl': 'size-20 p-0',
         full: 'w-full py-3 px-8',
       },
       typo: {

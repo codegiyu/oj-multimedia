@@ -1,239 +1,89 @@
 'use client';
 
-import { ComponentProps, Dispatch, SetStateAction, useEffect, useState } from 'react';
-import { ChevronDown, Menu, X } from 'lucide-react';
-import { RegularBtn } from '../atoms/RegularBtn';
-import { GhostBtn } from '../atoms/GhostBtn';
-import { usePathname } from 'next/navigation';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Menu, X, Search, Music, Video, Newspaper, ShoppingBag, Users } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { cn } from '@/lib/utils';
-import { NAV_LINKS } from '@/lib/constants/texts';
+import { UserMenu, UserMobileMenu } from './UserMenu';
+import { Logo } from '@/components/atoms/Logo';
 
-export type HeaderProps = ComponentProps<'section'>;
+const navItems = [
+  { label: 'Music', icon: Music, href: '/music' },
+  { label: 'Videos', icon: Video, href: '/videos' },
+  { label: 'News', icon: Newspaper, href: '/news' },
+  { label: 'Marketplace', icon: ShoppingBag, href: '/marketplace' },
+  { label: 'Community', icon: Users, href: '/community' },
+];
 
-export const Header = ({ className, ...props }: HeaderProps) => {
+export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const pathname = usePathname();
-
-  // Prevent scroll when menu is open
-  useEffect(() => {
-    if (isMenuOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, [isMenuOpen]);
 
   return (
-    <header
-      className={cn(
-        'sticky top-0 z-50 bg-white/95 backdrop-blur-md shadow-md border-b border-[#2563EB]/20',
-        className
-      )}
-      {...props}>
-      <div className="regular-container">
-        <div className="flex items-center justify-between h-20">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-card/80 backdrop-blur-md border-b border-border">
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
-          <div className="flex items-center">
-            <GhostBtn linkProps={{ href: '/' }} className="group">
-              <span className="text-[1.5rem] lg:text-[2.5rem] font-bold font-sans bg-gradient-primary bg-clip-text text-transparent group-hover:opacity-80 transition-opacity">
-                OJ Multimedia
-              </span>
-            </GhostBtn>
-          </div>
+          <Logo />
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center space-x-8">
-            <nav className="">
-              <ul className="list-none hidden lg:flex items-center space-x-8">
-                {NAV_LINKS.filter(s => !s.showInFooterOnly).map((item, idx) => (
-                  <HeaderLink key={idx} {...item} activePath={pathname} />
-                ))}
-              </ul>
-            </nav>
-          </div>
-
-          {/* Mobile Menu Button */}
-          <GhostBtn
-            className="lg:hidden"
-            wrapClassName="lg:hidden"
-            iconClass={`size-6 ${isMenuOpen ? 'text-destructive' : ''}`}
-            LucideIcon={isMenuOpen ? X : Menu}
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          />
-        </div>
-
-        {/* Mobile Menu */}
-        <div
-          className={`lg:hidden h-auto grid ${isMenuOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'} transition-all duration-500 ease-out animate-fade-in overflow-hidden`}>
-          <nav className="overflow-hidden">
-            <div className="pb-4">
-              <ul className="list-none grid px-0 pb-6 gap-2">
-                {NAV_LINKS.filter(s => !s.showInFooterOnly).map((item, idx) => (
-                  <MobileHeaderLink
-                    key={idx}
-                    {...item}
-                    afterClick={() => setIsMenuOpen(false)}
-                    activePath={pathname}
-                  />
-                ))}
-              </ul>
-            </div>
+          <nav className="hidden lg:flex items-center gap-1">
+            {navItems.map(item => (
+              <Link
+                key={item.label}
+                href={item.href}
+                className="flex items-center gap-2 px-4 py-2 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted transition-colors font-medium">
+                <item.icon className="w-4 h-4" />
+                {item.label}
+              </Link>
+            ))}
           </nav>
+
+          {/* Actions */}
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="icon" className="rounded-full">
+              <Search className="w-5 h-5" />
+            </Button>
+            <div className="hidden lg:block">
+              <UserMenu />
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="lg:hidden rounded-full"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}>
+              {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </Button>
+          </div>
         </div>
       </div>
-    </header>
-  );
-};
 
-export type BaseHeaderLinkProps = {
-  text: string;
-  href?: string;
-  basePath?: string;
-  children?: HeaderDropdownLinkProps[];
-  footerOnlySuffix?: string;
-  showInHeaderOnly?: boolean;
-  showInFooterOnly?: boolean;
-  afterClick?: () => void;
-  activePath?: string;
-  dropdownOpen?: boolean;
-  setDropdownOpen?: Dispatch<SetStateAction<boolean>>;
-};
-
-export type HeaderLinkProps =
-  | {
-      text: string;
-      href: string;
-      basePath?: never;
-      children?: never;
-      footerOnlySuffix?: string;
-      showInHeaderOnly?: boolean;
-      showInFooterOnly?: boolean;
-      afterClick?: () => void;
-      activePath?: string;
-      dropdownOpen?: boolean;
-      setDropdownOpen?: Dispatch<SetStateAction<boolean>>;
-    }
-  | {
-      text: string;
-      href?: never;
-      basePath: string;
-      children: HeaderDropdownLinkProps[];
-      footerOnlySuffix?: never;
-      showInHeaderOnly: true;
-      showInFooterOnly?: never;
-      afterClick?: () => void;
-      activePath?: string;
-      dropdownOpen?: boolean;
-      setDropdownOpen?: Dispatch<SetStateAction<boolean>>;
-    };
-
-export interface HeaderDropdownLinkProps {
-  text: string;
-  href: string;
-}
-
-const HeaderLink = ({
-  text,
-  href,
-  children,
-  afterClick,
-  activePath,
-  basePath,
-  dropdownOpen,
-  setDropdownOpen,
-}: HeaderLinkProps) => {
-  return (
-    <li className={``}>
-      {children ? (
-        <div className="relative group">
-          <GhostBtn
-            className={`w-fit flex items-center font-semibold transition-smooth hover:text-[#2563EB] ${
-              activePath?.startsWith(basePath) ? 'text-[#2563EB]' : 'text-foreground'
-            }`}
-            onMouseEnter={() => setDropdownOpen?.(true)}
-            onMouseLeave={() => setDropdownOpen?.(false)}>
-            <span>{text}</span>
-            <ChevronDown className="ml-1 h-4 w-4" />
-          </GhostBtn>
-
-          {dropdownOpen && (
-            <div
-              className="absolute top-full left-0 mt-0 w-48 bg-card rounded-lg shadow-medium border border-border py-2 animate-fade-in"
-              onMouseEnter={() => setDropdownOpen?.(true)}
-              onMouseLeave={() => setDropdownOpen?.(false)}>
-              {children.map((link, idx) => (
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="lg:hidden bg-card border-b border-border">
+            <nav className="container mx-auto px-4 py-4 flex flex-col gap-2">
+              {navItems.map(item => (
                 <Link
-                  key={`link-${text}-${idx}`}
-                  href={link.href}
-                  className="block px-4 py-2 hover:bg-secondary transition-smooth">
-                  {link.text}
+                  key={item.label}
+                  href={item.href}
+                  className="flex items-center gap-3 px-4 py-3 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-colors font-medium"
+                  onClick={() => setIsMenuOpen(false)}>
+                  <item.icon className="w-5 h-5" />
+                  {item.label}
                 </Link>
               ))}
-            </div>
-          )}
-        </div>
-      ) : (
-        <GhostBtn
-          className={`w-fit py-0`}
-          wrapClassName={`w-fit`}
-          {...(href && { linkProps: { href } })}
-          onClick={() => {
-            afterClick?.();
-          }}>
-          <div className="w-full lg:w-fit px-0 relative">
-            <p
-              className={`transition-smooth hover:text-[#2563EB] ${
-                activePath === href
-                  ? 'font-semibold text-[#2563EB]'
-                  : 'font-semibold text-foreground'
-              }`}>
-              {text}
-            </p>
-          </div>
-        </GhostBtn>
-      )}
-    </li>
-  );
-};
-
-const MobileHeaderLink = ({ text, href, children, afterClick, activePath }: HeaderLinkProps) => {
-  return (
-    <li className={``}>
-      {children ? (
-        <div className="grid gap-2">
-          <span className="font-medium text-foreground py-2">{text}</span>
-          {children.map(({ href, text }, idx) => (
-            <RegularBtn
-              key={`mob-link-${text}-${idx}`}
-              variant="none"
-              size="icon"
-              linkProps={{ href }}
-              text={text}
-              className={`w-full justify-start px-4 py-2 ${
-                activePath === href ? 'bg-gradient-primary text-white' : 'text-muted-foreground'
-              } hover:bg-[#2563EB]/10`}
-              wrapClassName="w-full"
-              onClick={() => afterClick?.()}
-            />
-          ))}
-        </div>
-      ) : (
-        <RegularBtn
-          variant="none"
-          size="icon"
-          linkProps={{ href }}
-          text={text}
-          className={`w-full justify-start px-4 py-2 ${
-            activePath === href ? 'bg-gradient-primary text-white' : 'text-foreground'
-          } hover:bg-[#2563EB]/10`}
-          wrapClassName="w-full"
-          onClick={() => afterClick?.()}
-        />
-      )}
-    </li>
+              <div className="pt-2 border-t border-border mt-2">
+                <UserMobileMenu onMenuClose={() => setIsMenuOpen(false)} />
+              </div>
+            </nav>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </header>
   );
 };
