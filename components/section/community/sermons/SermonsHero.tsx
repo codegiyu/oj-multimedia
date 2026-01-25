@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 
 export const SermonsHero = () => {
   return (
-    <section className="relative min-h-[50vh] flex items-center overflow-hidden pt-24 pb-12">
+    <section className="relative min-h-[50vh] flex items-center overflow-hidden pt-[12.25rem] pb-12">
       {/* Background */}
       <div className="absolute inset-0 z-0">
         <div className="absolute inset-0 bg-gradient-to-br from-secondary/15 via-primary/10 to-accent/15" />

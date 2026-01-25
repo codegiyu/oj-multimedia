@@ -21,11 +21,11 @@ export function UserMenu() {
   }));
 
   // Initialize session on mount
-  useEffect(() => {
-    if (!user) {
-      actions.initSession();
-    }
-  }, [user, actions]);
+  // useEffect(() => {
+  //   if (!user) {
+  //     actions.initSession();
+  //   }
+  // }, [user, actions]);
 
   // Close dropdown when clicking outside
   useEffect(() => {

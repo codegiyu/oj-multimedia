@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 
 export const MusicHero = () => {
   return (
-    <section className="relative pt-24 pb-16 overflow-hidden">
+    <section className="relative pt-[12.25rem] pb-16 overflow-hidden">
       {/* Background Elements */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-secondary/5" />
       <div className="absolute top-20 right-10 w-64 h-64 bg-primary/10 rounded-full blur-3xl" />

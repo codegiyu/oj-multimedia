@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { ArrowRight, Newspaper } from 'lucide-react';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { NewsCard } from '@/components/cards/NewsCard';
 
@@ -33,9 +34,14 @@ export const NewsSection = ({ articles: newsArticles }: NewsSectionProps) => {
               <p className="text-muted-foreground text-sm">Stay updated with trending news</p>
             </div>
           </div>
-          <Button variant="ghost" className="gap-2 text-muted-foreground hover:text-primary">
-            View All
-            <ArrowRight className="w-4 h-4" />
+          <Button
+            variant="ghost"
+            className="gap-2 text-muted-foreground hover:text-primary"
+            asChild>
+            <Link href="/news">
+              View All
+              <ArrowRight className="w-4 h-4" />
+            </Link>
           </Button>
         </div>
 

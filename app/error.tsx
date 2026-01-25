@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { Btns404Page } from '@/components/general/Btns404Page';
-import { NewLayout } from '@/components/layout/NewLayout';
+import { MainLayout } from '@/components/layout/MainLayout';
 import { SectionContainer } from '@/components/general/SectionContainer';
 
 export default function Error({
@@ -18,7 +18,7 @@ export default function Error({
   }, [error]);
 
   return (
-    <NewLayout>
+    <MainLayout>
       <div className="min-h-screen bg-background flex items-center justify-center px-4">
         <SectionContainer>
           <div className="text-center grid gap-8 mx-auto max-w-2xl">
@@ -48,6 +48,6 @@ export default function Error({
           </div>
         </SectionContainer>
       </div>
-    </NewLayout>
+    </MainLayout>
   );
 }

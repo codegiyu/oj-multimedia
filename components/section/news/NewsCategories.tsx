@@ -1,34 +1,32 @@
 'use client';
 
+import { useRouter, usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useQueryState, parseAsString } from 'nuqs';
-import {
-  Sparkles,
-  Music,
-  Heart,
-  Lightbulb,
-  GraduationCap,
-  Briefcase,
-  Film,
-  Tv,
-} from 'lucide-react';
+import { Sparkles, Lightbulb, GraduationCap, Briefcase, Film, Church, Star } from 'lucide-react';
 
 const categories = [
   { id: 'all', label: 'All Stories', icon: Sparkles },
-  { id: 'entertainment', label: 'Entertainment', icon: Tv },
-  { id: 'music', label: 'Music & Culture', icon: Music },
-  { id: 'lifestyle', label: 'Lifestyle', icon: Heart },
-  { id: 'inspiration', label: 'Inspiration', icon: Lightbulb },
-  { id: 'scholarships', label: 'Scholarships', icon: GraduationCap },
-  { id: 'jobs', label: 'Jobs & Careers', icon: Briefcase },
-  { id: 'movies', label: 'Movies & Reviews', icon: Film },
+  { id: 'christian-celebrity-news', label: 'Christian Celebrity News', icon: Star },
+  { id: 'church-announcements', label: 'Church & Ministry Announcements', icon: Church },
+  { id: 'inspirational-stories', label: 'Inspirational Stories', icon: Lightbulb },
+  { id: 'scholarship-alerts', label: 'Scholarship Alerts', icon: GraduationCap },
+  { id: 'jobs-ngo', label: 'Jobs (NGO / Faith-based)', icon: Briefcase },
+  { id: 'christian-movie-reviews', label: 'Christian Movie Reviews', icon: Film },
 ];
 
 export const NewsCategories = () => {
-  const [activeCategory, setActiveCategory] = useQueryState(
-    'category',
-    parseAsString.withDefault('all')
-  );
+  const router = useRouter();
+  const pathname = usePathname();
+  const [activeCategory] = useQueryState('category', parseAsString.withDefault('all'));
+
+  const handleCategoryChange = (categoryId: string) => {
+    // Use router.push to trigger server-side re-render with new searchParams
+    // nuqs will automatically sync from the URL change
+    const newUrl = categoryId === 'all' ? pathname : `${pathname}?category=${categoryId}`;
+    router.push(newUrl, { scroll: false });
+  };
+
   return (
     <section className="py-6 border-b border-border/50 sticky top-16 bg-background/95 backdrop-blur-md z-40">
       <div className="container mx-auto px-4">
@@ -40,7 +38,7 @@ export const NewsCategories = () => {
             return (
               <motion.button
                 key={category.id}
-                onClick={() => setActiveCategory(category.id)}
+                onClick={() => handleCategoryChange(category.id)}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 className={`

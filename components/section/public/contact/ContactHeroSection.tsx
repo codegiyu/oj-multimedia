@@ -8,7 +8,7 @@ export const ContactHeroSection = () => {
   const { siteLoading } = useSiteStore(state => state);
 
   return (
-    <SectionContainer className="relative overflow-hidden bg-gradient-to-br from-secondary/5 via-background to-primary/5 py-16 md:py-20">
+    <SectionContainer className="relative overflow-hidden bg-gradient-to-br from-secondary/5 via-background to-primary/5 pt-[10.25rem] md:pt-[12.25rem] pb-16 md:pb-20">
       {/* Background Pattern */}
       <div className="absolute inset-0 pattern-overlay pointer-events-none" />
 

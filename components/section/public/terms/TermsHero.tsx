@@ -5,7 +5,7 @@ import { FileText, Scale, BookOpen } from 'lucide-react';
 
 export const TermsHero = () => {
   return (
-    <section className="relative min-h-[40vh] flex items-center overflow-hidden pt-24 pb-12">
+    <section className="relative min-h-[40vh] flex items-center overflow-hidden pt-[12.25rem] pb-12">
       {/* Background */}
       <div className="absolute inset-0 z-0">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/15 via-accent/10 to-secondary/15" />

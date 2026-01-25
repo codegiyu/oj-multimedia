@@ -5,3 +5,6 @@ export { TrendingSidebar } from './TrendingSidebar';
 export { NewsCategories } from './NewsCategories';
 export { NewsHero } from './NewsHero';
 export { VideoNews } from './VideoNews';
+export { VideoNewsPageClient } from './VideoNewsPageClient';
+export { TrendingStoriesPageClient } from './TrendingStoriesPageClient';
+export { FeaturedStoriesPageClient } from './FeaturedStoriesPageClient';
