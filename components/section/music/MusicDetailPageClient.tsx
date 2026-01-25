@@ -35,73 +35,77 @@ export const MusicDetailPageClient = ({ musicItem, relatedSongs }: MusicDetailPa
         <Image src={musicItem.cover} alt={musicItem.title} fill className="object-cover" priority />
         <div className="absolute inset-0 bg-gradient-to-t from-foreground via-foreground/60 to-transparent" />
 
-        {/* Back Button */}
-        <div className="absolute top-6 left-6 z-10">
-          <Link href="/music">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="gap-2 bg-background/80 backdrop-blur-sm text-foreground hover:bg-background">
-              <ArrowLeft className="w-4 h-4" />
-              Back to Music
-            </Button>
-          </Link>
-        </div>
-
-        {/* Action Buttons */}
-        <div className="absolute top-6 right-6 z-10 flex gap-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleShare}
-            className="gap-2 bg-background/80 backdrop-blur-sm text-foreground hover:bg-background">
-            <Share2 className="w-4 h-4" />
-            Share
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="gap-2 bg-background/80 backdrop-blur-sm text-foreground hover:bg-background">
-            <Bookmark className="w-4 h-4" />
-            Save
-          </Button>
-        </div>
-
         {/* Content Overlay */}
-        <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-8 lg:p-12 text-primary-foreground">
-          <div className="max-w-4xl">
-            <span className="inline-flex w-fit px-3 py-1 rounded-full bg-primary text-primary-foreground text-xs font-medium mb-4">
-              {musicItem.category}
-            </span>
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold mb-2">
-              {musicItem.title}
-            </h1>
-            <p className="text-xl md:text-2xl text-primary-foreground/90 mb-4">
-              {musicItem.artist}
-            </p>
-            <div className="flex items-center gap-4 text-sm text-primary-foreground/80 flex-wrap">
-              {musicItem.plays && (
-                <span className="flex items-center gap-1">
-                  <Eye className="w-4 h-4" />
-                  {musicItem.plays}
-                </span>
-              )}
-              {musicItem.duration && (
-                <span className="flex items-center gap-1">
-                  <Clock className="w-4 h-4" />
-                  {musicItem.duration}
-                </span>
-              )}
-              {musicItem.releaseDate && (
-                <span className="flex items-center gap-1">
-                  <Calendar className="w-4 h-4" />
-                  {new Date(musicItem.releaseDate).toLocaleDateString('en-US', {
-                    month: 'long',
-                    day: 'numeric',
-                    year: 'numeric',
-                  })}
-                </span>
-              )}
+        <div className="absolute inset-0">
+          <div className="container h-full flex flex-col justify-between px-6 pt-28 pb-6 md:pb-8 lg:pb-12 text-primary-foreground mx-auto relative">
+            <div className="w-full h-10 relative">
+              {/* Back Button */}
+              <div className="absolute top-0 left-0 z-10">
+                <Link href="/music">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="gap-2 bg-background/80 backdrop-blur-sm text-foreground hover:bg-background">
+                    <ArrowLeft className="w-4 h-4" />
+                    Back to Music
+                  </Button>
+                </Link>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="absolute top-0 right-0 z-10 flex gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleShare}
+                  className="gap-2 bg-background/80 backdrop-blur-sm text-foreground hover:bg-background">
+                  <Share2 className="w-4 h-4" />
+                  Share
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="gap-2 bg-background/80 backdrop-blur-sm text-foreground hover:bg-background">
+                  <Bookmark className="w-4 h-4" />
+                  Save
+                </Button>
+              </div>
+            </div>
+
+            <div className="max-w-4xl">
+              <span className="inline-flex w-fit px-3 py-1 rounded-full bg-primary text-primary-foreground text-xs font-medium mb-4">
+                {musicItem.category}
+              </span>
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold mb-2">
+                {musicItem.title}
+              </h1>
+              <p className="text-xl md:text-2xl text-primary-foreground/90 mb-4">
+                {musicItem.artist}
+              </p>
+              <div className="flex items-center gap-4 text-sm text-primary-foreground/80 flex-wrap">
+                {musicItem.plays && (
+                  <span className="flex items-center gap-1">
+                    <Eye className="w-4 h-4" />
+                    {musicItem.plays}
+                  </span>
+                )}
+                {musicItem.duration && (
+                  <span className="flex items-center gap-1">
+                    <Clock className="w-4 h-4" />
+                    {musicItem.duration}
+                  </span>
+                )}
+                {musicItem.releaseDate && (
+                  <span className="flex items-center gap-1">
+                    <Calendar className="w-4 h-4" />
+                    {new Date(musicItem.releaseDate).toLocaleDateString('en-US', {
+                      month: 'long',
+                      day: 'numeric',
+                      year: 'numeric',
+                    })}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
         </div>

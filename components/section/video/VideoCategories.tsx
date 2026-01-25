@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter, usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useQueryState, parseAsString } from 'nuqs';
 
@@ -15,10 +16,16 @@ const categories = [
 ];
 
 export const VideoCategories = () => {
-  const [activeCategory, setActiveCategory] = useQueryState(
-    'category',
-    parseAsString.withDefault('all')
-  );
+  const router = useRouter();
+  const pathname = usePathname();
+  const [activeCategory] = useQueryState('category', parseAsString.withDefault('all'));
+
+  const handleCategoryChange = (categoryId: string) => {
+    // Use router.push to trigger server-side re-render with new searchParams
+    // nuqs will automatically sync from the URL change
+    const newUrl = categoryId === 'all' ? pathname : `${pathname}?category=${categoryId}`;
+    router.push(newUrl, { scroll: false });
+  };
 
   return (
     <section className="py-6 border-b border-border/50 sticky top-16 bg-background/95 backdrop-blur-sm z-40">
@@ -27,7 +34,7 @@ export const VideoCategories = () => {
           {categories.map(category => (
             <motion.button
               key={category.id}
-              onClick={() => setActiveCategory(category.id)}
+              onClick={() => handleCategoryChange(category.id)}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               className={`

@@ -99,6 +99,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
     rank: 5,
     trend: 'up',
     change: 8,
+    audioUrl: 'https://example.com/audio/african-rhythm.mp3',
   },
   // Afrobeats - Recent Uploads
   {
@@ -110,6 +111,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
     uploadedAt: '3 hours ago',
     genre: 'Afrobeats',
     isRecent: true,
+    audioUrl: 'https://example.com/audio/lagos-nights.mp3',
   },
   {
     id: 4,
@@ -120,6 +122,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
     uploadedAt: '5 hours ago',
     genre: 'Afrobeats',
     isRecent: true,
+    audioUrl: 'https://example.com/audio/dancehall-vibes.mp3',
   },
   // Afrobeats - Featured Artists
   {
@@ -167,6 +170,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
     rank: 6,
     trend: 'up',
     change: 5,
+    audioUrl: 'https://example.com/audio/street-dreams.mp3',
   },
   {
     id: 8,
@@ -183,6 +187,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
     rank: 4,
     trend: 'up',
     change: 10,
+    audioUrl: 'https://example.com/audio/urban-flow.mp3',
   },
   // Hip-Hop - Recent Uploads
   {
@@ -194,6 +199,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
     uploadedAt: '4 hours ago',
     genre: 'Hip-Hop',
     isRecent: true,
+    audioUrl: 'https://example.com/audio/city-lights.mp3',
   },
   {
     id: 10,
@@ -204,6 +210,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
     uploadedAt: '7 hours ago',
     genre: 'Hip-Hop',
     isRecent: true,
+    audioUrl: 'https://example.com/audio/rap-flow.mp3',
   },
   // Hip-Hop - Featured Artists
   {
@@ -251,6 +258,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
     rank: 2,
     trend: 'up',
     change: 8,
+    audioUrl: 'https://example.com/audio/city-lights-pop.mp3',
   },
   {
     id: 14,
@@ -267,6 +275,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
     rank: 7,
     trend: 'up',
     change: 15,
+    audioUrl: 'https://example.com/audio/summer-feels.mp3',
   },
   // Pop - Recent Uploads
   {
@@ -278,6 +287,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
     uploadedAt: '12 hours ago',
     genre: 'Pop',
     isRecent: true,
+    audioUrl: 'https://example.com/audio/golden-hour.mp3',
   },
   {
     id: 16,
@@ -288,6 +298,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
     uploadedAt: '1 day ago',
     genre: 'Pop',
     isRecent: true,
+    audioUrl: 'https://example.com/audio/neon-nights.mp3',
   },
   // Pop - Featured Artists
   {
@@ -335,6 +346,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
     rank: 4,
     trend: 'down',
     change: 3,
+    audioUrl: 'https://example.com/audio/electric-soul.mp3',
   },
   {
     id: 20,
@@ -351,6 +363,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
     rank: 8,
     trend: 'up',
     change: 6,
+    audioUrl: 'https://example.com/audio/heart-soul.mp3',
   },
   // R&B - Recent Uploads
   {
@@ -362,6 +375,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
     uploadedAt: '1 day ago',
     genre: 'R&B',
     isRecent: true,
+    audioUrl: 'https://example.com/audio/smooth-operator.mp3',
   },
   {
     id: 22,
@@ -372,6 +386,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
     uploadedAt: '2 days ago',
     genre: 'R&B',
     isRecent: true,
+    audioUrl: 'https://example.com/audio/midnight-love.mp3',
   },
   // R&B - Featured Artists
   {
@@ -419,6 +434,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
     rank: 3,
     trend: 'same',
     change: 0,
+    audioUrl: 'https://example.com/audio/praise-anthem.mp3',
   },
   {
     id: 26,
@@ -435,6 +451,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
     rank: 9,
     trend: 'up',
     change: 4,
+    audioUrl: 'https://example.com/audio/heavenly-sound.mp3',
   },
   // Gospel - Recent Uploads
   {
@@ -446,6 +463,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
     uploadedAt: '6 hours ago',
     genre: 'Gospel',
     isRecent: true,
+    audioUrl: 'https://example.com/audio/worship-song.mp3',
   },
   {
     id: 28,
@@ -456,6 +474,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
     uploadedAt: '9 hours ago',
     genre: 'Gospel',
     isRecent: true,
+    audioUrl: 'https://example.com/audio/testimony.mp3',
   },
   // Gospel - Featured Artists
   {
@@ -503,6 +522,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
     rank: 3,
     trend: 'same',
     change: 0,
+    audioUrl: 'https://example.com/audio/midnight-dreams.mp3',
   },
   {
     id: 32,
@@ -519,6 +539,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
     rank: 10,
     trend: 'up',
     change: 7,
+    audioUrl: 'https://example.com/audio/peaceful-mind.mp3',
   },
   // Instrumental - Recent Uploads
   {
@@ -530,6 +551,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
     uploadedAt: '6 hours ago',
     genre: 'Instrumental',
     isRecent: true,
+    audioUrl: 'https://example.com/audio/ocean-waves.mp3',
   },
   {
     id: 34,
@@ -540,6 +562,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
     uploadedAt: '10 hours ago',
     genre: 'Instrumental',
     isRecent: true,
+    audioUrl: 'https://example.com/audio/meditation-flow.mp3',
   },
   // Instrumental - Featured Artists
   {
@@ -587,6 +610,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
     rank: 7,
     trend: 'down',
     change: 2,
+    audioUrl: 'https://example.com/audio/morning-light.mp3',
   },
   {
     id: 38,
@@ -603,6 +627,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
     rank: 8,
     trend: 'up',
     change: 20,
+    audioUrl: 'https://example.com/audio/guitar-serenade.mp3',
   },
   // Acoustic - Recent Uploads
   {
@@ -614,6 +639,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
     uploadedAt: '8 hours ago',
     genre: 'Acoustic',
     isRecent: true,
+    audioUrl: 'https://example.com/audio/rise-up.mp3',
   },
   {
     id: 40,
@@ -624,6 +650,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
     uploadedAt: '11 hours ago',
     genre: 'Acoustic',
     isRecent: true,
+    audioUrl: 'https://example.com/audio/fingerstyle.mp3',
   },
   // Acoustic - Featured Artists
   {
@@ -671,6 +698,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
     rank: 2,
     trend: 'up',
     change: 9,
+    audioUrl: 'https://example.com/audio/holy-spirit.mp3',
   },
   {
     id: 44,
@@ -687,6 +715,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
     rank: 5,
     trend: 'up',
     change: 11,
+    audioUrl: 'https://example.com/audio/hallelujah.mp3',
   },
   // Worship - Recent Uploads
   {
@@ -698,6 +727,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
     uploadedAt: '2 hours ago',
     genre: 'Worship',
     isRecent: true,
+    audioUrl: 'https://example.com/audio/glory-song.mp3',
   },
   {
     id: 46,
@@ -708,6 +738,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
     uploadedAt: '5 hours ago',
     genre: 'Worship',
     isRecent: true,
+    audioUrl: 'https://example.com/audio/adoration.mp3',
   },
   // Worship - Featured Artists
   {
@@ -755,6 +786,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
     rank: 9,
     trend: 'same',
     change: 0,
+    audioUrl: 'https://example.com/audio/inspiration.mp3',
   },
   {
     id: 50,
@@ -771,6 +803,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
     rank: 10,
     trend: 'up',
     change: 3,
+    audioUrl: 'https://example.com/audio/poetry-flow.mp3',
   },
   // Spoken Word - Recent Uploads
   {
@@ -782,6 +815,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
     uploadedAt: '1 day ago',
     genre: 'Spoken Word',
     isRecent: true,
+    audioUrl: 'https://example.com/audio/motivational-speech.mp3',
   },
   {
     id: 52,
@@ -792,6 +826,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
     uploadedAt: '2 days ago',
     genre: 'Spoken Word',
     isRecent: true,
+    audioUrl: 'https://example.com/audio/faith-declaration.mp3',
   },
   // Spoken Word - Featured Artists
   {
