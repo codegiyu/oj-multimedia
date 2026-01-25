@@ -2,6 +2,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, X, Music, Newspaper, Video, Users, ArrowRight } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -63,6 +64,19 @@ const typeColors: Record<string, string> = {
   community: 'text-muted-foreground',
 };
 
+function getDetailHref(item: SearchItem): string | null {
+  switch (item.type) {
+    case 'music':
+      return `/music/${item.id}`;
+    case 'news':
+      return `/news/story/${item.id}`;
+    case 'video':
+      return `/videos/${item.id}`;
+    default:
+      return null;
+  }
+}
+
 export const SearchModal = ({ isOpen, onClose }: SearchModalProps) => {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchItem[]>([]);
@@ -103,11 +117,6 @@ export const SearchModal = ({ isOpen, onClose }: SearchModalProps) => {
       router.push(`/search?q=${encodeURIComponent(query)}`);
       onClose();
     }
-  };
-
-  const handleResultClick = (result: SearchItem) => {
-    router.push(`/search?q=${encodeURIComponent(result.title)}`);
-    onClose();
   };
 
   // Debounced search with 500ms delay
@@ -187,14 +196,13 @@ export const SearchModal = ({ isOpen, onClose }: SearchModalProps) => {
                     {results.map((result, index) => {
                       const Icon = typeIcons[result.type];
                       const colorClass = typeColors[result.type];
+                      const href = getDetailHref(result);
 
-                      return (
-                        <motion.button
-                          key={`${result.type}-${result.id}`}
+                      const row = (
+                        <motion.div
                           initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: index * 0.05 }}
-                          onClick={() => handleResultClick(result)}
                           className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-muted transition-colors text-left">
                           <div className={`p-2 rounded-lg bg-muted ${colorClass}`}>
                             <Icon className="w-4 h-4" />
@@ -208,7 +216,19 @@ export const SearchModal = ({ isOpen, onClose }: SearchModalProps) => {
                           <span className="text-xs text-muted-foreground capitalize px-2 py-1 bg-muted rounded-full">
                             {result.type}
                           </span>
-                        </motion.button>
+                        </motion.div>
+                      );
+
+                      return href ? (
+                        <Link
+                          key={`${result.type}-${result.id}`}
+                          href={href}
+                          onClick={onClose}
+                          className="block">
+                          {row}
+                        </Link>
+                      ) : (
+                        <div key={`${result.type}-${result.id}`}>{row}</div>
                       );
                     })}
                   </div>

@@ -55,7 +55,7 @@ export default async function MusicDetailPage({ params }: MusicDetailPageProps) 
   }
 
   // Get related songs
-  const relatedSongs = getRelatedMusicItems(id, musicItem.category, 6);
+  const relatedSongs = getRelatedMusicItems(id, musicItem.category, 3);
 
   return (
     <MainLayout>
