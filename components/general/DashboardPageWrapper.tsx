@@ -1,3 +1,5 @@
+'use client';
+
 import { PropsWithChildren, ReactNode } from 'react';
 import { PageHeader, PageHeaderProps } from './PageHeader';
 import { cn } from '@/lib/utils';

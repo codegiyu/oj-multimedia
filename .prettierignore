@@ -21,3 +21,5 @@ tsconfig.json
 # CSS files
 app/globals.css
 public/fonts/**/*.css
+
+*.json

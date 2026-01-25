@@ -1,3 +1,5 @@
+'use client';
+
 import { LucideIconComp } from '@/lib/types/general';
 import * as LucideIcons from 'lucide-react';
 import { SVGProps } from 'react';

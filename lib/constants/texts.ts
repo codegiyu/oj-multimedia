@@ -1,5 +1,3 @@
-import { HeaderLinkProps } from '@/components/layout/Header';
-
 const liveUrl = process.env.live_url || 'https://example.com';
 
 export const SEO_DETAILS = {
@@ -15,8 +13,8 @@ export const SEO_DETAILS = {
   alternates: {
     canonical: liveUrl,
   },
-  image: `${liveUrl}/og-image.png`,
-  icons: `/favicon.ico`,
+  image: `https://pub-c807427a809441a09d33cb2015370549.r2.dev/favicon.png`,
+  icons: `/favicon.png`,
   robots: {
     index: true,
     follow: true,
@@ -27,7 +25,7 @@ export const SEO_DETAILS = {
       'max-video-preview': -1,
     },
   },
-  authors: [{ name: 'OHEJUIRA-Multimedia', url: liveUrl }],
+  authors: [{ name: 'Edward-Precious Omegbu', url: 'https://portfolio-codegigu.vercel.app' }],
   keywords: [
     'OHEJUIRA',
     'OHEJUIRA-Multimedia',
@@ -56,15 +54,3 @@ export const SEO_DETAILS = {
   classification:
     'Dynamic multimedia platform featuring music categories, charts, recent uploads, and download metrics. Serving humanity through innovation in entertainment and technology.',
 };
-
-export const NAV_LINKS: HeaderLinkProps[] = [
-  { text: 'Home', href: '/' },
-  { text: 'Music', href: '/music' },
-  { text: 'Sermons', href: '/sermons' },
-  { text: 'Devotionals', href: '/devotionals' },
-  { text: 'News', href: '/news' },
-  { text: 'Resources', href: '/resources' },
-  { text: 'Community', href: '/community' },
-  { text: 'Marketplace', href: '/marketplace' },
-  { text: 'Contact', href: '/contact' },
-];

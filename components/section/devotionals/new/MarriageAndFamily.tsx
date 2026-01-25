@@ -1,3 +1,5 @@
+'use client';
+
 import { Heart, Users, Baby, Home, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';

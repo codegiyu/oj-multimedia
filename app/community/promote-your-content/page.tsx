@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
-import { PromoteYourContentClient } from '@/components/section/promote/new/PromoteYourContentClient';
+import { MainLayout } from '@/components/layout/MainLayout';
+import { PromoteYourContentClient } from '@/components/section/community/promote/PromoteYourContentClient';
 
 export const metadata: Metadata = {
   title: 'Promote Your Content - Reach Your Audience',
@@ -8,5 +9,9 @@ export const metadata: Metadata = {
 };
 
 export default function PromoteYourContentPage() {
-  return <PromoteYourContentClient />;
+  return (
+    <MainLayout>
+      <PromoteYourContentClient />
+    </MainLayout>
+  );
 }

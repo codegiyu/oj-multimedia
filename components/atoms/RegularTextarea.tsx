@@ -1,3 +1,5 @@
+'use client';
+
 import { cn } from '@/lib/utils';
 import { Textarea, type TextareaProps } from '../ui/textarea';
 import { FocusEvent, ReactNode } from 'react';

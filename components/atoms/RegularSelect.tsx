@@ -1,3 +1,5 @@
+'use client';
+
 import { type SelectOption } from '@/lib/types/general';
 import {
   Select,

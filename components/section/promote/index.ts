@@ -1,1 +1,0 @@
-export { PromotePageClient } from './PromotePageClient';

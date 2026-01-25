@@ -1,3 +1,5 @@
+'use client';
+
 import { Play, Download, TrendingUp, Clock, Headphones } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
