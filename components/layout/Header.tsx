@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { UserMenu, UserMobileMenu } from './UserMenu';
 import { Logo } from '@/components/atoms/Logo';
+import { SearchModal } from '../section/public/search/SearchModal';
 
 const navItems = [
   { label: 'Music', icon: Music, href: '/music' },
@@ -18,6 +19,7 @@ const navItems = [
 
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-card/80 backdrop-blur-md border-b border-border">
@@ -41,7 +43,11 @@ export const Header = () => {
 
           {/* Actions */}
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" className="rounded-full">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="rounded-full"
+              onClick={() => setIsSearchOpen(true)}>
               <Search className="w-5 h-5" />
             </Button>
             <div className="hidden lg:block">
@@ -84,6 +90,9 @@ export const Header = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Search Modal */}
+      <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
     </header>
   );
 };
