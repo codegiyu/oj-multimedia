@@ -4,11 +4,33 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, X, Music, Newspaper, Video, Users, ArrowRight } from 'lucide-react';
+import {
+  Search,
+  X,
+  Music,
+  Newspaper,
+  Video,
+  Users,
+  ArrowRight,
+  BookOpen,
+  Mic,
+  Heart,
+  HandHeart,
+  HelpCircle,
+  BarChart3,
+  FolderOpen,
+} from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useRouter } from 'next/navigation';
 import { MUSIC_ITEMS, type MusicItem } from '@/lib/constants/music';
 import { NEWS_ITEMS, type NewsItem } from '@/lib/constants/news';
+import { DEVOTIONALS_ITEMS } from '@/lib/constants/community/devotionals';
+import { SERMONS_ITEMS } from '@/lib/constants/community/sermons';
+import { TESTIMONIES_ITEMS } from '@/lib/constants/community/testimonies';
+import { PRAYER_REQUESTS_ITEMS } from '@/lib/constants/community/prayer-requests';
+import { QUESTIONS_ITEMS } from '@/lib/constants/community/questions';
+import { POLLS_ITEMS } from '@/lib/constants/community/polls';
+import { RESOURCES_ITEMS } from '@/lib/constants/community/resources';
 
 interface SearchModalProps {
   isOpen: boolean;
@@ -22,6 +44,8 @@ interface SearchItem {
   artist?: string;
   category?: string;
   creator?: string;
+  pastor?: string;
+  author?: string;
 }
 
 // Transform music items to search items
@@ -46,15 +70,93 @@ const transformNewsItems = (items: NewsItem[]): SearchItem[] => {
   }));
 };
 
-// TODO: Add video and community transform functions when constants are available
-// const transformVideoItems = (items: VideoItem[]): SearchItem[] => { ... }
-// const transformCommunityItems = (items: CommunityItem[]): SearchItem[] => { ... }
+// Transform devotional items to search items
+const transformDevotionalItems = (items: typeof DEVOTIONALS_ITEMS): SearchItem[] => {
+  return items.map(item => ({
+    id: item.id,
+    title: item.title,
+    type: 'devotional',
+    category: item.category,
+    creator: item.author,
+  }));
+};
+
+// Transform sermon items to search items
+const transformSermonItems = (items: typeof SERMONS_ITEMS): SearchItem[] => {
+  return items.map(item => ({
+    id: item.id,
+    title: item.title,
+    type: 'sermon',
+    category: item.category || item.topic,
+    pastor: item.pastor,
+  }));
+};
+
+// Transform testimony items to search items
+const transformTestimonyItems = (items: typeof TESTIMONIES_ITEMS): SearchItem[] => {
+  return items.map(item => ({
+    id: item.id,
+    title: item.title || item.content.substring(0, 50),
+    type: 'testimony',
+    category: item.category,
+    author: item.author,
+  }));
+};
+
+// Transform prayer request items to search items
+const transformPrayerRequestItems = (items: typeof PRAYER_REQUESTS_ITEMS): SearchItem[] => {
+  return items.map(item => ({
+    id: item.id,
+    title: item.title,
+    type: 'prayer-request',
+    category: item.category,
+    author: item.author,
+  }));
+};
+
+// Transform question items to search items
+const transformQuestionItems = (items: typeof QUESTIONS_ITEMS): SearchItem[] => {
+  return items.map(item => ({
+    id: item.id,
+    title: item.question,
+    type: 'question',
+    category: item.category,
+    author: item.author,
+  }));
+};
+
+// Transform poll items to search items
+const transformPollItems = (items: typeof POLLS_ITEMS): SearchItem[] => {
+  return items.map(item => ({
+    id: item.id,
+    title: item.question,
+    type: 'poll',
+    category: item.category,
+  }));
+};
+
+// Transform resource items to search items
+const transformResourceItems = (items: typeof RESOURCES_ITEMS): SearchItem[] => {
+  return items.map(item => ({
+    id: item.id,
+    title: item.title,
+    type: 'resource',
+    category: item.category || item.genre || item.templateType || item.productCategory,
+  }));
+};
 
 const typeIcons: Record<string, typeof Music> = {
   music: Music,
   news: Newspaper,
   video: Video,
   community: Users,
+  devotional: BookOpen,
+  sermon: Mic,
+  testimony: Heart,
+  'prayer-request': HandHeart,
+  question: HelpCircle,
+  poll: BarChart3,
+  resource: FolderOpen,
 };
 
 const typeColors: Record<string, string> = {
@@ -62,6 +164,13 @@ const typeColors: Record<string, string> = {
   news: 'text-accent',
   video: 'text-secondary',
   community: 'text-muted-foreground',
+  devotional: 'text-blue-500',
+  sermon: 'text-purple-500',
+  testimony: 'text-pink-500',
+  'prayer-request': 'text-red-500',
+  question: 'text-orange-500',
+  poll: 'text-green-500',
+  resource: 'text-yellow-500',
 };
 
 function getDetailHref(item: SearchItem): string | null {
@@ -72,6 +181,20 @@ function getDetailHref(item: SearchItem): string | null {
       return `/news/story/${item.id}`;
     case 'video':
       return `/videos/${item.id}`;
+    case 'devotional':
+      return `/community/devotionals/${item.id}`;
+    case 'sermon':
+      return `/community/sermons/${item.id}`;
+    case 'testimony':
+      return `/community/testimonies/${item.id}`;
+    case 'prayer-request':
+      return `/community/prayer-requests/${item.id}`;
+    case 'question':
+      return `/community/ask-a-pastor/${item.id}`;
+    case 'poll':
+      return `/community/polls-and-voting/${item.id}`;
+    case 'resource':
+      return `/community/resources`;
     default:
       return null;
   }
@@ -95,10 +218,13 @@ export const SearchModal = ({ isOpen, onClose }: SearchModalProps) => {
     const allContent: SearchItem[] = [
       ...transformMusicItems(MUSIC_ITEMS),
       ...transformNewsItems(NEWS_ITEMS),
-      // TODO: Add when video constants are available
-      // ...transformVideoItems(VIDEO_ITEMS),
-      // TODO: Add when community constants are available
-      // ...transformCommunityItems(COMMUNITY_ITEMS),
+      ...transformDevotionalItems(DEVOTIONALS_ITEMS),
+      ...transformSermonItems(SERMONS_ITEMS),
+      ...transformTestimonyItems(TESTIMONIES_ITEMS),
+      ...transformPrayerRequestItems(PRAYER_REQUESTS_ITEMS),
+      ...transformQuestionItems(QUESTIONS_ITEMS),
+      ...transformPollItems(POLLS_ITEMS),
+      ...transformResourceItems(RESOURCES_ITEMS),
     ];
 
     const filtered = allContent.filter(
@@ -106,7 +232,9 @@ export const SearchModal = ({ isOpen, onClose }: SearchModalProps) => {
         item.title.toLowerCase().includes(lowerQuery) ||
         (item.artist && item.artist.toLowerCase().includes(lowerQuery)) ||
         (item.category && item.category.toLowerCase().includes(lowerQuery)) ||
-        (item.creator && item.creator.toLowerCase().includes(lowerQuery))
+        (item.creator && item.creator.toLowerCase().includes(lowerQuery)) ||
+        (item.pastor && item.pastor.toLowerCase().includes(lowerQuery)) ||
+        (item.author && item.author.toLowerCase().includes(lowerQuery))
     );
 
     setResults(filtered.slice(0, 8));
@@ -210,7 +338,11 @@ export const SearchModal = ({ isOpen, onClose }: SearchModalProps) => {
                           <div className="flex-1 min-w-0">
                             <p className="font-medium text-foreground truncate">{result.title}</p>
                             <p className="text-sm text-muted-foreground truncate">
-                              {result.artist || result.category || result.creator}
+                              {result.artist ||
+                                result.pastor ||
+                                result.author ||
+                                result.category ||
+                                result.creator}
                             </p>
                           </div>
                           <span className="text-xs text-muted-foreground capitalize px-2 py-1 bg-muted rounded-full">

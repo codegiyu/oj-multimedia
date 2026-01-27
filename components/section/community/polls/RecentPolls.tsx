@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { BarChart3, CheckCircle, Lock } from 'lucide-react';
+import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
 import type { Poll } from './PollsPageClient';
 
@@ -43,55 +44,57 @@ export const RecentPolls = ({ polls }: RecentPollsProps) => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}>
-              <Card className="card-interactive">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2">
-                      <Lock className="w-4 h-4 text-muted-foreground" />
-                      <span className="px-2 py-1 bg-muted text-muted-foreground text-xs font-medium rounded-full">
-                        Closed
-                      </span>
-                    </div>
-                    <span className="text-xs text-muted-foreground">{poll.timeAgo}</span>
-                  </div>
-
-                  <h3 className="font-bold text-foreground mb-4 line-clamp-2">{poll.question}</h3>
-
-                  <div className="space-y-3 mb-4">
-                    {poll.options.map(option => (
-                      <div key={option.id} className="space-y-1">
-                        <div className="flex items-center justify-between text-xs">
-                          <span className="text-foreground">{option.text}</span>
-                          <span className="text-muted-foreground">{option.percentage}%</span>
-                        </div>
-                        <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
-                          <div
-                            className="h-full bg-gradient-to-r from-secondary to-secondary/70 rounded-full"
-                            style={{ width: `${option.percentage}%` }}
-                          />
-                        </div>
+              <Link href={`/community/polls-and-voting/${poll.id}`}>
+                <Card className="card-interactive">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-2">
+                        <Lock className="w-4 h-4 text-muted-foreground" />
+                        <span className="px-2 py-1 bg-muted text-muted-foreground text-xs font-medium rounded-full">
+                          Closed
+                        </span>
                       </div>
-                    ))}
-                  </div>
-
-                  <div className="pt-4 border-t border-border">
-                    <div className="flex items-center justify-between text-sm">
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        <CheckCircle className="w-4 h-4" />
-                        <span>{poll.totalVotes} votes</span>
-                      </div>
-                      {winningOption && (
-                        <div className="text-xs">
-                          <span className="text-muted-foreground">Winner: </span>
-                          <span className="font-semibold text-foreground">
-                            {winningOption.text}
-                          </span>
-                        </div>
-                      )}
+                      <span className="text-xs text-muted-foreground">{poll.timeAgo}</span>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
+
+                    <h3 className="font-bold text-foreground mb-4 line-clamp-2">{poll.question}</h3>
+
+                    <div className="space-y-3 mb-4">
+                      {poll.options.map(option => (
+                        <div key={option.id} className="space-y-1">
+                          <div className="flex items-center justify-between text-xs">
+                            <span className="text-foreground">{option.text}</span>
+                            <span className="text-muted-foreground">{option.percentage}%</span>
+                          </div>
+                          <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
+                            <div
+                              className="h-full bg-gradient-to-r from-secondary to-secondary/70 rounded-full"
+                              style={{ width: `${option.percentage}%` }}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="pt-4 border-t border-border">
+                      <div className="flex items-center justify-between text-sm">
+                        <div className="flex items-center gap-2 text-muted-foreground">
+                          <CheckCircle className="w-4 h-4" />
+                          <span>{poll.totalVotes} votes</span>
+                        </div>
+                        {winningOption && (
+                          <div className="text-xs">
+                            <span className="text-muted-foreground">Winner: </span>
+                            <span className="font-semibold text-foreground">
+                              {winningOption.text}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
             </motion.div>
           );
         })}

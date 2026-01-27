@@ -2,8 +2,11 @@
 
 import { motion } from 'framer-motion';
 import { Users, Mic, ExternalLink, ArrowRight } from 'lucide-react';
+import Link from 'next/link';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { toast } from '@/components/atoms/Toast';
 import type { Pastor } from './SermonsPageClient';
 
 interface PastorSpotlightSectionProps {
@@ -11,6 +14,30 @@ interface PastorSpotlightSectionProps {
 }
 
 export const PastorSpotlightSection = ({ pastors }: PastorSpotlightSectionProps) => {
+  const [followedPastors, setFollowedPastors] = useState<Set<number>>(new Set());
+
+  const handleFollow = (pastorId: number, pastorName: string) => {
+    setFollowedPastors(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(pastorId)) {
+        newSet.delete(pastorId);
+        toast({
+          title: 'Unfollowed',
+          description: `You've unfollowed ${pastorName}`,
+          variant: 'default',
+        });
+      } else {
+        newSet.add(pastorId);
+        toast({
+          title: 'Following!',
+          description: `You're now following ${pastorName}. You'll be notified of new sermons.`,
+          variant: 'success',
+        });
+      }
+      return newSet;
+    });
+  };
+
   return (
     <section className="py-12">
       <div className="flex items-center justify-between mb-8">
@@ -25,9 +52,11 @@ export const PastorSpotlightSection = ({ pastors }: PastorSpotlightSectionProps)
             </p>
           </div>
         </div>
-        <Button variant="ghost" className="gap-2 text-secondary">
-          View All Pastors
-          <ArrowRight className="w-4 h-4" />
+        <Button variant="ghost" className="gap-2 text-secondary" asChild>
+          <Link href="/community/sermons">
+            View All Pastors
+            <ArrowRight className="w-4 h-4" />
+          </Link>
         </Button>
       </div>
 
@@ -80,10 +109,24 @@ export const PastorSpotlightSection = ({ pastors }: PastorSpotlightSectionProps)
               </div>
 
               <div className="flex gap-2">
-                <Button size="sm" className="flex-1">
-                  Follow
+                <Button
+                  size="sm"
+                  className="flex-1"
+                  variant={followedPastors.has(pastor.id) ? 'outline' : 'default'}
+                  onClick={() => handleFollow(pastor.id, pastor.name)}>
+                  {followedPastors.has(pastor.id) ? 'Following' : 'Follow'}
                 </Button>
-                <Button size="sm" variant="outline">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    // In a real app, this would navigate to pastor's profile or sermons
+                    toast({
+                      title: 'View Pastor',
+                      description: `Viewing sermons by ${pastor.name}`,
+                      variant: 'default',
+                    });
+                  }}>
                   <ExternalLink className="w-4 h-4" />
                 </Button>
               </div>

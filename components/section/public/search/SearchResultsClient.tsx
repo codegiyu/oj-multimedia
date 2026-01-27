@@ -13,16 +13,31 @@ export const SearchResultsClient = ({ results }: SearchResultsClientProps) => {
   const [query] = useQueryState('q', parseAsString.withDefault(''));
   const [activeFilter, setActiveFilter] = useState('all');
 
+  // Community-related types
+  const communityTypes = [
+    'devotional',
+    'sermon',
+    'testimony',
+    'prayer-request',
+    'question',
+    'poll',
+    'resource',
+  ];
+
   // Filter results by active filter
   const filteredResults =
-    activeFilter === 'all' ? results : results.filter(item => item.type === activeFilter);
+    activeFilter === 'all'
+      ? results
+      : activeFilter === 'community'
+        ? results.filter(item => communityTypes.includes(item.type))
+        : results.filter(item => item.type === activeFilter);
 
   // Calculate results by type
   const resultsByType = [
     { value: 'music', count: results.filter(r => r.type === 'music').length },
     { value: 'news', count: results.filter(r => r.type === 'news').length },
     { value: 'video', count: results.filter(r => r.type === 'video').length },
-    { value: 'community', count: results.filter(r => r.type === 'community').length },
+    { value: 'community', count: results.filter(r => communityTypes.includes(r.type)).length },
   ];
 
   return (

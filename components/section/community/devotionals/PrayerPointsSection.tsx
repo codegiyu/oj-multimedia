@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { Heart, CheckCircle, Clock, ArrowRight, Bookmark } from 'lucide-react';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import type { PrayerPoint } from './DevotionalsPageClient';
@@ -23,9 +24,11 @@ export const PrayerPointsSection = ({ prayerPoints }: PrayerPointsSectionProps) 
             <p className="text-muted-foreground text-sm">Structured prayers for every need</p>
           </div>
         </div>
-        <Button variant="ghost" className="gap-2 text-accent">
-          View All
-          <ArrowRight className="w-4 h-4" />
+        <Button variant="ghost" className="gap-2 text-accent" asChild>
+          <Link href="/community/devotionals">
+            View All
+            <ArrowRight className="w-4 h-4" />
+          </Link>
         </Button>
       </div>
 
@@ -39,37 +42,39 @@ export const PrayerPointsSection = ({ prayerPoints }: PrayerPointsSectionProps) 
             transition={{ delay: index * 0.1 }}
             whileHover={{ y: -4 }}
             className="bg-card rounded-2xl p-5 shadow-sm border border-border/50 hover:shadow-md transition-all cursor-pointer group">
-            <div className="flex items-start justify-between mb-3">
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-2">
-                  <Badge variant="secondary" className="text-xs">
-                    {prayer.category}
-                  </Badge>
-                  <Bookmark className="w-4 h-4 text-muted-foreground" />
+            <Link href={`/community/devotionals/${prayer.id}`}>
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Badge variant="secondary" className="text-xs">
+                      {prayer.category}
+                    </Badge>
+                    <Bookmark className="w-4 h-4 text-muted-foreground" />
+                  </div>
+                  <h3 className="font-semibold text-lg mb-1 group-hover:text-accent transition-colors">
+                    {prayer.title}
+                  </h3>
+                  <p className="text-sm text-primary font-medium">{prayer.verse}</p>
                 </div>
-                <h3 className="font-semibold text-lg mb-1 group-hover:text-accent transition-colors">
-                  {prayer.title}
-                </h3>
-                <p className="text-sm text-primary font-medium">{prayer.verse}</p>
               </div>
-            </div>
 
-            <div className="flex items-center gap-3 text-xs text-muted-foreground mb-4">
-              <span className="flex items-center gap-1">
-                <CheckCircle className="w-3 h-3" />
-                {prayer.points} points
-              </span>
-              <span className="flex items-center gap-1">
-                <Clock className="w-3 h-3" />
-                {prayer.readingTime}
-              </span>
-            </div>
+              <div className="flex items-center gap-3 text-xs text-muted-foreground mb-4">
+                <span className="flex items-center gap-1">
+                  <CheckCircle className="w-3 h-3" />
+                  {prayer.points} points
+                </span>
+                <span className="flex items-center gap-1">
+                  <Clock className="w-3 h-3" />
+                  {prayer.readingTime}
+                </span>
+              </div>
 
-            <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{prayer.excerpt}</p>
+              <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{prayer.excerpt}</p>
 
-            <Button variant="outline" size="sm" className="w-full">
-              Read Full Prayer
-            </Button>
+              <Button variant="outline" size="sm" className="w-full" asChild>
+                <Link href={`/community/devotionals/${prayer.id}`}>Read Full Prayer</Link>
+              </Button>
+            </Link>
           </motion.div>
         ))}
       </div>

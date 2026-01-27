@@ -53,13 +53,13 @@ export const MusicHero = () => {
               </Link>
             </Button>
             <Button variant="hero-outline" size="lg" className="gap-2" asChild>
-              <Link href="/music/upload">
+              <Link href="/community/promote-your-content">
                 <Upload className="w-5 h-5" />
                 Upload Your Song
               </Link>
             </Button>
             <Button variant="hero-outline" size="lg" className="gap-2" asChild>
-              <Link href="/music/submit-beats">
+              <Link href="/community/promote-your-content">
                 <Music className="w-5 h-5" />
                 Submit Beats
               </Link>

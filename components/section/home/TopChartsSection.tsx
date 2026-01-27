@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { Trophy, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 import { ChartCard } from '@/components/cards/ChartCard';
 
 export interface ChartItem {
@@ -49,8 +50,8 @@ export const TopChartsSection = ({ chartData, risingArtists }: TopChartsSectionP
                   <p className="text-sm text-muted-foreground">This Week</p>
                 </div>
               </div>
-              <Button variant="ghost" size="sm">
-                See All
+              <Button variant="ghost" size="sm" asChild>
+                <Link href="/music/top-charts">See All</Link>
               </Button>
             </div>
 
@@ -78,17 +79,17 @@ export const TopChartsSection = ({ chartData, risingArtists }: TopChartsSectionP
                   <p className="text-sm text-muted-foreground">New Talents</p>
                 </div>
               </div>
-              <Button variant="ghost" size="sm">
-                See All
+              <Button variant="ghost" size="sm" asChild>
+                <Link href="/music/artists">See All</Link>
               </Button>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               {risingArtists.map((artist, index) => (
-                <motion.div
-                  key={index}
-                  whileHover={{ y: -4 }}
-                  className="group p-4 rounded-2xl bg-muted/50 hover:bg-muted transition-colors cursor-pointer">
+                <Link key={index} href="/music/artists">
+                  <motion.div
+                    whileHover={{ y: -4 }}
+                    className="group p-4 rounded-2xl bg-muted/50 hover:bg-muted transition-colors cursor-pointer">
                   <div className="w-16 h-16 rounded-full overflow-hidden mx-auto mb-3">
                     <img
                       src={artist.image}
@@ -103,7 +104,8 @@ export const TopChartsSection = ({ chartData, risingArtists }: TopChartsSectionP
                   <p className="text-xs text-center mt-1 text-primary font-medium">
                     {artist.followers} followers
                   </p>
-                </motion.div>
+                  </motion.div>
+                </Link>
               ))}
             </div>
           </motion.div>

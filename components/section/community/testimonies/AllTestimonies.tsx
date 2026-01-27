@@ -1,10 +1,11 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Heart, MessageSquare, Quote, Filter } from 'lucide-react';
+import { Heart, MessageSquare, Quote, Filter, ArrowRight } from 'lucide-react';
+import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { Testimony } from './TestimoniesPageClient';
 
 interface AllTestimoniesProps {
@@ -25,11 +26,32 @@ const categories = [
 
 export const AllTestimonies = ({ testimonies }: AllTestimoniesProps) => {
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [displayedItems, setDisplayedItems] = useState(12);
+  const [isLoading, setIsLoading] = useState(false);
 
   const filteredTestimonies =
     selectedCategory === 'All'
       ? testimonies
       : testimonies.filter(t => t.category === selectedCategory);
+
+  // Reset displayed items when category changes
+  useEffect(() => {
+    // Use setTimeout to avoid synchronous setState in effect
+    const timer = setTimeout(() => {
+      setDisplayedItems(12);
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [selectedCategory]);
+
+  const loadMoreItems = async () => {
+    setIsLoading(true);
+    await new Promise(resolve => setTimeout(resolve, 800));
+    setDisplayedItems(prev => Math.min(prev + 12, filteredTestimonies.length));
+    setIsLoading(false);
+  };
+
+  const hasMore = displayedItems < filteredTestimonies.length;
+  const itemsToShow = filteredTestimonies.slice(0, displayedItems);
 
   return (
     <section className="py-12">
@@ -66,7 +88,7 @@ export const AllTestimonies = ({ testimonies }: AllTestimoniesProps) => {
 
       {/* Testimonies Grid */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredTestimonies.map((testimony, index) => (
+        {itemsToShow.map((testimony, index) => (
           <motion.div
             key={testimony.id}
             initial={{ opacity: 0, y: 20 }}
@@ -74,51 +96,74 @@ export const AllTestimonies = ({ testimonies }: AllTestimoniesProps) => {
             viewport={{ once: true }}
             transition={{ delay: index * 0.05 }}
             whileHover={{ y: -4 }}>
-            <Card className="card-interactive h-full">
-              <CardContent className="p-6">
-                <div className="flex items-start justify-between mb-4">
-                  <Quote className="w-6 h-6 text-primary/20 shrink-0" />
-                  {testimony.category && (
-                    <span className="px-2 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full">
-                      {testimony.category}
-                    </span>
-                  )}
-                </div>
-                <p className="text-muted-foreground mb-6 line-clamp-4">{testimony.content}</p>
+            <Link href={`/community/testimonies/${testimony.id}`}>
+              <Card className="card-interactive h-full">
+                <CardContent className="p-6">
+                  <div className="flex items-start justify-between mb-4">
+                    <Quote className="w-6 h-6 text-primary/20 shrink-0" />
+                    {testimony.category && (
+                      <span className="px-2 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full">
+                        {testimony.category}
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-muted-foreground mb-6 line-clamp-4">{testimony.content}</p>
 
-                <div className="flex items-center justify-between pt-4 border-t border-border">
-                  <div className="flex items-center gap-3">
-                    <img
-                      src={testimony.avatar}
-                      alt={testimony.author}
-                      className="w-10 h-10 rounded-full object-cover"
-                    />
-                    <div>
-                      <p className="font-semibold text-sm text-foreground">{testimony.author}</p>
-                      <p className="text-xs text-muted-foreground">{testimony.timeAgo}</p>
+                  <div className="flex items-center justify-between pt-4 border-t border-border">
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={testimony.avatar}
+                        alt={testimony.author}
+                        className="w-10 h-10 rounded-full object-cover"
+                      />
+                      <div>
+                        <p className="font-semibold text-sm text-foreground">{testimony.author}</p>
+                        <p className="text-xs text-muted-foreground">{testimony.timeAgo}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                      <span className="flex items-center gap-1">
+                        <Heart className="w-4 h-4" />
+                        {testimony.likes}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <MessageSquare className="w-4 h-4" />
+                        {testimony.comments}
+                      </span>
                     </div>
                   </div>
-
-                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                    <span className="flex items-center gap-1">
-                      <Heart className="w-4 h-4" />
-                      {testimony.likes}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <MessageSquare className="w-4 h-4" />
-                      {testimony.comments}
-                    </span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </Link>
           </motion.div>
         ))}
       </div>
 
-      {filteredTestimonies.length === 0 && (
+      {itemsToShow.length === 0 && (
         <div className="text-center py-12">
           <p className="text-muted-foreground">No testimonies found in this category.</p>
+        </div>
+      )}
+
+      {/* Load More */}
+      {hasMore && itemsToShow.length > 0 && (
+        <div className="flex justify-center mt-10">
+          <motion.button
+            onClick={loadMoreItems}
+            disabled={isLoading}
+            whileHover={{ scale: isLoading ? 1 : 1.02 }}
+            whileTap={{ scale: isLoading ? 1 : 0.98 }}
+            className="px-8 py-3 rounded-full bg-muted text-foreground font-medium hover:bg-muted/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
+            {isLoading ? (
+              'Loading...'
+            ) : (
+              <>
+                Load More Testimonies
+                <ArrowRight className="w-4 h-4" />
+              </>
+            )}
+          </motion.button>
         </div>
       )}
     </section>

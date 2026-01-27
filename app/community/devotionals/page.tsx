@@ -5,8 +5,13 @@ import { DevotionalsHero } from '@/components/section/community/devotionals/Devo
 import {
   BibleStudy,
   DevotionalsPageClient,
+  type DailyDevotional,
+  type PrayerPoint,
+  type LivingTip,
+  type MarriageFamily,
 } from '@/components/section/community/devotionals/DevotionalsPageClient';
 import { DevotionalsPageSkeleton } from '@/components/section/community/devotionals/DevotionalsPageSkeleton';
+import { DEVOTIONALS_ITEMS } from '@/lib/constants/community/devotionals';
 
 export const metadata: Metadata = {
   title: 'Devotionals - Daily Inspiration & Bible Study',
@@ -14,208 +19,88 @@ export const metadata: Metadata = {
     'Explore daily devotionals, Bible study series, prayer points, Christian living tips, and marriage & family guidance. Grow in your faith with inspiring content.',
 };
 
-// Generate devotionals data (in a real app, this would come from an API or database)
+// Force dynamic rendering to ensure searchParams changes trigger re-renders
+export const dynamic = 'force-dynamic';
+
+// Generate devotionals data from central constants
 async function generateDevotionalsData() {
   // Simulate API delay
   await new Promise(resolve => setTimeout(resolve, 1500));
 
-  const dailyDevotionals = [
-    {
-      id: 1,
-      title: 'Walking in Faith',
-      verse: 'Hebrews 11:1',
-      date: 'Today',
-      readingTime: '5 min',
-      category: 'Faith',
-      excerpt:
-        'Now faith is confidence in what we hope for and assurance about what we do not see...',
-      views: 2340,
-    },
-    {
-      id: 2,
-      title: 'The Power of Prayer',
-      verse: 'Philippians 4:6-7',
-      date: 'Yesterday',
-      readingTime: '6 min',
-      category: 'Prayer',
-      excerpt:
-        'Do not be anxious about anything, but in every situation, by prayer and petition...',
-      views: 1890,
-    },
-    {
-      id: 3,
-      title: "God's Unfailing Love",
-      verse: 'Romans 8:38-39',
-      date: '2 days ago',
-      readingTime: '4 min',
-      category: 'Love',
-      excerpt: 'For I am convinced that neither death nor life, neither angels nor demons...',
-      views: 3120,
-    },
-    {
-      id: 4,
-      title: 'Finding Peace in Chaos',
-      verse: 'John 14:27',
-      date: '3 days ago',
-      readingTime: '7 min',
-      category: 'Peace',
-      excerpt:
-        'Peace I leave with you; my peace I give you. I do not give to you as the world gives...',
-      views: 2780,
-    },
-  ];
+  // Filter and transform daily devotionals (limit to 4)
+  const dailyDevotionals: DailyDevotional[] = DEVOTIONALS_ITEMS.filter(
+    item => item.isDaily && item.verse !== undefined && item.date !== undefined
+  )
+    .slice(0, 4)
+    .map(item => ({
+      id: item.id,
+      title: item.title,
+      verse: item.verse!,
+      date: item.date!,
+      readingTime: item.readingTime || '5 min',
+      category: item.category,
+      excerpt: item.excerpt || '',
+      views: item.views || 0,
+    }));
 
-  const bibleStudySeries = [
-    {
-      id: 1,
-      title: 'The Book of Romans',
-      description: "A deep dive into Paul's letter to the Romans",
-      lessons: 16,
-      duration: '8 weeks',
-      participants: '2.4K',
-      status: 'Ongoing',
-    },
-    {
-      id: 2,
-      title: 'The Gospel of John',
-      description: 'Exploring the life and teachings of Jesus Christ',
-      lessons: 21,
-      duration: '10 weeks',
-      participants: '3.1K',
-      status: 'Ongoing',
-    },
-    {
-      id: 3,
-      title: 'Proverbs: Wisdom for Life',
-      description: 'Practical wisdom for daily living',
-      lessons: 31,
-      duration: '1 month',
-      participants: '1.8K',
-      status: 'Completed',
-    },
-    {
-      id: 4,
-      title: 'The Psalms',
-      description: 'Songs of praise, lament, and worship',
-      lessons: 12,
-      duration: '6 weeks',
-      participants: '2.7K',
-      status: 'Ongoing',
-    },
-  ] satisfies BibleStudy[];
+  // Filter and transform Bible study series
+  const bibleStudySeries: BibleStudy[] = DEVOTIONALS_ITEMS.filter(
+    item =>
+      item.isBibleStudy &&
+      item.description !== undefined &&
+      item.lessons !== undefined &&
+      item.duration !== undefined &&
+      item.participants !== undefined &&
+      item.status !== undefined
+  ).map(item => ({
+    id: item.id,
+    title: item.title,
+    description: item.description!,
+    lessons: item.lessons!,
+    duration: item.duration!,
+    participants: item.participants!,
+    status: item.status!,
+  }));
 
-  const prayerPoints = [
-    {
-      id: 1,
-      title: 'Prayer for Healing',
-      category: 'Health',
-      points: 5,
-      readingTime: '3 min',
-      verse: 'James 5:15',
-      excerpt: 'Prayers for physical, emotional, and spiritual wholeness',
-    },
-    {
-      id: 2,
-      title: 'Prayer for Financial Breakthrough',
-      category: 'Finance',
-      points: 7,
-      readingTime: '4 min',
-      verse: 'Philippians 4:19',
-      excerpt: 'Prayers for provision, wisdom, and open doors',
-    },
-    {
-      id: 3,
-      title: 'Prayer for Family Unity',
-      category: 'Family',
-      points: 6,
-      readingTime: '5 min',
-      verse: 'Psalm 133:1',
-      excerpt: 'Prayers for love, understanding, and harmony in families',
-    },
-    {
-      id: 4,
-      title: 'Prayer for Spiritual Growth',
-      category: 'Spiritual',
-      points: 6,
-      readingTime: '4 min',
-      verse: '2 Peter 3:18',
-      excerpt: 'Prayers for deeper relationship and transformation',
-    },
-  ];
+  // Filter and transform prayer points
+  const prayerPoints: PrayerPoint[] = DEVOTIONALS_ITEMS.filter(
+    item =>
+      item.isPrayerPoint &&
+      item.points !== undefined &&
+      item.verse !== undefined &&
+      item.excerpt !== undefined
+  ).map(item => ({
+    id: item.id,
+    title: item.title,
+    category: item.category,
+    points: item.points!,
+    readingTime: item.readingTime || '3 min',
+    verse: item.verse!,
+    excerpt: item.excerpt!,
+  }));
 
-  const livingTips = [
-    {
-      id: 1,
-      title: 'Building a Consistent Prayer Life',
-      category: 'Spiritual Growth',
-      excerpt:
-        'Learn practical steps to develop a meaningful and consistent prayer routine that transforms your relationship with God.',
-      views: '12.5K',
-      trending: true,
-    },
-    {
-      id: 2,
-      title: 'Managing Time as a Christian',
-      category: 'Productivity',
-      excerpt:
-        'Discover biblical principles for time management that honor God while maximizing your productivity and purpose.',
-      views: '9.8K',
-      trending: false,
-    },
-    {
-      id: 3,
-      title: 'Overcoming Temptation',
-      category: 'Spiritual Warfare',
-      excerpt:
-        'Biblical strategies to resist temptation and walk in victory through the power of the Holy Spirit.',
-      views: '15.2K',
-      trending: true,
-    },
-    {
-      id: 4,
-      title: 'Cultivating Gratitude',
-      category: 'Attitude',
-      excerpt:
-        "Transform your perspective by developing a heart of gratitude that sees God's goodness in every situation.",
-      views: '8.3K',
-      trending: false,
-    },
-  ];
+  // Filter and transform living tips
+  const livingTips: LivingTip[] = DEVOTIONALS_ITEMS.filter(
+    item => item.isLivingTip && item.excerpt !== undefined
+  ).map(item => ({
+    id: item.id,
+    title: item.title,
+    category: item.category,
+    excerpt: item.excerpt!,
+    views: item.views?.toString() || '0',
+    trending: item.trending || false,
+  }));
 
-  const marriageFamily = [
-    {
-      id: 1,
-      title: 'Building a God-Centered Marriage',
-      category: 'Marriage',
-      excerpt:
-        'Discover biblical principles for a strong, loving marriage that honors God and brings joy to both partners.',
-      articles: 12,
-    },
-    {
-      id: 2,
-      title: 'Raising Children in Faith',
-      category: 'Parenting',
-      excerpt:
-        'Practical guidance for teaching your children about God and instilling Christian values in their daily lives.',
-      articles: 18,
-    },
-    {
-      id: 3,
-      title: 'Communication in Marriage',
-      category: 'Marriage',
-      excerpt:
-        'Learn to communicate effectively with your spouse, resolving conflicts with love, respect, and understanding.',
-      articles: 8,
-    },
-    {
-      id: 4,
-      title: 'Family Devotions',
-      category: 'Family',
-      excerpt:
-        'Create meaningful family worship times that bring your household closer to God and to each other.',
-      articles: 15,
-    },
-  ];
+  // Filter and transform marriage/family content
+  const marriageFamily: MarriageFamily[] = DEVOTIONALS_ITEMS.filter(
+    item => item.isMarriageFamily && item.excerpt !== undefined && item.articles !== undefined
+  ).map(item => ({
+    id: item.id,
+    title: item.title,
+    category: item.category,
+    excerpt: item.excerpt!,
+    articles: item.articles!,
+  }));
 
   return {
     dailyDevotionals,

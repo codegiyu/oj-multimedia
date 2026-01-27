@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { Sparkles, Users, TrendingUp, DollarSign, BookOpen, Heart, ArrowRight } from 'lucide-react';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import type { QuestionCategory } from './AskAPastorPageClient';
@@ -43,9 +44,11 @@ export const QuestionCategoriesSection = ({ categories }: QuestionCategoriesSect
             <p className="text-muted-foreground text-sm">Find questions and answers by topic</p>
           </div>
         </div>
-        <Button variant="ghost" className="gap-2 text-primary">
-          View All Categories
-          <ArrowRight className="w-4 h-4" />
+        <Button variant="ghost" className="gap-2 text-primary" asChild>
+          <Link href="/community/ask-a-pastor">
+            View All Categories
+            <ArrowRight className="w-4 h-4" />
+          </Link>
         </Button>
       </div>
 
@@ -63,21 +66,24 @@ export const QuestionCategoriesSection = ({ categories }: QuestionCategoriesSect
               transition={{ delay: index * 0.05 }}
               whileHover={{ scale: 1.05, y: -4 }}
               className="bg-card rounded-2xl overflow-hidden shadow-sm border border-border/50 hover:shadow-md transition-all cursor-pointer group p-0">
-              <div className="px-6 py-8 text-center relative">
-                <div
-                  className={`absolute inset-0 bg-gradient-to-br ${colorClass} opacity-0 group-hover:opacity-10 transition-opacity`}
-                />
-                <div
-                  className={`w-14 h-14 mx-auto mb-4 rounded-xl bg-gradient-to-br ${colorClass} flex items-center justify-center transform group-hover:scale-110 transition-transform`}>
-                  <Icon className="w-7 h-7 text-white" />
+              <Link
+                href={`/community/ask-a-pastor/active?category=${encodeURIComponent(category.name.toLowerCase().replace(' ', '-'))}`}>
+                <div className="px-6 py-8 text-center relative">
+                  <div
+                    className={`absolute inset-0 bg-gradient-to-br ${colorClass} opacity-0 group-hover:opacity-10 transition-opacity`}
+                  />
+                  <div
+                    className={`w-14 h-14 mx-auto mb-4 rounded-xl bg-gradient-to-br ${colorClass} flex items-center justify-center transform group-hover:scale-110 transition-transform`}>
+                    <Icon className="w-7 h-7 text-white" />
+                  </div>
+                  <h3 className="font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
+                    {category.name}
+                  </h3>
+                  <Badge variant="secondary" className="text-xs">
+                    {category.count} questions
+                  </Badge>
                 </div>
-                <h3 className="font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
-                  {category.name}
-                </h3>
-                <Badge variant="secondary" className="text-xs">
-                  {category.count} questions
-                </Badge>
-              </div>
+              </Link>
             </motion.div>
           );
         })}

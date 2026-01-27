@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { HelpCircle, Send, CheckCircle } from 'lucide-react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -13,8 +14,46 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Card, CardContent } from '@/components/ui/card';
+import { toast } from '@/components/atoms/Toast';
 
 export const SubmitQuestionSection = () => {
+  const [name, setName] = useState('');
+  const [category, setCategory] = useState('');
+  const [question, setQuestion] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!question.trim()) {
+      toast({
+        title: 'Question Required',
+        description: 'Please enter your question before submitting.',
+        variant: 'error',
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1500));
+
+    setIsSubmitting(false);
+
+    toast({
+      title: 'Question Submitted!',
+      description:
+        'Your question has been submitted successfully. Our pastors will review and answer it soon.',
+      variant: 'success',
+    });
+
+    // Reset form
+    setName('');
+    setCategory('');
+    setQuestion('');
+  };
+
   return (
     <section className="container mx-auto px-4 py-12">
       <div className="max-w-3xl mx-auto">
@@ -41,19 +80,24 @@ export const SubmitQuestionSection = () => {
           transition={{ delay: 0.1 }}>
           <Card className="border-border/50">
             <CardContent className="p-6">
-              <form className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <label htmlFor="name" className="text-sm font-medium">
                       Your Name (Optional)
                     </label>
-                    <Input id="name" placeholder="Enter your name" />
+                    <Input
+                      id="name"
+                      placeholder="Enter your name"
+                      value={name}
+                      onChange={e => setName(e.target.value)}
+                    />
                   </div>
                   <div className="space-y-2">
                     <label htmlFor="category" className="text-sm font-medium">
                       Category
                     </label>
-                    <Select>
+                    <Select value={category} onValueChange={setCategory}>
                       <SelectTrigger id="category">
                         <SelectValue placeholder="Select category" />
                       </SelectTrigger>
@@ -79,12 +123,15 @@ export const SubmitQuestionSection = () => {
                     placeholder="Ask your question here... Be as specific as possible to get the best answer."
                     rows={6}
                     className="resize-none"
+                    value={question}
+                    onChange={e => setQuestion(e.target.value)}
+                    required
                   />
                 </div>
 
-                <Button type="submit" size="lg" className="w-full gap-2">
+                <Button type="submit" size="lg" className="w-full gap-2" disabled={isSubmitting}>
                   <Send className="w-4 h-4" />
-                  Submit Question
+                  {isSubmitting ? 'Submitting...' : 'Submit Question'}
                 </Button>
               </form>
             </CardContent>

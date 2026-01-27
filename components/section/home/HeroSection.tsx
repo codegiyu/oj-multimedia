@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { Play, Upload, TrendingUp, Headphones } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 export const HeroSection = () => {
   return (
@@ -74,13 +75,17 @@ export const HeroSection = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
             className="flex flex-wrap gap-4">
-            <Button variant="hero" size="xl" className="gap-3">
-              <Headphones className="w-5 h-5" />
-              Listen to Trending Songs
+            <Button variant="hero" size="xl" className="gap-3" asChild>
+              <Link href="/music/trending">
+                <Headphones className="w-5 h-5" />
+                Listen to Trending Songs
+              </Link>
             </Button>
-            <Button variant="hero-outline" size="xl" className="gap-3">
-              <Play className="w-5 h-5" />
-              Watch Videos
+            <Button variant="hero-outline" size="xl" className="gap-3" asChild>
+              <Link href="/videos/trending">
+                <Play className="w-5 h-5" />
+                Watch Videos
+              </Link>
             </Button>
           </motion.div>
 
@@ -89,9 +94,11 @@ export const HeroSection = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
             className="mt-8">
-            <Button variant="accent" size="lg" className="gap-2">
-              <Upload className="w-4 h-4" />
-              Upload Your Music or Video
+            <Button variant="accent" size="lg" className="gap-2" asChild>
+              <Link href="/community/promote-your-content">
+                <Upload className="w-4 h-4" />
+                Upload Your Music or Video
+              </Link>
             </Button>
           </motion.div>
 
