@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { Users, Star, MessageSquare, ArrowRight, ExternalLink } from 'lucide-react';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import type { AvailablePastor } from './AskAPastorPageClient';
@@ -25,9 +26,11 @@ export const AvailablePastorsSection = ({ pastors }: AvailablePastorsSectionProp
             </p>
           </div>
         </div>
-        <Button variant="ghost" className="gap-2 text-accent">
-          View All Pastors
-          <ArrowRight className="w-4 h-4" />
+        <Button variant="ghost" className="gap-2 text-accent" asChild>
+          <Link href="/community/sermons">
+            View All Pastors
+            <ArrowRight className="w-4 h-4" />
+          </Link>
         </Button>
       </div>
 

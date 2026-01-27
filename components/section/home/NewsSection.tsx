@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { NewsCard } from '@/components/cards/NewsCard';
 
 export interface NewsArticle {
+  id?: number;
   title: string;
   excerpt: string;
   category: string;

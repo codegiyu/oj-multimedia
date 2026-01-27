@@ -17,25 +17,25 @@ const footerLinks = {
     { label: 'Community', href: '/community' },
   ],
   creators: [
-    { label: 'Upload Music', href: '#' },
-    { label: 'Upload Video', href: '#' },
-    { label: 'Start Podcast', href: '#' },
-    { label: 'Become a Vendor', href: '#' },
-    { label: 'Artist Portal', href: '#' },
+    { label: 'Upload Music', href: '/community/promote-your-content' },
+    { label: 'Upload Video', href: '/community/promote-your-content' },
+    { label: 'Start Podcast', href: '/community/promote-your-content' },
+    { label: 'Become a Vendor', href: '/marketplace/become-vendor' },
+    { label: 'Artist Portal', href: '/music/artists' },
   ],
   resources: [
-    { label: 'Daily Devotionals', href: '#' },
-    { label: 'Sermons', href: '#' },
-    { label: 'Bible Study', href: '#' },
-    { label: 'Help Center', href: '#' },
-    { label: 'Guidelines', href: '#' },
+    { label: 'Daily Devotionals', href: '/community/devotionals' },
+    { label: 'Sermons', href: '/community/sermons' },
+    { label: 'Bible Study', href: '/community/devotionals/bible-study' },
+    { label: 'Help Center', href: '/contact' },
+    { label: 'Guidelines', href: '/terms-and-conditions' },
   ],
   company: [
     { label: 'About Us', href: '/about' },
     { label: 'Contact', href: '/contact' },
     // { label: 'Careers', href: '/careers' },
     { label: 'Privacy Policy', href: '/privacy-policy' },
-    { label: 'Terms of Service', href: '/terms-of-service' },
+    { label: 'Terms of Service', href: '/terms-and-conditions' },
   ],
 };
 
@@ -87,12 +87,22 @@ export const Footer = () => {
                 type="email"
                 placeholder="Enter your email"
                 className="flex-1 px-4 py-3 rounded-full border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                disabled
+                title="Newsletter subscription requires backend integration"
               />
-              <Button variant="hero" size="lg" className="gap-2">
+              <Button
+                variant="hero"
+                size="lg"
+                className="gap-2"
+                disabled
+                title="Newsletter subscription requires backend integration">
                 <Mail className="w-4 h-4" />
                 Subscribe
               </Button>
             </div>
+            <p className="text-xs text-muted-foreground mt-2">
+              Newsletter subscription coming soon
+            </p>
           </div>
         </div>
       </div>

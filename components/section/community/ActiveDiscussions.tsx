@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { MessageCircle, Users, TrendingUp, ArrowRight, Clock } from 'lucide-react';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
 export interface Discussion {
@@ -31,9 +32,11 @@ export const ActiveDiscussions = ({ discussions }: ActiveDiscussionsProps) => {
             <p className="text-muted-foreground text-sm">Join the conversation</p>
           </div>
         </div>
-        <Button variant="ghost" className="gap-2 text-accent">
-          View All
-          <ArrowRight className="w-4 h-4" />
+        <Button variant="ghost" className="gap-2 text-accent" asChild>
+          <Link href="/community">
+            View All
+            <ArrowRight className="w-4 h-4" />
+          </Link>
         </Button>
       </div>
 

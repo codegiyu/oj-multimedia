@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { ShoppingBag, ArrowRight, Store, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 export interface MarketplaceProduct {
   name: string;
@@ -31,13 +32,20 @@ export const MarketplaceSection = ({ products }: MarketplaceSectionProps) => {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="accent" size="sm" className="gap-2">
-              <Store className="w-4 h-4" />
-              Become a Vendor
+            <Button variant="accent" size="sm" className="gap-2" asChild>
+              <Link href="/marketplace/become-vendor">
+                <Store className="w-4 h-4" />
+                Become a Vendor
+              </Link>
             </Button>
-            <Button variant="ghost" className="gap-2 text-muted-foreground hover:text-primary">
-              View All
-              <ArrowRight className="w-4 h-4" />
+            <Button
+              variant="ghost"
+              className="gap-2 text-muted-foreground hover:text-primary"
+              asChild>
+              <Link href="/marketplace">
+                View All
+                <ArrowRight className="w-4 h-4" />
+              </Link>
             </Button>
           </div>
         </div>
@@ -73,7 +81,8 @@ export const MarketplaceSection = ({ products }: MarketplaceSectionProps) => {
                   </Button>
                 </div>
               </div>
-            </motion.div>
+              </motion.div>
+            </Link>
           ))}
         </motion.div>
       </div>

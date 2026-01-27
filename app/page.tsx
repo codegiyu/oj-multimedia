@@ -221,6 +221,7 @@ async function generateHomeData() {
 
   const newsArticles: NewsArticle[] = [
     {
+      id: 1,
       title: 'Top 10 Rising Artists You Need to Know in 2025',
       excerpt:
         'Discover the fresh voices and innovative sounds that are reshaping the music landscape this year.',
@@ -230,6 +231,7 @@ async function generateHomeData() {
       featured: true,
     },
     {
+      id: 2,
       title: 'The Evolution of Afrobeats: From Lagos to the World',
       excerpt: 'How a local genre became a global phenomenon influencing artists worldwide.',
       category: 'Music',
@@ -237,6 +239,7 @@ async function generateHomeData() {
       image: '/images/video-thumb-2.jpg',
     },
     {
+      id: 3,
       title: 'Young Creators Making Waves in Digital Content',
       excerpt: 'Meet the Gen-Z content creators who are redefining entertainment online.',
       category: 'Lifestyle',

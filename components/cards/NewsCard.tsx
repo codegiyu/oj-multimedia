@@ -2,8 +2,10 @@
 
 import { motion } from 'framer-motion';
 import { Clock, ArrowRight } from 'lucide-react';
+import Link from 'next/link';
 
 interface NewsCardProps {
+  id?: number;
   title: string;
   excerpt: string;
   category: string;
@@ -12,9 +14,17 @@ interface NewsCardProps {
   featured?: boolean;
 }
 
-export const NewsCard = ({ title, excerpt, category, time, image, featured }: NewsCardProps) => {
+export const NewsCard = ({
+  id,
+  title,
+  excerpt,
+  category,
+  time,
+  image,
+  featured,
+}: NewsCardProps) => {
   if (featured) {
-    return (
+    const featuredContent = (
       <motion.article
         whileHover={{ y: -4 }}
         transition={{ duration: 0.3 }}
@@ -47,9 +57,18 @@ export const NewsCard = ({ title, excerpt, category, time, image, featured }: Ne
         </div>
       </motion.article>
     );
+
+    if (id) {
+      return (
+        <Link href={`/news/story/${id}`} className="block h-full">
+          {featuredContent}
+        </Link>
+      );
+    }
+    return featuredContent;
   }
 
-  return (
+  const regularContent = (
     <motion.article
       whileHover={{ y: -4 }}
       transition={{ duration: 0.3 }}
@@ -76,4 +95,13 @@ export const NewsCard = ({ title, excerpt, category, time, image, featured }: Ne
       </div>
     </motion.article>
   );
+
+  if (id) {
+    return (
+      <Link href={`/news/story/${id}`} className="block">
+        {regularContent}
+      </Link>
+    );
+  }
+  return regularContent;
 };

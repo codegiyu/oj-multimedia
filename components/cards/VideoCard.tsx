@@ -3,8 +3,10 @@
 import { motion } from 'framer-motion';
 import { Play, Eye, Clock, MoreVertical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 interface VideoCardProps {
+  id?: number;
   title: string;
   creator: string;
   thumbnail: string;
@@ -14,6 +16,7 @@ interface VideoCardProps {
 }
 
 export const VideoCard = ({
+  id,
   title,
   creator,
   thumbnail,
@@ -21,11 +24,11 @@ export const VideoCard = ({
   duration,
   category,
 }: VideoCardProps) => {
-  return (
+  const cardContent = (
     <motion.div
       whileHover={{ y: -4 }}
       transition={{ duration: 0.3 }}
-      className="group bg-card rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all">
+      className={`group bg-card rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all ${id ? 'cursor-pointer' : ''}`}>
       {/* Thumbnail */}
       <div className="relative aspect-video overflow-hidden">
         <img
@@ -81,11 +84,25 @@ export const VideoCard = ({
           <Button
             variant="ghost"
             size="icon-sm"
-            className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+            className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
+            onClick={e => {
+              e.preventDefault();
+              e.stopPropagation();
+            }}>
             <MoreVertical className="w-4 h-4" />
           </Button>
         </div>
       </div>
     </motion.div>
   );
+
+  if (id) {
+    return (
+      <Link href={`/videos/${id}`} className="block">
+        {cardContent}
+      </Link>
+    );
+  }
+
+  return cardContent;
 };

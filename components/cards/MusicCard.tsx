@@ -3,8 +3,10 @@
 import { motion } from 'framer-motion';
 import { Play, Heart, Download, MoreHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 interface MusicCardProps {
+  id?: number;
   title: string;
   artist: string;
   cover: string;
@@ -13,12 +15,20 @@ interface MusicCardProps {
   isNew?: boolean;
 }
 
-export const MusicCard = ({ title, artist, cover, plays, genre, isNew }: MusicCardProps) => {
-  return (
+export const MusicCard = ({
+  id,
+  title,
+  artist,
+  cover,
+  plays,
+  genre,
+  isNew,
+}: MusicCardProps) => {
+  const cardContent = (
     <motion.div
       whileHover={{ y: -8 }}
       transition={{ duration: 0.3 }}
-      className="group relative bg-card rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow">
+      className={`group relative bg-card rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow ${id ? 'cursor-pointer' : ''}`}>
       {/* Cover Image */}
       <div className="relative aspect-square overflow-hidden">
         <img
@@ -47,17 +57,21 @@ export const MusicCard = ({ title, artist, cover, plays, genre, isNew }: MusicCa
         </div>
 
         {/* Quick Actions */}
-        <div className="absolute top-3 right-3 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div
+          className="absolute top-3 right-3 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+          onClick={e => e.stopPropagation()}>
           <Button
             variant="ghost"
             size="icon-sm"
-            className="bg-card/80 backdrop-blur-sm hover:bg-card">
+            className="bg-card/80 backdrop-blur-sm hover:bg-card"
+            onClick={e => e.preventDefault()}>
             <Heart className="w-4 h-4" />
           </Button>
           <Button
             variant="ghost"
             size="icon-sm"
-            className="bg-card/80 backdrop-blur-sm hover:bg-card">
+            className="bg-card/80 backdrop-blur-sm hover:bg-card"
+            onClick={e => e.preventDefault()}>
             <Download className="w-4 h-4" />
           </Button>
         </div>
@@ -72,7 +86,14 @@ export const MusicCard = ({ title, artist, cover, plays, genre, isNew }: MusicCa
             </h3>
             <p className="text-sm text-muted-foreground truncate">{artist}</p>
           </div>
-          <Button variant="ghost" size="icon-sm" className="shrink-0">
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            className="shrink-0"
+            onClick={e => {
+              e.preventDefault();
+              e.stopPropagation();
+            }}>
             <MoreHorizontal className="w-4 h-4" />
           </Button>
         </div>
@@ -80,4 +101,14 @@ export const MusicCard = ({ title, artist, cover, plays, genre, isNew }: MusicCa
       </div>
     </motion.div>
   );
+
+  if (id) {
+    return (
+      <Link href={`/music/${id}`} className="block">
+        {cardContent}
+      </Link>
+    );
+  }
+
+  return cardContent;
 };

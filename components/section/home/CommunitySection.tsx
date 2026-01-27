@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { Users, MessageSquare, BarChart3, Sparkles, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 export interface CommunityPost {
   user: string;
@@ -42,9 +43,11 @@ export const CommunitySection = ({
               <p className="text-muted-foreground text-sm">Connect with creators</p>
             </div>
           </div>
-          <Button variant="secondary" className="gap-2">
-            Join Community
-            <ArrowRight className="w-4 h-4" />
+          <Button variant="secondary" className="gap-2" asChild>
+            <Link href="/community">
+              Join Community
+              <ArrowRight className="w-4 h-4" />
+            </Link>
           </Button>
         </div>
 
@@ -57,13 +60,13 @@ export const CommunitySection = ({
             </h3>
             <div className="space-y-4">
               {communityPosts.map((post, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                  className="bg-card rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                <Link key={index} href="/community">
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.1 }}
+                    className="bg-card rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
                   <div className="flex gap-3">
                     <div className="w-10 h-10 rounded-full overflow-hidden shrink-0">
                       <img
@@ -86,7 +89,8 @@ export const CommunitySection = ({
                       </div>
                     </div>
                   </div>
-                </motion.div>
+                  </motion.div>
+                </Link>
               ))}
             </div>
           </div>
@@ -120,9 +124,16 @@ export const CommunitySection = ({
                   </button>
                 ))}
               </div>
-              <p className="text-xs text-muted-foreground mt-3">
-                {pollTotalVotes.toLocaleString()} votes
-              </p>
+              <div className="flex items-center justify-between mt-3">
+                <p className="text-xs text-muted-foreground">
+                  {pollTotalVotes.toLocaleString()} votes
+                </p>
+                <Link
+                  href="/community/polls-and-voting"
+                  className="text-xs text-primary hover:text-primary/80 transition-colors">
+                  View All Polls →
+                </Link>
+              </div>
             </motion.div>
 
             {/* Quick Links */}
@@ -134,15 +145,17 @@ export const CommunitySection = ({
               className="bg-card rounded-2xl p-6 shadow-sm">
               <h3 className="font-semibold mb-4">Quick Links</h3>
               <div className="space-y-2">
-                <a href="#" className="quick-link w-full justify-start">
+                <Link href="/community/devotionals" className="quick-link w-full justify-start">
                   📖 Daily Devotionals
-                </a>
-                <a href="#" className="quick-link w-full justify-start">
+                </Link>
+                <Link href="/community/sermons" className="quick-link w-full justify-start">
                   🎤 Looking for Sermons?
-                </a>
-                <a href="#" className="quick-link w-full justify-start">
+                </Link>
+                <Link
+                  href="/community/devotionals/bible-study"
+                  className="quick-link w-full justify-start">
                   📚 Bible Study Resources
-                </a>
+                </Link>
               </div>
             </motion.div>
           </div>

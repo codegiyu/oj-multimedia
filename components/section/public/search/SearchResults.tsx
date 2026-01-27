@@ -8,8 +8,18 @@ export interface SearchResultItem {
   id: string;
   title: string;
   subtitle: string;
-  type: 'music' | 'news' | 'video' | 'community';
-  image: string | { src: string };
+  type:
+    | 'music'
+    | 'news'
+    | 'video'
+    | 'devotional'
+    | 'sermon'
+    | 'testimony'
+    | 'prayer-request'
+    | 'question'
+    | 'poll'
+    | 'resource';
+  image?: string | { src: string };
   meta: string;
 }
 
@@ -21,8 +31,8 @@ const typeColors: Record<string, string> = {
 };
 
 function getDetailHref(item: SearchResultItem): string | null {
-  if (item.type === 'community') return null;
-  const numericId = item.id.replace(/^[mnv]/, '');
+  // Extract numeric ID from prefix (m, n, v, d, s, t, pr, q, p, r)
+  const numericId = item.id.replace(/^[mnvdstprq]/, '');
   switch (item.type) {
     case 'music':
       return `/music/${numericId}`;
@@ -30,6 +40,20 @@ function getDetailHref(item: SearchResultItem): string | null {
       return `/news/story/${numericId}`;
     case 'video':
       return `/videos/${numericId}`;
+    case 'devotional':
+      return `/community/devotionals/${numericId}`;
+    case 'sermon':
+      return `/community/sermons/${numericId}`;
+    case 'testimony':
+      return `/community/testimonies/${numericId}`;
+    case 'prayer-request':
+      return `/community/prayer-requests/${numericId}`;
+    case 'question':
+      return `/community/ask-a-pastor/${numericId}`;
+    case 'poll':
+      return `/community/polls-and-voting/${numericId}`;
+    case 'resource':
+      return `/community/resources`;
     default:
       return null;
   }
@@ -53,12 +77,26 @@ export const SearchResults = ({ results }: SearchResultsProps) => {
             whileHover={{ y: -4 }}
             className="group bg-card rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all cursor-pointer">
             {/* Image */}
-            <div className="relative aspect-square overflow-hidden">
-              <img
-                src={typeof result.image === 'string' ? result.image : result.image.src}
-                alt={result.title}
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-              />
+            <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-primary/20 to-accent/20">
+              {result.image ? (
+                <img
+                  src={typeof result.image === 'string' ? result.image : result.image.src}
+                  alt={result.title}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center">
+                  <span className="text-4xl opacity-30">
+                    {result.type === 'devotional' && '📖'}
+                    {result.type === 'sermon' && '🎤'}
+                    {result.type === 'testimony' && '❤️'}
+                    {result.type === 'prayer-request' && '🙏'}
+                    {result.type === 'question' && '❓'}
+                    {result.type === 'poll' && '📊'}
+                    {result.type === 'resource' && '📁'}
+                  </span>
+                </div>
+              )}
               <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
 
               {/* Type Badge */}
@@ -87,10 +125,18 @@ export const SearchResults = ({ results }: SearchResultsProps) => {
               </h3>
               <p className="text-sm text-muted-foreground mb-2">{result.subtitle}</p>
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                {result.type === 'music' && <Play className="w-3 h-3" />}
-                {result.type === 'news' && <Clock className="w-3 h-3" />}
+                {(result.type === 'music' || result.type === 'sermon') && (
+                  <Play className="w-3 h-3" />
+                )}
+                {(result.type === 'news' || result.type === 'devotional') && (
+                  <Clock className="w-3 h-3" />
+                )}
                 {result.type === 'video' && <Video className="w-3 h-3" />}
-                {result.type === 'community' && <Eye className="w-3 h-3" />}
+                {(result.type === 'testimony' ||
+                  result.type === 'prayer-request' ||
+                  result.type === 'question' ||
+                  result.type === 'poll' ||
+                  result.type === 'resource') && <Eye className="w-3 h-3" />}
                 <span>{result.meta}</span>
               </div>
             </div>

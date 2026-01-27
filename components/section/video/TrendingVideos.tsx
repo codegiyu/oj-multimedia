@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useRef } from 'react';
+import Link from 'next/link';
 
 export interface TrendingVideo {
   id: number;
@@ -91,7 +92,8 @@ export const TrendingVideos = ({ videos: trendingVideos }: TrendingVideosProps) 
               transition={{ delay: index * 0.05 }}
               whileHover={{ y: -8 }}
               className="group relative min-w-[280px] md:min-w-[320px] snap-start">
-              <div className="bg-card rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow">
+              <Link href={`/videos/${video.id}`} className="block">
+                <div className="bg-card rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow cursor-pointer">
                 {/* Thumbnail */}
                 <div className="relative aspect-video overflow-hidden">
                   <img
@@ -123,17 +125,21 @@ export const TrendingVideos = ({ videos: trendingVideos }: TrendingVideosProps) 
                   )}
 
                   {/* Quick Actions */}
-                  <div className="absolute top-3 right-3 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div
+                    className="absolute top-3 right-3 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={e => e.stopPropagation()}>
                     <Button
                       variant="ghost"
                       size="icon-sm"
-                      className="bg-card/80 backdrop-blur-sm hover:bg-card">
+                      className="bg-card/80 backdrop-blur-sm hover:bg-card"
+                      onClick={e => e.preventDefault()}>
                       <Heart className="w-4 h-4" />
                     </Button>
                     <Button
                       variant="ghost"
                       size="icon-sm"
-                      className="bg-card/80 backdrop-blur-sm hover:bg-card">
+                      className="bg-card/80 backdrop-blur-sm hover:bg-card"
+                      onClick={e => e.preventDefault()}>
                       <Share2 className="w-4 h-4" />
                     </Button>
                   </div>
@@ -148,7 +154,14 @@ export const TrendingVideos = ({ videos: trendingVideos }: TrendingVideosProps) 
                       </h3>
                       <p className="text-sm text-muted-foreground truncate">{video.creator}</p>
                     </div>
-                    <Button variant="ghost" size="icon-sm" className="shrink-0">
+                    <Button
+                      variant="ghost"
+                      size="icon-sm"
+                      className="shrink-0"
+                      onClick={e => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                      }}>
                       <MoreHorizontal className="w-4 h-4" />
                     </Button>
                   </div>
@@ -163,7 +176,8 @@ export const TrendingVideos = ({ videos: trendingVideos }: TrendingVideosProps) 
                     </span>
                   </div>
                 </div>
-              </div>
+                </div>
+              </Link>
             </motion.div>
           ))}
         </div>

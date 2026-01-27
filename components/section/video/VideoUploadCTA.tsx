@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { Upload, Video, BarChart3, Users, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 const benefits = [
   { icon: Upload, title: 'Easy Upload', description: 'Drag & drop your videos' },
@@ -62,13 +63,17 @@ export const VideoUploadCTA = () => {
                 viewport={{ once: true }}
                 transition={{ delay: 0.4 }}
                 className="flex flex-wrap gap-3">
-                <Button variant="hero" size="lg" className="gap-2">
-                  <Upload className="w-5 h-5" />
-                  Upload Your Video
+                <Button variant="hero" size="lg" className="gap-2" asChild>
+                  <Link href="/community/promote-your-content">
+                    <Upload className="w-5 h-5" />
+                    Upload Your Video
+                  </Link>
                 </Button>
-                <Button variant="hero-outline" size="lg" className="gap-2">
-                  <Share2 className="w-5 h-5" />
-                  Share Your Creativity
+                <Button variant="hero-outline" size="lg" className="gap-2" asChild>
+                  <Link href="/community/promote-your-content">
+                    <Share2 className="w-5 h-5" />
+                    Share Your Creativity
+                  </Link>
                 </Button>
               </motion.div>
             </div>

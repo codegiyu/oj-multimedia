@@ -1,9 +1,11 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { BarChart3, Vote, Clock, CheckCircle } from 'lucide-react';
+import { BarChart3, Vote, Clock, CheckCircle, ArrowRight } from 'lucide-react';
+import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { useState } from 'react';
 import type { Poll } from './PollsPageClient';
 
 interface ActivePollsProps {
@@ -11,6 +13,19 @@ interface ActivePollsProps {
 }
 
 export const ActivePolls = ({ polls }: ActivePollsProps) => {
+  const [displayedItems, setDisplayedItems] = useState(4);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const loadMoreItems = async () => {
+    setIsLoading(true);
+    await new Promise(resolve => setTimeout(resolve, 800));
+    setDisplayedItems(prev => Math.min(prev + 4, polls.length));
+    setIsLoading(false);
+  };
+
+  const hasMore = displayedItems < polls.length;
+  const itemsToShow = polls.slice(0, displayedItems);
+
   return (
     <section id="active-polls" className="py-12">
       <motion.div
@@ -30,7 +45,7 @@ export const ActivePolls = ({ polls }: ActivePollsProps) => {
       </motion.div>
 
       <div className="grid md:grid-cols-2 gap-6">
-        {polls.map((poll, index) => (
+        {itemsToShow.map((poll, index) => (
           <motion.div
             key={poll.id}
             initial={{ opacity: 0, y: 20 }}
@@ -86,8 +101,8 @@ export const ActivePolls = ({ polls }: ActivePollsProps) => {
                     <CheckCircle className="w-4 h-4" />
                     <span>{poll.totalVotes} total votes</span>
                   </div>
-                  <Button variant="outline" size="sm">
-                    Vote Now
+                  <Button variant="outline" size="sm" asChild>
+                    <Link href={`/community/polls-and-voting/${poll.id}`}>Vote Now</Link>
                   </Button>
                 </div>
               </CardContent>
@@ -95,6 +110,27 @@ export const ActivePolls = ({ polls }: ActivePollsProps) => {
           </motion.div>
         ))}
       </div>
+
+      {/* Load More */}
+      {hasMore && itemsToShow.length > 0 && (
+        <div className="flex justify-center mt-10">
+          <motion.button
+            onClick={loadMoreItems}
+            disabled={isLoading}
+            whileHover={{ scale: isLoading ? 1 : 1.02 }}
+            whileTap={{ scale: isLoading ? 1 : 0.98 }}
+            className="px-8 py-3 rounded-full bg-muted text-foreground font-medium hover:bg-muted/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
+            {isLoading ? (
+              'Loading...'
+            ) : (
+              <>
+                Load More Polls
+                <ArrowRight className="w-4 h-4" />
+              </>
+            )}
+          </motion.button>
+        </div>
+      )}
     </section>
   );
 };

@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { BookOpen, Users, Clock, ArrowRight } from 'lucide-react';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import type { BibleStudy } from './DevotionalsPageClient';
@@ -23,9 +24,11 @@ export const BibleStudySeriesSection = ({ series }: BibleStudySeriesSectionProps
             <p className="text-muted-foreground text-sm">Deep dive into God's word</p>
           </div>
         </div>
-        <Button variant="ghost" className="gap-2 text-primary">
-          View All Series
-          <ArrowRight className="w-4 h-4" />
+        <Button variant="ghost" className="gap-2 text-primary" asChild>
+          <Link href="/community/devotionals/bible-study">
+            View All Series
+            <ArrowRight className="w-4 h-4" />
+          </Link>
         </Button>
       </div>
 
@@ -39,54 +42,58 @@ export const BibleStudySeriesSection = ({ series }: BibleStudySeriesSectionProps
             transition={{ delay: index * 0.1 }}
             whileHover={{ y: -4 }}
             className="bg-card rounded-2xl overflow-hidden shadow-sm border border-border/50 hover:shadow-md transition-all cursor-pointer group">
-            <div className="relative aspect-[1.75] overflow-hidden bg-gradient-to-br from-primary/20 to-accent/20">
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-              <div className="absolute bottom-3 left-3 right-3">
-                <div className="flex items-center justify-between mb-2">
-                  <Badge
-                    variant={
-                      study.status === 'Ongoing'
-                        ? 'default'
-                        : study.status === 'Upcoming'
-                          ? 'secondary'
-                          : 'outline'
-                    }
-                    className={
-                      study.status === 'Ongoing'
-                        ? 'bg-green-500 hover:bg-green-600'
-                        : study.status === 'Upcoming'
-                          ? 'bg-blue-500 hover:bg-blue-600'
-                          : 'bg-gray-500 hover:bg-gray-600'
-                    }>
-                    {study.status}
-                  </Badge>
+            <Link href={`/community/devotionals/${study.id}`}>
+              <div className="relative aspect-[1.75] overflow-hidden bg-gradient-to-br from-primary/20 to-accent/20">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                <div className="absolute bottom-3 left-3 right-3">
+                  <div className="flex items-center justify-between mb-2">
+                    <Badge
+                      variant={
+                        study.status === 'Ongoing'
+                          ? 'default'
+                          : study.status === 'Upcoming'
+                            ? 'secondary'
+                            : 'outline'
+                      }
+                      className={
+                        study.status === 'Ongoing'
+                          ? 'bg-green-500 hover:bg-green-600'
+                          : study.status === 'Upcoming'
+                            ? 'bg-blue-500 hover:bg-blue-600'
+                            : 'bg-gray-500 hover:bg-gray-600'
+                      }>
+                      {study.status}
+                    </Badge>
+                  </div>
+                  <h3 className="font-semibold text-white text-lg mb-1">{study.title}</h3>
                 </div>
-                <h3 className="font-semibold text-white text-lg mb-1">{study.title}</h3>
               </div>
-            </div>
 
-            <div className="p-5">
-              <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{study.description}</p>
-              <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
-                <span className="flex items-center gap-1">
-                  <BookOpen className="w-4 h-4" />
-                  {study.lessons} lessons
-                </span>
-                <span className="flex items-center gap-1">
-                  <Clock className="w-4 h-4" />
-                  {study.duration}
-                </span>
+              <div className="p-5">
+                <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
+                  {study.description}
+                </p>
+                <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
+                  <span className="flex items-center gap-1">
+                    <BookOpen className="w-4 h-4" />
+                    {study.lessons} lessons
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Clock className="w-4 h-4" />
+                    {study.duration}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="flex items-center gap-1 text-sm text-muted-foreground">
+                    <Users className="w-4 h-4" />
+                    {study.participants} participants
+                  </span>
+                  <Button size="sm" variant="default">
+                    Join Study
+                  </Button>
+                </div>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="flex items-center gap-1 text-sm text-muted-foreground">
-                  <Users className="w-4 h-4" />
-                  {study.participants} participants
-                </span>
-                <Button size="sm" variant="default">
-                  Join Study
-                </Button>
-              </div>
-            </div>
+            </Link>
           </motion.div>
         ))}
       </div>

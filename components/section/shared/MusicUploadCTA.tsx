@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { Upload, Music, Mic, DollarSign, BarChart3, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 const benefits = [
   { icon: Upload, title: 'Easy Upload', description: 'Drag & drop your tracks' },
@@ -62,13 +63,17 @@ export const MusicUploadCTA = () => {
                 viewport={{ once: true }}
                 transition={{ delay: 0.4 }}
                 className="flex flex-wrap gap-3">
-                <Button variant="hero" size="lg" className="gap-2">
-                  <Upload className="w-5 h-5" />
-                  Upload Your Song
+                <Button variant="hero" size="lg" className="gap-2" asChild>
+                  <Link href="/community/promote-your-content">
+                    <Upload className="w-5 h-5" />
+                    Upload Your Song
+                  </Link>
                 </Button>
-                <Button variant="hero-outline" size="lg" className="gap-2">
-                  <Mic className="w-5 h-5" />
-                  Submit Beats
+                <Button variant="hero-outline" size="lg" className="gap-2" asChild>
+                  <Link href="/community/promote-your-content">
+                    <Mic className="w-5 h-5" />
+                    Submit Beats
+                  </Link>
                 </Button>
               </motion.div>
             </div>
