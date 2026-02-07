@@ -31,7 +31,7 @@ async function generateChartSongsData(period: string = 'weekly') {
   )
     .sort((a, b) => (a.rank || 0) - (b.rank || 0))
     .map(item => ({
-      id: item.id,
+      _id: item._id,
       rank: item.rank!,
       title: item.title,
       artist: item.artist,

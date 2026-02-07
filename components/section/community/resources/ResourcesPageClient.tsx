@@ -1,7 +1,6 @@
 'use client';
 
 import { FreeEbooks } from './FreeEbooks';
-import { SermonTemplates } from './SermonTemplates';
 import { FreeBeats } from './FreeBeats';
 import { ChristianWallpapers } from './ChristianWallpapers';
 import { AffiliateProducts } from './AffiliateProducts';
@@ -52,7 +51,7 @@ export interface ResourceData {
 
 export const ResourcesPageClient = ({
   ebooks,
-  templates,
+  // templates,
   beats,
   wallpapers,
   affiliateProducts,
@@ -61,7 +60,6 @@ export const ResourcesPageClient = ({
     <>
       <FreeDownloads />
       <FreeEbooks ebooks={ebooks} />
-      <SermonTemplates templates={templates} />
       <FreeBeats beats={beats} />
       <ChristianWallpapers wallpapers={wallpapers} />
       <AffiliateProducts products={affiliateProducts} />

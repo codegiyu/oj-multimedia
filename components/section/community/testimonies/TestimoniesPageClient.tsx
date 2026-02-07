@@ -5,7 +5,7 @@ import { AllTestimonies } from './AllTestimonies';
 import { ShareTestimony } from './ShareTestimony';
 
 export interface Testimony {
-  id: number;
+  _id: string;
   author: string;
   avatar: string;
   content: string;

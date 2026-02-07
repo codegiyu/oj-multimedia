@@ -5,7 +5,7 @@
  * which sections they belong to.
  */
 export interface PrayerRequestItem {
-  id: number;
+  _id: string;
   title: string;
   content: string;
   author: string;
@@ -34,7 +34,7 @@ export interface PrayerRequestItem {
 export const PRAYER_REQUESTS_ITEMS: PrayerRequestItem[] = [
   // Active Requests
   {
-    id: 1,
+    _id: '1',
     title: 'Prayer for Healing',
     content:
       'Please pray for my mother who is recovering from surgery. She needs strength and complete healing.',
@@ -52,7 +52,7 @@ export const PRAYER_REQUESTS_ITEMS: PrayerRequestItem[] = [
     tags: ['healing', 'surgery', 'family'],
   },
   {
-    id: 2,
+    _id: '2',
     title: 'Financial Breakthrough Needed',
     content:
       'Our family is facing financial difficulties. Please pray for God to open doors and provide for our needs.',
@@ -69,7 +69,7 @@ export const PRAYER_REQUESTS_ITEMS: PrayerRequestItem[] = [
     tags: ['finance', 'provision', 'family'],
   },
   {
-    id: 3,
+    _id: '3',
     title: 'Prayer for Job Opportunity',
     content:
       'I have been searching for employment for months. Please pray that God opens the right door for me.',
@@ -86,7 +86,7 @@ export const PRAYER_REQUESTS_ITEMS: PrayerRequestItem[] = [
     tags: ['career', 'job', 'employment'],
   },
   {
-    id: 4,
+    _id: '4',
     title: 'Family Reconciliation',
     content:
       'Please pray for reconciliation in our family. There has been a lot of hurt and misunderstanding.',
@@ -104,7 +104,7 @@ export const PRAYER_REQUESTS_ITEMS: PrayerRequestItem[] = [
     tags: ['family', 'reconciliation', 'healing'],
   },
   {
-    id: 5,
+    _id: '5',
     title: 'Prayer for Spiritual Growth',
     content:
       'I desire to grow deeper in my relationship with God. Please pray for wisdom and understanding.',
@@ -121,7 +121,7 @@ export const PRAYER_REQUESTS_ITEMS: PrayerRequestItem[] = [
     tags: ['spiritual-growth', 'relationship', 'wisdom'],
   },
   {
-    id: 6,
+    _id: '6',
     title: 'Prayer for Protection',
     content:
       'Please pray for protection over my children as they travel. I trust God to keep them safe.',
@@ -138,7 +138,7 @@ export const PRAYER_REQUESTS_ITEMS: PrayerRequestItem[] = [
     tags: ['protection', 'children', 'travel'],
   },
   {
-    id: 7,
+    _id: '7',
     title: 'Prayer for Marriage Restoration',
     content:
       'My marriage is going through a difficult season. Please pray for restoration and healing.',
@@ -155,7 +155,7 @@ export const PRAYER_REQUESTS_ITEMS: PrayerRequestItem[] = [
     tags: ['marriage', 'restoration', 'healing'],
   },
   {
-    id: 8,
+    _id: '8',
     title: 'Prayer for Direction',
     content: "I need clarity on a major life decision. Please pray for God's guidance and wisdom.",
     fullContent:
@@ -172,7 +172,7 @@ export const PRAYER_REQUESTS_ITEMS: PrayerRequestItem[] = [
   },
   // Answered Prayers
   {
-    id: 9,
+    _id: '9',
     title: 'Praise Report: Job Found!',
     originalRequest: 'I was praying for a new job opportunity...',
     content: 'Praise Report: Job Found!',
@@ -193,7 +193,7 @@ export const PRAYER_REQUESTS_ITEMS: PrayerRequestItem[] = [
     tags: ['praise', 'job', 'answered-prayer'],
   },
   {
-    id: 10,
+    _id: '10',
     title: 'Healing Testimony',
     originalRequest: 'My daughter was very sick...',
     content: 'Healing Testimony',
@@ -214,7 +214,7 @@ export const PRAYER_REQUESTS_ITEMS: PrayerRequestItem[] = [
     tags: ['healing', 'testimony', 'answered-prayer'],
   },
   {
-    id: 11,
+    _id: '11',
     title: 'Financial Breakthrough',
     originalRequest: 'We were struggling financially...',
     content: 'Financial Breakthrough',
@@ -234,7 +234,7 @@ export const PRAYER_REQUESTS_ITEMS: PrayerRequestItem[] = [
     tags: ['finance', 'provision', 'answered-prayer'],
   },
   {
-    id: 12,
+    _id: '12',
     title: 'Family Reconciliation - Answered!',
     originalRequest: 'Please pray for reconciliation in our family...',
     content: 'Family Reconciliation - Answered!',

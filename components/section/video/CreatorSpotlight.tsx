@@ -5,7 +5,7 @@ import { Play, Users, Verified, Video, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export interface FeaturedCreator {
-  id: number;
+  _id: string;
   name: string;
   category: string;
   avatar: string;
@@ -48,7 +48,7 @@ export const CreatorSpotlight = ({ creators: featuredCreators }: CreatorSpotligh
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {featuredCreators.map((creator, index) => (
             <motion.div
-              key={creator.id}
+              key={creator._id}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}

@@ -33,7 +33,7 @@ async function generateDevotionalsData() {
   )
     .slice(0, 4)
     .map(item => ({
-      id: item.id,
+      _id: item._id,
       title: item.title,
       verse: item.verse!,
       date: item.date!,
@@ -53,7 +53,7 @@ async function generateDevotionalsData() {
       item.participants !== undefined &&
       item.status !== undefined
   ).map(item => ({
-    id: item.id,
+    _id: item._id,
     title: item.title,
     description: item.description!,
     lessons: item.lessons!,
@@ -70,7 +70,7 @@ async function generateDevotionalsData() {
       item.verse !== undefined &&
       item.excerpt !== undefined
   ).map(item => ({
-    id: item.id,
+    _id: item._id,
     title: item.title,
     category: item.category,
     points: item.points!,
@@ -83,7 +83,7 @@ async function generateDevotionalsData() {
   const livingTips: LivingTip[] = DEVOTIONALS_ITEMS.filter(
     item => item.isLivingTip && item.excerpt !== undefined
   ).map(item => ({
-    id: item.id,
+    _id: item._id,
     title: item.title,
     category: item.category,
     excerpt: item.excerpt!,
@@ -95,7 +95,7 @@ async function generateDevotionalsData() {
   const marriageFamily: MarriageFamily[] = DEVOTIONALS_ITEMS.filter(
     item => item.isMarriageFamily && item.excerpt !== undefined && item.articles !== undefined
   ).map(item => ({
-    id: item.id,
+    _id: item._id,
     title: item.title,
     category: item.category,
     excerpt: item.excerpt!,

@@ -1,12 +1,52 @@
 import { VIDEOS_ITEMS, type VideoItem } from '@/lib/constants/videos';
 
+/** Video category to display label for home section */
+function videoCategoryToLabel(category: VideoItem['category']): string {
+  const map: Record<VideoItem['category'], string> = {
+    music: 'Music Videos',
+    short: 'Short Clips',
+    talks: 'Talks',
+    creative: 'Creative',
+    inspirational: 'Inspirational',
+    live: 'Live Performances',
+    podcasts: 'Podcasts',
+    sermon: 'Sermon',
+  };
+  return map[category] ?? category;
+}
+
+/**
+ * Get trending videos for the home page (from VIDEOS_ITEMS with isTrending)
+ */
+export function getTrendingVideosForHome(limit: number = 12): Array<{
+  _id: string;
+  title: string;
+  creator: string;
+  thumbnail: string;
+  views: string;
+  duration: string;
+  category: string;
+}> {
+  return VIDEOS_ITEMS.filter(item => item.isTrending)
+    .slice(0, limit)
+    .map(item => ({
+      _id: item._id,
+      title: item.title,
+      creator: item.creator,
+      thumbnail: item.thumbnail,
+      views: item.views ?? '0',
+      duration: item.duration ?? '0:00',
+      category: videoCategoryToLabel(item.category),
+    }));
+}
+
 /**
  * Get a video item by its ID
- * @param id - The numeric ID of the video item
+ * @param _id - The string ID of the video item
  * @returns The video item if found, undefined otherwise
  */
-export function getVideoItemById(id: number): VideoItem | undefined {
-  return VIDEOS_ITEMS.find(item => item.id === id);
+export function getVideoItemById(_id: string): VideoItem | undefined {
+  return VIDEOS_ITEMS.find(item => item._id === _id);
 }
 
 /**
@@ -17,11 +57,11 @@ export function getVideoItemById(id: number): VideoItem | undefined {
  * @returns Array of related video items
  */
 export function getRelatedVideos(
-  currentId: number,
+  currentId: string,
   category: string,
   limit: number = 3
 ): VideoItem[] {
-  return VIDEOS_ITEMS.filter(item => item.id !== currentId && item.category === category).slice(
+  return VIDEOS_ITEMS.filter(item => item._id !== currentId && item.category === category).slice(
     0,
     limit
   );
@@ -43,6 +83,7 @@ export const mapCategoryIdToValue = (categoryId: string | null | undefined): str
     inspirational: 'inspirational',
     live: 'live',
     podcasts: 'podcasts',
+    sermon: 'sermon',
   };
 
   return categoryMap[categoryId] || null;

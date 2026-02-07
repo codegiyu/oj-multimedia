@@ -39,12 +39,12 @@ export const RecentPolls = ({ polls }: RecentPollsProps) => {
 
           return (
             <motion.div
-              key={poll.id}
+              key={poll._id}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}>
-              <Link href={`/community/polls-and-voting/${poll.id}`}>
+              <Link href={`/community/polls-and-voting/${poll._id}`}>
                 <Card className="card-interactive">
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between mb-4">
@@ -61,7 +61,7 @@ export const RecentPolls = ({ polls }: RecentPollsProps) => {
 
                     <div className="space-y-3 mb-4">
                       {poll.options.map(option => (
-                        <div key={option.id} className="space-y-1">
+                        <div key={option._id} className="space-y-1">
                           <div className="flex items-center justify-between text-xs">
                             <span className="text-foreground">{option.text}</span>
                             <span className="text-muted-foreground">{option.percentage}%</span>

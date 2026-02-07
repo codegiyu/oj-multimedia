@@ -33,7 +33,7 @@ async function generateMusicData(category: string = 'all', period: string = 'wee
     .filter(item => item.isTrending && item.plays !== undefined && item.duration !== undefined)
     .slice(0, 8)
     .map(item => ({
-      id: item.id,
+      _id: item._id,
       title: item.title,
       artist: item.artist,
       cover: item.cover,
@@ -54,7 +54,7 @@ async function generateMusicData(category: string = 'all', period: string = 'wee
     .sort((a, b) => (a.rank || 0) - (b.rank || 0))
     .slice(0, 10)
     .map(item => ({
-      id: item.id,
+      _id: item._id,
       rank: item.rank!,
       title: item.title,
       artist: item.artist,
@@ -69,7 +69,7 @@ async function generateMusicData(category: string = 'all', period: string = 'wee
     .filter(item => item.isRecent && item.uploadedAt !== undefined && item.genre !== undefined)
     .slice(0, 6)
     .map(item => ({
-      id: item.id,
+      _id: item._id,
       title: item.title,
       artist: item.artist,
       cover: item.cover,
@@ -88,7 +88,7 @@ async function generateMusicData(category: string = 'all', period: string = 'wee
     )
     .slice(0, 6)
     .map(item => ({
-      id: item.id,
+      _id: item._id,
       name: item.name || item.artist,
       genre: item.genre || '',
       image: item.image || item.cover,

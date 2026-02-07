@@ -13,6 +13,7 @@ const categories = [
   { id: 'inspirational', label: 'Inspirational', emoji: '💫' },
   { id: 'live', label: 'Live Performances', emoji: '🎭' },
   { id: 'podcasts', label: 'Podcasts / Video Talks', emoji: '🎙️' },
+  { id: 'sermon', label: 'Sermons', emoji: '📿' },
 ];
 
 export const VideoCategories = () => {
@@ -28,9 +29,9 @@ export const VideoCategories = () => {
   };
 
   return (
-    <section className="py-6 border-b border-border/50 sticky top-16 bg-background/95 backdrop-blur-sm z-40">
+    <section className="py-6 border-b border-border/50">
       <div className="container mx-auto px-4">
-        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+        <div className="flex flex-wrap justify-center gap-2 pb-2">
           {categories.map(category => (
             <motion.button
               key={category.id}

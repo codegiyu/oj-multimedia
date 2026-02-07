@@ -27,7 +27,7 @@ async function generateBibleStudyData() {
       item.participants !== undefined &&
       item.status !== undefined
   ).map(item => ({
-    id: item.id,
+    _id: item._id,
     title: item.title,
     description: item.description!,
     lessons: item.lessons!,

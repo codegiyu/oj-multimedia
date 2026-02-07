@@ -27,6 +27,11 @@ interface PathData {
   delay: number;
 }
 
+// Helper function to round numbers to fixed decimal places for consistent hydration
+function roundToFixed(value: number, decimals: number = 2): number {
+  return Math.round(value * Math.pow(10, decimals)) / Math.pow(10, decimals);
+}
+
 // Path generation function
 function generateAestheticPath(
   index: number,
@@ -59,8 +64,8 @@ function generateAestheticPath(
       Math.sin(progress * Math.PI * 2 + phase) * (baseAmplitude * 0.2 * amplitudeFactor);
 
     points.push({
-      x: baseX * position,
-      y: baseY + wave1 + wave2 + wave3,
+      x: roundToFixed(baseX * position, 2),
+      y: roundToFixed(baseY + wave1 + wave2 + wave3, 2),
     });
   }
 
@@ -68,18 +73,18 @@ function generateAestheticPath(
     if (i === 0) return `M ${point.x} ${point.y}`;
     const prevPoint = points[i - 1];
     const tension = 0.4;
-    const cp1x = prevPoint.x + (point.x - prevPoint.x) * tension;
-    const cp1y = prevPoint.y;
-    const cp2x = prevPoint.x + (point.x - prevPoint.x) * (1 - tension);
-    const cp2y = point.y;
+    const cp1x = roundToFixed(prevPoint.x + (point.x - prevPoint.x) * tension, 2);
+    const cp1y = roundToFixed(prevPoint.y, 2);
+    const cp2x = roundToFixed(prevPoint.x + (point.x - prevPoint.x) * (1 - tension), 2);
+    const cp2y = roundToFixed(point.y, 2);
     return `C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${point.x} ${point.y}`;
   });
 
   return pathCommands.join(' ');
 }
 
-const generateUniqueId = (prefix: string): string =>
-  `${prefix}-${Math.random().toString(36).substr(2, 9)}`;
+// Generate deterministic IDs based on prefix and index to avoid hydration mismatches
+const generateUniqueId = (prefix: string, index: number): string => `${prefix}-${index}`;
 
 // Memoized FloatingPaths component
 const FloatingPaths = memo(function FloatingPaths({
@@ -106,7 +111,7 @@ const FloatingPaths = memo(function FloatingPaths({
   const primaryPaths: PathData[] = useMemo(
     () =>
       Array.from({ length: 12 }, (_, i) => ({
-        id: generateUniqueId('primary'),
+        id: generateUniqueId('primary', i),
         d: generateAestheticPath(i, position, 'primary'),
         opacity: 0.15 + i * 0.02,
         width: 4 + i * 0.3,
@@ -119,7 +124,7 @@ const FloatingPaths = memo(function FloatingPaths({
   const secondaryPaths: PathData[] = useMemo(
     () =>
       Array.from({ length: 15 }, (_, i) => ({
-        id: generateUniqueId('secondary'),
+        id: generateUniqueId('secondary', i),
         d: generateAestheticPath(i, position, 'secondary'),
         opacity: 0.12 + i * 0.015,
         width: 3 + i * 0.25,
@@ -132,7 +137,7 @@ const FloatingPaths = memo(function FloatingPaths({
   const accentPaths: PathData[] = useMemo(
     () =>
       Array.from({ length: 10 }, (_, i) => ({
-        id: generateUniqueId('accent'),
+        id: generateUniqueId('accent', i),
         d: generateAestheticPath(i, position, 'accent'),
         opacity: 0.08 + i * 0.12,
         width: 2 + i * 0.2,

@@ -27,7 +27,7 @@ export const AvailablePastorsSection = ({ pastors }: AvailablePastorsSectionProp
           </div>
         </div>
         <Button variant="ghost" className="gap-2 text-accent" asChild>
-          <Link href="/community/sermons">
+          <Link href="/community/ask-a-pastor">
             View All Pastors
             <ArrowRight className="w-4 h-4" />
           </Link>
@@ -37,7 +37,7 @@ export const AvailablePastorsSection = ({ pastors }: AvailablePastorsSectionProp
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
         {pastors.map((pastor, index) => (
           <motion.div
-            key={pastor.id}
+            key={pastor._id}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}

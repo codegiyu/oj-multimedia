@@ -5,7 +5,7 @@
  * which sections they belong to.
  */
 export interface DevotionalItem {
-  id: number;
+  _id: string;
   title: string;
   verse?: string;
   date?: string;
@@ -56,7 +56,7 @@ export interface DevotionalItem {
 export const DEVOTIONALS_ITEMS: DevotionalItem[] = [
   // Daily Devotionals
   {
-    id: 1,
+    _id: '1',
     title: 'Walking in Faith',
     verse: 'Hebrews 11:1',
     date: 'Today',
@@ -94,7 +94,7 @@ export const DEVOTIONALS_ITEMS: DevotionalItem[] = [
     tags: ['faith', 'trust', 'daily-devotional'],
   },
   {
-    id: 2,
+    _id: '2',
     title: 'The Power of Prayer',
     verse: 'Philippians 4:6-7',
     date: 'Yesterday',
@@ -130,7 +130,7 @@ export const DEVOTIONALS_ITEMS: DevotionalItem[] = [
     tags: ['prayer', 'communication', 'daily-devotional'],
   },
   {
-    id: 3,
+    _id: '3',
     title: "God's Unfailing Love",
     verse: 'Romans 8:38-39',
     date: '2 days ago',
@@ -166,7 +166,7 @@ export const DEVOTIONALS_ITEMS: DevotionalItem[] = [
     tags: ['love', 'god', 'daily-devotional'],
   },
   {
-    id: 4,
+    _id: '4',
     title: 'Finding Peace in Chaos',
     verse: 'John 14:27',
     date: '3 days ago',
@@ -204,7 +204,7 @@ export const DEVOTIONALS_ITEMS: DevotionalItem[] = [
   },
   // Bible Study Series
   {
-    id: 5,
+    _id: '5',
     title: 'The Book of Romans',
     description: "A deep dive into Paul's letter to the Romans",
     lessons: 16,
@@ -231,7 +231,7 @@ export const DEVOTIONALS_ITEMS: DevotionalItem[] = [
     tags: ['bible-study', 'romans', 'theology'],
   },
   {
-    id: 6,
+    _id: '6',
     title: 'The Gospel of John',
     description: 'Exploring the life and teachings of Jesus Christ',
     lessons: 21,
@@ -248,7 +248,7 @@ export const DEVOTIONALS_ITEMS: DevotionalItem[] = [
     tags: ['bible-study', 'john', 'jesus'],
   },
   {
-    id: 7,
+    _id: '7',
     title: 'Proverbs: Wisdom for Life',
     description: 'Practical wisdom for daily living',
     lessons: 31,
@@ -265,7 +265,7 @@ export const DEVOTIONALS_ITEMS: DevotionalItem[] = [
     tags: ['bible-study', 'proverbs', 'wisdom'],
   },
   {
-    id: 8,
+    _id: '8',
     title: 'The Psalms',
     description: 'Songs of praise, lament, and worship',
     lessons: 12,
@@ -283,7 +283,7 @@ export const DEVOTIONALS_ITEMS: DevotionalItem[] = [
   },
   // Prayer Points
   {
-    id: 9,
+    _id: '9',
     title: 'Prayer for Healing',
     category: 'Health',
     points: 5,
@@ -306,7 +306,7 @@ export const DEVOTIONALS_ITEMS: DevotionalItem[] = [
     tags: ['prayer', 'healing', 'health'],
   },
   {
-    id: 10,
+    _id: '10',
     title: 'Prayer for Financial Breakthrough',
     category: 'Finance',
     points: 7,
@@ -331,7 +331,7 @@ export const DEVOTIONALS_ITEMS: DevotionalItem[] = [
     tags: ['prayer', 'finance', 'provision'],
   },
   {
-    id: 11,
+    _id: '11',
     title: 'Prayer for Family Unity',
     category: 'Family',
     points: 6,
@@ -355,7 +355,7 @@ export const DEVOTIONALS_ITEMS: DevotionalItem[] = [
     tags: ['prayer', 'family', 'unity'],
   },
   {
-    id: 12,
+    _id: '12',
     title: 'Prayer for Spiritual Growth',
     category: 'Spiritual',
     points: 6,
@@ -380,7 +380,7 @@ export const DEVOTIONALS_ITEMS: DevotionalItem[] = [
   },
   // Christian Living Tips
   {
-    id: 13,
+    _id: '13',
     title: 'Building a Consistent Prayer Life',
     category: 'Spiritual Growth',
     excerpt:
@@ -414,7 +414,7 @@ export const DEVOTIONALS_ITEMS: DevotionalItem[] = [
     tags: ['prayer', 'spiritual-discipline', 'christian-living'],
   },
   {
-    id: 14,
+    _id: '14',
     title: 'Managing Time as a Christian',
     category: 'Productivity',
     excerpt:
@@ -431,7 +431,7 @@ export const DEVOTIONALS_ITEMS: DevotionalItem[] = [
     tags: ['time-management', 'productivity', 'stewardship'],
   },
   {
-    id: 15,
+    _id: '15',
     title: 'Overcoming Temptation',
     category: 'Spiritual Warfare',
     excerpt:
@@ -449,7 +449,7 @@ export const DEVOTIONALS_ITEMS: DevotionalItem[] = [
     tags: ['temptation', 'spiritual-warfare', 'victory'],
   },
   {
-    id: 16,
+    _id: '16',
     title: 'Cultivating Gratitude',
     category: 'Attitude',
     excerpt:
@@ -467,7 +467,7 @@ export const DEVOTIONALS_ITEMS: DevotionalItem[] = [
   },
   // Marriage and Family
   {
-    id: 17,
+    _id: '17',
     title: 'Building a God-Centered Marriage',
     category: 'Marriage',
     excerpt:
@@ -484,7 +484,7 @@ export const DEVOTIONALS_ITEMS: DevotionalItem[] = [
     tags: ['marriage', 'relationships', 'god-centered'],
   },
   {
-    id: 18,
+    _id: '18',
     title: 'Raising Children in Faith',
     category: 'Parenting',
     excerpt:
@@ -500,7 +500,7 @@ export const DEVOTIONALS_ITEMS: DevotionalItem[] = [
     tags: ['parenting', 'children', 'faith'],
   },
   {
-    id: 19,
+    _id: '19',
     title: 'Communication in Marriage',
     category: 'Marriage',
     excerpt:
@@ -515,7 +515,7 @@ export const DEVOTIONALS_ITEMS: DevotionalItem[] = [
     tags: ['marriage', 'communication', 'relationships'],
   },
   {
-    id: 20,
+    _id: '20',
     title: 'Family Devotions',
     category: 'Family',
     excerpt:

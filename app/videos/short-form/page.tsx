@@ -31,7 +31,7 @@ async function generateShortFormVideosData(): Promise<{
       item.duration !== undefined &&
       item.likes !== undefined
   ).map(item => ({
-    id: item.id,
+    _id: item._id,
     title: item.title,
     creator: item.creator,
     thumbnail: item.thumbnail,

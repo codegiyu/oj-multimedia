@@ -31,7 +31,7 @@ async function generateFeaturedArtistsData(): Promise<{
       item.followers !== undefined &&
       item.songs !== undefined
   ).map(item => ({
-    id: item.id,
+    _id: item._id,
     name: item.name || item.artist,
     genre: item.genre || '',
     image: item.image || item.cover,

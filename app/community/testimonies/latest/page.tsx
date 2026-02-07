@@ -24,7 +24,7 @@ async function generateLatestTestimoniesData() {
       return timeA.localeCompare(timeB);
     })
     .map(item => ({
-      id: item.id,
+      _id: item._id,
       author: item.author,
       avatar: item.avatar,
       content: item.content,

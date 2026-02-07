@@ -2,16 +2,13 @@
 
 import { useRouter, usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Play, TrendingUp, TrendingDown, Minus, Trophy } from 'lucide-react';
+import { Trophy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import Image from 'next/image';
 import { useQueryState, parseAsString } from 'nuqs';
-import Link from 'next/link';
-import { MusicCardOptions } from './MusicCardOptions';
-import { MUSIC_ITEMS } from '@/lib/constants/music';
+import { ChartCard } from '@/components/cards/ChartCard';
 
 export interface ChartSong {
-  id?: number;
+  _id: string;
   rank: number;
   title: string;
   artist: string;
@@ -25,12 +22,6 @@ export interface ChartSong {
 interface TopMusicChartsProps {
   songs: ChartSong[];
 }
-
-const TrendIcon = ({ trend }: { trend: string }) => {
-  if (trend === 'up') return <TrendingUp className="w-4 h-4 text-emerald-500" />;
-  if (trend === 'down') return <TrendingDown className="w-4 h-4 text-destructive" />;
-  return <Minus className="w-4 h-4 text-muted-foreground" />;
-};
 
 export const TopMusicCharts = ({ songs: chartSongs }: TopMusicChartsProps) => {
   const router = useRouter();
@@ -103,76 +94,25 @@ export const TopMusicCharts = ({ songs: chartSongs }: TopMusicChartsProps) => {
 
         {/* Charts Grid */}
         <div className="grid md:grid-cols-2 gap-4">
-          {chartSongs.map((song, index) => {
-            const musicItem = MUSIC_ITEMS.find(
-              item => item.title === song.title && item.artist === song.artist
-            );
-            return (
-              <motion.div
-                key={song.id || song.rank}
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.05 }}
-                whileHover={{ scale: 1.01 }}
-                className="group">
-                <Link
-                  href={`/music/${song.id || song.rank}`}
-                  className="flex items-center gap-4 p-3 bg-card rounded-xl hover:bg-muted/50 transition-colors cursor-pointer">
-                  {/* Rank */}
-                  <div
-                    className={`
-                w-8 h-8 flex items-center justify-center font-bold text-lg
-                ${song.rank <= 3 ? 'text-primary' : 'text-muted-foreground'}
-              `}>
-                    {song.rank}
-                  </div>
-
-                  {/* Cover */}
-                  <div className="relative w-14 h-14 rounded-lg overflow-hidden shrink-0">
-                    <Image
-                      src={song.cover}
-                      alt={song.title}
-                      className="w-full h-full object-cover"
-                      fill
-                    />
-                    <div className="absolute inset-0 bg-foreground/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                      <Play className="w-5 h-5 text-background fill-current" />
-                    </div>
-                  </div>
-
-                  {/* Info */}
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold truncate group-hover:text-primary transition-colors">
-                      {song.title}
-                    </h3>
-                    <p className="text-sm text-muted-foreground truncate">{song.artist}</p>
-                  </div>
-
-                  {/* Stats */}
-                  <div className="hidden sm:flex items-center gap-4">
-                    <span className="text-sm text-muted-foreground">{song.plays}</span>
-                    <div className="flex items-center gap-1">
-                      <TrendIcon trend={song.trend} />
-                      {song.change > 0 && (
-                        <span
-                          className={`text-xs ${song.trend === 'up' ? 'text-emerald-500' : song.trend === 'down' ? 'text-destructive' : 'text-muted-foreground'}`}>
-                          {song.change}%
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Options Menu */}
-                  <div
-                    className="opacity-0 group-hover:opacity-100 transition-opacity"
-                    onClick={e => e.preventDefault()}>
-                    {musicItem && <MusicCardOptions musicItem={musicItem} />}
-                  </div>
-                </Link>
-              </motion.div>
-            );
-          })}
+          {chartSongs.map((song, index) => (
+            <motion.div
+              key={song._id}
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.05 }}>
+              <ChartCard
+                _id={song._id}
+                rank={song.rank}
+                title={song.title}
+                artist={song.artist}
+                cover={song.cover}
+                plays={song.plays}
+                trend={song.trend}
+                change={song.change}
+              />
+            </motion.div>
+          ))}
         </div>
 
         <div className="text-center mt-8">

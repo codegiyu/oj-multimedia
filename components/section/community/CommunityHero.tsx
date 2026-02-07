@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Users, MessageCircle, Sparkles, Heart } from 'lucide-react';
+import { MessageCircle, Sparkles, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export const CommunityHero = () => {
@@ -29,7 +29,7 @@ export const CommunityHero = () => {
       {/* Content */}
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-3xl mx-auto text-center">
-          <motion.div
+          {/* <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -38,7 +38,7 @@ export const CommunityHero = () => {
               <Users className="w-3 h-3" />
               Community Hub
             </span>
-          </motion.div>
+          </motion.div> */}
 
           <motion.h1
             initial={{ opacity: 0, y: 30 }}

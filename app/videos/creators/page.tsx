@@ -33,7 +33,7 @@ async function generateFeaturedCreatorsData(): Promise<{
       item.views !== undefined &&
       item.latestVideo !== undefined
   ).map(item => ({
-    id: item.id,
+    _id: item._id,
     name: item.name || item.creator,
     category:
       item.category === 'music'

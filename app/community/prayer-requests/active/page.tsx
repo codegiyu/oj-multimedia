@@ -21,7 +21,7 @@ async function generateActivePrayerRequestsData() {
 
   const activeRequests: PrayerRequest[] = PRAYER_REQUESTS_ITEMS.filter(item => item.isActive).map(
     item => ({
-      id: item.id,
+      _id: item._id,
       title: item.title,
       content: item.content,
       author: item.author,

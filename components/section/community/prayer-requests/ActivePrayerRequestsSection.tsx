@@ -14,13 +14,13 @@ interface ActivePrayerRequestsSectionProps {
 }
 
 export const ActivePrayerRequestsSection = ({ requests }: ActivePrayerRequestsSectionProps) => {
-  const [prayerCounts, setPrayerCounts] = useState<Record<number, number>>(
+  const [prayerCounts, setPrayerCounts] = useState<Record<string, number>>(
     requests.reduce(
       (acc, req) => {
-        acc[req.id] = req.prayers;
+        acc[req._id] = req.prayers;
         return acc;
       },
-      {} as Record<number, number>
+      {} as Record<string, number>
     )
   );
   const [displayedItems, setDisplayedItems] = useState(6);
@@ -36,7 +36,7 @@ export const ActivePrayerRequestsSection = ({ requests }: ActivePrayerRequestsSe
   const hasMore = displayedItems < requests.length;
   const itemsToShow = requests.slice(0, displayedItems);
 
-  const handlePray = (e: React.MouseEvent, requestId: number) => {
+  const handlePray = (e: React.MouseEvent, requestId: string) => {
     e.preventDefault();
     e.stopPropagation();
     setPrayerCounts(prev => ({
@@ -50,7 +50,7 @@ export const ActivePrayerRequestsSection = ({ requests }: ActivePrayerRequestsSe
     });
   };
 
-  const handleComment = (e: React.MouseEvent, requestId: number) => {
+  const handleComment = (e: React.MouseEvent, requestId: string) => {
     e.preventDefault();
     e.stopPropagation();
     // Navigate to detail page for comments
@@ -80,14 +80,14 @@ export const ActivePrayerRequestsSection = ({ requests }: ActivePrayerRequestsSe
       <div className="grid md:grid-cols-2 gap-6">
         {itemsToShow.map((request, index) => (
           <motion.div
-            key={request.id}
+            key={request._id}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: index * 0.1 }}
             whileHover={{ y: -4 }}
             className="bg-card rounded-2xl p-6 shadow-sm border border-border/50 hover:shadow-md transition-all">
-            <Link href={`/community/prayer-requests/${request.id}`} className="block">
+            <Link href={`/community/prayer-requests/${request._id}`} className="block">
               <div className="flex items-start justify-between gap-3 mb-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
@@ -118,7 +118,7 @@ export const ActivePrayerRequestsSection = ({ requests }: ActivePrayerRequestsSe
                   </span>
                   <span className="flex items-center gap-1">
                     <Heart className="w-3 h-3" />
-                    {prayerCounts[request.id] || request.prayers} prayers
+                    {prayerCounts[request._id] || request.prayers} prayers
                   </span>
                   <span className="flex items-center gap-1">
                     <MessageCircle className="w-3 h-3" />
@@ -135,7 +135,7 @@ export const ActivePrayerRequestsSection = ({ requests }: ActivePrayerRequestsSe
                   size="sm"
                   variant="ghost"
                   className="gap-1"
-                  onClick={e => handlePray(e, request.id)}>
+                  onClick={e => handlePray(e, request._id)}>
                   <Heart className="w-4 h-4" />
                   Pray
                 </Button>
@@ -143,7 +143,7 @@ export const ActivePrayerRequestsSection = ({ requests }: ActivePrayerRequestsSe
                   size="sm"
                   variant="ghost"
                   className="gap-1"
-                  onClick={e => handleComment(e, request.id)}>
+                  onClick={e => handleComment(e, request._id)}>
                   <MessageCircle className="w-4 h-4" />
                   Comment
                 </Button>

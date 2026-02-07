@@ -56,7 +56,7 @@ export const ShortFormVideosPageClient = ({ shortFormVideos }: ShortFormVideosPa
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
                 {itemsToShow.map((video, index) => (
                   <motion.div
-                    key={video.id}
+                    key={video._id}
                     initial={{ opacity: 0, scale: 0.9 }}
                     whileInView={{ opacity: 1, scale: 1 }}
                     viewport={{ once: true }}
@@ -64,7 +64,7 @@ export const ShortFormVideosPageClient = ({ shortFormVideos }: ShortFormVideosPa
                     whileHover={{ scale: 1.05 }}
                     className="group">
                     <Link
-                      href={`/videos/${video.id}`}
+                      href={`/videos/${video._id}`}
                       className="block bg-card rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 border border-border/50 hover:border-primary/20">
                       {/* Thumbnail - Vertical */}
                       <div className="relative aspect-[9/16] overflow-hidden bg-muted">

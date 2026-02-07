@@ -237,13 +237,13 @@ export const NewsDetailPageClient = ({ newsItem, relatedStories }: NewsDetailPag
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {relatedStories.map((story, index) => (
                 <motion.article
-                  key={story.id}
+                  key={story._id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3, delay: index * 0.1 }}
                   whileHover={{ y: -4 }}
                   className="group bg-card rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all cursor-pointer">
-                  <Link href={`/news/story/${story.id}`}>
+                  <Link href={`/news/story/${story._id}`}>
                     <div className="relative aspect-[16/10] overflow-hidden">
                       <Image
                         src={story.image}

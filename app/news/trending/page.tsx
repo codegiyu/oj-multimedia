@@ -25,7 +25,7 @@ async function generateTrendingStoriesData() {
   const trendingStories: TrendingStory[] = NEWS_ITEMS.filter(item => item.isTrending)
     .sort((a, b) => (a.rank || 0) - (b.rank || 0))
     .map(item => ({
-      id: item.id,
+      _id: item._id,
       title: item.title,
       excerpt: item.excerpt,
       category: item.category,

@@ -5,7 +5,7 @@ import { Clock, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
 interface NewsCardProps {
-  id?: number;
+  _id: string;
   title: string;
   excerpt: string;
   category: string;
@@ -15,7 +15,7 @@ interface NewsCardProps {
 }
 
 export const NewsCard = ({
-  id,
+  _id,
   title,
   excerpt,
   category,
@@ -23,6 +23,7 @@ export const NewsCard = ({
   image,
   featured,
 }: NewsCardProps) => {
+  const linkId = _id;
   if (featured) {
     const featuredContent = (
       <motion.article
@@ -58,9 +59,9 @@ export const NewsCard = ({
       </motion.article>
     );
 
-    if (id) {
+    if (linkId) {
       return (
-        <Link href={`/news/story/${id}`} className="block h-full">
+        <Link href={`/news/story/${linkId}`} className="block h-full">
           {featuredContent}
         </Link>
       );
@@ -96,9 +97,9 @@ export const NewsCard = ({
     </motion.article>
   );
 
-  if (id) {
+  if (linkId) {
     return (
-      <Link href={`/news/story/${id}`} className="block">
+      <Link href={`/news/story/${linkId}`} className="block">
         {regularContent}
       </Link>
     );

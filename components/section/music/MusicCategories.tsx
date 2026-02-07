@@ -15,6 +15,7 @@ const genres = [
   { id: 'acoustic', label: 'Acoustic', emoji: '🎸' },
   { id: 'worship', label: 'Worship', emoji: '🎶' },
   { id: 'spoken', label: 'Spoken Word', emoji: '📖' },
+  { id: 'sermon', label: 'Sermon', emoji: '📿' },
 ];
 
 export const MusicCategories = () => {
@@ -30,9 +31,9 @@ export const MusicCategories = () => {
   };
 
   return (
-    <section className="py-6 border-b border-border/50 sticky top-16 bg-background/95 backdrop-blur-sm z-40">
+    <section className="py-6 border-b border-border/50">
       <div className="container mx-auto px-4">
-        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+        <div className="flex flex-wrap justify-center gap-2 pb-2">
           {genres.map(genre => {
             const isActive = activeGenre === genre.id;
 

@@ -1,13 +1,14 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { ArrowLeft, Eye, MessageCircle, Share2, ThumbsUp, User } from 'lucide-react';
+import { ArrowLeft, Eye, MessageCircle, ThumbsUp, User } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { toast } from '@/components/atoms/Toast';
 import type { QuestionItem } from '@/lib/constants/community/questions';
-import { getPastorById } from '@/lib/utils/community/sermons';
+import { getPastorById } from '@/lib/utils/community/pastors';
+import { ShareButton } from '@/lib/hooks/use-copy';
 
 interface QuestionDetailPageClientProps {
   question: QuestionItem;
@@ -19,34 +20,7 @@ export const QuestionDetailPageClient = ({
   relatedQuestions,
 }: QuestionDetailPageClientProps) => {
   const [helpful, setHelpful] = useState(question.helpful || 0);
-  const pastor = question.pastorId ? getPastorById(question.pastorId) : null;
-
-  const handleShare = async () => {
-    try {
-      if (navigator.share) {
-        await navigator.share({
-          title: question.question,
-          text: question.fullQuestion || question.question,
-          url: window.location.href,
-        });
-        toast({
-          title: 'Shared!',
-          description: 'Question shared successfully.',
-          variant: 'success',
-        });
-      } else {
-        await navigator.clipboard.writeText(window.location.href);
-        toast({
-          title: 'Link Copied!',
-          description: 'Question link copied to clipboard.',
-          variant: 'success',
-        });
-      }
-    } catch (error) {
-      // User cancelled share
-      console.error(error);
-    }
-  };
+  const pastor = question.pastor_id ? getPastorById(question.pastor_id) : null;
 
   const handleHelpful = () => {
     setHelpful(prev => prev + 1);
@@ -172,10 +146,16 @@ export const QuestionDetailPageClient = ({
                 {question.answers} answers
               </span>
             </div>
-            <Button onClick={handleShare} variant="outline" size="sm" className="gap-2">
-              <Share2 className="w-4 h-4" />
-              Share
-            </Button>
+            <ShareButton
+              text=""
+              shareTitle={question.question}
+              shareText={question.fullQuestion || question.question}
+              successTitle="Link Copied!"
+              successDescription="Question link copied to clipboard."
+              displayType="text-icon"
+              variant="outline"
+              size="sm"
+            />
           </motion.div>
         </div>
       </section>
@@ -186,12 +166,12 @@ export const QuestionDetailPageClient = ({
           <div className="grid md:grid-cols-3 gap-6">
             {relatedQuestions.map((related, index) => (
               <motion.div
-                key={related.id}
+                key={related._id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}>
                 <Link
-                  href={`/community/ask-a-pastor/${related.id}`}
+                  href={`/community/ask-a-pastor/${related._id}`}
                   className="block p-6 bg-card rounded-lg border border-border hover:border-primary transition-colors">
                   <h3 className="font-semibold mb-2 line-clamp-2">{related.question}</h3>
                   <div className="flex items-center justify-between text-xs text-muted-foreground mt-4">

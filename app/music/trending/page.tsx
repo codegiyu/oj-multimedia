@@ -27,7 +27,7 @@ async function generateTrendingSongsData(): Promise<{
   const trendingSongs: (TrendingSong & { category: string })[] = MUSIC_ITEMS.filter(
     item => item.isTrending && item.plays !== undefined && item.duration !== undefined
   ).map(item => ({
-    id: item.id,
+    _id: item._id,
     title: item.title,
     artist: item.artist,
     cover: item.cover,

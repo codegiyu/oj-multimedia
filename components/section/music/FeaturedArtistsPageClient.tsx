@@ -58,7 +58,7 @@ export const FeaturedArtistsPageClient = ({ featuredArtists }: FeaturedArtistsPa
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
                 {itemsToShow.map((artist, index) => (
                   <motion.div
-                    key={artist.id}
+                    key={artist._id}
                     initial={{ opacity: 0, scale: 0.9 }}
                     whileInView={{ opacity: 1, scale: 1 }}
                     viewport={{ once: true }}

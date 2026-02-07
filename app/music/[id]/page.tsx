@@ -11,9 +11,9 @@ interface MusicDetailPageProps {
 // Generate metadata for the music detail page
 export async function generateMetadata({ params }: MusicDetailPageProps): Promise<Metadata> {
   const resolvedParams = await params;
-  const id = parseInt(resolvedParams.id, 10);
+  const id = resolvedParams.id;
 
-  if (isNaN(id)) {
+  if (!id) {
     return {
       title: 'Music Not Found',
       description: 'The requested music track could not be found.',
@@ -39,10 +39,10 @@ export async function generateMetadata({ params }: MusicDetailPageProps): Promis
 
 export default async function MusicDetailPage({ params }: MusicDetailPageProps) {
   const resolvedParams = await params;
-  const id = parseInt(resolvedParams.id, 10);
+  const id = resolvedParams.id;
 
   // Validate ID
-  if (isNaN(id)) {
+  if (!id) {
     notFound();
   }
 

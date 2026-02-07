@@ -2,11 +2,12 @@ import { TESTIMONIES_ITEMS, type TestimonyItem } from '@/lib/constants/community
 
 /**
  * Get a testimony item by its ID
- * @param id - The numeric ID of the testimony item
+ * @param id - The ID of the testimony item (string from URL)
  * @returns The testimony item if found, undefined otherwise
  */
-export function getTestimonyById(id: number): TestimonyItem | undefined {
-  return TESTIMONIES_ITEMS.find(item => item.id === id);
+export function getTestimonyById(id: string): TestimonyItem | undefined {
+  if (!id) return undefined;
+  return TESTIMONIES_ITEMS.find(item => item._id === id);
 }
 
 /**
@@ -17,12 +18,13 @@ export function getTestimonyById(id: number): TestimonyItem | undefined {
  * @returns Array of related testimony items
  */
 export function getRelatedTestimonies(
-  currentId: number,
+  currentId: string,
   category: string,
   limit: number = 3
 ): TestimonyItem[] {
+  if (!currentId) return [];
   return TESTIMONIES_ITEMS.filter(
-    item => item.id !== currentId && item.category === category
+    item => item._id !== currentId && item.category === category
   ).slice(0, limit);
 }
 

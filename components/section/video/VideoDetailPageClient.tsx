@@ -8,7 +8,6 @@ import {
   Calendar,
   Share2,
   Bookmark,
-  Video,
   MessageCircle,
   Heart,
 } from 'lucide-react';
@@ -18,6 +17,7 @@ import { Button } from '@/components/ui/button';
 import type { VideoItem } from '@/lib/constants/videos';
 import { VideoPlayer } from './VideoPlayer';
 import { VideoDownloadButton } from './VideoDownloadButton';
+import { VideoCard } from '@/components/cards/VideoCard';
 
 interface VideoDetailPageClientProps {
   videoItem: VideoItem;
@@ -225,44 +225,20 @@ export const VideoDetailPageClient = ({ videoItem, relatedVideos }: VideoDetailP
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {relatedVideos.map((video, index) => (
                   <motion.div
-                    key={video.id}
+                    key={video._id}
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    transition={{ delay: index * 0.1 }}
-                    whileHover={{ y: -4 }}
-                    className="group">
-                    <Link
-                      href={`/videos/${video.id}`}
-                      className="block bg-card rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all border border-border/50 hover:border-primary/20">
-                      <div className="relative aspect-video overflow-hidden">
-                        <Image
-                          src={video.thumbnail}
-                          alt={video.title}
-                          fill
-                          className="object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                        <div className="absolute inset-0 bg-foreground/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                          <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center">
-                            <Video className="w-6 h-6 fill-current ml-1" />
-                          </div>
-                        </div>
-                        {video.duration && (
-                          <span className="absolute bottom-2 right-2 px-2 py-1 bg-foreground/80 text-background text-xs rounded font-medium">
-                            {video.duration}
-                          </span>
-                        )}
-                      </div>
-                      <div className="p-4">
-                        <h3 className="font-semibold truncate group-hover:text-primary transition-colors">
-                          {video.title}
-                        </h3>
-                        <p className="text-sm text-muted-foreground truncate">{video.creator}</p>
-                        {video.views && (
-                          <p className="text-xs text-muted-foreground mt-1">{video.views} views</p>
-                        )}
-                      </div>
-                    </Link>
+                    transition={{ delay: index * 0.1 }}>
+                    <VideoCard
+                      _id={video._id}
+                      title={video.title}
+                      creator={video.creator}
+                      thumbnail={video.thumbnail}
+                      views={video.views || '0'}
+                      duration={video.duration || '0:00'}
+                      category={video.category || 'Video'}
+                    />
                   </motion.div>
                 ))}
               </div>

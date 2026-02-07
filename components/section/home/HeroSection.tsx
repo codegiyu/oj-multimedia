@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Play, Upload, TrendingUp, Headphones } from 'lucide-react';
+import { Play, Upload, Headphones } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
@@ -39,7 +39,7 @@ export const HeroSection = () => {
       {/* Content */}
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-3xl">
-          <motion.div
+          {/* <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}>
@@ -47,7 +47,7 @@ export const HeroSection = () => {
               <TrendingUp className="w-3 h-3" />
               Trending Now
             </span>
-          </motion.div>
+          </motion.div> */}
 
           <motion.h1
             initial={{ opacity: 0, y: 30 }}

@@ -5,7 +5,7 @@ import { TrendingUp, Flame, Clock, User, Calendar } from 'lucide-react';
 import Link from 'next/link';
 
 export interface TrendingStory {
-  id: number;
+  _id: string;
   title: string;
   excerpt?: string;
   category: string;
@@ -34,7 +34,7 @@ export const TrendingSidebar = ({ stories: trendingStories }: TrendingSidebarPro
 
       <div className="grid gap-6">
         {trendingStories.map((story, index) => (
-          <Link key={story.id} href={`/news/story/${story.id}`}>
+          <Link key={story._id} href={`/news/story/${story._id}`}>
             <motion.article
               initial={{ opacity: 0, x: -10 }}
               whileInView={{ opacity: 1, x: 0 }}

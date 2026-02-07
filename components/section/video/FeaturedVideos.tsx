@@ -5,7 +5,7 @@ import { Play, Star, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export interface FeaturedVideo {
-  id: number;
+  _id: string;
   title: string;
   creator: string;
   thumbnail: string;
@@ -43,7 +43,7 @@ export const FeaturedVideos = ({ videos: featuredVideos }: FeaturedVideosProps) 
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {featuredVideos.map((video, index) => (
             <motion.div
-              key={video.id}
+              key={video._id}
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}

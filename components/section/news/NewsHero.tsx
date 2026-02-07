@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { TrendingUp, Sparkles } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 
 export const NewsHero = () => {
   return (
@@ -17,10 +17,10 @@ export const NewsHero = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           className="text-center max-w-3xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary mb-6">
+          {/* <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary mb-6">
             <TrendingUp className="w-4 h-4" />
             <span className="text-sm font-medium">Fresh stories daily</span>
-          </div>
+          </div> */}
 
           <h1 className="text-4xl md:text-6xl font-display font-bold text-foreground mb-4">
             What's <span className="text-primary">Trending</span>

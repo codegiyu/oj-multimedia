@@ -2,11 +2,12 @@ import { DEVOTIONALS_ITEMS, type DevotionalItem } from '@/lib/constants/communit
 
 /**
  * Get a devotional item by its ID
- * @param id - The numeric ID of the devotional item
+ * @param id - The ID of the devotional item (string from URL)
  * @returns The devotional item if found, undefined otherwise
  */
-export function getDevotionalById(id: number): DevotionalItem | undefined {
-  return DEVOTIONALS_ITEMS.find(item => item.id === id);
+export function getDevotionalById(id: string): DevotionalItem | undefined {
+  if (!id) return undefined;
+  return DEVOTIONALS_ITEMS.find(item => item._id === id);
 }
 
 /**
@@ -17,12 +18,13 @@ export function getDevotionalById(id: number): DevotionalItem | undefined {
  * @returns Array of related devotional items
  */
 export function getRelatedDevotionals(
-  currentId: number,
+  currentId: string,
   category: string,
   limit: number = 3
 ): DevotionalItem[] {
+  if (!currentId) return [];
   return DEVOTIONALS_ITEMS.filter(
-    item => item.id !== currentId && item.category === category
+    item => item._id !== currentId && item.category === category
   ).slice(0, limit);
 }
 

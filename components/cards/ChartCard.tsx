@@ -3,8 +3,10 @@
 import { motion } from 'framer-motion';
 import { Play, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 interface ChartCardProps {
+  _id?: string;
   rank: number;
   title: string;
   artist: string;
@@ -14,7 +16,16 @@ interface ChartCardProps {
   change?: number;
 }
 
-export const ChartCard = ({ rank, title, artist, cover, plays, trend, change }: ChartCardProps) => {
+export const ChartCard = ({
+  _id,
+  rank,
+  title,
+  artist,
+  cover,
+  plays,
+  trend,
+  change,
+}: ChartCardProps) => {
   const TrendIcon = trend === 'up' ? TrendingUp : trend === 'down' ? TrendingDown : Minus;
   const trendColor =
     trend === 'up'
@@ -23,11 +34,11 @@ export const ChartCard = ({ rank, title, artist, cover, plays, trend, change }: 
         ? 'text-destructive'
         : 'text-muted-foreground';
 
-  return (
+  const cardContent = (
     <motion.div
       whileHover={{ x: 4 }}
       transition={{ duration: 0.2 }}
-      className="group flex items-center gap-4 p-3 rounded-xl hover:bg-muted/50 transition-colors">
+      className={`group flex items-center gap-4 p-3 rounded-xl hover:bg-muted/50 transition-colors ${_id ? 'cursor-pointer' : ''}`}>
       {/* Rank */}
       <div className="w-8 text-center">
         <span
@@ -70,9 +81,25 @@ export const ChartCard = ({ rank, title, artist, cover, plays, trend, change }: 
       <Button
         variant="play"
         size="icon-sm"
-        className="opacity-0 group-hover:opacity-100 transition-opacity">
+        className="opacity-0 group-hover:opacity-100 transition-opacity"
+        onClick={e => {
+          if (_id) {
+            e.preventDefault();
+            e.stopPropagation();
+          }
+        }}>
         <Play className="w-4 h-4 fill-current ml-0.5" />
       </Button>
     </motion.div>
   );
+
+  if (_id) {
+    return (
+      <Link href={`/music/${_id}`} className="block">
+        {cardContent}
+      </Link>
+    );
+  }
+
+  return cardContent;
 };

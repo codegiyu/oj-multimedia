@@ -28,7 +28,7 @@ async function generateTestimoniesData(): Promise<{
 
   // Transform all testimonies
   const allTestimonies: Testimony[] = TESTIMONIES_ITEMS.map(item => ({
-    id: item.id,
+    _id: item._id,
     author: item.author,
     avatar: item.avatar,
     content: item.content,
@@ -40,7 +40,7 @@ async function generateTestimoniesData(): Promise<{
 
   return {
     testimonies: allTestimonies,
-    featured: allTestimonies.filter(item => item.id <= 3),
+    featured: allTestimonies.filter(item => ['1', '2', '3'].includes(item._id)),
   };
 }
 

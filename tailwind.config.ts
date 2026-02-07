@@ -16,6 +16,7 @@ export default {
       fontFamily: {
         display: ["Space Grotesk", "system-ui", "sans-serif"],
         body: ["DM Sans", "system-ui", "sans-serif"],
+        lobster: ["Lobster", "cursive"],
       },
       colors: {
         border: "hsl(var(--border))",

@@ -11,7 +11,6 @@ import {
   Heart,
   MessageSquare,
   TrendingUp,
-  Mic,
 } from 'lucide-react';
 import type { ISidebarLinkGroup } from '@/lib/types/general';
 
@@ -36,11 +35,6 @@ export const sidebarLinksData: ISidebarLinkGroup[] = [
         LucideIcon: Music,
         page: 'Music',
         path: { prefix: '/admin', suffix: '/dashboard/music' },
-      },
-      {
-        LucideIcon: Mic,
-        page: 'Sermons',
-        path: { prefix: '/admin', suffix: '/dashboard/sermons' },
       },
       {
         LucideIcon: BookOpen,

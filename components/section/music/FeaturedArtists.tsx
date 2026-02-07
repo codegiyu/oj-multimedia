@@ -5,7 +5,7 @@ import { Play, Users, Verified } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export interface FeaturedArtist {
-  id: number;
+  _id: string;
   name: string;
   genre: string;
   image: string;
@@ -43,7 +43,7 @@ export const FeaturedArtists = ({ artists: featuredArtists }: FeaturedArtistsPro
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
           {featuredArtists.map((artist, index) => (
             <motion.div
-              key={artist.id}
+              key={artist._id}
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}

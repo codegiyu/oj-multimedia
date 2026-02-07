@@ -11,9 +11,9 @@ interface DevotionalDetailPageProps {
 // Generate metadata for the devotional detail page
 export async function generateMetadata({ params }: DevotionalDetailPageProps): Promise<Metadata> {
   const resolvedParams = await params;
-  const id = parseInt(resolvedParams.id, 10);
+  const id = resolvedParams.id;
 
-  if (isNaN(id)) {
+  if (!id) {
     return {
       title: 'Devotional Not Found',
       description: 'The requested devotional could not be found.',
@@ -37,10 +37,10 @@ export async function generateMetadata({ params }: DevotionalDetailPageProps): P
 
 export default async function DevotionalDetailPage({ params }: DevotionalDetailPageProps) {
   const resolvedParams = await params;
-  const id = parseInt(resolvedParams.id, 10);
+  const id = resolvedParams.id;
 
   // Validate ID
-  if (Number.isNaN(id)) {
+  if (!id) {
     notFound();
   }
 

@@ -35,14 +35,14 @@ export const PrayerPointsSection = ({ prayerPoints }: PrayerPointsSectionProps) 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {prayerPoints.map((prayer, index) => (
           <motion.div
-            key={prayer.id}
+            key={prayer._id}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: index * 0.1 }}
             whileHover={{ y: -4 }}
             className="bg-card rounded-2xl p-5 shadow-sm border border-border/50 hover:shadow-md transition-all cursor-pointer group">
-            <Link href={`/community/devotionals/${prayer.id}`}>
+            <Link href={`/community/devotionals/${prayer._id}`}>
               <div className="flex items-start justify-between mb-3">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
@@ -72,7 +72,7 @@ export const PrayerPointsSection = ({ prayerPoints }: PrayerPointsSectionProps) 
               <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{prayer.excerpt}</p>
 
               <Button variant="outline" size="sm" className="w-full" asChild>
-                <Link href={`/community/devotionals/${prayer.id}`}>Read Full Prayer</Link>
+                <Link href={`/community/devotionals/${prayer._id}`}>Read Full Prayer</Link>
               </Button>
             </Link>
           </motion.div>

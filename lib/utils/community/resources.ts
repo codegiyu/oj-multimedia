@@ -5,8 +5,8 @@ import { RESOURCES_ITEMS, type ResourceItem } from '@/lib/constants/community/re
  * @param id - The numeric ID of the resource item
  * @returns The resource item if found, undefined otherwise
  */
-export function getResourceById(id: number): ResourceItem | undefined {
-  return RESOURCES_ITEMS.find(item => item.id === id);
+export function getResourceById(id: string): ResourceItem | undefined {
+  return RESOURCES_ITEMS.find(item => item._id === id);
 }
 
 /**

@@ -50,7 +50,7 @@ export const FeaturedStoriesPageClient = ({ featuredStories }: FeaturedStoriesPa
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {itemsToShow.map((story, index) => (
-                <Link key={story.id} href={`/news/story/${story.id}`} className="h-full">
+                <Link key={story._id} href={`/news/story/${story._id}`} className="h-full">
                   <motion.article
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}

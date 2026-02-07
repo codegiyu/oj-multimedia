@@ -1,23 +1,13 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import {
-  Play,
-  Heart,
-  Share2,
-  MoreHorizontal,
-  ChevronLeft,
-  ChevronRight,
-  Flame,
-  Clock,
-  Eye,
-} from 'lucide-react';
+import { ChevronLeft, ChevronRight, Flame } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useRef } from 'react';
-import Link from 'next/link';
+import { VideoCard } from '@/components/cards/VideoCard';
 
 export interface TrendingVideo {
-  id: number;
+  _id: string;
   title: string;
   creator: string;
   thumbnail: string;
@@ -85,99 +75,21 @@ export const TrendingVideos = ({ videos: trendingVideos }: TrendingVideosProps) 
           className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
           {trendingVideos.map((video, index) => (
             <motion.div
-              key={video.id}
+              key={video._id}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.05 }}
-              whileHover={{ y: -8 }}
-              className="group relative min-w-[280px] md:min-w-[320px] snap-start">
-              <Link href={`/videos/${video.id}`} className="block">
-                <div className="bg-card rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow cursor-pointer">
-                {/* Thumbnail */}
-                <div className="relative aspect-video overflow-hidden">
-                  <img
-                    src={video.thumbnail}
-                    alt={video.title}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
-
-                  {/* Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-                  {/* Play Button */}
-                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <Button variant="play" size="icon-lg" className="shadow-glow">
-                      <Play className="w-6 h-6 fill-current ml-1" />
-                    </Button>
-                  </div>
-
-                  {/* Duration Badge */}
-                  <span className="absolute bottom-3 right-3 px-2 py-1 bg-foreground/80 text-background text-xs rounded-md font-medium">
-                    {video.duration}
-                  </span>
-
-                  {/* New Badge */}
-                  {video.isNew && (
-                    <span className="absolute top-3 left-3 px-2 py-1 bg-primary text-primary-foreground text-xs font-bold rounded-full">
-                      NEW
-                    </span>
-                  )}
-
-                  {/* Quick Actions */}
-                  <div
-                    className="absolute top-3 right-3 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                    onClick={e => e.stopPropagation()}>
-                    <Button
-                      variant="ghost"
-                      size="icon-sm"
-                      className="bg-card/80 backdrop-blur-sm hover:bg-card"
-                      onClick={e => e.preventDefault()}>
-                      <Heart className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon-sm"
-                      className="bg-card/80 backdrop-blur-sm hover:bg-card"
-                      onClick={e => e.preventDefault()}>
-                      <Share2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Info */}
-                <div className="p-4">
-                  <div className="flex items-start justify-between gap-2 mb-2">
-                    <div className="min-w-0 flex-1">
-                      <h3 className="font-semibold truncate group-hover:text-primary transition-colors mb-1">
-                        {video.title}
-                      </h3>
-                      <p className="text-sm text-muted-foreground truncate">{video.creator}</p>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="icon-sm"
-                      className="shrink-0"
-                      onClick={e => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                      }}>
-                      <MoreHorizontal className="w-4 h-4" />
-                    </Button>
-                  </div>
-                  <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                    <span className="flex items-center gap-1">
-                      <Eye className="w-3 h-3" />
-                      {video.views} views
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Clock className="w-3 h-3" />
-                      {video.uploadedAt}
-                    </span>
-                  </div>
-                </div>
-                </div>
-              </Link>
+              className="min-w-[280px] md:min-w-[320px] snap-start">
+              <VideoCard
+                _id={video._id}
+                title={video.title}
+                creator={video.creator}
+                thumbnail={video.thumbnail}
+                views={video.views}
+                duration={video.duration}
+                category="Video"
+              />
             </motion.div>
           ))}
         </div>

@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
 export interface Discussion {
-  id: number;
+  _id: string;
   title: string;
   author: string;
   replies: number;
@@ -43,7 +43,7 @@ export const ActiveDiscussions = ({ discussions }: ActiveDiscussionsProps) => {
       <div className="bg-card rounded-2xl border border-border/50 overflow-hidden">
         {discussions.map((discussion, index) => (
           <motion.div
-            key={discussion.id}
+            key={discussion._id}
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}

@@ -13,7 +13,7 @@ interface PollDetailPageClientProps {
 }
 
 export const PollDetailPageClient = ({ poll }: PollDetailPageClientProps) => {
-  const [selectedOption, setSelectedOption] = useState<number | null>(null);
+  const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [hasVoted, setHasVoted] = useState(false);
   const [localPoll, setLocalPoll] = useState(poll);
 
@@ -44,7 +44,7 @@ export const PollDetailPageClient = ({ poll }: PollDetailPageClientProps) => {
     }
   };
 
-  const handleVote = (optionId: number) => {
+  const handleVote = (optionId: string) => {
     if (hasVoted || poll.status === 'closed') {
       if (poll.status === 'closed') {
         toast({
@@ -61,7 +61,7 @@ export const PollDetailPageClient = ({ poll }: PollDetailPageClientProps) => {
 
     // Update local state to show vote
     const updatedOptions = localPoll.options.map(opt => {
-      if (opt.id === optionId) {
+      if (opt._id === optionId) {
         const newVotes = opt.votes + 1;
         const newTotal = localPoll.totalVotes + 1;
         const newPercentage = Math.round((newVotes / newTotal) * 100);
@@ -148,13 +148,13 @@ export const PollDetailPageClient = ({ poll }: PollDetailPageClientProps) => {
             transition={{ duration: 0.5 }}
             className="space-y-4">
             {localPoll.options.map(option => {
-              const isSelected = selectedOption === option.id;
+              const isSelected = selectedOption === option._id;
               const isDisabled = hasVoted || poll.status === 'closed';
 
               return (
                 <button
-                  key={option.id}
-                  onClick={() => handleVote(option.id)}
+                  key={option._id}
+                  onClick={() => handleVote(option._id)}
                   disabled={isDisabled}
                   className={`w-full p-4 rounded-lg border-2 text-left transition-all ${
                     isSelected

@@ -8,7 +8,7 @@ import { MarriageAndFamilySection } from './MarriageAndFamilySection';
 import { CommunityCTA } from '../../shared';
 
 export interface DailyDevotional {
-  id: number;
+  _id: string;
   title: string;
   verse: string;
   date: string;
@@ -19,7 +19,7 @@ export interface DailyDevotional {
 }
 
 export interface BibleStudy {
-  id: number;
+  _id: string;
   title: string;
   description: string;
   lessons: number;
@@ -29,7 +29,7 @@ export interface BibleStudy {
 }
 
 export interface PrayerPoint {
-  id: number;
+  _id: string;
   title: string;
   category: string;
   points: number;
@@ -39,7 +39,7 @@ export interface PrayerPoint {
 }
 
 export interface LivingTip {
-  id: number;
+  _id: string;
   title: string;
   category: string;
   excerpt: string;
@@ -48,7 +48,7 @@ export interface LivingTip {
 }
 
 export interface MarriageFamily {
-  id: number;
+  _id: string;
   title: string;
   category: string;
   excerpt: string;

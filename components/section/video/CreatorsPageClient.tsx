@@ -58,7 +58,7 @@ export const CreatorsPageClient = ({ featuredCreators }: CreatorsPageClientProps
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {itemsToShow.map((creator, index) => (
                   <motion.div
-                    key={creator.id}
+                    key={creator._id}
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}

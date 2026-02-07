@@ -1,13 +1,14 @@
 'use client';
 
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { ArrowRight, Flame } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
+import { useMemo, useRef } from 'react';
+import { Flame } from 'lucide-react';
 import { MusicCard } from '@/components/cards/MusicCard';
+import { SectionComp } from '@/components/general/SectionComp';
+import { useQueryState, parseAsString } from 'nuqs';
+import { motion } from 'framer-motion';
 
 export interface TrendingMusicItem {
+  _id: string;
   title: string;
   artist: string;
   cover: string;
@@ -20,84 +21,71 @@ interface TrendingMusicSectionProps {
   music: TrendingMusicItem[];
 }
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 },
-};
+const genres = [
+  { id: 'All', label: 'All' },
+  { id: 'Afrobeats', label: 'Afrobeats' },
+  { id: 'Hip-Hop', label: 'Hip-Hop' },
+  { id: 'Pop', label: 'Pop' },
+  { id: 'R&B', label: 'R&B' },
+  { id: 'Gospel', label: 'Gospel' },
+  { id: 'Instrumental', label: 'Instrumental' },
+];
 
 export const TrendingMusicSection = ({ music: trendingMusic }: TrendingMusicSectionProps) => {
-  const [selectedGenre, setSelectedGenre] = useState<string>('All');
+  const [selectedGenre] = useQueryState('genre', parseAsString.withDefault('All'));
+  const scrollRef = useRef<HTMLDivElement>(null);
 
-  const genres = ['All', 'Afrobeats', 'Hip-Hop', 'Pop', 'R&B', 'Gospel', 'Instrumental'];
+  const filteredMusic = useMemo(
+    () =>
+      selectedGenre === 'All'
+        ? trendingMusic
+        : trendingMusic.filter(track => track.genre === selectedGenre),
+    [trendingMusic, selectedGenre]
+  );
 
-  const filteredMusic =
-    selectedGenre === 'All'
-      ? trendingMusic
-      : trendingMusic.filter(track => track.genre === selectedGenre);
+  const scroll = (direction: 'left' | 'right') => {
+    if (scrollRef.current) {
+      const scrollAmount = 280;
+      scrollRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth',
+      });
+    }
+  };
 
   return (
-    <section id="music" className="py-16 md:py-24">
-      <div className="container mx-auto px-4">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-              <Flame className="w-5 h-5 text-primary" />
-            </div>
-            <div>
-              <h2 className="section-header">Trending Music</h2>
-              <p className="text-muted-foreground text-sm">Discover what's hot right now</p>
-            </div>
-          </div>
-          <Button
-            variant="ghost"
-            className="gap-2 text-muted-foreground hover:text-primary"
-            asChild>
-            <Link href="/music/trending">
-              View All
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-          </Button>
-        </div>
-
-        {/* Genre Filter */}
-        <div className="flex gap-2 mb-8 overflow-x-auto pb-2 scrollbar-hide">
-          {genres.map(genre => (
-            <button
-              key={genre}
-              onClick={() => setSelectedGenre(genre)}
-              className={`quick-link whitespace-nowrap transition-colors ${
-                selectedGenre === genre ? 'bg-primary text-primary-foreground' : ''
-              }`}>
-              {genre}
-            </button>
-          ))}
-        </div>
-
-        {/* Music Grid */}
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-100px' }}
-          className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 md:gap-6">
-          {filteredMusic.map((track, index) => (
-            <motion.div key={index} variants={itemVariants}>
-              <MusicCard {...track} />
-            </motion.div>
-          ))}
-        </motion.div>
+    <SectionComp
+      id="music"
+      icon={Flame}
+      iconColor="primary"
+      heading="Trending Music"
+      subtext="Discover what's hot right now"
+      viewAllLink="/music/trending"
+      tabs={genres}
+      tabsQueryKey="genre"
+      defaultTab="All"
+      showPrevNext={true}
+      onPrev={() => scroll('left')}
+      onNext={() => scroll('right')}
+      contentProps={{
+        className: '',
+        enableAnimation: false,
+      }}>
+      <div
+        ref={scrollRef}
+        className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
+        {filteredMusic.map((track, index) => (
+          <motion.div
+            key={track._id || index}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: index * 0.05 }}
+            className="max-w-[160px] sm:max-w-[180px] md:max-w-[200px] lg:max-w-[220px] xl:max-w-[240px] 2xl:max-w-[260px] snap-start shrink-0">
+            <MusicCard {...track} />
+          </motion.div>
+        ))}
       </div>
-    </section>
+    </SectionComp>
   );
 };

@@ -56,7 +56,7 @@ export const RecentVideosPageClient = ({ recentUploads }: RecentVideosPageClient
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {itemsToShow.map((video, index) => (
                   <motion.div
-                    key={video.id}
+                    key={video._id}
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
@@ -82,7 +82,7 @@ export const RecentVideosPageClient = ({ recentUploads }: RecentVideosPageClient
                     {/* Info */}
                     <div className="flex-1 min-w-0 flex flex-col justify-between">
                       <div>
-                        <Link href={`/videos/${video.id}`}>
+                        <Link href={`/videos/${video._id}`}>
                           <h3 className="font-semibold text-sm truncate group-hover:text-primary transition-colors mb-1">
                             {video.title}
                           </h3>

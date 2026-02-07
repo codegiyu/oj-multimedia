@@ -31,7 +31,7 @@ async function generateNewsData() {
   )
     .slice(0, 3)
     .map(item => ({
-      id: item.id,
+      _id: item._id,
       title: item.title,
       excerpt: item.excerpt!,
       category: item.category,
@@ -51,7 +51,7 @@ async function generateNewsData() {
   )
     .slice(0, 10)
     .map(item => ({
-      id: item.id,
+      _id: item._id,
       title: item.title,
       excerpt: item.excerpt!,
       category: item.category,
@@ -70,7 +70,7 @@ async function generateNewsData() {
     .sort((a, b) => (a.rank || 0) - (b.rank || 0))
     .slice(0, 6)
     .map(item => ({
-      id: item.id,
+      _id: item._id,
       title: item.title,
       excerpt: item.excerpt,
       category: item.category,
@@ -85,7 +85,7 @@ async function generateNewsData() {
   const videoNews: VideoNewsItem[] = NEWS_ITEMS.filter(item => item.videoUrl && item.duration)
     .slice(0, 4)
     .map(item => ({
-      id: item.id,
+      _id: item._id,
       title: item.title,
       category: item.category,
       duration: item.duration!,

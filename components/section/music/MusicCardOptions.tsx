@@ -24,21 +24,21 @@ export const MusicCardOptions = ({ musicItem }: MusicCardOptionsProps) => {
       navigator.share({
         title: musicItem.title,
         text: `${musicItem.title} by ${musicItem.artist}`,
-        url: `${window.location.origin}/music/${musicItem.id}`,
+        url: `${window.location.origin}/music/${musicItem._id}`,
       });
     } else {
-      navigator.clipboard.writeText(`${window.location.origin}/music/${musicItem.id}`);
+      navigator.clipboard.writeText(`${window.location.origin}/music/${musicItem._id}`);
     }
   };
 
   const handleAddToPlaylist = () => {
     // TODO: Implement playlist functionality
-    console.log('Add to playlist:', musicItem.id);
+    console.log('Add to playlist:', musicItem._id);
   };
 
   const handleAddToFavorites = () => {
     // TODO: Implement favorites functionality
-    console.log('Add to favorites:', musicItem.id);
+    console.log('Add to favorites:', musicItem._id);
   };
 
   const handleDownload = () => {
@@ -54,12 +54,12 @@ export const MusicCardOptions = ({ musicItem }: MusicCardOptionsProps) => {
   };
 
   const handleViewDetails = () => {
-    router.push(`/music/${musicItem.id}`);
+    router.push(`/music/${musicItem._id}`);
   };
 
   const handleReport = () => {
     // TODO: Implement report functionality
-    console.log('Report:', musicItem.id);
+    console.log('Report:', musicItem._id);
   };
 
   return (

@@ -11,9 +11,9 @@ interface PollDetailPageProps {
 // Generate metadata for the poll detail page
 export async function generateMetadata({ params }: PollDetailPageProps): Promise<Metadata> {
   const resolvedParams = await params;
-  const id = parseInt(resolvedParams.id, 10);
+  const id = resolvedParams.id;
 
-  if (isNaN(id)) {
+  if (!id) {
     return {
       title: 'Poll Not Found',
       description: 'The requested poll could not be found.',
@@ -37,10 +37,10 @@ export async function generateMetadata({ params }: PollDetailPageProps): Promise
 
 export default async function PollDetailPage({ params }: PollDetailPageProps) {
   const resolvedParams = await params;
-  const id = parseInt(resolvedParams.id, 10);
+  const id = resolvedParams.id;
 
   // Validate ID
-  if (isNaN(id)) {
+  if (!id) {
     notFound();
   }
 

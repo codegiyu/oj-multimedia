@@ -10,7 +10,7 @@ import {
 } from '@/components/section/community/ask-a-pastor/AskAPastorPageClient';
 import { AskAPastorPageSkeleton } from '@/components/section/community/ask-a-pastor/AskAPastorPageSkeleton';
 import { QUESTIONS_ITEMS } from '@/lib/constants/community/questions';
-import { PASTORS } from '@/lib/constants/community/sermons';
+import { PASTORS, type Pastor } from '@/lib/constants/community/pastors';
 
 export const metadata: Metadata = {
   title: 'Ask a Pastor - Get Biblical Guidance',
@@ -28,7 +28,7 @@ async function generateAskAPastorData() {
 
   // Filter and transform active questions
   const activeQuestions: Question[] = QUESTIONS_ITEMS.filter(item => item.isActive).map(item => ({
-    id: item.id,
+    _id: item._id,
     question: item.question,
     category: item.category,
     author: item.author,
@@ -42,7 +42,7 @@ async function generateAskAPastorData() {
   const answeredQuestions: AnsweredQuestion[] = QUESTIONS_ITEMS.filter(
     item => item.isAnswered && item.answer !== undefined && item.pastor !== undefined
   ).map(item => ({
-    id: item.id,
+    _id: item._id,
     question: item.question,
     answer: item.answer!,
     pastor: item.pastor!,
@@ -52,13 +52,13 @@ async function generateAskAPastorData() {
   }));
 
   // Transform available pastors
-  const availablePastors: AvailablePastor[] = PASTORS.map(pastor => ({
-    id: pastor.id,
+  const availablePastors: AvailablePastor[] = PASTORS.map((pastor: Pastor) => ({
+    _id: pastor._id,
     name: pastor.name,
     title: pastor.title,
     church: pastor.church,
     image: pastor.image,
-    expertise: pastor.expertise || pastor.topics,
+    expertise: (pastor.expertise || pastor.topics || []) as string[],
     questionsAnswered: pastor.questionsAnswered || 0,
     rating: pastor.rating || 0,
   }));

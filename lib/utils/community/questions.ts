@@ -2,11 +2,12 @@ import { QUESTIONS_ITEMS, type QuestionItem } from '@/lib/constants/community/qu
 
 /**
  * Get a question item by its ID
- * @param id - The numeric ID of the question item
+ * @param id - The ID of the question item (string from URL)
  * @returns The question item if found, undefined otherwise
  */
-export function getQuestionById(id: number): QuestionItem | undefined {
-  return QUESTIONS_ITEMS.find(item => item.id === id);
+export function getQuestionById(id: string): QuestionItem | undefined {
+  if (!id) return undefined;
+  return QUESTIONS_ITEMS.find(item => item._id === id);
 }
 
 /**
@@ -17,11 +18,12 @@ export function getQuestionById(id: number): QuestionItem | undefined {
  * @returns Array of related question items
  */
 export function getRelatedQuestions(
-  currentId: number,
+  currentId: string,
   category: string,
   limit: number = 3
 ): QuestionItem[] {
-  return QUESTIONS_ITEMS.filter(item => item.id !== currentId && item.category === category).slice(
+  if (!currentId) return [];
+  return QUESTIONS_ITEMS.filter(item => item._id !== currentId && item.category === category).slice(
     0,
     limit
   );

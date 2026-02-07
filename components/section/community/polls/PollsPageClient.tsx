@@ -5,14 +5,14 @@ import { RecentPolls } from './RecentPolls';
 import { CreatePoll } from './CreatePoll';
 
 export interface PollOption {
-  id: number;
+  _id: string;
   text: string;
   votes: number;
   percentage: number;
 }
 
 export interface Poll {
-  id: number;
+  _id: string;
   question: string;
   description?: string;
   options: PollOption[];

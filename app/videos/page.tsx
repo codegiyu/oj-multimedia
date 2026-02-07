@@ -40,7 +40,7 @@ async function generateVideoData(category: string = 'all') {
     )
     .slice(0, 8)
     .map(item => ({
-      id: item.id,
+      _id: item._id,
       title: item.title,
       creator: item.creator,
       thumbnail: item.thumbnail,
@@ -61,7 +61,7 @@ async function generateVideoData(category: string = 'all') {
     )
     .slice(0, 4)
     .map(item => ({
-      id: item.id,
+      _id: item._id,
       title: item.title,
       creator: item.creator,
       thumbnail: item.thumbnail,
@@ -80,7 +80,9 @@ async function generateVideoData(category: string = 'all') {
                   ? 'Inspirational'
                   : item.category === 'live'
                     ? 'Live Performances'
-                    : 'Podcasts / Video Talks',
+                    : item.category === 'sermon'
+                      ? 'Sermons'
+                      : 'Podcasts / Video Talks',
       featured: item.featured || false,
     }));
 
@@ -96,7 +98,7 @@ async function generateVideoData(category: string = 'all') {
     )
     .slice(0, 6)
     .map(item => ({
-      id: item.id,
+      _id: item._id,
       title: item.title,
       creator: item.creator,
       thumbnail: item.thumbnail,
@@ -130,7 +132,7 @@ async function generateVideoData(category: string = 'all') {
     )
     .slice(0, 8)
     .map(item => ({
-      id: item.id,
+      _id: item._id,
       title: item.title,
       creator: item.creator,
       thumbnail: item.thumbnail,
@@ -152,7 +154,7 @@ async function generateVideoData(category: string = 'all') {
     )
     .slice(0, 6)
     .map(item => ({
-      id: item.id,
+      _id: item._id,
       name: item.name || item.creator,
       category:
         item.category === 'music'

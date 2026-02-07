@@ -34,14 +34,14 @@ export const DailyDevotionalsSection = ({ devotionals }: DailyDevotionalsSection
       <div className="grid md:grid-cols-2 gap-4">
         {devotionals.map((devotional, index) => (
           <motion.div
-            key={devotional.id}
+            key={devotional._id}
             initial={{ opacity: 0, x: index % 2 === 0 ? -20 : 20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ delay: index * 0.1 }}
             whileHover={{ scale: 1.01 }}
             className="bg-card rounded-2xl p-5 shadow-sm border border-border/50 hover:shadow-md transition-all cursor-pointer group">
-            <Link href={`/community/devotionals/${devotional.id}`}>
+            <Link href={`/community/devotionals/${devotional._id}`}>
               <div className="flex gap-4">
                 <div className="w-16 h-16 rounded-xl bg-secondary/10 flex items-center justify-center shrink-0">
                   <Calendar className="w-7 h-7 text-secondary" />
