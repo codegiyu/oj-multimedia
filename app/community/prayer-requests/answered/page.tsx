@@ -25,7 +25,7 @@ async function generateAnsweredPrayersData() {
       return dateB.localeCompare(dateA);
     })
     .map(item => ({
-      id: item.id,
+      _id: item._id,
       title: item.title,
       originalRequest: item.originalRequest || item.content,
       testimony: item.testimony || item.content,

@@ -58,7 +58,7 @@ export const TrendingStoriesPageClient = ({ trendingStories }: TrendingStoriesPa
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {itemsToShow.map((story, index) => (
                   <motion.article
-                    key={story.id}
+                    key={story._id}
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
@@ -66,7 +66,7 @@ export const TrendingStoriesPageClient = ({ trendingStories }: TrendingStoriesPa
                     whileHover={{ y: -4 }}
                     className="group">
                     <Link
-                      href={`/news/story/${story.id}`}
+                      href={`/news/story/${story._id}`}
                       className="block bg-card rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 border border-border/50 hover:border-primary/20">
                       {/* Image */}
                       {story.image && (

@@ -25,7 +25,7 @@ async function generateFeaturedStoriesData() {
   const featuredStories: FeaturedStory[] = NEWS_ITEMS.filter(
     item => item.isFeatured && item.excerpt !== undefined && item.comments !== undefined
   ).map(item => ({
-    id: item.id,
+    _id: item._id,
     title: item.title,
     excerpt: item.excerpt!,
     category: item.category,

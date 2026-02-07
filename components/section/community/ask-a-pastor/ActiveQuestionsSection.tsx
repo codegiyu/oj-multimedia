@@ -51,14 +51,14 @@ export const ActiveQuestionsSection = ({ questions }: ActiveQuestionsSectionProp
       <div className="grid md:grid-cols-2 gap-6">
         {itemsToShow.map((question, index) => (
           <motion.div
-            key={question.id}
+            key={question._id}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: index * 0.1 }}
             whileHover={{ y: -4 }}
             className="bg-card rounded-2xl p-6 shadow-sm border border-border/50 hover:shadow-md transition-all">
-            <Link href={`/community/ask-a-pastor/${question.id}`}>
+            <Link href={`/community/ask-a-pastor/${question._id}`}>
               <div className="flex items-start justify-between gap-3 mb-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
@@ -92,7 +92,7 @@ export const ActiveQuestionsSection = ({ questions }: ActiveQuestionsSectionProp
               <div className="flex items-center justify-between mt-4">
                 <span className="text-sm text-muted-foreground">— {question.author}</span>
                 <Button size="sm" variant="ghost" className="gap-1" asChild>
-                  <Link href={`/community/ask-a-pastor/${question.id}`}>
+                  <Link href={`/community/ask-a-pastor/${question._id}`}>
                     <MessageSquare className="w-4 h-4" />
                     View Answers
                   </Link>

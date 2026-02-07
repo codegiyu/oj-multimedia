@@ -22,7 +22,6 @@ async function generateCommunityData() {
   // Only fetch category counts from the server
   const categoryCounts: Record<string, number> = {
     devotionals: 245,
-    sermons: 128,
     testimonies: 567,
     prayerRequests: 89,
     askAPastor: 156,
@@ -33,7 +32,7 @@ async function generateCommunityData() {
 
   const testimonies: Testimony[] = [
     {
-      id: 1,
+      _id: '1',
       author: 'Michelle K.',
       avatar: '/images/artist-2.jpg',
       content:
@@ -43,7 +42,7 @@ async function generateCommunityData() {
       timeAgo: '2 hours ago',
     },
     {
-      id: 2,
+      _id: '2',
       author: 'David O.',
       avatar: '/images/artist-1.jpg',
       content:
@@ -53,7 +52,7 @@ async function generateCommunityData() {
       timeAgo: '5 hours ago',
     },
     {
-      id: 3,
+      _id: '3',
       author: 'Grace A.',
       avatar: '/images/artist-3.jpg',
       content:
@@ -66,7 +65,7 @@ async function generateCommunityData() {
 
   const devotionals: Devotional[] = [
     {
-      id: 1,
+      _id: '1',
       title: 'Finding Peace in Chaos',
       excerpt:
         "In the midst of life's storms, discover how to anchor yourself in calm and clarity...",
@@ -76,7 +75,7 @@ async function generateCommunityData() {
       category: 'Peace & Rest',
     },
     {
-      id: 2,
+      _id: '2',
       title: 'The Power of Gratitude',
       excerpt: 'Transform your perspective by embracing thankfulness in every season of life...',
       author: 'Rev. Sarah',
@@ -85,7 +84,7 @@ async function generateCommunityData() {
       category: 'Growth',
     },
     {
-      id: 3,
+      _id: '3',
       title: 'Walking in Purpose',
       excerpt:
         'Uncover your unique calling and learn to walk confidently in your God-given purpose...',
@@ -95,7 +94,7 @@ async function generateCommunityData() {
       category: 'Purpose',
     },
     {
-      id: 4,
+      _id: '4',
       title: 'Overcoming Fear',
       excerpt: 'Break free from the chains of fear and step into boldness and confidence...',
       author: 'Pastor Grace',
@@ -107,7 +106,7 @@ async function generateCommunityData() {
 
   const discussions: Discussion[] = [
     {
-      id: 1,
+      _id: '1',
       title: 'How do you stay motivated during tough times?',
       author: 'Alex M.',
       replies: 47,
@@ -116,7 +115,7 @@ async function generateCommunityData() {
       trending: true,
     },
     {
-      id: 2,
+      _id: '2',
       title: "What's your favorite worship song right now?",
       author: 'Jessica T.',
       replies: 89,
@@ -125,7 +124,7 @@ async function generateCommunityData() {
       trending: true,
     },
     {
-      id: 3,
+      _id: '3',
       title: 'Tips for building better daily habits',
       author: 'Marcus D.',
       replies: 34,
@@ -134,7 +133,7 @@ async function generateCommunityData() {
       trending: false,
     },
     {
-      id: 4,
+      _id: '4',
       title: 'Share your favorite inspirational quotes!',
       author: 'Rachel K.',
       replies: 156,
@@ -143,7 +142,7 @@ async function generateCommunityData() {
       trending: true,
     },
     {
-      id: 5,
+      _id: '5',
       title: 'How has music helped your journey?',
       author: 'Daniel O.',
       replies: 28,

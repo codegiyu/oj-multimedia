@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { EmptyState } from './EmptyState';
 
 export interface FeaturedStory {
-  id: number;
+  _id: string;
   title: string;
   excerpt: string;
   category: string;
@@ -62,14 +62,14 @@ export const FeaturedStories = ({ stories: featuredStories }: FeaturedStoriesPro
 
         <div className="grid lg:grid-cols-2 gap-6">
           {/* Main Featured Story */}
-          <Link href={`/news/story/${featuredStories[0].id}`} className="h-full">
+          <Link href={`/news/story/${featuredStories[0]._id}`} className="h-full">
             <motion.article
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               whileHover={{ y: -4 }}
               transition={{ duration: 0.3 }}
-              className="h-full group relative h-[400px] md:h-[500px] rounded-2xl overflow-hidden cursor-pointer">
+              className="h-full group relative md:h-[500px] rounded-2xl overflow-hidden cursor-pointer">
               <img
                 src={featuredStories[0].image}
                 alt={featuredStories[0].title}
@@ -124,7 +124,7 @@ export const FeaturedStories = ({ stories: featuredStories }: FeaturedStoriesPro
           {/* Secondary Featured Stories */}
           <div className="grid gap-6">
             {featuredStories.slice(1).map((story, index) => (
-              <Link key={story.id} href={`/news/story/${story.id}`}>
+              <Link key={story._id} href={`/news/story/${story._id}`}>
                 <motion.article
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}

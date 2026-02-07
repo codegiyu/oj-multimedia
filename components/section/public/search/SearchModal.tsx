@@ -13,7 +13,6 @@ import {
   Users,
   ArrowRight,
   BookOpen,
-  Mic,
   Heart,
   HandHeart,
   HelpCircle,
@@ -25,7 +24,6 @@ import { useRouter } from 'next/navigation';
 import { MUSIC_ITEMS, type MusicItem } from '@/lib/constants/music';
 import { NEWS_ITEMS, type NewsItem } from '@/lib/constants/news';
 import { DEVOTIONALS_ITEMS } from '@/lib/constants/community/devotionals';
-import { SERMONS_ITEMS } from '@/lib/constants/community/sermons';
 import { TESTIMONIES_ITEMS } from '@/lib/constants/community/testimonies';
 import { PRAYER_REQUESTS_ITEMS } from '@/lib/constants/community/prayer-requests';
 import { QUESTIONS_ITEMS } from '@/lib/constants/community/questions';
@@ -38,20 +36,19 @@ interface SearchModalProps {
 }
 
 interface SearchItem {
-  id: number;
+  _id: string;
   title: string;
   type: string;
   artist?: string;
   category?: string;
   creator?: string;
-  pastor?: string;
   author?: string;
 }
 
 // Transform music items to search items
 const transformMusicItems = (items: MusicItem[]): SearchItem[] => {
   return items.map(item => ({
-    id: item.id,
+    _id: item._id,
     title: item.title,
     type: 'music',
     artist: item.artist,
@@ -62,7 +59,7 @@ const transformMusicItems = (items: MusicItem[]): SearchItem[] => {
 // Transform news items to search items
 const transformNewsItems = (items: NewsItem[]): SearchItem[] => {
   return items.map(item => ({
-    id: item.id,
+    _id: item._id,
     title: item.title,
     type: 'news',
     category: item.category,
@@ -73,7 +70,7 @@ const transformNewsItems = (items: NewsItem[]): SearchItem[] => {
 // Transform devotional items to search items
 const transformDevotionalItems = (items: typeof DEVOTIONALS_ITEMS): SearchItem[] => {
   return items.map(item => ({
-    id: item.id,
+    _id: item._id,
     title: item.title,
     type: 'devotional',
     category: item.category,
@@ -81,21 +78,10 @@ const transformDevotionalItems = (items: typeof DEVOTIONALS_ITEMS): SearchItem[]
   }));
 };
 
-// Transform sermon items to search items
-const transformSermonItems = (items: typeof SERMONS_ITEMS): SearchItem[] => {
-  return items.map(item => ({
-    id: item.id,
-    title: item.title,
-    type: 'sermon',
-    category: item.category || item.topic,
-    pastor: item.pastor,
-  }));
-};
-
 // Transform testimony items to search items
 const transformTestimonyItems = (items: typeof TESTIMONIES_ITEMS): SearchItem[] => {
   return items.map(item => ({
-    id: item.id,
+    _id: item._id,
     title: item.title || item.content.substring(0, 50),
     type: 'testimony',
     category: item.category,
@@ -106,7 +92,7 @@ const transformTestimonyItems = (items: typeof TESTIMONIES_ITEMS): SearchItem[] 
 // Transform prayer request items to search items
 const transformPrayerRequestItems = (items: typeof PRAYER_REQUESTS_ITEMS): SearchItem[] => {
   return items.map(item => ({
-    id: item.id,
+    _id: item._id,
     title: item.title,
     type: 'prayer-request',
     category: item.category,
@@ -117,7 +103,7 @@ const transformPrayerRequestItems = (items: typeof PRAYER_REQUESTS_ITEMS): Searc
 // Transform question items to search items
 const transformQuestionItems = (items: typeof QUESTIONS_ITEMS): SearchItem[] => {
   return items.map(item => ({
-    id: item.id,
+    _id: item._id,
     title: item.question,
     type: 'question',
     category: item.category,
@@ -128,7 +114,7 @@ const transformQuestionItems = (items: typeof QUESTIONS_ITEMS): SearchItem[] => 
 // Transform poll items to search items
 const transformPollItems = (items: typeof POLLS_ITEMS): SearchItem[] => {
   return items.map(item => ({
-    id: item.id,
+    _id: item._id,
     title: item.question,
     type: 'poll',
     category: item.category,
@@ -138,7 +124,7 @@ const transformPollItems = (items: typeof POLLS_ITEMS): SearchItem[] => {
 // Transform resource items to search items
 const transformResourceItems = (items: typeof RESOURCES_ITEMS): SearchItem[] => {
   return items.map(item => ({
-    id: item.id,
+    _id: item._id,
     title: item.title,
     type: 'resource',
     category: item.category || item.genre || item.templateType || item.productCategory,
@@ -151,7 +137,6 @@ const typeIcons: Record<string, typeof Music> = {
   video: Video,
   community: Users,
   devotional: BookOpen,
-  sermon: Mic,
   testimony: Heart,
   'prayer-request': HandHeart,
   question: HelpCircle,
@@ -165,7 +150,6 @@ const typeColors: Record<string, string> = {
   video: 'text-secondary',
   community: 'text-muted-foreground',
   devotional: 'text-blue-500',
-  sermon: 'text-purple-500',
   testimony: 'text-pink-500',
   'prayer-request': 'text-red-500',
   question: 'text-orange-500',
@@ -176,23 +160,21 @@ const typeColors: Record<string, string> = {
 function getDetailHref(item: SearchItem): string | null {
   switch (item.type) {
     case 'music':
-      return `/music/${item.id}`;
+      return `/music/${item._id}`;
     case 'news':
-      return `/news/story/${item.id}`;
+      return `/news/story/${item._id}`;
     case 'video':
-      return `/videos/${item.id}`;
+      return `/videos/${item._id}`;
     case 'devotional':
-      return `/community/devotionals/${item.id}`;
-    case 'sermon':
-      return `/community/sermons/${item.id}`;
+      return `/community/devotionals/${item._id}`;
     case 'testimony':
-      return `/community/testimonies/${item.id}`;
+      return `/community/testimonies/${item._id}`;
     case 'prayer-request':
-      return `/community/prayer-requests/${item.id}`;
+      return `/community/prayer-requests/${item._id}`;
     case 'question':
-      return `/community/ask-a-pastor/${item.id}`;
+      return `/community/ask-a-pastor/${item._id}`;
     case 'poll':
-      return `/community/polls-and-voting/${item.id}`;
+      return `/community/polls-and-voting/${item._id}`;
     case 'resource':
       return `/community/resources`;
     default:
@@ -219,7 +201,6 @@ export const SearchModal = ({ isOpen, onClose }: SearchModalProps) => {
       ...transformMusicItems(MUSIC_ITEMS),
       ...transformNewsItems(NEWS_ITEMS),
       ...transformDevotionalItems(DEVOTIONALS_ITEMS),
-      ...transformSermonItems(SERMONS_ITEMS),
       ...transformTestimonyItems(TESTIMONIES_ITEMS),
       ...transformPrayerRequestItems(PRAYER_REQUESTS_ITEMS),
       ...transformQuestionItems(QUESTIONS_ITEMS),
@@ -233,7 +214,6 @@ export const SearchModal = ({ isOpen, onClose }: SearchModalProps) => {
         (item.artist && item.artist.toLowerCase().includes(lowerQuery)) ||
         (item.category && item.category.toLowerCase().includes(lowerQuery)) ||
         (item.creator && item.creator.toLowerCase().includes(lowerQuery)) ||
-        (item.pastor && item.pastor.toLowerCase().includes(lowerQuery)) ||
         (item.author && item.author.toLowerCase().includes(lowerQuery))
     );
 
@@ -339,7 +319,7 @@ export const SearchModal = ({ isOpen, onClose }: SearchModalProps) => {
                             <p className="font-medium text-foreground truncate">{result.title}</p>
                             <p className="text-sm text-muted-foreground truncate">
                               {result.artist ||
-                                result.pastor ||
+                                // result.pastor ||
                                 result.author ||
                                 result.category ||
                                 result.creator}
@@ -353,14 +333,14 @@ export const SearchModal = ({ isOpen, onClose }: SearchModalProps) => {
 
                       return href ? (
                         <Link
-                          key={`${result.type}-${result.id}`}
+                          key={`${result.type}-${result._id}`}
                           href={href}
                           onClick={onClose}
                           className="block">
                           {row}
                         </Link>
                       ) : (
-                        <div key={`${result.type}-${result.id}`}>{row}</div>
+                        <div key={`${result.type}-${result._id}`}>{row}</div>
                       );
                     })}
                   </div>

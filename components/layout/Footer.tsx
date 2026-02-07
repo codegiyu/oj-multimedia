@@ -25,7 +25,6 @@ const footerLinks = {
   ],
   resources: [
     { label: 'Daily Devotionals', href: '/community/devotionals' },
-    { label: 'Sermons', href: '/community/sermons' },
     { label: 'Bible Study', href: '/community/devotionals/bible-study' },
     { label: 'Help Center', href: '/contact' },
     { label: 'Guidelines', href: '/terms-and-conditions' },
@@ -191,7 +190,17 @@ export const Footer = () => {
         <div className="container mx-auto px-4 py-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
             <p>© {currentYear} OJ Multimedia. All rights reserved.</p>
-            <p>Made with ❤️ for creators everywhere</p>
+            <p>
+              Built by{' '}
+              <a
+                href="https://portfolio-codegiyu.vercel.app"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block font-lobster text-red-600 hover:text-red-700 transition-colors">
+                <span className="text-xl font-black">C</span>
+                <span>odegiyu</span>
+              </a>
+            </p>
           </div>
         </div>
       </div>

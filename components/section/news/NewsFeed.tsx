@@ -1,22 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
 import { motion } from 'framer-motion';
-import {
-  Clock,
-  Eye,
-  MessageCircle,
-  Heart,
-  Bookmark,
-  Newspaper,
-  User,
-  Calendar,
-} from 'lucide-react';
+import { Newspaper } from 'lucide-react';
 import { EmptyState } from './EmptyState';
+import { NewsCard } from '@/components/cards/NewsCard';
 
 export interface NewsItem {
-  id: number;
+  _id: string;
   title: string;
   excerpt: string;
   category: string;
@@ -70,91 +61,21 @@ export const NewsFeed = ({ items: newsItems }: NewsFeedProps) => {
           <>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {itemsToShow.map((item, index) => (
-                <Link key={item.id} href={`/news/story/${item.id}`}>
-                  <motion.article
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.3, delay: index * 0.05 }}
-                    whileHover={{ y: -6 }}
-                    className="group bg-card rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer">
-                    {/* Image */}
-                    <div className="relative aspect-[16/10] overflow-hidden">
-                      <img
-                        src={item.image}
-                        alt={item.title}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-foreground/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-
-                      {/* Save Button */}
-                      <button className="absolute top-3 right-3 w-8 h-8 rounded-full bg-background/80 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-background">
-                        <Bookmark className="w-4 h-4 text-foreground" />
-                      </button>
-
-                      {/* Category Badge */}
-                      <span className="absolute bottom-3 left-3 px-2.5 py-1 rounded-full bg-primary text-primary-foreground text-xs font-medium">
-                        {item.category}
-                      </span>
-                    </div>
-
-                    {/* Content */}
-                    <div className="p-5">
-                      <h3 className="font-semibold text-foreground line-clamp-2 group-hover:text-primary transition-colors mb-2">
-                        {item.title}
-                      </h3>
-                      <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
-                        {item.excerpt}
-                      </p>
-
-                      {/* Meta */}
-                      <div className="space-y-2">
-                        {(item.author || item.date) && (
-                          <div className="flex items-center gap-3 text-xs text-muted-foreground flex-wrap">
-                            {item.author && (
-                              <span className="flex items-center gap-1">
-                                <User className="w-3 h-3" />
-                                {item.author}
-                              </span>
-                            )}
-                            {item.date && (
-                              <span className="flex items-center gap-1">
-                                <Calendar className="w-3 h-3" />
-                                {new Date(item.date).toLocaleDateString('en-US', {
-                                  month: 'short',
-                                  day: 'numeric',
-                                  year: 'numeric',
-                                })}
-                              </span>
-                            )}
-                          </div>
-                        )}
-                        <div className="flex items-center justify-between text-xs text-muted-foreground">
-                          <div className="flex items-center gap-3">
-                            <span className="flex items-center gap-1">
-                              <Clock className="w-3 h-3" />
-                              {item.readTime}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <Eye className="w-3 h-3" />
-                              {item.views}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-3">
-                            <span className="flex items-center gap-1">
-                              <Heart className="w-3 h-3" />
-                              {item.likes}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <MessageCircle className="w-3 h-3" />
-                              {item.comments}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </motion.article>
-                </Link>
+                <motion.div
+                  key={item._id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.3, delay: index * 0.05 }}>
+                  <NewsCard
+                    _id={item._id}
+                    title={item.title}
+                    excerpt={item.excerpt}
+                    category={item.category}
+                    time={item.readTime}
+                    image={item.image}
+                  />
+                </motion.div>
               ))}
             </div>
 

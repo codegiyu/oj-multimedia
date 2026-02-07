@@ -51,14 +51,14 @@ export const AnsweredPrayersSection = ({ prayers }: AnsweredPrayersSectionProps)
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {itemsToShow.map((prayer, index) => (
           <motion.div
-            key={prayer.id}
+            key={prayer._id}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: index * 0.1 }}
             whileHover={{ y: -4 }}
             className="bg-card rounded-2xl p-6 shadow-sm border border-border/50 hover:shadow-md transition-all">
-            <Link href={`/community/prayer-requests/${prayer.id}`}>
+            <Link href={`/community/prayer-requests/${prayer._id}`}>
               <div className="flex items-start gap-3 mb-4">
                 <div className="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center shrink-0">
                   <CheckCircle2 className="w-6 h-6 text-green-600 dark:text-green-400" />

@@ -11,9 +11,9 @@ interface TestimonyDetailPageProps {
 // Generate metadata for the testimony detail page
 export async function generateMetadata({ params }: TestimonyDetailPageProps): Promise<Metadata> {
   const resolvedParams = await params;
-  const id = parseInt(resolvedParams.id, 10);
+  const id = resolvedParams.id;
 
-  if (isNaN(id)) {
+  if (!id) {
     return {
       title: 'Testimony Not Found',
       description: 'The requested testimony could not be found.',
@@ -37,10 +37,10 @@ export async function generateMetadata({ params }: TestimonyDetailPageProps): Pr
 
 export default async function TestimonyDetailPage({ params }: TestimonyDetailPageProps) {
   const resolvedParams = await params;
-  const id = parseInt(resolvedParams.id, 10);
+  const id = resolvedParams.id;
 
   // Validate ID
-  if (Number.isNaN(id)) {
+  if (!id) {
     notFound();
   }
 

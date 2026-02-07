@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
 export interface Testimony {
-  id: number;
+  _id: string;
   author: string;
   avatar: string;
   content: string;
@@ -43,14 +43,14 @@ export const FeaturedTestimonies = ({ testimonies }: FeaturedTestimoniesProps) =
       <div className="grid md:grid-cols-3 gap-6">
         {testimonies.map((testimony, index) => (
           <motion.div
-            key={testimony.id}
+            key={testimony._id}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: index * 0.1 }}
             whileHover={{ y: -4 }}
             className="bg-card rounded-2xl p-6 shadow-sm border border-border/50 hover:shadow-md transition-all cursor-pointer">
-            <Link href={`/community/testimonies/${testimony.id}`}>
+            <Link href={`/community/testimonies/${testimony._id}`}>
               <Quote className="w-8 h-8 text-primary/20 mb-4" />
               <p className="text-muted-foreground mb-6 line-clamp-4">{testimony.content}</p>
 

@@ -47,7 +47,7 @@ export const ActivePolls = ({ polls }: ActivePollsProps) => {
       <div className="grid md:grid-cols-2 gap-6">
         {itemsToShow.map((poll, index) => (
           <motion.div
-            key={poll.id}
+            key={poll._id}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -76,7 +76,7 @@ export const ActivePolls = ({ polls }: ActivePollsProps) => {
 
                 <div className="space-y-3 mb-6">
                   {poll.options.map(option => (
-                    <div key={option.id} className="space-y-2">
+                    <div key={option._id} className="space-y-2">
                       <div className="flex items-center justify-between text-sm">
                         <span className="text-foreground font-medium">{option.text}</span>
                         <span className="text-muted-foreground">
@@ -102,7 +102,7 @@ export const ActivePolls = ({ polls }: ActivePollsProps) => {
                     <span>{poll.totalVotes} total votes</span>
                   </div>
                   <Button variant="outline" size="sm" asChild>
-                    <Link href={`/community/polls-and-voting/${poll.id}`}>Vote Now</Link>
+                    <Link href={`/community/polls-and-voting/${poll._id}`}>Vote Now</Link>
                   </Button>
                 </div>
               </CardContent>

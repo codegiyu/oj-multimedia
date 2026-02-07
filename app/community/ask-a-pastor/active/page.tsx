@@ -20,7 +20,7 @@ async function generateActiveQuestionsData() {
   await new Promise(resolve => setTimeout(resolve, 1500));
 
   const activeQuestions: Question[] = QUESTIONS_ITEMS.filter(item => item.isActive).map(item => ({
-    id: item.id,
+    _id: item._id,
     question: item.question,
     category: item.category,
     author: item.author,

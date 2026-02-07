@@ -22,7 +22,7 @@ async function generateAnsweredQuestionsData() {
   const answeredQuestions: AnsweredQuestion[] = QUESTIONS_ITEMS.filter(
     item => item.isAnswered && item.answer !== undefined && item.pastor !== undefined
   ).map(item => ({
-    id: item.id,
+    _id: item._id,
     question: item.question,
     answer: item.answer!,
     pastor: item.pastor!,

@@ -32,7 +32,7 @@ async function generateRecentUploadsData(): Promise<{
       item.views !== undefined &&
       item.duration !== undefined
   ).map(item => ({
-    id: item.id,
+    _id: item._id,
     title: item.title,
     creator: item.creator,
     thumbnail: item.thumbnail,

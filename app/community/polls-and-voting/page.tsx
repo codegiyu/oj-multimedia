@@ -22,7 +22,7 @@ async function generatePollsData(): Promise<{ activePolls: Poll[]; recentPolls: 
 
   // Transform poll items to Poll format
   const allPolls: Poll[] = POLLS_ITEMS.map(item => ({
-    id: item.id,
+    _id: item._id,
     question: item.question,
     description: item.description,
     options: item.options,

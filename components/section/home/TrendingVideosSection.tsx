@@ -1,13 +1,16 @@
 'use client';
 
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { ArrowRight, Video, Upload } from 'lucide-react';
+import { useMemo, useRef } from 'react';
+import { Video, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { VideoCard } from '@/components/cards/VideoCard';
+import { SectionComp } from '@/components/general/SectionComp';
+import { useQueryState, parseAsString } from 'nuqs';
+import { motion } from 'framer-motion';
 
 export interface TrendingVideoItem {
+  _id: string;
   title: string;
   creator: string;
   thumbnail: string;
@@ -20,92 +23,80 @@ interface TrendingVideosSectionProps {
   videos: TrendingVideoItem[];
 }
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 },
-};
+const categories = [
+  { id: 'All', label: 'All' },
+  { id: 'Music Videos', label: 'Music Videos' },
+  { id: 'Short Clips', label: 'Short Clips' },
+  { id: 'Talks', label: 'Talks' },
+  { id: 'Dance', label: 'Dance' },
+  { id: 'Creative', label: 'Creative' },
+  { id: 'BTS', label: 'BTS' },
+];
 
 export const TrendingVideosSection = ({ videos: trendingVideos }: TrendingVideosSectionProps) => {
-  const [selectedCategory, setSelectedCategory] = useState<string>('All');
+  const [selectedCategory] = useQueryState('category', parseAsString.withDefault('All'));
+  const scrollRef = useRef<HTMLDivElement>(null);
 
-  const categories = ['All', 'Music Videos', 'Short Clips', 'Talks', 'Dance', 'Creative', 'BTS'];
+  const filteredVideos = useMemo(
+    () =>
+      selectedCategory === 'All'
+        ? trendingVideos
+        : trendingVideos.filter(video => video.category === selectedCategory),
+    [trendingVideos, selectedCategory]
+  );
 
-  const filteredVideos =
-    selectedCategory === 'All'
-      ? trendingVideos
-      : trendingVideos.filter(video => video.category === selectedCategory);
+  const scroll = (direction: 'left' | 'right') => {
+    if (scrollRef.current) {
+      const scrollAmount = 340;
+      scrollRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth',
+      });
+    }
+  };
 
   return (
-    <section id="videos" className="py-16 md:py-24 bg-muted/30">
-      <div className="container mx-auto px-4">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center">
-              <Video className="w-5 h-5 text-secondary" />
-            </div>
-            <div>
-              <h2 className="section-header">Trending Videos</h2>
-              <p className="text-muted-foreground text-sm">Watch the latest creative content</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button variant="accent" size="sm" className="gap-2" asChild>
-              <Link href="/community/promote-your-content">
-                <Upload className="w-4 h-4" />
-                Upload Your Video
-              </Link>
-            </Button>
-            <Button
-              variant="ghost"
-              className="gap-2 text-muted-foreground hover:text-primary"
-              asChild>
-              <Link href="/videos/trending">
-                View All
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-            </Button>
-          </div>
-        </div>
-
-        {/* Category Filter */}
-        <div className="flex gap-2 mb-8 overflow-x-auto pb-2 scrollbar-hide">
-          {categories.map(cat => (
-            <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
-              className={`quick-link whitespace-nowrap transition-colors ${
-                selectedCategory === cat ? 'bg-secondary text-secondary-foreground' : ''
-              }`}>
-              {cat}
-            </button>
-          ))}
-        </div>
-
-        {/* Videos Grid */}
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-100px' }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredVideos.map((video, index) => (
-            <motion.div key={index} variants={itemVariants}>
-              <VideoCard {...video} />
-            </motion.div>
-          ))}
-        </motion.div>
+    <SectionComp
+      id="videos"
+      icon={Video}
+      iconColor="secondary"
+      heading="Trending Videos"
+      subtext="Watch the latest creative content"
+      viewAllLink="/videos/trending"
+      background="bg-muted/30"
+      tabs={categories}
+      tabsQueryKey="category"
+      defaultTab="All"
+      showPrevNext={true}
+      onPrev={() => scroll('left')}
+      onNext={() => scroll('right')}
+      extraButtons={
+        <Button variant="accent" size="sm" className="gap-2" asChild>
+          <Link href="/community/promote-your-content">
+            <Upload className="w-4 h-4" />
+            Upload Your Video
+          </Link>
+        </Button>
+      }
+      contentProps={{
+        className: '',
+        enableAnimation: false,
+      }}>
+      <div
+        ref={scrollRef}
+        className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
+        {filteredVideos.map((video, index) => (
+          <motion.div
+            key={index}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: index * 0.05 }}
+            className="max-w-[240px] sm:max-w-[280px] lg:max-w-[300px] xl:max-w-[320px] 2xl:max-w-[340px] snap-start shrink-0">
+            <VideoCard {...video} />
+          </motion.div>
+        ))}
       </div>
-    </section>
+    </SectionComp>
   );
 };

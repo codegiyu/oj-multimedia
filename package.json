@@ -4,14 +4,14 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build --turbopack",
+    "build": "rm -rf .next && next build --turbopack",
     "start": "next start",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "lint:next": "next lint",
     "format": "prettier --write . --ignore-path .prettierignore",
     "format:check": "prettier --check . --ignore-path .prettierignore",
-    "checks": "npm run lint && npm run format:check && npm run build",
+    "checks": "npm run lint && npm run format:check && rm -rf .next && npm run build",
     "generate:icons": "npx @svgr/cli --out-dir components/icons --ignore-existing --typescript --replace-attr-values #fff=currentColor,#000=currentColor --jsx-runtime automatic --icon -- public/icons"
   },
   "keywords": [

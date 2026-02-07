@@ -7,7 +7,7 @@ import { PrayerCategoriesSection } from './PrayerCategoriesSection';
 import { CommunityCTA } from '../../shared';
 
 export interface PrayerRequest {
-  id: number;
+  _id: string;
   title: string;
   content: string;
   author: string;
@@ -19,7 +19,7 @@ export interface PrayerRequest {
 }
 
 export interface AnsweredPrayer {
-  id: number;
+  _id: string;
   title: string;
   originalRequest: string;
   testimony: string;

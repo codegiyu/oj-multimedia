@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import type { MusicItem } from '@/lib/constants/music';
 import { AudioPlayer } from './AudioPlayer';
 import { DownloadButton } from './DownloadButton';
+import { MusicCard } from '@/components/cards/MusicCard';
 
 interface MusicDetailPageClientProps {
   musicItem: MusicItem;
@@ -184,39 +185,19 @@ export const MusicDetailPageClient = ({ musicItem, relatedSongs }: MusicDetailPa
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {relatedSongs.map((song, index) => (
                   <motion.div
-                    key={song.id}
+                    key={song._id}
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    transition={{ delay: index * 0.1 }}
-                    whileHover={{ y: -4 }}
-                    className="group">
-                    <Link
-                      href={`/music/${song.id}`}
-                      className="block bg-card rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all border border-border/50 hover:border-primary/20">
-                      <div className="relative aspect-square overflow-hidden">
-                        <Image
-                          src={song.cover}
-                          alt={song.title}
-                          fill
-                          className="object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                        <div className="absolute inset-0 bg-foreground/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                          <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center">
-                            <Music className="w-6 h-6 fill-current ml-1" />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="p-4">
-                        <h3 className="font-semibold truncate group-hover:text-primary transition-colors">
-                          {song.title}
-                        </h3>
-                        <p className="text-sm text-muted-foreground truncate">{song.artist}</p>
-                        {song.plays && (
-                          <p className="text-xs text-muted-foreground mt-1">{song.plays} plays</p>
-                        )}
-                      </div>
-                    </Link>
+                    transition={{ delay: index * 0.1 }}>
+                    <MusicCard
+                      _id={song._id}
+                      title={song.title}
+                      artist={song.artist}
+                      cover={song.cover}
+                      plays={song.plays || '0'}
+                      genre={song.category || 'Music'}
+                    />
                   </motion.div>
                 ))}
               </div>

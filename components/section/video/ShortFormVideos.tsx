@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { useRef } from 'react';
 
 export interface ShortFormVideo {
-  id: number;
+  _id: string;
   title: string;
   creator: string;
   thumbnail: string;
@@ -73,7 +73,7 @@ export const ShortFormVideos = ({ videos: shortFormVideos }: ShortFormVideosProp
           className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
           {shortFormVideos.map((video, index) => (
             <motion.div
-              key={video.id}
+              key={video._id}
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}

@@ -31,7 +31,7 @@ async function generateTrendingVideosData(): Promise<{
       item.duration !== undefined &&
       item.uploadedAt !== undefined
   ).map(item => ({
-    id: item.id,
+    _id: item._id,
     title: item.title,
     creator: item.creator,
     thumbnail: item.thumbnail,

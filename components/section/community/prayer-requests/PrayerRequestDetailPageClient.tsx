@@ -158,12 +158,12 @@ export const PrayerRequestDetailPageClient = ({
           <div className="grid md:grid-cols-3 gap-6">
             {relatedRequests.map((related, index) => (
               <motion.div
-                key={related.id}
+                key={related._id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}>
                 <Link
-                  href={`/community/prayer-requests/${related.id}`}
+                  href={`/community/prayer-requests/${related._id}`}
                   className="block p-6 bg-card rounded-lg border border-border hover:border-primary transition-colors">
                   <h3 className="font-semibold mb-2 line-clamp-2">{related.title}</h3>
                   <p className="text-sm text-muted-foreground mb-4 line-clamp-3">

@@ -11,8 +11,8 @@ interface NewsStoryPageProps {
 // Generate metadata for the news story page
 export async function generateMetadata({ params }: NewsStoryPageProps): Promise<Metadata> {
   const resolvedParams = await params;
-  const id = parseInt(resolvedParams.id, 10);
-  const newsItem = getNewsItemById(id);
+  const id = resolvedParams.id;
+  const newsItem = id ? getNewsItemById(id) : undefined;
 
   if (!newsItem) {
     return {
@@ -59,10 +59,10 @@ export const dynamic = 'force-dynamic';
 
 export default async function NewsStoryPage({ params }: NewsStoryPageProps) {
   const resolvedParams = await params;
-  const id = parseInt(resolvedParams.id, 10);
+  const id = resolvedParams.id;
 
   // Validate ID
-  if (isNaN(id)) {
+  if (!id) {
     notFound();
   }
 

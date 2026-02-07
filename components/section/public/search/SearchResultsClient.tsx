@@ -16,7 +16,6 @@ export const SearchResultsClient = ({ results }: SearchResultsClientProps) => {
   // Community-related types
   const communityTypes = [
     'devotional',
-    'sermon',
     'testimony',
     'prayer-request',
     'question',

@@ -18,7 +18,7 @@ export interface FullStoryContent {
  * which sections they belong to. The presence of videoUrl indicates a video story.
  */
 export interface NewsItem {
-  id: number;
+  _id: string;
   title: string;
   excerpt?: string; // Optional - not all items need excerpts (e.g., video items)
   category: string;
@@ -45,7 +45,7 @@ export interface NewsItem {
 export const NEWS_ITEMS: NewsItem[] = [
   // Featured Stories
   {
-    id: 1,
+    _id: '1',
     title: 'Gospel Artist Wins International Music Award',
     excerpt:
       'Celebrating the achievement of a renowned gospel artist who brought home a prestigious international award, inspiring millions worldwide.',
@@ -83,7 +83,7 @@ export const NEWS_ITEMS: NewsItem[] = [
     },
   },
   {
-    id: 2,
+    _id: '2',
     title: 'New Church Building Dedication Ceremony Announced',
     excerpt:
       'Join us for the grand opening and dedication of our new worship center this coming Sunday.',
@@ -120,7 +120,7 @@ export const NEWS_ITEMS: NewsItem[] = [
     },
   },
   {
-    id: 3,
+    _id: '3',
     title: 'From Addiction to Ministry: A Powerful Testimony',
     excerpt:
       'A moving story of transformation and redemption that shows the power of faith and community support.',
@@ -165,7 +165,7 @@ export const NEWS_ITEMS: NewsItem[] = [
     },
   },
   {
-    id: 4,
+    _id: '4',
     title: 'Full Scholarship Available for Theology Students',
     excerpt:
       'Apply now for fully-funded theology scholarships at leading Christian universities worldwide.',
@@ -202,7 +202,7 @@ export const NEWS_ITEMS: NewsItem[] = [
     },
   },
   {
-    id: 5,
+    _id: '5',
     title: 'NGO Seeking Program Coordinator for Youth Ministry',
     excerpt:
       'Join our team in making a difference. We are hiring a passionate coordinator for our youth programs.',
@@ -239,7 +239,7 @@ export const NEWS_ITEMS: NewsItem[] = [
     },
   },
   {
-    id: 6,
+    _id: '6',
     title: 'Review: "The Chosen" Season 4 - A Masterpiece',
     excerpt:
       'An in-depth review of the latest season of this groundbreaking Christian series that has captivated audiences globally.',
@@ -277,7 +277,7 @@ export const NEWS_ITEMS: NewsItem[] = [
     },
   },
   {
-    id: 7,
+    _id: '7',
     title: 'Pastor Shares Journey of Faith on National TV',
     excerpt:
       'A prominent pastor shares his inspiring journey and message of hope on a major television network.',
@@ -315,7 +315,7 @@ export const NEWS_ITEMS: NewsItem[] = [
     },
   },
   {
-    id: 8,
+    _id: '8',
     title: 'Annual Church Conference Registration Now Open',
     excerpt:
       'Register early for our annual conference featuring renowned speakers, worship sessions, and networking opportunities.',
@@ -352,7 +352,7 @@ export const NEWS_ITEMS: NewsItem[] = [
     },
   },
   {
-    id: 9,
+    _id: '9',
     title: 'Miracle Healing: A Story of Faith and Recovery',
     excerpt:
       'A powerful testimony of healing that has touched the hearts of many and strengthened the faith of our community.',
@@ -389,7 +389,7 @@ export const NEWS_ITEMS: NewsItem[] = [
     },
   },
   {
-    id: 10,
+    _id: '10',
     title: 'International Christian University Offers Full Scholarships',
     excerpt:
       'Leading Christian universities are offering fully-funded programs for students from developing countries.',
@@ -426,7 +426,7 @@ export const NEWS_ITEMS: NewsItem[] = [
     },
   },
   {
-    id: 11,
+    _id: '11',
     title: 'Mission Organization Hiring Field Workers',
     excerpt:
       'Join our mission team in serving communities around the world. Multiple positions available for passionate individuals.',
@@ -463,7 +463,7 @@ export const NEWS_ITEMS: NewsItem[] = [
     },
   },
   {
-    id: 12,
+    _id: '12',
     title: 'Review: "I Can Only Imagine" - A Must-Watch',
     excerpt:
       'An emotional and inspiring film that tells the true story behind one of the most beloved Christian songs.',
@@ -503,7 +503,7 @@ export const NEWS_ITEMS: NewsItem[] = [
 
   // Latest/News Feed Items (additional items not in featured)
   {
-    id: 13,
+    _id: '13',
     title: 'Gospel Singer Announces New Album Release',
     excerpt:
       'One of the most beloved gospel artists has announced their highly anticipated new album, set to release next month.',
@@ -540,7 +540,7 @@ export const NEWS_ITEMS: NewsItem[] = [
     },
   },
   {
-    id: 14,
+    _id: '14',
     title: 'Pastor Shares Journey of Faith on National TV',
     excerpt:
       'A prominent pastor shares his inspiring journey and message of hope on a major television network.',
@@ -578,7 +578,7 @@ export const NEWS_ITEMS: NewsItem[] = [
     },
   },
   {
-    id: 15,
+    _id: '15',
     title: 'Annual Church Conference Registration Now Open',
     excerpt:
       'Register early for our annual conference featuring renowned speakers, worship sessions, and networking opportunities.',
@@ -615,7 +615,7 @@ export const NEWS_ITEMS: NewsItem[] = [
     },
   },
   {
-    id: 16,
+    _id: '16',
     title: 'New Youth Ministry Program Launching This Fall',
     excerpt:
       'Exciting new programs for youth including Bible study, mentorship, and community service initiatives.',
@@ -652,7 +652,7 @@ export const NEWS_ITEMS: NewsItem[] = [
     },
   },
   {
-    id: 17,
+    _id: '17',
     title: 'Miracle Healing: A Story of Faith and Recovery',
     excerpt:
       'A powerful testimony of healing that has touched the hearts of many and strengthened the faith of our community.',
@@ -689,7 +689,7 @@ export const NEWS_ITEMS: NewsItem[] = [
     },
   },
   {
-    id: 18,
+    _id: '18',
     title: 'From Homelessness to Hope: A Community Story',
     excerpt:
       'How a local church community helped transform lives and provide hope to those in need.',
@@ -727,7 +727,7 @@ export const NEWS_ITEMS: NewsItem[] = [
     },
   },
   {
-    id: 19,
+    _id: '19',
     title: 'Scholarship Deadline Approaching: Apply Today',
     excerpt:
       "Don't miss out on this opportunity for Christian students pursuing higher education. Application closes soon.",
@@ -764,7 +764,7 @@ export const NEWS_ITEMS: NewsItem[] = [
     },
   },
   {
-    id: 20,
+    _id: '20',
     title: 'International Christian University Offers Full Scholarships',
     excerpt:
       'Leading Christian universities are offering fully-funded programs for students from developing countries.',
@@ -801,7 +801,7 @@ export const NEWS_ITEMS: NewsItem[] = [
     },
   },
   {
-    id: 21,
+    _id: '21',
     title: 'Mission Organization Hiring Field Workers',
     excerpt:
       'Join our mission team in serving communities around the world. Multiple positions available for passionate individuals.',
@@ -838,7 +838,7 @@ export const NEWS_ITEMS: NewsItem[] = [
     },
   },
   {
-    id: 22,
+    _id: '22',
     title: 'Christian School Seeking Qualified Teachers',
     excerpt:
       "A faith-based school is looking for dedicated educators to join their team and make a difference in students' lives.",
@@ -875,7 +875,7 @@ export const NEWS_ITEMS: NewsItem[] = [
     },
   },
   {
-    id: 23,
+    _id: '23',
     title: 'Review: "I Can Only Imagine" - A Must-Watch',
     excerpt:
       'An emotional and inspiring film that tells the true story behind one of the most beloved Christian songs.',
@@ -913,7 +913,7 @@ export const NEWS_ITEMS: NewsItem[] = [
     },
   },
   {
-    id: 24,
+    _id: '24',
     title: 'Film Review: "War Room" - Prayer in Action',
     excerpt:
       "A compelling review of this powerful film about the importance of prayer and faith in overcoming life's challenges.",
@@ -952,7 +952,7 @@ export const NEWS_ITEMS: NewsItem[] = [
 
   // Trending Stories
   {
-    id: 25,
+    _id: '25',
     title: 'Gospel Artist Breaks Streaming Records',
     excerpt:
       'A renowned gospel artist has broken all-time streaming records, reaching millions with their message of hope and faith.',
@@ -983,7 +983,7 @@ export const NEWS_ITEMS: NewsItem[] = [
     },
   },
   {
-    id: 26,
+    _id: '26',
     title: 'Major Church Event Draws Thousands',
     excerpt:
       'An annual church conference has drawn thousands of attendees from around the world, creating a powerful gathering of faith.',
@@ -1013,7 +1013,7 @@ export const NEWS_ITEMS: NewsItem[] = [
     },
   },
   {
-    id: 27,
+    _id: '27',
     title: 'Incredible Testimony Goes Viral',
     excerpt:
       'A powerful testimony of transformation has gone viral, inspiring millions and showing the power of faith and redemption.',
@@ -1044,7 +1044,7 @@ export const NEWS_ITEMS: NewsItem[] = [
     },
   },
   {
-    id: 28,
+    _id: '28',
     title: 'New Scholarship Program Announced',
     excerpt:
       'A major scholarship program has been announced, offering full funding for Christian students pursuing higher education.',
@@ -1074,7 +1074,7 @@ export const NEWS_ITEMS: NewsItem[] = [
     },
   },
   {
-    id: 29,
+    _id: '29',
     title: 'Faith-Based Organizations Hiring Now',
     excerpt:
       'Multiple faith-based organizations are actively hiring, offering opportunities to serve and make a difference in communities.',
@@ -1104,7 +1104,7 @@ export const NEWS_ITEMS: NewsItem[] = [
     },
   },
   {
-    id: 30,
+    _id: '30',
     title: 'New Christian Film Tops Box Office',
     excerpt:
       'A new Christian film has topped the box office, proving that faith-based content resonates with audiences worldwide.',
@@ -1135,7 +1135,7 @@ export const NEWS_ITEMS: NewsItem[] = [
     },
   },
   {
-    id: 31,
+    _id: '31',
     title: "Pastor's Message Reaches Global Audience",
     excerpt:
       "A pastor's powerful message has reached a global audience through social media, touching hearts and changing lives.",
@@ -1166,7 +1166,7 @@ export const NEWS_ITEMS: NewsItem[] = [
     },
   },
   {
-    id: 32,
+    _id: '32',
     title: 'Youth Ministry Program Launches Successfully',
     excerpt:
       'A new youth ministry program has launched successfully, engaging young people and building a strong community of faith.',
@@ -1196,7 +1196,7 @@ export const NEWS_ITEMS: NewsItem[] = [
     },
   },
   {
-    id: 33,
+    _id: '33',
     title: 'Miracle Story Inspires Thousands',
     excerpt:
       'A remarkable story of healing and miracles has inspired thousands, strengthening faith and bringing hope to many.',
@@ -1226,7 +1226,7 @@ export const NEWS_ITEMS: NewsItem[] = [
     },
   },
   {
-    id: 34,
+    _id: '34',
     title: 'Scholarship Deadline Extended',
     excerpt:
       'Due to high demand, the scholarship application deadline has been extended, giving more students a chance to apply.',
@@ -1256,7 +1256,7 @@ export const NEWS_ITEMS: NewsItem[] = [
     },
   },
   {
-    id: 35,
+    _id: '35',
     title: 'Mission Trip Opportunities Available',
     excerpt:
       'Multiple mission trip opportunities are now available for those looking to serve and make a difference globally.',
@@ -1286,7 +1286,7 @@ export const NEWS_ITEMS: NewsItem[] = [
     },
   },
   {
-    id: 36,
+    _id: '36',
     title: 'Christian Film Festival Highlights',
     excerpt:
       'The annual Christian film festival has showcased incredible films, celebrating faith-based storytelling and creativity.',
@@ -1317,7 +1317,7 @@ export const NEWS_ITEMS: NewsItem[] = [
     },
   },
   {
-    id: 37,
+    _id: '37',
     title: 'Gospel Music Awards Ceremony',
     excerpt:
       'The annual gospel music awards ceremony celebrated the best in Christian music, honoring artists and their contributions.',
@@ -1348,7 +1348,7 @@ export const NEWS_ITEMS: NewsItem[] = [
     },
   },
   {
-    id: 38,
+    _id: '38',
     title: 'Church Planting Initiative Announced',
     excerpt:
       'A new church planting initiative has been announced, aiming to establish new congregations in underserved areas.',
@@ -1378,7 +1378,7 @@ export const NEWS_ITEMS: NewsItem[] = [
     },
   },
   {
-    id: 39,
+    _id: '39',
     title: 'From Prison to Pulpit: A Story of Redemption',
     excerpt:
       'An inspiring story of transformation from prison to pulpit, showing how faith can change even the most difficult circumstances.',
@@ -1411,7 +1411,7 @@ export const NEWS_ITEMS: NewsItem[] = [
 
   // Video News Items (items with videoUrl and duration)
   {
-    id: 40,
+    _id: '40',
     title: 'Gospel Artist Interview: Behind the Music',
     excerpt:
       'An exclusive interview with a renowned gospel artist discussing their creative process and journey in the music industry.',
@@ -1441,7 +1441,7 @@ export const NEWS_ITEMS: NewsItem[] = [
     },
   },
   {
-    id: 41,
+    _id: '41',
     title: 'Award-Winning Gospel Artist Shares Journey',
     excerpt:
       'Award-winning gospel artist opens up about their path to success and the faith that guides their music career.',
@@ -1471,7 +1471,7 @@ export const NEWS_ITEMS: NewsItem[] = [
     },
   },
   {
-    id: 42,
+    _id: '42',
     title: 'Church Service Highlights: Sunday Worship',
     excerpt:
       'Highlights from our inspiring Sunday worship service featuring powerful messages and uplifting music.',
@@ -1501,7 +1501,7 @@ export const NEWS_ITEMS: NewsItem[] = [
     },
   },
   {
-    id: 43,
+    _id: '43',
     title: 'New Ministry Program Launch Event',
     excerpt:
       'Watch the exciting launch of our new ministry program designed to serve and uplift our community.',
@@ -1531,7 +1531,7 @@ export const NEWS_ITEMS: NewsItem[] = [
     },
   },
   {
-    id: 44,
+    _id: '44',
     title: 'Powerful Testimony: From Darkness to Light',
     excerpt:
       'A moving testimony of transformation showing how faith can bring light into the darkest moments of life.',
@@ -1561,7 +1561,7 @@ export const NEWS_ITEMS: NewsItem[] = [
     },
   },
   {
-    id: 45,
+    _id: '45',
     title: 'Miracle Healing: A Story of Faith',
     excerpt:
       'An incredible story of healing and restoration that demonstrates the power of prayer and unwavering faith.',
@@ -1591,7 +1591,7 @@ export const NEWS_ITEMS: NewsItem[] = [
     },
   },
   {
-    id: 46,
+    _id: '46',
     title: 'Scholarship Information Session Recording',
     excerpt:
       'Complete recording of our scholarship information session covering application processes and available opportunities.',
@@ -1621,7 +1621,7 @@ export const NEWS_ITEMS: NewsItem[] = [
     },
   },
   {
-    id: 47,
+    _id: '47',
     title: 'How to Apply for Christian Scholarships',
     excerpt:
       'A comprehensive guide on applying for Christian scholarships with tips and step-by-step instructions.',
@@ -1651,7 +1651,7 @@ export const NEWS_ITEMS: NewsItem[] = [
     },
   },
   {
-    id: 48,
+    _id: '48',
     title: 'NGO Work: Making a Difference',
     excerpt:
       'See how our NGO is making a real difference in communities through faith-based service and outreach programs.',
@@ -1681,7 +1681,7 @@ export const NEWS_ITEMS: NewsItem[] = [
     },
   },
   {
-    id: 49,
+    _id: '49',
     title: 'Mission Trip: Stories from the Field',
     excerpt:
       'Powerful stories and experiences from our mission trip, showing the impact of faith-based service around the world.',
@@ -1711,7 +1711,7 @@ export const NEWS_ITEMS: NewsItem[] = [
     },
   },
   {
-    id: 50,
+    _id: '50',
     title: 'Movie Review: "The Passion of the Christ"',
     excerpt:
       'An in-depth review of this powerful film that portrays the final hours of Jesus Christ with profound impact.',
@@ -1741,7 +1741,7 @@ export const NEWS_ITEMS: NewsItem[] = [
     },
   },
   {
-    id: 51,
+    _id: '51',
     title: 'Film Analysis: "I Can Only Imagine"',
     excerpt:
       'A detailed analysis of this inspiring film that tells the true story behind one of the most beloved Christian songs.',

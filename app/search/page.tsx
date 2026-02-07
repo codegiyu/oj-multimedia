@@ -8,7 +8,6 @@ import { MUSIC_ITEMS } from '@/lib/constants/music';
 import { NEWS_ITEMS } from '@/lib/constants/news';
 import { VIDEOS_ITEMS } from '@/lib/constants/videos';
 import { DEVOTIONALS_ITEMS } from '@/lib/constants/community/devotionals';
-import { SERMONS_ITEMS } from '@/lib/constants/community/sermons';
 import { TESTIMONIES_ITEMS } from '@/lib/constants/community/testimonies';
 import { PRAYER_REQUESTS_ITEMS } from '@/lib/constants/community/prayer-requests';
 import { QUESTIONS_ITEMS } from '@/lib/constants/community/questions';
@@ -30,7 +29,7 @@ async function filterContent(query: string): Promise<SearchResultItem[]> {
   const searchQuery = query.toLowerCase();
 
   const musicItems: SearchResultItem[] = MUSIC_ITEMS.map(item => ({
-    id: `m${item.id}`,
+    _id: `m${item._id}`,
     title: item.title,
     subtitle: item.artist,
     type: 'music' as const,
@@ -39,7 +38,7 @@ async function filterContent(query: string): Promise<SearchResultItem[]> {
   }));
 
   const newsItems: SearchResultItem[] = NEWS_ITEMS.map(item => ({
-    id: `n${item.id}`,
+    _id: `n${String(item._id)}`,
     title: item.title,
     subtitle: item.category,
     type: 'news' as const,
@@ -48,7 +47,7 @@ async function filterContent(query: string): Promise<SearchResultItem[]> {
   }));
 
   const videoItems: SearchResultItem[] = VIDEOS_ITEMS.map(item => ({
-    id: `v${item.id}`,
+    _id: `v${item._id}`,
     title: item.title,
     subtitle: item.creator,
     type: 'video' as const,
@@ -57,7 +56,7 @@ async function filterContent(query: string): Promise<SearchResultItem[]> {
   }));
 
   const devotionalItems: SearchResultItem[] = DEVOTIONALS_ITEMS.map(item => ({
-    id: `d${item.id}`,
+    _id: `d${item._id}`,
     title: item.title,
     subtitle: item.category,
     type: 'devotional' as const,
@@ -65,17 +64,8 @@ async function filterContent(query: string): Promise<SearchResultItem[]> {
     meta: item.readingTime || item.date || '',
   }));
 
-  const sermonItems: SearchResultItem[] = SERMONS_ITEMS.map(item => ({
-    id: `s${item.id}`,
-    title: item.title,
-    subtitle: item.pastor,
-    type: 'sermon' as const,
-    image: item.thumbnail || item.image,
-    meta: item.duration,
-  }));
-
   const testimonyItems: SearchResultItem[] = TESTIMONIES_ITEMS.map(item => ({
-    id: `t${item.id}`,
+    _id: `t${item._id}`,
     title: item.title || item.content.substring(0, 50),
     subtitle: item.author,
     type: 'testimony' as const,
@@ -84,7 +74,7 @@ async function filterContent(query: string): Promise<SearchResultItem[]> {
   }));
 
   const prayerRequestItems: SearchResultItem[] = PRAYER_REQUESTS_ITEMS.map(item => ({
-    id: `pr${item.id}`,
+    _id: `pr${item._id}`,
     title: item.title,
     subtitle: item.author,
     type: 'prayer-request' as const,
@@ -93,7 +83,7 @@ async function filterContent(query: string): Promise<SearchResultItem[]> {
   }));
 
   const questionItems: SearchResultItem[] = QUESTIONS_ITEMS.map(item => ({
-    id: `q${item.id}`,
+    _id: `q${String(item._id)}`,
     title: item.question,
     subtitle: item.author,
     type: 'question' as const,
@@ -102,7 +92,7 @@ async function filterContent(query: string): Promise<SearchResultItem[]> {
   }));
 
   const pollItems: SearchResultItem[] = POLLS_ITEMS.map(item => ({
-    id: `p${item.id}`,
+    _id: `p${item._id}`,
     title: item.question,
     subtitle: item.category || '',
     type: 'poll' as const,
@@ -111,7 +101,7 @@ async function filterContent(query: string): Promise<SearchResultItem[]> {
   }));
 
   const resourceItems: SearchResultItem[] = RESOURCES_ITEMS.map(item => ({
-    id: `r${item.id}`,
+    _id: `r${item._id}`,
     title: item.title,
     subtitle: item.category || item.genre || item.templateType || item.productCategory || '',
     type: 'resource' as const,
@@ -124,7 +114,6 @@ async function filterContent(query: string): Promise<SearchResultItem[]> {
     ...newsItems,
     ...videoItems,
     ...devotionalItems,
-    ...sermonItems,
     ...testimonyItems,
     ...prayerRequestItems,
     ...questionItems,

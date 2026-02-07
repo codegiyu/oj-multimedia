@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { EmptyState } from './EmptyState';
 
 export interface VideoNewsItem {
-  id: number;
+  _id: string;
   title: string;
   category: string;
   duration: string;
@@ -50,7 +50,7 @@ export const VideoNews = ({ videos }: VideoNewsProps) => {
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {videos.map((video, index) => (
-              <Link key={video.id} href={`/news/story/${video.id}`}>
+              <Link key={video._id} href={`/news/story/${video._id}`}>
                 <motion.article
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}

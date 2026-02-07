@@ -365,7 +365,6 @@ export const ENTITY_TYPES = [
   'artist',
   'music',
   'pastor',
-  'sermon',
   'devotional',
   'news-article',
   'resource',
@@ -801,7 +800,6 @@ export type ModelGospelVerse = IGospelVerse & IModelIndex & Document;
 export type ModelArtist = IArtist & IModelIndex & Document;
 export type ModelMusic = IMusic & IModelIndex & Document;
 export type ModelPastor = IPastor & IModelIndex & Document;
-export type ModelSermon = ISermon & IModelIndex & Document;
 export type ModelDevotional = IDevotional & IModelIndex & Document;
 export type ModelNewsArticle = INewsArticle & IModelIndex & Document;
 export type ModelResource = IResource & IModelIndex & Document;

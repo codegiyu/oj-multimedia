@@ -5,11 +5,19 @@
  * which sections they belong to.
  */
 export interface VideoItem {
-  id: number;
+  _id: string;
   title: string;
   creator: string;
   thumbnail: string;
-  category: 'music' | 'short' | 'talks' | 'creative' | 'inspirational' | 'live' | 'podcasts';
+  category:
+    | 'music'
+    | 'short'
+    | 'talks'
+    | 'creative'
+    | 'inspirational'
+    | 'live'
+    | 'podcasts'
+    | 'sermon';
   // Trending Video fields
   views?: string;
   duration?: string;
@@ -57,7 +65,7 @@ export interface VideoItem {
 export const VIDEOS_ITEMS: VideoItem[] = [
   // Music Videos - Trending
   {
-    id: 1,
+    _id: '1',
     title: 'Sunset Vibes - Official Music Video',
     creator: 'DJ Flame',
     thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=225&fit=crop',
@@ -78,7 +86,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
     comments: 124,
   },
   {
-    id: 2,
+    _id: '2',
     title: 'City Lights - Live Performance',
     creator: 'Luna Belle',
     thumbnail: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=225&fit=crop',
@@ -101,7 +109,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
   },
   // Music Videos - Recent
   {
-    id: 3,
+    _id: '3',
     title: 'Summer Feels - Music Video',
     creator: 'Beach Vibes',
     thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=169&fit=crop',
@@ -119,7 +127,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
     comments: 23,
   },
   {
-    id: 4,
+    _id: '4',
     title: 'Electric Soul - Music Video',
     creator: 'Marcus Jay',
     thumbnail: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=225&fit=crop',
@@ -140,7 +148,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
 
   // Short Clips - Trending
   {
-    id: 5,
+    _id: '5',
     title: 'Midnight Dreams - Creative Short',
     creator: 'The Wave',
     thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=225&fit=crop',
@@ -161,7 +169,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
     comments: 156,
   },
   {
-    id: 6,
+    _id: '6',
     title: 'Quick Tips: Creative Hacks',
     creator: 'Quick Tips',
     thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=200&h=300&fit=crop',
@@ -182,7 +190,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
   },
   // Short Clips - Recent
   {
-    id: 7,
+    _id: '7',
     title: '60 Second Motivation',
     creator: 'Motivate Daily',
     thumbnail: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=300&fit=crop',
@@ -202,7 +210,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
     comments: 234,
   },
   {
-    id: 8,
+    _id: '8',
     title: 'Behind the Scenes',
     creator: 'Studio Life',
     thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=200&h=300&fit=crop',
@@ -222,7 +230,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
 
   // Talks & Speeches - Trending
   {
-    id: 9,
+    _id: '9',
     title: 'Golden Hour - Inspirational Talk',
     creator: 'Aria Rose',
     thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=225&fit=crop',
@@ -244,7 +252,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
     comments: 189,
   },
   {
-    id: 10,
+    _id: '10',
     title: 'Rise Up - Motivational Talk',
     creator: 'Victory Sound',
     thumbnail: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=169&fit=crop',
@@ -264,7 +272,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
   },
   // Talks & Speeches - Featured
   {
-    id: 11,
+    _id: '11',
     title: 'The Art of Creative Expression',
     creator: 'Creative Minds',
     thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=225&fit=crop',
@@ -285,7 +293,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
 
   // Creative Content - Trending
   {
-    id: 12,
+    _id: '12',
     title: 'Street Dreams - Short Film',
     creator: 'King Vibe',
     thumbnail: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=225&fit=crop',
@@ -305,7 +313,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
     comments: 234,
   },
   {
-    id: 13,
+    _id: '13',
     title: 'Ocean Waves - Creative Content',
     creator: 'Crystal',
     thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=225&fit=crop',
@@ -325,7 +333,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
   },
   // Creative Content - Recent
   {
-    id: 14,
+    _id: '14',
     title: 'Creative Process: Behind the Scenes',
     creator: 'Zen Beats',
     thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=169&fit=crop',
@@ -343,7 +351,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
     comments: 34,
   },
   {
-    id: 15,
+    _id: '15',
     title: 'Heart & Soul - Creative Short',
     creator: 'Melody Grace',
     thumbnail: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=169&fit=crop',
@@ -365,7 +373,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
 
   // Inspirational - Trending
   {
-    id: 16,
+    _id: '16',
     title: 'Inspiring Stories: Journey to Success',
     creator: 'Motivation Hub',
     thumbnail: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=225&fit=crop',
@@ -385,7 +393,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
     comments: 567,
   },
   {
-    id: 17,
+    _id: '17',
     title: 'Morning Inspiration - Daily Motivation',
     creator: 'Sarah Grace',
     thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=169&fit=crop',
@@ -404,7 +412,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
   },
   // Inspirational - Featured
   {
-    id: 18,
+    _id: '18',
     title: 'Deep Dive: Creative Process',
     creator: 'Art Studio',
     thumbnail: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=225&fit=crop',
@@ -425,7 +433,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
 
   // Live Performances - Trending
   {
-    id: 19,
+    _id: '19',
     title: 'Live Concert: Summer Vibes',
     creator: 'Music Fest',
     thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=225&fit=crop',
@@ -446,7 +454,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
     comments: 789,
   },
   {
-    id: 20,
+    _id: '20',
     title: 'Urban Flow - Street Performance',
     creator: 'Metro Kid',
     thumbnail: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=169&fit=crop',
@@ -464,7 +472,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
     comments: 45,
   },
   {
-    id: 21,
+    _id: '21',
     title: 'Neon Nights - Live Stream',
     creator: 'Summer',
     thumbnail: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=225&fit=crop',
@@ -485,7 +493,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
 
   // Podcasts / Video Talks - Trending
   {
-    id: 22,
+    _id: '22',
     title: 'The Creative Mindset Podcast',
     creator: 'Mindset Masters',
     thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=225&fit=crop',
@@ -506,7 +514,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
     comments: 345,
   },
   {
-    id: 23,
+    _id: '23',
     title: 'Success Stories: Episode 5',
     creator: 'Success Stories',
     thumbnail: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=225&fit=crop',
@@ -527,7 +535,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
   },
   // Podcasts - Recent
   {
-    id: 24,
+    _id: '24',
     title: 'Tech Talk: Future of Media',
     creator: 'Tech Insights',
     thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=169&fit=crop',
@@ -547,7 +555,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
 
   // Featured Creators
   {
-    id: 25,
+    _id: '25',
     name: 'DJ Flame',
     creator: 'DJ Flame',
     title: 'DJ Flame',
@@ -567,7 +575,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
     },
   },
   {
-    id: 26,
+    _id: '26',
     name: 'Luna Belle',
     creator: 'Luna Belle',
     title: 'Luna Belle',
@@ -587,7 +595,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
     },
   },
   {
-    id: 27,
+    _id: '27',
     name: 'Marcus Jay',
     creator: 'Marcus Jay',
     title: 'Marcus Jay',
@@ -607,7 +615,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
     },
   },
   {
-    id: 28,
+    _id: '28',
     name: 'Aria Rose',
     creator: 'Aria Rose',
     title: 'Aria Rose',
@@ -627,7 +635,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
     },
   },
   {
-    id: 29,
+    _id: '29',
     name: 'The Wave',
     creator: 'The Wave',
     title: 'The Wave',
@@ -647,7 +655,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
     },
   },
   {
-    id: 30,
+    _id: '30',
     name: 'King Vibe',
     creator: 'King Vibe',
     title: 'King Vibe',
@@ -665,5 +673,46 @@ export const VIDEOS_ITEMS: VideoItem[] = [
       title: 'Street Dreams',
       duration: '5:32',
     },
+  },
+
+  // Sermons - Trending
+  {
+    _id: '31',
+    title: 'Sunday Service: The Power of Prayer',
+    creator: 'Grace Church',
+    thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=225&fit=crop',
+    category: 'sermon',
+    views: '15K',
+    duration: '1:15:00',
+    uploadedAt: '1 day ago',
+    isNew: true,
+    isTrending: true,
+    isFeatured: true,
+    videoUrl: 'https://example.com/videos/power-of-prayer.mp4',
+    downloadUrl: 'https://example.com/downloads/power-of-prayer.mp4',
+    description: 'Full Sunday service recording focusing on the importance of prayer.',
+    releaseDate: '2025-02-01',
+    tags: ['sermon', 'prayer', 'church'],
+    isMonetizable: false,
+    comments: 45,
+  },
+  {
+    _id: '32',
+    title: 'Understanding the Scriptures',
+    creator: 'Bible Study Group',
+    thumbnail: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=225&fit=crop',
+    category: 'sermon',
+    views: '5K',
+    duration: '45:30',
+    uploadedAt: '3 days ago',
+    isNew: false,
+    isTrending: true,
+    videoUrl: 'https://example.com/videos/understanding-scriptures.mp4',
+    downloadUrl: 'https://example.com/downloads/understanding-scriptures.mp4',
+    description: 'Deep dive into biblical interpretation.',
+    releaseDate: '2025-01-29',
+    tags: ['sermon', 'bible', 'study'],
+    isMonetizable: false,
+    comments: 12,
   },
 ];

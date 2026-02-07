@@ -13,9 +13,9 @@ export async function generateMetadata({
   params,
 }: PrayerRequestDetailPageProps): Promise<Metadata> {
   const resolvedParams = await params;
-  const id = parseInt(resolvedParams.id, 10);
+  const id = resolvedParams.id;
 
-  if (isNaN(id)) {
+  if (!id) {
     return {
       title: 'Prayer Request Not Found',
       description: 'The requested prayer request could not be found.',
@@ -39,10 +39,10 @@ export async function generateMetadata({
 
 export default async function PrayerRequestDetailPage({ params }: PrayerRequestDetailPageProps) {
   const resolvedParams = await params;
-  const id = parseInt(resolvedParams.id, 10);
+  const id = resolvedParams.id;
 
   // Validate ID
-  if (Number.isNaN(id)) {
+  if (!id) {
     notFound();
   }
 

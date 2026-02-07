@@ -49,14 +49,14 @@ export const AnsweredQuestionsSection = ({ questions }: AnsweredQuestionsSection
       <div className="grid md:grid-cols-2 gap-6">
         {itemsToShow.map((question, index) => (
           <motion.div
-            key={question.id}
+            key={question._id}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: index * 0.1 }}
             whileHover={{ y: -4 }}
             className="bg-card rounded-2xl p-6 shadow-sm border border-border/50 hover:shadow-md transition-all">
-            <Link href={`/community/ask-a-pastor/${question.id}`}>
+            <Link href={`/community/ask-a-pastor/${question._id}`}>
               <div className="flex items-start gap-3 mb-4">
                 <div className="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center shrink-0">
                   <CheckCircle2 className="w-6 h-6 text-green-600 dark:text-green-400" />
@@ -89,7 +89,7 @@ export const AnsweredQuestionsSection = ({ questions }: AnsweredQuestionsSection
                   {question.helpful} found this helpful
                 </div>
                 <Button size="sm" variant="ghost" className="gap-1" asChild>
-                  <Link href={`/community/ask-a-pastor/${question.id}`}>
+                  <Link href={`/community/ask-a-pastor/${question._id}`}>
                     Read Full Answer
                     <ArrowRight className="w-3 h-3" />
                   </Link>

@@ -5,7 +5,7 @@ import { Play, Heart, Clock, Sparkles, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export interface RecentVideoUpload {
-  id: number;
+  _id: string;
   title: string;
   creator: string;
   thumbnail: string;
@@ -43,7 +43,7 @@ export const RecentVideoUploads = ({ uploads: recentUploads }: RecentVideoUpload
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {recentUploads.map((video, index) => (
             <motion.div
-              key={video.id}
+              key={video._id}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}

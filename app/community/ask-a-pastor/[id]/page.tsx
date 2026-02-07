@@ -11,9 +11,9 @@ interface QuestionDetailPageProps {
 // Generate metadata for the question detail page
 export async function generateMetadata({ params }: QuestionDetailPageProps): Promise<Metadata> {
   const resolvedParams = await params;
-  const id = parseInt(resolvedParams.id, 10);
+  const id = resolvedParams.id;
 
-  if (isNaN(id)) {
+  if (!id) {
     return {
       title: 'Question Not Found',
       description: 'The requested question could not be found.',
@@ -37,10 +37,10 @@ export async function generateMetadata({ params }: QuestionDetailPageProps): Pro
 
 export default async function QuestionDetailPage({ params }: QuestionDetailPageProps) {
   const resolvedParams = await params;
-  const id = parseInt(resolvedParams.id, 10);
+  const id = resolvedParams.id;
 
   // Validate ID
-  if (isNaN(id)) {
+  if (!id) {
     notFound();
   }
 

@@ -32,13 +32,13 @@ export const FeaturedTestimonies = ({ testimonies }: FeaturedTestimoniesProps) =
       <div className="grid md:grid-cols-3 gap-6">
         {testimonies.map((testimony, index) => (
           <motion.div
-            key={testimony.id}
+            key={testimony._id}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: index * 0.1 }}
             whileHover={{ y: -4 }}>
-            <Link href={`/community/testimonies/${testimony.id}`}>
+            <Link href={`/community/testimonies/${testimony._id}`}>
               <Card className="card-interactive h-full">
                 <CardContent className="p-6">
                   <div className="flex items-start justify-between mb-4">

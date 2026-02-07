@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
 interface MusicCardProps {
-  id?: number;
+  _id: string;
   title: string;
   artist: string;
   cover: string;
@@ -15,20 +15,12 @@ interface MusicCardProps {
   isNew?: boolean;
 }
 
-export const MusicCard = ({
-  id,
-  title,
-  artist,
-  cover,
-  plays,
-  genre,
-  isNew,
-}: MusicCardProps) => {
+export const MusicCard = ({ _id, title, artist, cover, plays, genre, isNew }: MusicCardProps) => {
   const cardContent = (
     <motion.div
       whileHover={{ y: -8 }}
       transition={{ duration: 0.3 }}
-      className={`group relative bg-card rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow ${id ? 'cursor-pointer' : ''}`}>
+      className="group relative bg-card rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow cursor-pointer">
       {/* Cover Image */}
       <div className="relative aspect-square overflow-hidden">
         <img
@@ -102,13 +94,9 @@ export const MusicCard = ({
     </motion.div>
   );
 
-  if (id) {
-    return (
-      <Link href={`/music/${id}`} className="block">
-        {cardContent}
-      </Link>
-    );
-  }
-
-  return cardContent;
+  return (
+    <Link href={`/music/${_id}`} className="block">
+      {cardContent}
+    </Link>
+  );
 };

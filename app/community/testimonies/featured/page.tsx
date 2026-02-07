@@ -20,7 +20,7 @@ async function generateFeaturedTestimoniesData() {
 
   const featuredTestimonies: Testimony[] = TESTIMONIES_ITEMS.filter(item => item.isFeatured).map(
     item => ({
-      id: item.id,
+      _id: item._id,
       author: item.author,
       avatar: item.avatar,
       content: item.content,

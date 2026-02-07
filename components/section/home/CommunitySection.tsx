@@ -67,28 +67,28 @@ export const CommunitySection = ({
                     viewport={{ once: true }}
                     transition={{ delay: index * 0.1 }}
                     className="bg-card rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
-                  <div className="flex gap-3">
-                    <div className="w-10 h-10 rounded-full overflow-hidden shrink-0">
-                      <img
-                        src={post.avatar}
-                        alt={post.user}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-semibold text-sm">{post.user}</p>
-                      <p className="text-muted-foreground mt-1">{post.content}</p>
-                      <div className="flex items-center gap-4 mt-3 text-sm text-muted-foreground">
-                        <span className="flex items-center gap-1 hover:text-primary cursor-pointer transition-colors">
-                          ❤️ {post.likes}
-                        </span>
-                        <span className="flex items-center gap-1 hover:text-primary cursor-pointer transition-colors">
-                          <MessageSquare className="w-4 h-4" />
-                          {post.comments}
-                        </span>
+                    <div className="flex gap-3">
+                      <div className="w-10 h-10 rounded-full overflow-hidden shrink-0">
+                        <img
+                          src={post.avatar}
+                          alt={post.user}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-semibold text-sm">{post.user}</p>
+                        <p className="text-muted-foreground mt-1">{post.content}</p>
+                        <div className="flex items-center gap-4 mt-3 text-sm text-muted-foreground">
+                          <span className="flex items-center gap-1 hover:text-primary cursor-pointer transition-colors">
+                            ❤️ {post.likes}
+                          </span>
+                          <span className="flex items-center gap-1 hover:text-primary cursor-pointer transition-colors">
+                            <MessageSquare className="w-4 h-4" />
+                            {post.comments}
+                          </span>
+                        </div>
                       </div>
                     </div>
-                  </div>
                   </motion.div>
                 </Link>
               ))}

@@ -27,7 +27,7 @@ async function generatePrayerRequestsData() {
   // Filter and transform active requests
   const activeRequests: PrayerRequest[] = PRAYER_REQUESTS_ITEMS.filter(item => item.isActive).map(
     item => ({
-      id: item.id,
+      _id: item._id,
       title: item.title,
       content: item.content,
       author: item.author,
@@ -43,7 +43,7 @@ async function generatePrayerRequestsData() {
   const answeredPrayers: AnsweredPrayer[] = PRAYER_REQUESTS_ITEMS.filter(
     item => item.isAnswered
   ).map(item => ({
-    id: item.id,
+    _id: item._id,
     title: item.title,
     originalRequest: item.originalRequest || item.content,
     testimony: item.testimony || item.content,

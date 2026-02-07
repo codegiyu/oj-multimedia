@@ -2,11 +2,13 @@
 
 import { motion } from 'framer-motion';
 import { Trophy, TrendingUp } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { ChartCard } from '@/components/cards/ChartCard';
+import { SectionHeader } from '@/components/general/SectionHeader';
+import { SectionContent } from '@/components/general/SectionContent';
 
 export interface ChartItem {
+  _id?: string;
   rank: number;
   title: string;
   artist: string;
@@ -40,26 +42,20 @@ export const TopChartsSection = ({ chartData, risingArtists }: TopChartsSectionP
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
             className="bg-card rounded-3xl p-6 shadow-sm">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center">
-                  <Trophy className="w-5 h-5 text-accent-foreground" />
-                </div>
-                <div>
-                  <h3 className="font-display font-bold text-xl">Top Songs</h3>
-                  <p className="text-sm text-muted-foreground">This Week</p>
-                </div>
-              </div>
-              <Button variant="ghost" size="sm" asChild>
-                <Link href="/music/top-charts">See All</Link>
-              </Button>
-            </div>
-
-            <div className="space-y-1">
+            <SectionHeader
+              icon={Trophy}
+              iconColor="accent"
+              heading="Top Songs"
+              subtext="This Week"
+              viewAllLink="/music/top-charts"
+              viewAllLabel="See All"
+              className="mb-6"
+            />
+            <SectionContent className="space-y-1" enableAnimation={false}>
               {chartData.slice(0, 5).map(item => (
-                <ChartCard key={item.rank} {...item} />
+                <ChartCard key={item._id ?? item.rank} {...item} />
               ))}
-            </div>
+            </SectionContent>
           </motion.div>
 
           {/* Rising Artists */}
@@ -69,45 +65,39 @@ export const TopChartsSection = ({ chartData, risingArtists }: TopChartsSectionP
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
             className="bg-card rounded-3xl p-6 shadow-sm">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                  <TrendingUp className="w-5 h-5 text-primary" />
-                </div>
-                <div>
-                  <h3 className="font-display font-bold text-xl">Rising Artists</h3>
-                  <p className="text-sm text-muted-foreground">New Talents</p>
-                </div>
-              </div>
-              <Button variant="ghost" size="sm" asChild>
-                <Link href="/music/artists">See All</Link>
-              </Button>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
+            <SectionHeader
+              icon={TrendingUp}
+              iconColor="primary"
+              heading="Rising Artists"
+              subtext="New Talents"
+              viewAllLink="/music/artists"
+              viewAllLabel="See All"
+              className="mb-6"
+            />
+            <SectionContent className="grid grid-cols-2 gap-4" enableAnimation={false}>
               {risingArtists.map((artist, index) => (
                 <Link key={index} href="/music/artists">
                   <motion.div
                     whileHover={{ y: -4 }}
                     className="group p-4 rounded-2xl bg-muted/50 hover:bg-muted transition-colors cursor-pointer">
-                  <div className="w-16 h-16 rounded-full overflow-hidden mx-auto mb-3">
-                    <img
-                      src={artist.image}
-                      alt={artist.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <h4 className="font-semibold text-sm text-center group-hover:text-primary transition-colors">
-                    {artist.name}
-                  </h4>
-                  <p className="text-xs text-muted-foreground text-center">{artist.genre}</p>
-                  <p className="text-xs text-center mt-1 text-primary font-medium">
-                    {artist.followers} followers
-                  </p>
+                    <div className="w-16 h-16 rounded-full overflow-hidden mx-auto mb-3">
+                      <img
+                        src={artist.image}
+                        alt={artist.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <h4 className="font-semibold text-sm text-center group-hover:text-primary transition-colors">
+                      {artist.name}
+                    </h4>
+                    <p className="text-xs text-muted-foreground text-center">{artist.genre}</p>
+                    <p className="text-xs text-center mt-1 text-primary font-medium">
+                      {artist.followers} followers
+                    </p>
                   </motion.div>
                 </Link>
               ))}
-            </div>
+            </SectionContent>
           </motion.div>
         </div>
       </div>

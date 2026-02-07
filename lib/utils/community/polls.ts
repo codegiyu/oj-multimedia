@@ -2,11 +2,12 @@ import { POLLS_ITEMS, type PollItem } from '@/lib/constants/community/polls';
 
 /**
  * Get a poll item by its ID
- * @param id - The numeric ID of the poll item
+ * @param id - The ID of the poll item (string from URL)
  * @returns The poll item if found, undefined otherwise
  */
-export function getPollById(id: number): PollItem | undefined {
-  return POLLS_ITEMS.find(item => item.id === id);
+export function getPollById(id: string): PollItem | undefined {
+  if (!id) return undefined;
+  return POLLS_ITEMS.find(item => item._id === id);
 }
 
 /**

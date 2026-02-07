@@ -11,9 +11,9 @@ interface VideoDetailPageProps {
 // Generate metadata for the video detail page
 export async function generateMetadata({ params }: VideoDetailPageProps): Promise<Metadata> {
   const resolvedParams = await params;
-  const id = parseInt(resolvedParams.id, 10);
+  const id = resolvedParams.id;
 
-  if (isNaN(id)) {
+  if (!id) {
     return {
       title: 'Video Not Found',
       description: 'The requested video could not be found.',
@@ -39,10 +39,10 @@ export async function generateMetadata({ params }: VideoDetailPageProps): Promis
 
 export default async function VideoDetailPage({ params }: VideoDetailPageProps) {
   const resolvedParams = await params;
-  const id = parseInt(resolvedParams.id, 10);
+  const id = resolvedParams.id;
 
   // Validate ID
-  if (isNaN(id)) {
+  if (!id) {
     notFound();
   }
 

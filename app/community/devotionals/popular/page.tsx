@@ -27,7 +27,7 @@ async function generatePopularDevotionalsData() {
   )
     .sort((a, b) => (b.views || 0) - (a.views || 0))
     .map(item => ({
-      id: item.id,
+      _id: item._id,
       title: item.title,
       verse: item.verse!,
       date: item.date!,

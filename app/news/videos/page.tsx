@@ -25,7 +25,7 @@ async function generateVideoNewsData() {
   // Filter items with videoUrl and duration (video stories)
   const videoNews: VideoNewsItem[] = NEWS_ITEMS.filter(item => item.videoUrl && item.duration).map(
     item => ({
-      id: item.id,
+      _id: item._id,
       title: item.title,
       category: item.category,
       duration: item.duration!,

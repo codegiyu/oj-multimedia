@@ -3,26 +3,19 @@
 import { useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Trophy, Play, TrendingUp, TrendingDown, Minus, ArrowRight } from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
+import { Trophy, ArrowRight } from 'lucide-react';
 import { MusicCategories } from './MusicCategories';
 import { MusicUploadCTA } from '../shared/MusicUploadCTA';
 import { EmptyState } from '../news/EmptyState';
 import { Button } from '@/components/ui/button';
 import { useQueryState, parseAsString } from 'nuqs';
+import { ChartCard } from '@/components/cards/ChartCard';
 import type { ChartSong } from './TopMusicCharts';
 
 interface TopChartsPageClientProps {
   chartSongs: (ChartSong & { category: string })[];
   period: string;
 }
-
-const TrendIcon = ({ trend }: { trend: string }) => {
-  if (trend === 'up') return <TrendingUp className="w-4 h-4 text-emerald-500" />;
-  if (trend === 'down') return <TrendingDown className="w-4 h-4 text-destructive" />;
-  return <Minus className="w-4 h-4 text-muted-foreground" />;
-};
 
 export const TopChartsPageClient = ({
   chartSongs,
@@ -121,75 +114,21 @@ export const TopChartsPageClient = ({
               <div className="grid gap-4 md:grid-cols-2">
                 {itemsToShow.map((song, index) => (
                   <motion.div
-                    key={song.id || song.rank}
+                    key={song._id}
                     initial={{ opacity: 0, x: -20 }}
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
-                    transition={{ delay: index * 0.02 }}
-                    whileHover={{ scale: 1.01 }}
-                    className="group">
-                    <Link
-                      href={`/music/${song.title.toLowerCase().replace(/\s+/g, '-')}-${song.rank}`}
-                      className="flex items-center gap-4 p-3 bg-card rounded-xl hover:bg-muted/50 transition-colors cursor-pointer">
-                      {/* Rank */}
-                      <div
-                        className={`
-                        w-10 h-10 flex items-center justify-center font-bold text-lg shrink-0
-                        ${song.rank <= 3 ? 'text-primary' : 'text-muted-foreground'}
-                      `}>
-                        {song.rank <= 3 && <Trophy className="w-5 h-5 mr-1" />}
-                        {song.rank}
-                      </div>
-
-                      {/* Cover */}
-                      <div className="relative w-16 h-16 rounded-lg overflow-hidden shrink-0">
-                        <Image
-                          src={song.cover}
-                          alt={song.title}
-                          className="w-full h-full object-cover"
-                          fill
-                        />
-                        <div className="absolute inset-0 bg-foreground/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                          <Play className="w-6 h-6 text-background fill-current" />
-                        </div>
-                      </div>
-
-                      {/* Info */}
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold truncate group-hover:text-primary transition-colors">
-                          {song.title}
-                        </h3>
-                        <p className="text-sm text-muted-foreground truncate">{song.artist}</p>
-                      </div>
-
-                      {/* Stats */}
-                      <div className="hidden sm:flex items-center gap-4">
-                        <span className="text-sm text-muted-foreground">{song.plays}</span>
-                        <div className="flex items-center gap-1">
-                          <TrendIcon trend={song.trend} />
-                          {song.change > 0 && (
-                            <span
-                              className={`text-xs ${
-                                song.trend === 'up'
-                                  ? 'text-emerald-500'
-                                  : song.trend === 'down'
-                                    ? 'text-destructive'
-                                    : 'text-muted-foreground'
-                              }`}>
-                              {song.change}%
-                            </span>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Play Button */}
-                      <Button
-                        variant="ghost"
-                        size="icon-sm"
-                        className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
-                        <Play className="w-4 h-4 fill-current" />
-                      </Button>
-                    </Link>
+                    transition={{ delay: index * 0.02 }}>
+                    <ChartCard
+                      _id={song._id}
+                      rank={song.rank}
+                      title={song.title}
+                      artist={song.artist}
+                      cover={song.cover}
+                      plays={song.plays}
+                      trend={song.trend}
+                      change={song.change}
+                    />
                   </motion.div>
                 ))}
               </div>

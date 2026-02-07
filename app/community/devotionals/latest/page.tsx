@@ -28,7 +28,7 @@ async function generateLatestDevotionalsData() {
       return dateB.localeCompare(dateA);
     })
     .map(item => ({
-      id: item.id,
+      _id: item._id,
       title: item.title,
       verse: item.verse!,
       date: item.date!,

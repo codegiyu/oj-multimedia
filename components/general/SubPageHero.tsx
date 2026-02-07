@@ -35,8 +35,8 @@ export const SubPageHero = ({
   title,
   titleHighlight,
   description,
-  badgeText,
-  badgeIcon,
+  // badgeText,
+  // badgeIcon,
   backUrl,
   backLabel = 'Back to News',
   stats,
@@ -90,12 +90,12 @@ export const SubPageHero = ({
           transition={{ duration: 0.6 }}
           className="text-center max-w-3xl mx-auto">
           {/* Badge */}
-          {badgeText && (
+          {/* {badgeText && (
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary mb-6">
               {badgeIcon && <DynamicIcon name={badgeIcon} props={{ className: 'w-4 h-4' }} />}
               <span className="text-sm font-medium">{badgeText}</span>
             </div>
-          )}
+          )} */}
 
           {/* Title */}
           <h1 className="text-3xl md:text-5xl lg:text-6xl font-display font-bold text-foreground mb-4">

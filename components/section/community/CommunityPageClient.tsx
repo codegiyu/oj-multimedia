@@ -51,14 +51,6 @@ const categoryDefinitions: Array<Omit<CommunityCategory, 'count'> & { key: strin
     href: '/community/devotionals',
   },
   {
-    key: 'sermons',
-    icon: 'Video',
-    title: 'Sermons & Talks',
-    description: 'Powerful messages and teachings from trusted voices',
-    color: 'primary',
-    href: '/community/sermons',
-  },
-  {
     key: 'testimonies',
     icon: 'Heart',
     title: 'Testimonies',

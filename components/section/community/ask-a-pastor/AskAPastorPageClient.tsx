@@ -8,7 +8,7 @@ import { QuestionCategoriesSection } from './QuestionCategoriesSection';
 import { CommunityCTA } from '../../shared';
 
 export interface Question {
-  id: number;
+  _id: string;
   question: string;
   category: string;
   author: string;
@@ -19,7 +19,7 @@ export interface Question {
 }
 
 export interface AnsweredQuestion {
-  id: number;
+  _id: string;
   question: string;
   answer: string;
   pastor: string;
@@ -29,7 +29,7 @@ export interface AnsweredQuestion {
 }
 
 export interface AvailablePastor {
-  id: number;
+  _id: string;
   name: string;
   title: string;
   church: string;

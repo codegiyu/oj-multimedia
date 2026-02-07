@@ -4,7 +4,7 @@
  * Items are marked with type to indicate which section they belong to.
  */
 export interface ResourceItem {
-  id: number;
+  _id: string;
   title: string;
   description: string;
   downloads: string;
@@ -35,7 +35,7 @@ export interface ResourceItem {
 export const RESOURCES_ITEMS: ResourceItem[] = [
   // Ebooks
   {
-    id: 1,
+    _id: '1',
     title: 'Prayer Guide: 30 Days of Prayer',
     description: 'A comprehensive guide to deepen your prayer life',
     downloads: '1.2K',
@@ -47,7 +47,7 @@ export const RESOURCES_ITEMS: ResourceItem[] = [
     date: '2026-01-15',
   },
   {
-    id: 2,
+    _id: '2',
     title: 'Bible Study Methods',
     description: 'Learn effective methods for studying the Bible',
     downloads: '890',
@@ -58,7 +58,7 @@ export const RESOURCES_ITEMS: ResourceItem[] = [
     date: '2026-01-10',
   },
   {
-    id: 3,
+    _id: '3',
     title: 'Christian Living Principles',
     description: 'Essential principles for daily Christian living',
     downloads: '650',
@@ -69,7 +69,7 @@ export const RESOURCES_ITEMS: ResourceItem[] = [
     date: '2026-01-05',
   },
   {
-    id: 4,
+    _id: '4',
     title: 'Worship & Praise Handbook',
     description: 'Understanding worship and its importance',
     downloads: '1.5K',
@@ -79,54 +79,9 @@ export const RESOURCES_ITEMS: ResourceItem[] = [
     tags: ['worship', 'praise', 'handbook'],
     date: '2025-12-28',
   },
-  // Templates
-  {
-    id: 5,
-    title: 'Church Flyer Template',
-    description: 'Professional flyer templates for church events',
-    downloads: '650',
-    type: 'template',
-    templateType: 'Flyer',
-    fileUrl: 'https://example.com/downloads/church-flyer-template.zip',
-    tags: ['flyer', 'template', 'events'],
-    date: '2026-01-20',
-  },
-  {
-    id: 6,
-    title: 'Event Poster Template',
-    description: 'Eye-catching poster designs for special events',
-    downloads: '420',
-    type: 'template',
-    templateType: 'Poster',
-    fileUrl: 'https://example.com/downloads/event-poster-template.zip',
-    tags: ['poster', 'template', 'events'],
-    date: '2026-01-18',
-  },
-  {
-    id: 7,
-    title: 'Sermon Series Template',
-    description: 'Templates for sermon series announcements',
-    downloads: '380',
-    type: 'template',
-    templateType: 'Series',
-    fileUrl: 'https://example.com/downloads/sermon-series-template.zip',
-    tags: ['sermon', 'template', 'series'],
-    date: '2026-01-15',
-  },
-  {
-    id: 8,
-    title: 'Bible Study Template',
-    description: 'Clean templates for Bible study materials',
-    downloads: '520',
-    type: 'template',
-    templateType: 'Study',
-    fileUrl: 'https://example.com/downloads/bible-study-template.zip',
-    tags: ['bible-study', 'template', 'materials'],
-    date: '2026-01-12',
-  },
   // Beats
   {
-    id: 9,
+    _id: '9',
     title: 'Worship Beat Pack',
     description: '10 professional worship beats for your ministry',
     downloads: '2.1K',
@@ -138,7 +93,7 @@ export const RESOURCES_ITEMS: ResourceItem[] = [
     date: '2026-01-22',
   },
   {
-    id: 10,
+    _id: '10',
     title: 'Gospel Instrumentals',
     description: 'High-quality gospel instrumentals collection',
     downloads: '1.8K',
@@ -150,7 +105,7 @@ export const RESOURCES_ITEMS: ResourceItem[] = [
     date: '2026-01-20',
   },
   {
-    id: 11,
+    _id: '11',
     title: 'Praise & Worship Loops',
     description: 'Ready-to-use loops for praise sessions',
     downloads: '1.5K',
@@ -162,7 +117,7 @@ export const RESOURCES_ITEMS: ResourceItem[] = [
     date: '2026-01-18',
   },
   {
-    id: 12,
+    _id: '12',
     title: 'Contemporary Christian Beats',
     description: 'Modern beats for contemporary worship',
     downloads: '1.2K',
@@ -175,7 +130,7 @@ export const RESOURCES_ITEMS: ResourceItem[] = [
   },
   // Wallpapers
   {
-    id: 13,
+    _id: '13',
     title: 'Inspirational Quotes',
     description: 'Beautiful wallpapers with inspirational Christian quotes',
     downloads: '3.5K',
@@ -188,7 +143,7 @@ export const RESOURCES_ITEMS: ResourceItem[] = [
     date: '2026-01-25',
   },
   {
-    id: 14,
+    _id: '14',
     title: 'Bible Verse Wallpapers',
     description: 'Scripture-based wallpapers for your devices',
     downloads: '2.9K',
@@ -201,7 +156,7 @@ export const RESOURCES_ITEMS: ResourceItem[] = [
     date: '2026-01-23',
   },
   {
-    id: 15,
+    _id: '15',
     title: 'Worship Wallpapers',
     description: 'Stunning worship-themed wallpapers',
     downloads: '2.1K',
@@ -214,7 +169,7 @@ export const RESOURCES_ITEMS: ResourceItem[] = [
     date: '2026-01-21',
   },
   {
-    id: 16,
+    _id: '16',
     title: 'Prayer Wallpapers',
     description: 'Peaceful prayer-themed backgrounds',
     downloads: '1.8K',
@@ -228,7 +183,7 @@ export const RESOURCES_ITEMS: ResourceItem[] = [
   },
   // Affiliate Products
   {
-    id: 17,
+    _id: '17',
     title: 'Christian Books Collection',
     description: 'Recommended Christian books for spiritual growth',
     downloads: '0',
@@ -240,7 +195,7 @@ export const RESOURCES_ITEMS: ResourceItem[] = [
     date: '2026-01-24',
   },
   {
-    id: 18,
+    _id: '18',
     title: 'Bible Study Gadgets',
     description: 'Tablets and devices perfect for Bible study',
     downloads: '0',
@@ -252,7 +207,7 @@ export const RESOURCES_ITEMS: ResourceItem[] = [
     date: '2026-01-22',
   },
   {
-    id: 19,
+    _id: '19',
     title: 'Worship Equipment',
     description: 'Quality audio equipment for worship ministry',
     downloads: '0',
@@ -264,7 +219,7 @@ export const RESOURCES_ITEMS: ResourceItem[] = [
     date: '2026-01-20',
   },
   {
-    id: 20,
+    _id: '20',
     title: 'Christian Apparel',
     description: 'Faith-inspired clothing and accessories',
     downloads: '0',

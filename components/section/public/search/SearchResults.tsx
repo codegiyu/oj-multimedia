@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { Play, Clock, Video, Eye } from 'lucide-react';
 
 export interface SearchResultItem {
-  id: string;
+  _id: string;
   title: string;
   subtitle: string;
   type:
@@ -13,7 +13,6 @@ export interface SearchResultItem {
     | 'news'
     | 'video'
     | 'devotional'
-    | 'sermon'
     | 'testimony'
     | 'prayer-request'
     | 'question'
@@ -31,27 +30,25 @@ const typeColors: Record<string, string> = {
 };
 
 function getDetailHref(item: SearchResultItem): string | null {
-  // Extract numeric ID from prefix (m, n, v, d, s, t, pr, q, p, r)
-  const numericId = item.id.replace(/^[mnvdstprq]/, '');
+  // Extract ID from prefix (m, n, v, d, t, pr, q, p, r) — match longer prefix first
+  const idPart = item._id.replace(/^(pr|m|n|v|d|t|q|p|r)/, '');
   switch (item.type) {
     case 'music':
-      return `/music/${numericId}`;
+      return `/music/${idPart}`;
     case 'news':
-      return `/news/story/${numericId}`;
+      return `/news/story/${idPart}`;
     case 'video':
-      return `/videos/${numericId}`;
+      return `/videos/${idPart}`;
     case 'devotional':
-      return `/community/devotionals/${numericId}`;
-    case 'sermon':
-      return `/community/sermons/${numericId}`;
+      return `/community/devotionals/${idPart}`;
     case 'testimony':
-      return `/community/testimonies/${numericId}`;
+      return `/community/testimonies/${idPart}`;
     case 'prayer-request':
-      return `/community/prayer-requests/${numericId}`;
+      return `/community/prayer-requests/${idPart}`;
     case 'question':
-      return `/community/ask-a-pastor/${numericId}`;
+      return `/community/ask-a-pastor/${idPart}`;
     case 'poll':
-      return `/community/polls-and-voting/${numericId}`;
+      return `/community/polls-and-voting/${idPart}`;
     case 'resource':
       return `/community/resources`;
     default:
@@ -70,7 +67,7 @@ export const SearchResults = ({ results }: SearchResultsProps) => {
         const href = getDetailHref(result);
         const card = (
           <motion.div
-            key={result.id}
+            key={result._id}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.05 }}
@@ -88,7 +85,6 @@ export const SearchResults = ({ results }: SearchResultsProps) => {
                 <div className="w-full h-full flex items-center justify-center">
                   <span className="text-4xl opacity-30">
                     {result.type === 'devotional' && '📖'}
-                    {result.type === 'sermon' && '🎤'}
                     {result.type === 'testimony' && '❤️'}
                     {result.type === 'prayer-request' && '🙏'}
                     {result.type === 'question' && '❓'}
@@ -125,9 +121,7 @@ export const SearchResults = ({ results }: SearchResultsProps) => {
               </h3>
               <p className="text-sm text-muted-foreground mb-2">{result.subtitle}</p>
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                {(result.type === 'music' || result.type === 'sermon') && (
-                  <Play className="w-3 h-3" />
-                )}
+                {result.type === 'music' && <Play className="w-3 h-3" />}
                 {(result.type === 'news' || result.type === 'devotional') && (
                   <Clock className="w-3 h-3" />
                 )}
@@ -144,7 +138,7 @@ export const SearchResults = ({ results }: SearchResultsProps) => {
         );
 
         return href ? (
-          <Link key={result.id} href={href} className="block">
+          <Link key={result._id} href={href} className="block">
             {card}
           </Link>
         ) : (

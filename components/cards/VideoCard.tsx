@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
 interface VideoCardProps {
-  id?: number;
+  _id?: string;
   title: string;
   creator: string;
   thumbnail: string;
@@ -16,7 +16,7 @@ interface VideoCardProps {
 }
 
 export const VideoCard = ({
-  id,
+  _id,
   title,
   creator,
   thumbnail,
@@ -28,7 +28,7 @@ export const VideoCard = ({
     <motion.div
       whileHover={{ y: -4 }}
       transition={{ duration: 0.3 }}
-      className={`group bg-card rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all ${id ? 'cursor-pointer' : ''}`}>
+      className={`group bg-card rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all ${_id ? 'cursor-pointer' : ''}`}>
       {/* Thumbnail */}
       <div className="relative aspect-video overflow-hidden">
         <img
@@ -96,9 +96,9 @@ export const VideoCard = ({
     </motion.div>
   );
 
-  if (id) {
+  if (_id) {
     return (
-      <Link href={`/videos/${id}`} className="block">
+      <Link href={`/videos/${_id}`} className="block">
         {cardContent}
       </Link>
     );

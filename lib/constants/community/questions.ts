@@ -5,7 +5,7 @@
  * which sections they belong to.
  */
 export interface QuestionItem {
-  id: number;
+  _id: string;
   question: string;
   category: string;
   author: string;
@@ -24,7 +24,7 @@ export interface QuestionItem {
   // Answered question fields
   answer?: string;
   pastor?: string;
-  pastorId?: number;
+  pastor_id?: string;
   answeredDate?: string;
   helpful?: number;
 }
@@ -35,7 +35,7 @@ export interface QuestionItem {
 export const QUESTIONS_ITEMS: QuestionItem[] = [
   // Active Questions
   {
-    id: 1,
+    _id: '1',
     question: 'How do I know if God is speaking to me?',
     category: 'Spiritual Growth',
     author: 'Sarah M.',
@@ -51,7 +51,7 @@ export const QUESTIONS_ITEMS: QuestionItem[] = [
     tags: ['hearing-god', 'discernment', 'spiritual-growth'],
   },
   {
-    id: 2,
+    _id: '2',
     question: 'What does the Bible say about handling conflict in relationships?',
     category: 'Relationships',
     author: 'Michael T.',
@@ -66,7 +66,7 @@ export const QUESTIONS_ITEMS: QuestionItem[] = [
     tags: ['relationships', 'conflict', 'biblical-principles'],
   },
   {
-    id: 3,
+    _id: '3',
     question: 'How can I overcome doubt in my faith?',
     category: 'Faith',
     author: 'David K.',
@@ -81,7 +81,7 @@ export const QUESTIONS_ITEMS: QuestionItem[] = [
     tags: ['doubt', 'faith', 'struggles'],
   },
   {
-    id: 4,
+    _id: '4',
     question: 'What is the biblical perspective on tithing?',
     category: 'Finance',
     author: 'Jennifer L.',
@@ -96,7 +96,7 @@ export const QUESTIONS_ITEMS: QuestionItem[] = [
     tags: ['tithing', 'finance', 'giving'],
   },
   {
-    id: 5,
+    _id: '5',
     question: 'How do I know if I have the gift of prophecy?',
     category: 'Spiritual Gifts',
     author: 'Robert P.',
@@ -111,7 +111,7 @@ export const QUESTIONS_ITEMS: QuestionItem[] = [
     tags: ['spiritual-gifts', 'prophecy', 'discernment'],
   },
   {
-    id: 6,
+    _id: '6',
     question: 'What should I do when I feel distant from God?',
     category: 'Spiritual Growth',
     author: 'Maria G.',
@@ -127,7 +127,7 @@ export const QUESTIONS_ITEMS: QuestionItem[] = [
   },
   // Answered Questions
   {
-    id: 7,
+    _id: '7',
     question: 'How do I forgive someone who has deeply hurt me?',
     category: 'Relationships',
     author: 'Anonymous',
@@ -142,14 +142,14 @@ export const QUESTIONS_ITEMS: QuestionItem[] = [
     answer:
       "Forgiveness is a process that begins with understanding God's forgiveness toward us. Jesus said in Matthew 6:14-15 that if we forgive others, our heavenly Father will forgive us. Start by praying for the person who hurt you, asking God to help you see them through His eyes. Remember that forgiveness doesn't mean forgetting or excusing the wrong, but rather releasing the debt and the right to revenge. It's a choice to let go of bitterness and trust God with justice.",
     pastor: 'Pastor David Chen',
-    pastorId: 1,
+    pastor_id: '1',
     answeredDate: '1 week ago',
     helpful: 89,
     date: '2026-01-19',
     tags: ['forgiveness', 'relationships', 'healing'],
   },
   {
-    id: 8,
+    _id: '8',
     question: 'What does it mean to be "born again"?',
     category: 'Faith',
     author: 'John D.',
@@ -163,14 +163,14 @@ export const QUESTIONS_ITEMS: QuestionItem[] = [
     answer:
       'Being "born again" refers to the spiritual transformation that occurs when someone accepts Jesus Christ as their Lord and Savior. Jesus explained this to Nicodemus in John 3:3, saying "unless one is born again, he cannot see the kingdom of God." This new birth is not physical but spiritual - it\'s the work of the Holy Spirit in a person\'s heart, creating a new nature and relationship with God. It involves repentance, faith in Christ, and receiving the Holy Spirit.',
     pastor: 'Rev. Sarah Williams',
-    pastorId: 2,
+    pastor_id: '2',
     answeredDate: '2 weeks ago',
     helpful: 156,
     date: '2026-01-12',
     tags: ['salvation', 'born-again', 'faith'],
   },
   {
-    id: 9,
+    _id: '9',
     question: 'How should Christians handle anxiety and worry?',
     category: 'Mental Health',
     author: 'Lisa M.',
@@ -185,7 +185,7 @@ export const QUESTIONS_ITEMS: QuestionItem[] = [
     answer:
       'The Bible addresses anxiety directly in Philippians 4:6-7: "Do not be anxious about anything, but in every situation, by prayer and petition, with thanksgiving, present your requests to God." Practical steps include: 1) Pray about everything, 2) Practice gratitude, 3) Focus on God\'s promises, 4) Seek community support, and 5) Remember that God cares for you (1 Peter 5:7). If anxiety persists, consider speaking with a Christian counselor alongside your spiritual practices.',
     pastor: 'Bishop James Moore',
-    pastorId: 3,
+    pastor_id: '3',
     answeredDate: '3 weeks ago',
     helpful: 203,
     date: '2026-01-05',

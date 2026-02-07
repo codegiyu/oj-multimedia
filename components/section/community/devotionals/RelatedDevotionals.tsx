@@ -16,12 +16,12 @@ export const RelatedDevotionals = ({ devotionals }: RelatedDevotionalsProps) => 
       <div className="grid md:grid-cols-3 gap-6">
         {devotionals.map((devotional, index) => (
           <motion.div
-            key={devotional.id}
+            key={devotional._id}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: index * 0.1 }}>
             <Link
-              href={`/community/devotionals/${devotional.id}`}
+              href={`/community/devotionals/${devotional._id}`}
               className="block p-6 bg-card rounded-lg border border-border hover:border-primary transition-colors">
               <h3 className="font-semibold mb-2 line-clamp-2">{devotional.title}</h3>
               {devotional.excerpt && (

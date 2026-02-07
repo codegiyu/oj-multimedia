@@ -5,11 +5,12 @@ import {
 
 /**
  * Get a prayer request item by its ID
- * @param id - The numeric ID of the prayer request item
+ * @param id - The ID of the prayer request item (string from URL)
  * @returns The prayer request item if found, undefined otherwise
  */
-export function getPrayerRequestById(id: number): PrayerRequestItem | undefined {
-  return PRAYER_REQUESTS_ITEMS.find(item => item.id === id);
+export function getPrayerRequestById(id: string): PrayerRequestItem | undefined {
+  if (!id) return undefined;
+  return PRAYER_REQUESTS_ITEMS.find(item => item._id === id);
 }
 
 /**
@@ -20,12 +21,13 @@ export function getPrayerRequestById(id: number): PrayerRequestItem | undefined 
  * @returns Array of related prayer request items
  */
 export function getRelatedRequests(
-  currentId: number,
+  currentId: string,
   category: string,
   limit: number = 3
 ): PrayerRequestItem[] {
+  if (!currentId) return [];
   return PRAYER_REQUESTS_ITEMS.filter(
-    item => item.id !== currentId && item.category === category
+    item => item._id !== currentId && item.category === category
   ).slice(0, limit);
 }
 

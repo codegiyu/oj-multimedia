@@ -5,7 +5,7 @@
  * which sections they belong to.
  */
 export interface TestimonyItem {
-  id: number;
+  _id: string;
   author: string;
   avatar: string;
   content: string;
@@ -30,7 +30,7 @@ export interface TestimonyItem {
  */
 export const TESTIMONIES_ITEMS: TestimonyItem[] = [
   {
-    id: 1,
+    _id: '1',
     author: 'Michelle K.',
     avatar: '/images/artist-2.jpg',
     content:
@@ -50,7 +50,7 @@ export const TESTIMONIES_ITEMS: TestimonyItem[] = [
     relatedScriptures: ['Jeremiah 30:17', 'Psalm 147:3'],
   },
   {
-    id: 2,
+    _id: '2',
     author: 'David O.',
     avatar: '/images/artist-1.jpg',
     content:
@@ -69,7 +69,7 @@ export const TESTIMONIES_ITEMS: TestimonyItem[] = [
     relatedScriptures: ['Jeremiah 29:11', 'Ephesians 2:10'],
   },
   {
-    id: 3,
+    _id: '3',
     author: 'Grace A.',
     avatar: '/images/artist-3.jpg',
     content:
@@ -88,7 +88,7 @@ export const TESTIMONIES_ITEMS: TestimonyItem[] = [
     relatedScriptures: ['James 5:16', 'Matthew 7:7'],
   },
   {
-    id: 4,
+    _id: '4',
     author: 'James M.',
     avatar: '/images/artist-1.jpg',
     content:
@@ -106,7 +106,7 @@ export const TESTIMONIES_ITEMS: TestimonyItem[] = [
     relatedScriptures: ['Mark 10:9', 'Ephesians 5:25'],
   },
   {
-    id: 5,
+    _id: '5',
     author: 'Sarah T.',
     avatar: '/images/artist-2.jpg',
     content:
@@ -124,7 +124,7 @@ export const TESTIMONIES_ITEMS: TestimonyItem[] = [
     relatedScriptures: ['Jeremiah 17:14', 'James 5:15'],
   },
   {
-    id: 6,
+    _id: '6',
     author: 'Michael P.',
     avatar: '/images/artist-3.jpg',
     content:
@@ -142,7 +142,7 @@ export const TESTIMONIES_ITEMS: TestimonyItem[] = [
     relatedScriptures: ['Philippians 4:19', 'Matthew 6:26'],
   },
   {
-    id: 7,
+    _id: '7',
     author: 'Ruth K.',
     avatar: '/images/artist-2.jpg',
     content:
@@ -159,7 +159,7 @@ export const TESTIMONIES_ITEMS: TestimonyItem[] = [
     relatedScriptures: ['2 Timothy 1:7', 'Isaiah 61:1'],
   },
   {
-    id: 8,
+    _id: '8',
     author: 'Peter D.',
     avatar: '/images/artist-1.jpg',
     content:
@@ -177,7 +177,7 @@ export const TESTIMONIES_ITEMS: TestimonyItem[] = [
     relatedScriptures: ['2 Corinthians 5:17', 'Ephesians 2:8-9'],
   },
   {
-    id: 9,
+    _id: '9',
     author: 'Esther F.',
     avatar: '/images/artist-3.jpg',
     content:
@@ -194,7 +194,7 @@ export const TESTIMONIES_ITEMS: TestimonyItem[] = [
     relatedScriptures: ['Psalm 127:3', 'Genesis 21:1-2'],
   },
   {
-    id: 10,
+    _id: '10',
     author: 'John B.',
     avatar: '/images/artist-1.jpg',
     content:
