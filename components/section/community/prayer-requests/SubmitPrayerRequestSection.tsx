@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/select';
 import { Card, CardContent } from '@/components/ui/card';
 import { toast } from '@/components/atoms/Toast';
+import { SectionComp } from '@/components/general/SectionComp';
 
 export const SubmitPrayerRequestSection = () => {
   const [name, setName] = useState('');
@@ -59,24 +60,14 @@ export const SubmitPrayerRequestSection = () => {
   };
 
   return (
-    <section className="container mx-auto px-4 py-12">
+    <SectionComp
+      id="submit-prayer-request"
+      icon={HandHeart}
+      iconColor="primary"
+      heading="Submit a Prayer Request"
+      subtext="Share your prayer need with our community. We'll join you in prayer."
+      contentProps={{ enableAnimation: false }}>
       <div className="max-w-3xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-8">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-              <HandHeart className="w-5 h-5 text-primary" />
-            </div>
-            <h2 className="section-header">Submit a Prayer Request</h2>
-          </div>
-          <p className="text-muted-foreground">
-            Share your prayer need with our community. We'll join you in prayer.
-          </p>
-        </motion.div>
-
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -188,6 +179,6 @@ export const SubmitPrayerRequestSection = () => {
           </div>
         </motion.div>
       </div>
-    </section>
+    </SectionComp>
   );
 };

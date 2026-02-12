@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Download, ArrowDown, CheckCircle } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { SectionComp } from '@/components/general/SectionComp';
 
 const downloadCategories = [
   {
@@ -34,23 +35,13 @@ const downloadCategories = [
 
 export const FreeDownloads = () => {
   return (
-    <section id="free-downloads" className="py-12">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="text-center mb-10">
-        <div className="flex items-center justify-center mb-4">
-          <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
-            <Download className="w-5 h-5 text-accent" />
-          </div>
-        </div>
-        <h2 className="section-header mb-3">Free Downloads</h2>
-        <p className="text-muted-foreground max-w-lg mx-auto">
-          Access all our free resources in one place. Everything you need for your ministry.
-        </p>
-      </motion.div>
-
+    <SectionComp
+      id="free-downloads"
+      icon={Download}
+      iconColor="accent"
+      heading="Free Downloads"
+      subtext="Access all our free resources in one place. Everything you need for your ministry."
+      contentProps={{ enableAnimation: false }}>
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
         {downloadCategories.map((category, index) => (
           <motion.div
@@ -108,6 +99,6 @@ export const FreeDownloads = () => {
           </CardContent>
         </Card>
       </motion.div>
-    </section>
+    </SectionComp>
   );
 };

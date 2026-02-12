@@ -1,9 +1,9 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { BookOpen, Clock, Eye, ArrowRight, Bookmark } from 'lucide-react';
+import { BookOpen, Clock, Eye, Bookmark } from 'lucide-react';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
+import { SectionComp } from '@/components/general/SectionComp';
 
 export interface Devotional {
   _id: string;
@@ -21,25 +21,13 @@ interface TrendingDevotionalsProps {
 
 export const TrendingDevotionals = ({ devotionals }: TrendingDevotionalsProps) => {
   return (
-    <section className="py-12">
-      <div className="flex items-center justify-between mb-8">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center">
-            <BookOpen className="w-5 h-5 text-secondary" />
-          </div>
-          <div>
-            <h2 className="section-header">Popular Devotionals</h2>
-            <p className="text-muted-foreground text-sm">Daily inspiration for your journey</p>
-          </div>
-        </div>
-        <Button variant="ghost" className="gap-2 text-secondary" asChild>
-          <Link href="/community/devotionals/popular">
-            View All
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-        </Button>
-      </div>
-
+    <SectionComp
+      icon={BookOpen}
+      iconColor="secondary"
+      heading="Popular Devotionals"
+      subtext="Daily inspiration for your journey"
+      viewAllLink="/community/devotionals/popular"
+      contentProps={{ enableAnimation: false }}>
       <div className="grid md:grid-cols-2 gap-4">
         {devotionals.map((devotional, index) => (
           <motion.div
@@ -94,6 +82,6 @@ export const TrendingDevotionals = ({ devotionals }: TrendingDevotionalsProps) =
           </motion.div>
         ))}
       </div>
-    </section>
+    </SectionComp>
   );
 };

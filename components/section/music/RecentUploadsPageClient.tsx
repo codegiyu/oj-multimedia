@@ -6,6 +6,7 @@ import { Sparkles, ArrowRight } from 'lucide-react';
 import { MusicCategories } from './MusicCategories';
 import { MusicUploadCTA } from '../shared/MusicUploadCTA';
 import { EmptyState } from '../news/EmptyState';
+import { SectionComp } from '@/components/general/SectionComp';
 import { MusicCard } from '@/components/cards/MusicCard';
 import type { RecentUpload } from './RecentUploads';
 
@@ -30,51 +31,42 @@ export const RecentUploadsPageClient = ({ recentUploads }: RecentUploadsPageClie
   return (
     <>
       <MusicCategories />
-      <section className="py-12">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-secondary/20 flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-secondary-foreground" />
-              </div>
-              <div>
-                <h2 className="text-2xl font-display font-bold text-foreground">Fresh Uploads</h2>
-                <p className="text-sm text-muted-foreground">Just added by creators</p>
-              </div>
+      <SectionComp
+        icon={Sparkles}
+        iconColor="secondary"
+        heading="Fresh Uploads"
+        subtext="Just added by creators"
+        viewAllLink="/music/recent"
+        contentProps={{ enableAnimation: false }}>
+        {itemsToShow.length === 0 ? (
+          <EmptyState
+            title="No Recent Uploads"
+            description="We couldn't find any recent uploads in this category. Try selecting a different category or check back later for new content."
+            icon={<Sparkles className="w-12 h-12 text-muted-foreground" />}
+          />
+        ) : (
+          <>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {itemsToShow.map((song, index) => (
+                <motion.div
+                  key={song._id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: index * 0.05 }}>
+                  <MusicCard
+                    _id={song._id}
+                    title={song.title}
+                    artist={song.artist}
+                    cover={song.cover}
+                    plays="0"
+                    genre={song.genre}
+                  />
+                </motion.div>
+              ))}
             </div>
-          </div>
 
-          <div>
-            {itemsToShow.length === 0 ? (
-              <EmptyState
-                title="No Recent Uploads"
-                description="We couldn't find any recent uploads in this category. Try selecting a different category or check back later for new content."
-                icon={<Sparkles className="w-12 h-12 text-muted-foreground" />}
-              />
-            ) : (
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {itemsToShow.map((song, index) => (
-                  <motion.div
-                    key={song._id}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.4, delay: index * 0.05 }}>
-                    <MusicCard
-                      _id={song._id}
-                      title={song.title}
-                      artist={song.artist}
-                      cover={song.cover}
-                      plays="0"
-                      genre={song.genre}
-                    />
-                  </motion.div>
-                ))}
-              </div>
-            )}
-
-            {/* Load More */}
-            {hasMore && itemsToShow.length > 0 && (
+            {hasMore && (
               <div className="flex justify-center mt-10">
                 <motion.button
                   onClick={loadMoreItems}
@@ -93,9 +85,9 @@ export const RecentUploadsPageClient = ({ recentUploads }: RecentUploadsPageClie
                 </motion.button>
               </div>
             )}
-          </div>
-        </div>
-      </section>
+          </>
+        )}
+      </SectionComp>
       <MusicUploadCTA />
     </>
   );

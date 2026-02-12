@@ -1,9 +1,9 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Heart, MessageSquare, Quote, ArrowRight } from 'lucide-react';
+import { Heart, MessageSquare, Quote } from 'lucide-react';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
+import { SectionComp } from '@/components/general/SectionComp';
 
 export interface Testimony {
   _id: string;
@@ -21,25 +21,13 @@ interface FeaturedTestimoniesProps {
 
 export const FeaturedTestimonies = ({ testimonies }: FeaturedTestimoniesProps) => {
   return (
-    <section className="py-12">
-      <div className="flex items-center justify-between mb-8">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-            <Heart className="w-5 h-5 text-primary" />
-          </div>
-          <div>
-            <h2 className="section-header">Recent Testimonies</h2>
-            <p className="text-muted-foreground text-sm">Stories from our community</p>
-          </div>
-        </div>
-        <Button variant="ghost" className="gap-2 text-primary" asChild>
-          <Link href="/community/testimonies/featured">
-            View All
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-        </Button>
-      </div>
-
+    <SectionComp
+      icon={Heart}
+      iconColor="primary"
+      heading="Recent Testimonies"
+      subtext="Stories from our community"
+      viewAllLink="/community/testimonies/featured"
+      contentProps={{ enableAnimation: false }}>
       <div className="grid md:grid-cols-3 gap-6">
         {testimonies.map((testimony, index) => (
           <motion.div
@@ -82,6 +70,6 @@ export const FeaturedTestimonies = ({ testimonies }: FeaturedTestimoniesProps) =
           </motion.div>
         ))}
       </div>
-    </section>
+    </SectionComp>
   );
 };

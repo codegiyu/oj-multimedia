@@ -23,10 +23,8 @@ export interface TestimoniesData {
 export const TestimoniesPageClient = ({ testimonies, featured }: TestimoniesData) => {
   return (
     <>
-      <div className="container mx-auto px-4 pb-16">
-        <FeaturedTestimonies testimonies={featured} />
-        <AllTestimonies testimonies={testimonies} />
-      </div>
+      <FeaturedTestimonies testimonies={featured} />
+      <AllTestimonies testimonies={testimonies} />
       <ShareTestimony />
     </>
   );

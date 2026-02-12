@@ -1,10 +1,11 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Heart, CheckCircle, Clock, ArrowRight, Bookmark } from 'lucide-react';
+import { Heart, CheckCircle, Clock, Bookmark } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { SectionComp } from '@/components/general/SectionComp';
 import type { PrayerPoint } from './DevotionalsPageClient';
 
 interface PrayerPointsSectionProps {
@@ -13,25 +14,14 @@ interface PrayerPointsSectionProps {
 
 export const PrayerPointsSection = ({ prayerPoints }: PrayerPointsSectionProps) => {
   return (
-    <section className="py-12">
-      <div className="flex items-center justify-between mb-8">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
-            <Heart className="w-5 h-5 text-accent" />
-          </div>
-          <div>
-            <h2 className="section-header">Prayer Points</h2>
-            <p className="text-muted-foreground text-sm">Structured prayers for every need</p>
-          </div>
-        </div>
-        <Button variant="ghost" className="gap-2 text-accent" asChild>
-          <Link href="/community/devotionals">
-            View All
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-        </Button>
-      </div>
-
+    <SectionComp
+      id="prayer-points"
+      icon={Heart}
+      iconColor="accent"
+      heading="Prayer Points"
+      subtext="Structured prayers for every need"
+      viewAllLink="/community/devotionals"
+      contentProps={{ enableAnimation: false }}>
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {prayerPoints.map((prayer, index) => (
           <motion.div
@@ -78,6 +68,6 @@ export const PrayerPointsSection = ({ prayerPoints }: PrayerPointsSectionProps) 
           </motion.div>
         ))}
       </div>
-    </section>
+    </SectionComp>
   );
 };

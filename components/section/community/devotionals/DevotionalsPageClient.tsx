@@ -71,13 +71,13 @@ export const DevotionalsPageClient = ({
   marriageFamily,
 }: DevotionalsPageClientProps) => {
   return (
-    <section className="container mx-auto px-4 pb-16">
+    <>
       <DailyDevotionalsSection devotionals={dailyDevotionals} />
       <BibleStudySeriesSection series={bibleStudySeries} />
       <PrayerPointsSection prayerPoints={prayerPoints} />
       <ChristianLivingTipsSection tips={livingTips} />
       <MarriageAndFamilySection content={marriageFamily} />
       <CommunityCTA />
-    </section>
+    </>
   );
 };

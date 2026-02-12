@@ -1,9 +1,9 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { MessageCircle, Users, TrendingUp, ArrowRight, Clock } from 'lucide-react';
-import Link from 'next/link';
+import { MessageCircle, Users, TrendingUp, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { SectionComp } from '@/components/general/SectionComp';
 
 export interface Discussion {
   _id: string;
@@ -21,25 +21,13 @@ interface ActiveDiscussionsProps {
 
 export const ActiveDiscussions = ({ discussions }: ActiveDiscussionsProps) => {
   return (
-    <section className="py-12">
-      <div className="flex items-center justify-between mb-8">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
-            <MessageCircle className="w-5 h-5 text-accent" />
-          </div>
-          <div>
-            <h2 className="section-header">Active Discussions</h2>
-            <p className="text-muted-foreground text-sm">Join the conversation</p>
-          </div>
-        </div>
-        <Button variant="ghost" className="gap-2 text-accent" asChild>
-          <Link href="/community">
-            View All
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-        </Button>
-      </div>
-
+    <SectionComp
+      icon={MessageCircle}
+      iconColor="accent"
+      heading="Active Discussions"
+      subtext="Join the conversation"
+      viewAllLink="/community"
+      contentProps={{ enableAnimation: false }}>
       <div className="bg-card rounded-2xl border border-border/50 overflow-hidden">
         {discussions.map((discussion, index) => (
           <motion.div
@@ -92,6 +80,6 @@ export const ActiveDiscussions = ({ discussions }: ActiveDiscussionsProps) => {
           Start a Discussion
         </Button>
       </div>
-    </section>
+    </SectionComp>
   );
 };

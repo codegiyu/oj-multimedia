@@ -10,9 +10,11 @@ import {
   BarChart3,
   FolderOpen,
   Megaphone,
+  LayoutGrid,
   type LucideIcon,
 } from 'lucide-react';
 import { CategoryCard } from '@/components/cards/CommunityCategoryCard';
+import { SectionComp } from '@/components/general/SectionComp';
 import { FeaturedTestimonies, type Testimony } from './FeaturedTestimonies';
 import { TrendingDevotionals, type Devotional } from './TrendingDevotionals';
 import { ActiveDiscussions, type Discussion } from './ActiveDiscussions';
@@ -124,21 +126,13 @@ export const CommunityPageClient = ({
   }));
 
   return (
-    <section className="container mx-auto px-4 pb-16">
-      <section className="py-12">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-10">
-          <h2 className="text-2xl md:text-3xl font-display font-bold mb-3">
-            Explore the Community
-          </h2>
-          <p className="text-muted-foreground max-w-lg mx-auto">
-            Find what speaks to you — from daily inspiration to open discussions
-          </p>
-        </motion.div>
-
+    <>
+      <SectionComp
+        icon={LayoutGrid}
+        iconColor="primary"
+        heading="Explore the Community"
+        subtext="Find what speaks to you — from daily inspiration to open discussions"
+        contentProps={{ enableAnimation: false }}>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {categories.map((category, index) => {
             const IconComponent = iconMap[category.icon];
@@ -158,7 +152,7 @@ export const CommunityPageClient = ({
             );
           })}
         </div>
-      </section>
+      </SectionComp>
 
       <FeaturedTestimonies testimonies={testimonies} />
 
@@ -167,6 +161,6 @@ export const CommunityPageClient = ({
       <ActiveDiscussions discussions={discussions} />
 
       <CommunityCTA />
-    </section>
+    </>
   );
 };

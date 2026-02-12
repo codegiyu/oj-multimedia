@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Music, Upload, Handshake } from 'lucide-react';
+import { Music, Handshake } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export function HeroSection() {
@@ -77,10 +77,10 @@ export function HeroSection() {
               size="lg"
               className="gap-2"
               onClick={() => {
-                document.getElementById('upload-sermon')?.scrollIntoView({ behavior: 'smooth' });
+                document.getElementById('get-featured')?.scrollIntoView({ behavior: 'smooth' });
               }}>
-              <Upload className="w-4 h-4" />
-              Upload Sermon
+              <Handshake className="w-4 h-4" />
+              Get Featured
             </Button>
           </motion.div>
         </div>

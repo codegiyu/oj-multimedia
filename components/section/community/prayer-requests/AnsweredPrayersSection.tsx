@@ -3,9 +3,9 @@
 import { motion } from 'framer-motion';
 import { Sparkles, Heart, ArrowRight, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useState } from 'react';
+import { SectionComp } from '@/components/general/SectionComp';
 import type { AnsweredPrayer } from './PrayerRequestsPageClient';
 
 interface AnsweredPrayersSectionProps {
@@ -27,27 +27,14 @@ export const AnsweredPrayersSection = ({ prayers }: AnsweredPrayersSectionProps)
   const itemsToShow = prayers.slice(0, displayedItems);
 
   return (
-    <section className="container mx-auto px-4 py-12">
-      <div className="flex items-center justify-between mb-8">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center">
-            <Sparkles className="w-5 h-5 text-secondary" />
-          </div>
-          <div>
-            <h2 className="section-header">Answered Prayers</h2>
-            <p className="text-muted-foreground text-sm">
-              Praise reports and testimonies of God's faithfulness
-            </p>
-          </div>
-        </div>
-        <Button variant="ghost" className="gap-2 text-secondary" asChild>
-          <Link href="/community/prayer-requests/answered">
-            View All
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-        </Button>
-      </div>
-
+    <SectionComp
+      id="answered-prayers"
+      icon={Sparkles}
+      iconColor="secondary"
+      heading="Answered Prayers"
+      subtext="Praise reports and testimonies of God's faithfulness"
+      viewAllLink="/community/prayer-requests/answered"
+      contentProps={{ enableAnimation: false }}>
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {itemsToShow.map((prayer, index) => (
           <motion.div
@@ -111,6 +98,6 @@ export const AnsweredPrayersSection = ({ prayers }: AnsweredPrayersSectionProps)
           </motion.button>
         </div>
       )}
-    </section>
+    </SectionComp>
   );
 };

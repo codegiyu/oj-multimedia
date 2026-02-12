@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { BookOpen, Download, ArrowRight } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { SectionComp } from '@/components/general/SectionComp';
 import type { Ebook } from './ResourcesPageClient';
 
 interface FreeEbooksProps {
@@ -12,23 +13,13 @@ interface FreeEbooksProps {
 
 export const FreeEbooks = ({ ebooks }: FreeEbooksProps) => {
   return (
-    <section id="free-ebooks" className="py-12">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="text-center mb-10">
-        <div className="flex items-center justify-center mb-4">
-          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-            <BookOpen className="w-5 h-5 text-primary" />
-          </div>
-        </div>
-        <h2 className="section-header mb-3">Free E-books</h2>
-        <p className="text-muted-foreground max-w-lg mx-auto">
-          Download free Christian e-books to enrich your faith journey and ministry
-        </p>
-      </motion.div>
-
+    <SectionComp
+      id="free-ebooks"
+      icon={BookOpen}
+      iconColor="primary"
+      heading="Free E-books"
+      subtext="Download free Christian e-books to enrich your faith journey and ministry"
+      contentProps={{ enableAnimation: false }}>
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {ebooks.map((ebook, index) => (
           <motion.div
@@ -63,6 +54,6 @@ export const FreeEbooks = ({ ebooks }: FreeEbooksProps) => {
           </motion.div>
         ))}
       </div>
-    </section>
+    </SectionComp>
   );
 };

@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Music, DollarSign, CheckCircle, ArrowRight, Star } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { SectionComp } from '@/components/general/SectionComp';
 
 const pricingOptions = [
   {
@@ -28,23 +29,13 @@ const pricingOptions = [
 
 export const PromoteYourSong = () => {
   return (
-    <section id="promote-song" className="py-12">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="text-center mb-10">
-        <div className="flex items-center justify-center mb-4">
-          <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
-            <Music className="w-5 h-5 text-accent" />
-          </div>
-        </div>
-        <h2 className="section-header mb-3">Promote Your Song</h2>
-        <p className="text-muted-foreground max-w-lg mx-auto">
-          Reach a wider audience and grow your fanbase with our promotional packages
-        </p>
-      </motion.div>
-
+    <SectionComp
+      id="promote-song"
+      icon={Music}
+      iconColor="accent"
+      heading="Promote Your Song"
+      subtext="Reach a wider audience and grow your fanbase with our promotional packages"
+      contentProps={{ enableAnimation: false }}>
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
         {pricingOptions.map((option, index) => (
           <motion.div
@@ -127,6 +118,6 @@ export const PromoteYourSong = () => {
           </CardContent>
         </Card>
       </motion.div>
-    </section>
+    </SectionComp>
   );
 };

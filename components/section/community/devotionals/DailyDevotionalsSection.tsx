@@ -1,9 +1,9 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Calendar, Clock, Eye, ArrowRight, Bookmark } from 'lucide-react';
+import { Calendar, Clock, Eye, Bookmark } from 'lucide-react';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
+import { SectionComp } from '@/components/general/SectionComp';
 import type { DailyDevotional } from './DevotionalsPageClient';
 
 interface DailyDevotionalsSectionProps {
@@ -12,25 +12,14 @@ interface DailyDevotionalsSectionProps {
 
 export const DailyDevotionalsSection = ({ devotionals }: DailyDevotionalsSectionProps) => {
   return (
-    <section className="py-12">
-      <div className="flex items-center justify-between mb-8">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center">
-            <Calendar className="w-5 h-5 text-secondary" />
-          </div>
-          <div>
-            <h2 className="section-header">Daily Devotionals</h2>
-            <p className="text-muted-foreground text-sm">Start your day with God's word</p>
-          </div>
-        </div>
-        <Button variant="ghost" className="gap-2 text-secondary" asChild>
-          <Link href="/community/devotionals/latest">
-            View All
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-        </Button>
-      </div>
-
+    <SectionComp
+      id="daily-devotionals"
+      icon={Calendar}
+      iconColor="secondary"
+      heading="Daily Devotionals"
+      subtext="Start your day with God's word"
+      viewAllLink="/community/devotionals/latest"
+      contentProps={{ enableAnimation: false }}>
       <div className="grid md:grid-cols-2 gap-4">
         {devotionals.map((devotional, index) => (
           <motion.div
@@ -93,6 +82,6 @@ export const DailyDevotionalsSection = ({ devotionals }: DailyDevotionalsSection
           </motion.div>
         ))}
       </div>
-    </section>
+    </SectionComp>
   );
 };

@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/select';
 import { Card, CardContent } from '@/components/ui/card';
 import { toast } from '@/components/atoms/Toast';
+import { SectionComp } from '@/components/general/SectionComp';
 
 export const SubmitQuestionSection = () => {
   const [name, setName] = useState('');
@@ -55,24 +56,14 @@ export const SubmitQuestionSection = () => {
   };
 
   return (
-    <section className="container mx-auto px-4 py-12">
+    <SectionComp
+      id="submit-question"
+      icon={HelpCircle}
+      iconColor="secondary"
+      heading="Ask a Question"
+      subtext="Submit your question to our pastors. They'll provide biblical guidance and answers."
+      contentProps={{ enableAnimation: false }}>
       <div className="max-w-3xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-8">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center">
-              <HelpCircle className="w-5 h-5 text-secondary" />
-            </div>
-            <h2 className="section-header">Ask a Question</h2>
-          </div>
-          <p className="text-muted-foreground">
-            Submit your question to our pastors. They'll provide biblical guidance and answers.
-          </p>
-        </motion.div>
-
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -159,6 +150,6 @@ export const SubmitQuestionSection = () => {
           </div>
         </motion.div>
       </div>
-    </section>
+    </SectionComp>
   );
 };

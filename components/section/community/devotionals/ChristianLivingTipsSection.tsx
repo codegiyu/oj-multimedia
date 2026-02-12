@@ -5,6 +5,7 @@ import { Lightbulb, TrendingUp, Users, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { SectionComp } from '@/components/general/SectionComp';
 import type { LivingTip } from './DevotionalsPageClient';
 
 interface ChristianLivingTipsSectionProps {
@@ -13,25 +14,14 @@ interface ChristianLivingTipsSectionProps {
 
 export const ChristianLivingTipsSection = ({ tips }: ChristianLivingTipsSectionProps) => {
   return (
-    <section className="py-12">
-      <div className="flex items-center justify-between mb-8">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-            <Lightbulb className="w-5 h-5 text-primary" />
-          </div>
-          <div>
-            <h2 className="section-header">Christian Living Tips</h2>
-            <p className="text-muted-foreground text-sm">Practical wisdom for daily life</p>
-          </div>
-        </div>
-        <Button variant="ghost" className="gap-2 text-primary" asChild>
-          <Link href="/community/devotionals">
-            View All Tips
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-        </Button>
-      </div>
-
+    <SectionComp
+      icon={Lightbulb}
+      iconColor="primary"
+      heading="Christian Living Tips"
+      subtext="Practical wisdom for daily life"
+      viewAllLink="/community/devotionals"
+      viewAllLabel="View All Tips"
+      contentProps={{ enableAnimation: false }}>
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {tips.map((tip, index) => (
           <motion.div
@@ -82,6 +72,6 @@ export const ChristianLivingTipsSection = ({ tips }: ChristianLivingTipsSectionP
           </motion.div>
         ))}
       </div>
-    </section>
+    </SectionComp>
   );
 };

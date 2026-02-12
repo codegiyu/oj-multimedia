@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Heart, MessageSquare, Quote, Star } from 'lucide-react';
 import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
+import { SectionComp } from '@/components/general/SectionComp';
 import type { Testimony } from './TestimoniesPageClient';
 
 interface FeaturedTestimoniesProps {
@@ -12,23 +13,13 @@ interface FeaturedTestimoniesProps {
 
 export const FeaturedTestimonies = ({ testimonies }: FeaturedTestimoniesProps) => {
   return (
-    <section id="featured-testimonies" className="py-12">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="text-center mb-10">
-        <div className="flex items-center justify-center mb-4">
-          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-            <Star className="w-5 h-5 text-primary" />
-          </div>
-        </div>
-        <h2 className="section-header mb-3">Featured Testimonies</h2>
-        <p className="text-muted-foreground max-w-lg mx-auto">
-          Inspiring stories of God's faithfulness and transformation in the lives of believers
-        </p>
-      </motion.div>
-
+    <SectionComp
+      id="featured-testimonies"
+      icon={Star}
+      iconColor="primary"
+      heading="Featured Testimonies"
+      subtext="Inspiring stories of God's faithfulness and transformation in the lives of believers"
+      contentProps={{ enableAnimation: false }}>
       <div className="grid md:grid-cols-3 gap-6">
         {testimonies.map((testimony, index) => (
           <motion.div
@@ -81,6 +72,6 @@ export const FeaturedTestimonies = ({ testimonies }: FeaturedTestimoniesProps) =
           </motion.div>
         ))}
       </div>
-    </section>
+    </SectionComp>
   );
 };

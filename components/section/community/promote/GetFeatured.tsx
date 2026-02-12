@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Star, TrendingUp, Home, Mail, CheckCircle, ArrowRight } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { SectionComp } from '@/components/general/SectionComp';
 
 const featuredOptions = [
   {
@@ -34,24 +35,13 @@ const featuredOptions = [
 
 export const GetFeatured = () => {
   return (
-    <section id="get-featured" className="py-12">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="text-center mb-10">
-        <div className="flex items-center justify-center mb-4">
-          <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
-            <Star className="w-5 h-5 text-accent" />
-          </div>
-        </div>
-        <h2 className="section-header mb-3">Get Featured and Boost Your Visibility</h2>
-        <p className="text-muted-foreground max-w-lg mx-auto">
-          Stand out from the crowd with our featured placement options. Get noticed by thousands of
-          potential listeners.
-        </p>
-      </motion.div>
-
+    <SectionComp
+      id="get-featured"
+      icon={Star}
+      iconColor="accent"
+      heading="Get Featured and Boost Your Visibility"
+      subtext="Stand out from the crowd with our featured placement options. Get noticed by thousands of potential listeners."
+      contentProps={{ enableAnimation: false }}>
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
         {featuredOptions.map((option, index) => {
           const Icon = option.icon;
@@ -123,6 +113,6 @@ export const GetFeatured = () => {
           </CardContent>
         </Card>
       </motion.div>
-    </section>
+    </SectionComp>
   );
 };

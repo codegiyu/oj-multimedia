@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useState, useEffect } from 'react';
+import { SectionComp } from '@/components/general/SectionComp';
 import type { Testimony } from './TestimoniesPageClient';
 
 interface AllTestimoniesProps {
@@ -54,23 +55,12 @@ export const AllTestimonies = ({ testimonies }: AllTestimoniesProps) => {
   const itemsToShow = filteredTestimonies.slice(0, displayedItems);
 
   return (
-    <section className="py-12">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="text-center mb-10">
-        <div className="flex items-center justify-center mb-4">
-          <div className="w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center">
-            <Quote className="w-5 h-5 text-secondary" />
-          </div>
-        </div>
-        <h2 className="section-header mb-3">All Testimonies</h2>
-        <p className="text-muted-foreground max-w-lg mx-auto">
-          Browse through all testimonies and be inspired by stories of God's goodness
-        </p>
-      </motion.div>
-
+    <SectionComp
+      icon={Quote}
+      iconColor="secondary"
+      heading="All Testimonies"
+      subtext="Browse through all testimonies and be inspired by stories of God's goodness"
+      contentProps={{ enableAnimation: false }}>
       {/* Category Filter */}
       <div className="flex flex-wrap items-center gap-3 mb-8 justify-center">
         <Filter className="w-4 h-4 text-muted-foreground" />
@@ -166,6 +156,6 @@ export const AllTestimonies = ({ testimonies }: AllTestimoniesProps) => {
           </motion.button>
         </div>
       )}
-    </section>
+    </SectionComp>
   );
 };

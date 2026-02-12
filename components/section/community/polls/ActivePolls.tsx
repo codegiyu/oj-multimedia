@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
+import { SectionComp } from '@/components/general/SectionComp';
 import type { Poll } from './PollsPageClient';
 
 interface ActivePollsProps {
@@ -27,23 +28,13 @@ export const ActivePolls = ({ polls }: ActivePollsProps) => {
   const itemsToShow = polls.slice(0, displayedItems);
 
   return (
-    <section id="active-polls" className="py-12">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="text-center mb-10">
-        <div className="flex items-center justify-center mb-4">
-          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-            <BarChart3 className="w-5 h-5 text-primary" />
-          </div>
-        </div>
-        <h2 className="section-header mb-3">Active Polls</h2>
-        <p className="text-muted-foreground max-w-lg mx-auto">
-          Participate in ongoing polls and share your opinion with the community
-        </p>
-      </motion.div>
-
+    <SectionComp
+      id="active-polls"
+      icon={BarChart3}
+      iconColor="primary"
+      heading="Active Polls"
+      subtext="Participate in ongoing polls and share your opinion with the community"
+      contentProps={{ enableAnimation: false }}>
       <div className="grid md:grid-cols-2 gap-6">
         {itemsToShow.map((poll, index) => (
           <motion.div
@@ -131,6 +122,6 @@ export const ActivePolls = ({ polls }: ActivePollsProps) => {
           </motion.button>
         </div>
       )}
-    </section>
+    </SectionComp>
   );
 };

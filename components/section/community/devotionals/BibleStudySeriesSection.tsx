@@ -1,10 +1,11 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { BookOpen, Users, Clock, ArrowRight } from 'lucide-react';
+import { BookOpen, Users, Clock } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { SectionComp } from '@/components/general/SectionComp';
 import type { BibleStudy } from './DevotionalsPageClient';
 
 interface BibleStudySeriesSectionProps {
@@ -13,25 +14,15 @@ interface BibleStudySeriesSectionProps {
 
 export const BibleStudySeriesSection = ({ series }: BibleStudySeriesSectionProps) => {
   return (
-    <section className="py-12">
-      <div className="flex items-center justify-between mb-8">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-            <BookOpen className="w-5 h-5 text-primary" />
-          </div>
-          <div>
-            <h2 className="section-header">Bible Study Series</h2>
-            <p className="text-muted-foreground text-sm">Deep dive into God's word</p>
-          </div>
-        </div>
-        <Button variant="ghost" className="gap-2 text-primary" asChild>
-          <Link href="/community/devotionals/bible-study">
-            View All Series
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-        </Button>
-      </div>
-
+    <SectionComp
+      id="bible-study-series"
+      icon={BookOpen}
+      iconColor="primary"
+      heading="Bible Study Series"
+      subtext="Deep dive into God's word"
+      viewAllLink="/community/devotionals/bible-study"
+      viewAllLabel="View All Series"
+      contentProps={{ enableAnimation: false }}>
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {series.map((study, index) => (
           <motion.div
@@ -97,6 +88,6 @@ export const BibleStudySeriesSection = ({ series }: BibleStudySeriesSectionProps
           </motion.div>
         ))}
       </div>
-    </section>
+    </SectionComp>
   );
 };

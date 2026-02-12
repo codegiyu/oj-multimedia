@@ -1,10 +1,10 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Sparkles, Users, TrendingUp, DollarSign, BookOpen, Heart, ArrowRight } from 'lucide-react';
+import { Sparkles, Users, TrendingUp, DollarSign, BookOpen, Heart } from 'lucide-react';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { SectionComp } from '@/components/general/SectionComp';
 import type { QuestionCategory } from './AskAPastorPageClient';
 
 interface QuestionCategoriesSectionProps {
@@ -33,25 +33,14 @@ const categoryColors: Record<string, string> = {
 
 export const QuestionCategoriesSection = ({ categories }: QuestionCategoriesSectionProps) => {
   return (
-    <section className="container mx-auto px-4 py-12">
-      <div className="flex items-center justify-between mb-8">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-            <BookOpen className="w-5 h-5 text-primary" />
-          </div>
-          <div>
-            <h2 className="section-header">Browse by Category</h2>
-            <p className="text-muted-foreground text-sm">Find questions and answers by topic</p>
-          </div>
-        </div>
-        <Button variant="ghost" className="gap-2 text-primary" asChild>
-          <Link href="/community/ask-a-pastor">
-            View All Categories
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-        </Button>
-      </div>
-
+    <SectionComp
+      icon={BookOpen}
+      iconColor="primary"
+      heading="Browse by Category"
+      subtext="Find questions and answers by topic"
+      viewAllLink="/community/ask-a-pastor"
+      viewAllLabel="View All Categories"
+      contentProps={{ enableAnimation: false }}>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         {categories.map((category, index) => {
           const Icon = categoryIcons[category.name] || categoryIcons.Default;
@@ -88,6 +77,6 @@ export const QuestionCategoriesSection = ({ categories }: QuestionCategoriesSect
           );
         })}
       </div>
-    </section>
+    </SectionComp>
   );
 };
