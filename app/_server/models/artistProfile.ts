@@ -2,7 +2,7 @@ import mongoose, { Schema, model } from 'mongoose';
 import { ModelArtistProfile } from '../lib/types/constants';
 import { createSlugMiddleware } from '../lib/utils/slugify';
 
-const ArtistSchema = new Schema<ModelArtistProfile>(
+const ArtistProfileSchema = new Schema<ModelArtistProfile>(
   {
     user: {
       type: Schema.Types.ObjectId,
@@ -65,14 +65,15 @@ const ArtistSchema = new Schema<ModelArtistProfile>(
   },
   {
     timestamps: true,
-    collection: 'artists',
+    collection: 'artist_profiles',
   }
 );
 
 const slugMiddleware = createSlugMiddleware<ModelArtistProfile>('name');
-ArtistSchema.pre('save', slugMiddleware.preSave);
-ArtistSchema.pre(/update/i, slugMiddleware.preUpdate);
+ArtistProfileSchema.pre('save', slugMiddleware.preSave);
+ArtistProfileSchema.pre(/update/i, slugMiddleware.preUpdate);
 
-ArtistSchema.index({ isActive: 1, isFeatured: 1, displayOrder: 1 });
+ArtistProfileSchema.index({ isActive: 1, isFeatured: 1, displayOrder: 1 });
 
-export const Artist = mongoose.models.Artist || model<ModelArtistProfile>('Artist', ArtistSchema);
+export const ArtistProfile =
+  mongoose.models.ArtistProfile || model<ModelArtistProfile>('ArtistProfile', ArtistProfileSchema);

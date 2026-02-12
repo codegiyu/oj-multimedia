@@ -1,14 +1,15 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Play, Heart, Share2, ChevronLeft, ChevronRight, Zap } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { VideoCard } from '@/components/cards/VideoCard';
 import { useRef } from 'react';
 
 export interface ShortFormVideo {
   _id: string;
   title: string;
-  creator: string;
+  creator: { _id: string; name: string };
   thumbnail: string;
   views: string;
   duration: string;
@@ -78,65 +79,18 @@ export const ShortFormVideos = ({ videos: shortFormVideos }: ShortFormVideosProp
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.05 }}
-              whileHover={{ scale: 1.05 }}
-              className="group relative min-w-[140px] md:min-w-[160px] snap-start">
-              <div className="bg-card rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow">
-                {/* Thumbnail - Vertical */}
-                <div className="relative aspect-[9/16] overflow-hidden">
-                  <img
-                    src={video.thumbnail}
-                    alt={video.title}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
-
-                  {/* Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-foreground/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-                  {/* Play Button */}
-                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <Button variant="play" size="icon" className="shadow-glow">
-                      <Play className="w-4 h-4 fill-current ml-0.5" />
-                    </Button>
-                  </div>
-
-                  {/* Duration Badge */}
-                  <span className="absolute bottom-2 right-2 px-1.5 py-0.5 bg-foreground/80 text-background text-[10px] rounded font-medium">
-                    {video.duration}
-                  </span>
-
-                  {/* Actions on Hover */}
-                  <div className="absolute bottom-2 left-2 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Button
-                      variant="ghost"
-                      size="icon-sm"
-                      className="bg-card/80 backdrop-blur-sm hover:bg-card h-7 w-7">
-                      <Heart className="w-3 h-3" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon-sm"
-                      className="bg-card/80 backdrop-blur-sm hover:bg-card h-7 w-7">
-                      <Share2 className="w-3 h-3" />
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Info */}
-                <div className="p-2">
-                  <h3 className="font-semibold text-xs line-clamp-2 group-hover:text-primary transition-colors mb-1">
-                    {video.title}
-                  </h3>
-                  <p className="text-[10px] text-muted-foreground truncate mb-1">{video.creator}</p>
-                  <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
-                    <span>{video.views} views</span>
-                    <span>•</span>
-                    <span className="flex items-center gap-0.5">
-                      <Heart className="w-2.5 h-2.5" />
-                      {video.likes}
-                    </span>
-                  </div>
-                </div>
-              </div>
+              className="min-w-[140px] md:min-w-[160px] snap-start">
+              <VideoCard
+                _id={video._id}
+                title={video.title}
+                creator={video.creator}
+                thumbnail={video.thumbnail}
+                views={video.views}
+                duration={video.duration}
+                category=""
+                variant="shortForm"
+                likes={video.likes}
+              />
             </motion.div>
           ))}
         </div>

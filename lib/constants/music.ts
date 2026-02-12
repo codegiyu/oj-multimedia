@@ -7,6 +7,7 @@
 export interface MusicItem {
   _id: string;
   title: string;
+  /** Artist profile _id (e.g. 'ap-1'). Getters populate to { _id, name }. */
   artist: string;
   cover: string;
   category:
@@ -64,7 +65,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '1',
     title: 'Sunset Vibes',
-    artist: 'DJ Flame',
+    artist: 'ap-1',
     cover: '/images/album-1.jpg',
     category: 'afrobeats',
     plays: '2.4M',
@@ -88,7 +89,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '2',
     title: 'African Rhythm',
-    artist: 'Kofi Beats',
+    artist: 'ap-2',
     cover: '/images/album-2.jpg',
     category: 'afrobeats',
     plays: '1.5M',
@@ -106,7 +107,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '3',
     title: 'Lagos Nights',
-    artist: 'Nigerian Star',
+    artist: 'ap-1',
     cover: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300&fit=crop',
     category: 'afrobeats',
     uploadedAt: '3 hours ago',
@@ -117,7 +118,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '4',
     title: 'Dancehall Vibes',
-    artist: 'Afro King',
+    artist: 'ap-1',
     cover: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop',
     category: 'afrobeats',
     uploadedAt: '5 hours ago',
@@ -130,7 +131,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
     _id: '5',
     title: 'DJ Flame',
     name: 'DJ Flame',
-    artist: 'DJ Flame',
+    artist: 'ap-1',
     cover: '/images/artist-1.jpg',
     image: '/images/artist-1.jpg',
     category: 'afrobeats',
@@ -144,7 +145,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
     _id: '6',
     title: 'Kofi Beats',
     name: 'Kofi Beats',
-    artist: 'Kofi Beats',
+    artist: 'ap-2',
     cover: '/images/artist-2.jpg',
     image: '/images/artist-2.jpg',
     category: 'afrobeats',
@@ -159,7 +160,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '7',
     title: 'Street Dreams',
-    artist: 'King Vibe',
+    artist: 'ap-4',
     cover: '/images/artist-3.jpg',
     category: 'hiphop',
     plays: '654K',
@@ -176,7 +177,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '8',
     title: 'Urban Flow',
-    artist: 'Metro Kid',
+    artist: 'ap-2',
     cover: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop',
     category: 'hiphop',
     plays: '890K',
@@ -194,7 +195,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '9',
     title: 'City Lights',
-    artist: 'Luna Belle',
+    artist: 'ap-5',
     cover: '/images/album-2.jpg',
     category: 'hiphop',
     uploadedAt: '4 hours ago',
@@ -205,7 +206,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '10',
     title: 'Rap Flow',
-    artist: 'MC Pro',
+    artist: 'ap-2',
     cover: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300&fit=crop',
     category: 'hiphop',
     uploadedAt: '7 hours ago',
@@ -218,7 +219,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
     _id: '11',
     title: 'Marcus Jay',
     name: 'Marcus Jay',
-    artist: 'Marcus Jay',
+    artist: 'ap-3',
     cover: '/images/artist-1.jpg',
     image: '/images/artist-1.jpg',
     category: 'hiphop',
@@ -232,7 +233,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
     _id: '12',
     title: 'King Vibe',
     name: 'King Vibe',
-    artist: 'King Vibe',
+    artist: 'ap-4',
     cover: '/images/artist-3.jpg',
     image: '/images/artist-3.jpg',
     category: 'hiphop',
@@ -247,7 +248,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '13',
     title: 'City Lights',
-    artist: 'Luna Belle',
+    artist: 'ap-5',
     cover: '/images/album-2.jpg',
     category: 'pop',
     plays: '1.8M',
@@ -264,7 +265,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '14',
     title: 'Summer Feels',
-    artist: 'Beach Vibes',
+    artist: 'ap-5',
     cover: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300&fit=crop',
     category: 'pop',
     plays: '1.2M',
@@ -282,7 +283,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '15',
     title: 'Golden Hour',
-    artist: 'Aria Rose',
+    artist: 'ap-6',
     cover: '/images/artist-2.jpg',
     category: 'pop',
     uploadedAt: '12 hours ago',
@@ -293,7 +294,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '16',
     title: 'Neon Nights',
-    artist: 'Summer',
+    artist: 'ap-5',
     cover: '/images/album-2.jpg',
     category: 'pop',
     uploadedAt: '1 day ago',
@@ -306,7 +307,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
     _id: '17',
     title: 'Luna Belle',
     name: 'Luna Belle',
-    artist: 'Luna Belle',
+    artist: 'ap-5',
     cover: '/images/artist-2.jpg',
     image: '/images/artist-2.jpg',
     category: 'pop',
@@ -320,7 +321,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
     _id: '18',
     title: 'Aria Rose',
     name: 'Aria Rose',
-    artist: 'Aria Rose',
+    artist: 'ap-6',
     cover: '/images/album-1.jpg',
     image: '/images/album-1.jpg',
     category: 'pop',
@@ -335,7 +336,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '19',
     title: 'Electric Soul',
-    artist: 'Marcus Jay',
+    artist: 'ap-3',
     cover: '/images/artist-1.jpg',
     category: 'rnb',
     plays: '980K',
@@ -352,7 +353,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '20',
     title: 'Heart & Soul',
-    artist: 'Melody Grace',
+    artist: 'ap-6',
     cover: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop',
     category: 'rnb',
     plays: '756K',
@@ -370,7 +371,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '21',
     title: 'Smooth Operator',
-    artist: 'Soul Singer',
+    artist: 'ap-3',
     cover: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300&fit=crop',
     category: 'rnb',
     uploadedAt: '1 day ago',
@@ -381,7 +382,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '22',
     title: 'Midnight Love',
-    artist: 'Velvet Voice',
+    artist: 'ap-3',
     cover: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop',
     category: 'rnb',
     uploadedAt: '2 days ago',
@@ -394,7 +395,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
     _id: '23',
     title: 'Aria Rose',
     name: 'Aria Rose',
-    artist: 'Aria Rose',
+    artist: 'ap-6',
     cover: '/images/album-1.jpg',
     image: '/images/album-1.jpg',
     category: 'rnb',
@@ -408,7 +409,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
     _id: '24',
     title: 'Melody Grace',
     name: 'Melody Grace',
-    artist: 'Melody Grace',
+    artist: 'ap-6',
     cover: '/images/artist-2.jpg',
     image: '/images/artist-2.jpg',
     category: 'rnb',
@@ -423,7 +424,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '25',
     title: 'Praise Anthem',
-    artist: 'Gospel Choir',
+    artist: 'ap-6',
     cover: '/images/album-3.jpg',
     category: 'gospel',
     plays: '1.1M',
@@ -440,7 +441,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '26',
     title: 'Heavenly Sound',
-    artist: 'Divine Voice',
+    artist: 'ap-6',
     cover: '/images/album-1.jpg',
     category: 'gospel',
     plays: '920K',
@@ -458,7 +459,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '27',
     title: 'Worship Song',
-    artist: 'Faithful Heart',
+    artist: 'ap-6',
     cover: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300&fit=crop',
     category: 'gospel',
     uploadedAt: '6 hours ago',
@@ -469,7 +470,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '28',
     title: 'Testimony',
-    artist: 'Blessed One',
+    artist: 'ap-6',
     cover: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop',
     category: 'gospel',
     uploadedAt: '9 hours ago',
@@ -482,7 +483,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
     _id: '29',
     title: 'King Vibe',
     name: 'King Vibe',
-    artist: 'King Vibe',
+    artist: 'ap-4',
     cover: '/images/artist-3.jpg',
     image: '/images/artist-3.jpg',
     category: 'gospel',
@@ -496,7 +497,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
     _id: '30',
     title: 'Gospel Choir',
     name: 'Gospel Choir',
-    artist: 'Gospel Choir',
+    artist: 'ap-6',
     cover: '/images/album-3.jpg',
     image: '/images/album-3.jpg',
     category: 'gospel',
@@ -511,7 +512,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '31',
     title: 'Midnight Dreams',
-    artist: 'The Wave',
+    artist: 'ap-4',
     cover: '/images/album-3.jpg',
     category: 'instrumental',
     plays: '1.2M',
@@ -528,7 +529,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '32',
     title: 'Peaceful Mind',
-    artist: 'Zen Beats',
+    artist: 'ap-4',
     cover: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300&fit=crop',
     category: 'instrumental',
     plays: '680K',
@@ -546,7 +547,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '33',
     title: 'Ocean Waves',
-    artist: 'Crystal',
+    artist: 'ap-5',
     cover: '/images/album-1.jpg',
     category: 'instrumental',
     uploadedAt: '6 hours ago',
@@ -557,7 +558,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '34',
     title: 'Meditation Flow',
-    artist: 'Calm Sounds',
+    artist: 'ap-1',
     cover: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop',
     category: 'instrumental',
     uploadedAt: '10 hours ago',
@@ -570,7 +571,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
     _id: '35',
     title: 'The Wave',
     name: 'The Wave',
-    artist: 'The Wave',
+    artist: 'ap-4',
     cover: '/images/album-2.jpg',
     image: '/images/album-2.jpg',
     category: 'instrumental',
@@ -584,7 +585,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
     _id: '36',
     title: 'Zen Beats',
     name: 'Zen Beats',
-    artist: 'Zen Beats',
+    artist: 'ap-4',
     cover: '/images/album-3.jpg',
     image: '/images/album-3.jpg',
     category: 'instrumental',
@@ -599,7 +600,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '37',
     title: 'Morning Light',
-    artist: 'Sarah Grace',
+    artist: 'ap-6',
     cover: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300&fit=crop',
     category: 'acoustic',
     plays: '543K',
@@ -616,7 +617,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '38',
     title: 'Guitar Serenade',
-    artist: 'Acoustic Soul',
+    artist: 'ap-1',
     cover: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop',
     category: 'acoustic',
     plays: '432K',
@@ -634,7 +635,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '39',
     title: 'Rise Up',
-    artist: 'Victory Sound',
+    artist: 'ap-2',
     cover: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop',
     category: 'acoustic',
     uploadedAt: '8 hours ago',
@@ -645,7 +646,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '40',
     title: 'Fingerstyle',
-    artist: 'String Master',
+    artist: 'ap-3',
     cover: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300&fit=crop',
     category: 'acoustic',
     uploadedAt: '11 hours ago',
@@ -658,7 +659,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
     _id: '41',
     title: 'Sarah Grace',
     name: 'Sarah Grace',
-    artist: 'Sarah Grace',
+    artist: 'ap-6',
     cover: '/images/artist-1.jpg',
     image: '/images/artist-1.jpg',
     category: 'acoustic',
@@ -672,7 +673,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
     _id: '42',
     title: 'Acoustic Soul',
     name: 'Acoustic Soul',
-    artist: 'Acoustic Soul',
+    artist: 'ap-1',
     cover: '/images/artist-2.jpg',
     image: '/images/artist-2.jpg',
     category: 'acoustic',
@@ -687,7 +688,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '43',
     title: 'Holy Spirit',
-    artist: 'Worship Team',
+    artist: 'ap-6',
     cover: '/images/album-2.jpg',
     category: 'worship',
     plays: '1.5M',
@@ -704,7 +705,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '44',
     title: 'Hallelujah',
-    artist: 'Praise Band',
+    artist: 'ap-4',
     cover: '/images/album-3.jpg',
     category: 'worship',
     plays: '1.0M',
@@ -722,7 +723,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '45',
     title: 'Glory Song',
-    artist: 'Heavenly Voices',
+    artist: 'ap-6',
     cover: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300&fit=crop',
     category: 'worship',
     uploadedAt: '2 hours ago',
@@ -733,7 +734,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '46',
     title: 'Adoration',
-    artist: 'Sacred Sound',
+    artist: 'ap-4',
     cover: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop',
     category: 'worship',
     uploadedAt: '5 hours ago',
@@ -746,7 +747,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
     _id: '47',
     title: 'Worship Team',
     name: 'Worship Team',
-    artist: 'Worship Team',
+    artist: 'ap-6',
     cover: '/images/artist-1.jpg',
     image: '/images/artist-1.jpg',
     category: 'worship',
@@ -760,7 +761,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
     _id: '48',
     title: 'Praise Band',
     name: 'Praise Band',
-    artist: 'Praise Band',
+    artist: 'ap-4',
     cover: '/images/artist-3.jpg',
     image: '/images/artist-3.jpg',
     category: 'worship',
@@ -775,7 +776,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '49',
     title: 'Inspiration',
-    artist: 'Word Master',
+    artist: 'ap-3',
     cover: '/images/album-1.jpg',
     category: 'spoken',
     plays: '356K',
@@ -792,7 +793,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '50',
     title: 'Poetry Flow',
-    artist: 'Verse Speaker',
+    artist: 'ap-3',
     cover: '/images/album-2.jpg',
     category: 'spoken',
     plays: '298K',
@@ -810,7 +811,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '51',
     title: 'Motivational Speech',
-    artist: 'Life Coach',
+    artist: 'ap-1',
     cover: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300&fit=crop',
     category: 'spoken',
     uploadedAt: '1 day ago',
@@ -821,7 +822,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '52',
     title: 'Faith Declaration',
-    artist: 'Truth Speaker',
+    artist: 'ap-2',
     cover: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop',
     category: 'spoken',
     uploadedAt: '2 days ago',
@@ -834,7 +835,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
     _id: '53',
     title: 'Word Master',
     name: 'Word Master',
-    artist: 'Word Master',
+    artist: 'ap-3',
     cover: '/images/artist-2.jpg',
     image: '/images/artist-2.jpg',
     category: 'spoken',
@@ -848,7 +849,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
     _id: '54',
     title: 'Verse Speaker',
     name: 'Verse Speaker',
-    artist: 'Verse Speaker',
+    artist: 'ap-3',
     cover: '/images/artist-3.jpg',
     image: '/images/artist-3.jpg',
     category: 'spoken',
@@ -863,7 +864,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '55',
     title: 'Grace Abounding',
-    artist: 'Pastor John Doe',
+    artist: 'ap-1',
     cover: '/images/album-3.jpg',
     category: 'sermon',
     plays: '10K',
@@ -884,7 +885,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '56',
     title: 'Faith in Hard Times',
-    artist: 'Bishop Jane Smith',
+    artist: 'ap-2',
     cover: '/images/album-1.jpg',
     category: 'sermon',
     plays: '8K',
@@ -903,7 +904,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '100',
     title: 'Sunset Vibes',
-    artist: 'DJ Flame',
+    artist: 'ap-1',
     cover: '/images/album-1.jpg',
     category: 'afrobeats',
     plays: '2.4M',
@@ -927,7 +928,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '101',
     title: 'African Rhythm',
-    artist: 'Kofi Beats',
+    artist: 'ap-2',
     cover: '/images/album-2.jpg',
     category: 'afrobeats',
     plays: '1.5M',
@@ -944,7 +945,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '102',
     title: 'Street Dreams',
-    artist: 'King Vibe',
+    artist: 'ap-4',
     cover: '/images/artist-3.jpg',
     category: 'hiphop',
     plays: '654K',
@@ -961,7 +962,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '103',
     title: 'Urban Flow',
-    artist: 'Metro Kid',
+    artist: 'ap-2',
     cover: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop',
     category: 'hiphop',
     plays: '890K',
@@ -978,7 +979,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '104',
     title: 'City Lights',
-    artist: 'Luna Belle',
+    artist: 'ap-5',
     cover: '/images/album-2.jpg',
     category: 'pop',
     plays: '1.8M',
@@ -995,7 +996,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '105',
     title: 'Summer Feels',
-    artist: 'Beach Vibes',
+    artist: 'ap-5',
     cover: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300&fit=crop',
     category: 'pop',
     plays: '1.2M',
@@ -1012,7 +1013,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '106',
     title: 'Electric Soul',
-    artist: 'Marcus Jay',
+    artist: 'ap-3',
     cover: '/images/artist-1.jpg',
     category: 'rnb',
     plays: '980K',
@@ -1029,7 +1030,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '107',
     title: 'Heart & Soul',
-    artist: 'Melody Grace',
+    artist: 'ap-6',
     cover: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop',
     category: 'rnb',
     plays: '756K',
@@ -1046,7 +1047,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '108',
     title: 'Praise Anthem',
-    artist: 'Gospel Choir',
+    artist: 'ap-6',
     cover: '/images/album-3.jpg',
     category: 'gospel',
     plays: '1.1M',
@@ -1063,7 +1064,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '109',
     title: 'Heavenly Sound',
-    artist: 'Divine Voice',
+    artist: 'ap-6',
     cover: '/images/album-1.jpg',
     category: 'gospel',
     plays: '920K',
@@ -1080,7 +1081,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '110',
     title: 'Midnight Dreams',
-    artist: 'The Wave',
+    artist: 'ap-4',
     cover: '/images/album-3.jpg',
     category: 'instrumental',
     plays: '1.2M',
@@ -1097,7 +1098,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '111',
     title: 'Peaceful Mind',
-    artist: 'Zen Beats',
+    artist: 'ap-4',
     cover: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300&fit=crop',
     category: 'instrumental',
     plays: '680K',
@@ -1114,7 +1115,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '112',
     title: 'Morning Light',
-    artist: 'Sarah Grace',
+    artist: 'ap-6',
     cover: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300&fit=crop',
     category: 'acoustic',
     plays: '543K',
@@ -1131,7 +1132,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '113',
     title: 'Guitar Serenade',
-    artist: 'Acoustic Soul',
+    artist: 'ap-1',
     cover: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop',
     category: 'acoustic',
     plays: '432K',
@@ -1148,7 +1149,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '114',
     title: 'Holy Spirit',
-    artist: 'Worship Team',
+    artist: 'ap-6',
     cover: '/images/album-2.jpg',
     category: 'worship',
     plays: '1.5M',
@@ -1165,7 +1166,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '115',
     title: 'Hallelujah',
-    artist: 'Praise Band',
+    artist: 'ap-4',
     cover: '/images/album-3.jpg',
     category: 'worship',
     plays: '1.0M',
@@ -1182,7 +1183,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '116',
     title: 'Inspiration',
-    artist: 'Word Master',
+    artist: 'ap-3',
     cover: '/images/album-1.jpg',
     category: 'spoken',
     plays: '356K',
@@ -1199,7 +1200,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '117',
     title: 'Poetry Flow',
-    artist: 'Verse Speaker',
+    artist: 'ap-3',
     cover: '/images/album-2.jpg',
     category: 'spoken',
     plays: '298K',
@@ -1218,7 +1219,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '200',
     title: 'Sunset Vibes',
-    artist: 'DJ Flame',
+    artist: 'ap-1',
     cover: '/images/album-1.jpg',
     category: 'afrobeats',
     plays: '2.4M',
@@ -1242,7 +1243,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '201',
     title: 'African Rhythm',
-    artist: 'Kofi Beats',
+    artist: 'ap-2',
     cover: '/images/album-2.jpg',
     category: 'afrobeats',
     plays: '1.5M',
@@ -1259,7 +1260,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '202',
     title: 'Street Dreams',
-    artist: 'King Vibe',
+    artist: 'ap-4',
     cover: '/images/artist-3.jpg',
     category: 'hiphop',
     plays: '654K',
@@ -1276,7 +1277,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '203',
     title: 'Urban Flow',
-    artist: 'Metro Kid',
+    artist: 'ap-2',
     cover: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop',
     category: 'hiphop',
     plays: '890K',
@@ -1293,7 +1294,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '204',
     title: 'City Lights',
-    artist: 'Luna Belle',
+    artist: 'ap-5',
     cover: '/images/album-2.jpg',
     category: 'pop',
     plays: '1.8M',
@@ -1310,7 +1311,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '205',
     title: 'Summer Feels',
-    artist: 'Beach Vibes',
+    artist: 'ap-5',
     cover: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300&fit=crop',
     category: 'pop',
     plays: '1.2M',
@@ -1327,7 +1328,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '206',
     title: 'Electric Soul',
-    artist: 'Marcus Jay',
+    artist: 'ap-3',
     cover: '/images/artist-1.jpg',
     category: 'rnb',
     plays: '980K',
@@ -1344,7 +1345,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '207',
     title: 'Heart & Soul',
-    artist: 'Melody Grace',
+    artist: 'ap-6',
     cover: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop',
     category: 'rnb',
     plays: '756K',
@@ -1361,7 +1362,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '208',
     title: 'Praise Anthem',
-    artist: 'Gospel Choir',
+    artist: 'ap-6',
     cover: '/images/album-3.jpg',
     category: 'gospel',
     plays: '1.1M',
@@ -1378,7 +1379,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '209',
     title: 'Heavenly Sound',
-    artist: 'Divine Voice',
+    artist: 'ap-6',
     cover: '/images/album-1.jpg',
     category: 'gospel',
     plays: '920K',
@@ -1395,7 +1396,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '210',
     title: 'Midnight Dreams',
-    artist: 'The Wave',
+    artist: 'ap-4',
     cover: '/images/album-3.jpg',
     category: 'instrumental',
     plays: '1.2M',
@@ -1412,7 +1413,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '211',
     title: 'Peaceful Mind',
-    artist: 'Zen Beats',
+    artist: 'ap-4',
     cover: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300&fit=crop',
     category: 'instrumental',
     plays: '680K',
@@ -1429,7 +1430,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '212',
     title: 'Morning Light',
-    artist: 'Sarah Grace',
+    artist: 'ap-6',
     cover: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300&fit=crop',
     category: 'acoustic',
     plays: '543K',
@@ -1446,7 +1447,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '213',
     title: 'Guitar Serenade',
-    artist: 'Acoustic Soul',
+    artist: 'ap-1',
     cover: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop',
     category: 'acoustic',
     plays: '432K',
@@ -1463,7 +1464,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '214',
     title: 'Holy Spirit',
-    artist: 'Worship Team',
+    artist: 'ap-6',
     cover: '/images/album-2.jpg',
     category: 'worship',
     plays: '1.5M',
@@ -1480,7 +1481,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '215',
     title: 'Hallelujah',
-    artist: 'Praise Band',
+    artist: 'ap-4',
     cover: '/images/album-3.jpg',
     category: 'worship',
     plays: '1.0M',
@@ -1497,7 +1498,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '216',
     title: 'Inspiration',
-    artist: 'Word Master',
+    artist: 'ap-3',
     cover: '/images/album-1.jpg',
     category: 'spoken',
     plays: '356K',
@@ -1514,7 +1515,7 @@ export const MUSIC_ITEMS: MusicItem[] = [
   {
     _id: '217',
     title: 'Poetry Flow',
-    artist: 'Verse Speaker',
+    artist: 'ap-3',
     cover: '/images/album-2.jpg',
     category: 'spoken',
     plays: '298K',

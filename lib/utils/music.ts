@@ -1,4 +1,9 @@
+import { ARTIST_PROFILES } from '@/lib/constants/community/artists';
+import { populateArtist } from '@/lib/utils/community/artists';
+import type { ArtistProfile } from '@/lib/types/artist';
 import { MUSIC_ITEMS, type MusicItem } from '@/lib/constants/music';
+
+export type MusicItemArtist = { _id: string; name: string };
 
 /** Category to display genre label (e.g. for home section) */
 function categoryToGenre(category: MusicItem['category']): string {
@@ -18,12 +23,13 @@ function categoryToGenre(category: MusicItem['category']): string {
 }
 
 /**
- * Get trending music items for the home page (from MUSIC_ITEMS with isTrending)
+ * Get trending music items for the home page (from MUSIC_ITEMS with isTrending).
+ * Artist is populated to { _id, name }.
  */
 export function getTrendingMusicForHome(limit: number = 12): Array<{
   _id: string;
   title: string;
-  artist: string;
+  artist: MusicItemArtist;
   cover: string;
   plays: string;
   genre: string;
@@ -31,25 +37,29 @@ export function getTrendingMusicForHome(limit: number = 12): Array<{
 }> {
   return MUSIC_ITEMS.filter(item => item.isTrending)
     .slice(0, limit)
-    .map(item => ({
-      _id: item._id,
-      title: item.title,
-      artist: item.artist,
-      cover: item.cover,
-      plays: item.plays ?? '0',
-      genre: item.genre ?? categoryToGenre(item.category),
-      isNew: item.isNew ?? false,
-    }));
+    .map(item => {
+      const artist = populateArtist(item.artist) ?? { _id: item.artist, name: 'Unknown' };
+      return {
+        _id: item._id,
+        title: item.title,
+        artist,
+        cover: item.cover,
+        plays: item.plays ?? '0',
+        genre: item.genre ?? categoryToGenre(item.category),
+        isNew: item.isNew ?? false,
+      };
+    });
 }
 
 /**
- * Get chart data for the home page (from MUSIC_ITEMS with isChart, sorted by rank)
+ * Get chart data for the home page (from MUSIC_ITEMS with isChart, sorted by rank).
+ * Artist is populated to { _id, name }.
  */
 export function getChartDataForHome(limit: number = 10): Array<{
   _id: string;
   rank: number;
   title: string;
-  artist: string;
+  artist: MusicItemArtist;
   cover: string;
   plays: string;
   trend: 'up' | 'down' | 'same';
@@ -61,62 +71,61 @@ export function getChartDataForHome(limit: number = 10): Array<{
   )
     .sort((a, b) => a.rank - b.rank)
     .slice(0, limit)
-    .map(item => ({
-      _id: item._id,
-      rank: item.rank,
-      title: item.title,
-      artist: item.artist,
-      cover: item.cover,
-      plays: item.plays ?? '0',
-      trend: item.trend,
-      change: item.change,
-    }));
+    .map(item => {
+      const artist = populateArtist(item.artist) ?? { _id: item.artist, name: 'Unknown' };
+      return {
+        _id: item._id,
+        rank: item.rank,
+        title: item.title,
+        artist,
+        cover: item.cover,
+        plays: item.plays ?? '0',
+        trend: item.trend,
+        change: item.change,
+      };
+    });
 }
 
 /**
- * Get rising/featured artists for the home page (from MUSIC_ITEMS with isFeaturedArtist)
+ * Get rising artists for the home page (from ARTIST_PROFILES with isRising)
  */
-export function getRisingArtistsForHome(limit: number = 4): Array<{
-  name: string;
-  genre: string;
-  image: string;
-  followers: string;
-}> {
-  return MUSIC_ITEMS.filter(item => item.isFeaturedArtist)
-    .slice(0, limit)
-    .map(item => ({
-      name: item.name ?? item.artist,
-      genre: item.genre ?? categoryToGenre(item.category),
-      image: item.image ?? item.cover,
-      followers: item.followers ?? '0',
-    }));
+export function getRisingArtistsForHome(limit: number = 4): ArtistProfile[] {
+  return ARTIST_PROFILES.filter(p => p.isRising).slice(0, limit);
 }
 
+/** Music item with artist populated to { _id, name } */
+export type MusicItemWithArtist = Omit<MusicItem, 'artist'> & { artist: MusicItemArtist };
+
 /**
- * Get a music item by its ID
+ * Get a music item by its ID. Artist is populated to { _id, name }.
  * @param _id - The string ID of the music item
- * @returns The music item if found, undefined otherwise
+ * @returns The music item if found (with artist populated), undefined otherwise
  */
-export function getMusicItemById(_id: string): MusicItem | undefined {
-  return MUSIC_ITEMS.find(item => item._id === _id);
+export function getMusicItemById(_id: string): MusicItemWithArtist | undefined {
+  const item = MUSIC_ITEMS.find(i => i._id === _id);
+  if (!item) return undefined;
+  const artist = populateArtist(item.artist) ?? { _id: item.artist, name: 'Unknown' };
+  return { ...item, artist };
 }
 
 /**
- * Get related music items based on category
+ * Get related music items based on category. Artist is populated to { _id, name }.
  * @param currentId - The ID of the current music item (to exclude)
  * @param category - The category to match
  * @param limit - Maximum number of related items to return (default: 3)
- * @returns Array of related music items
+ * @returns Array of related music items with artist populated
  */
 export function getRelatedMusicItems(
   currentId: string,
   category: string,
   limit: number = 3
-): MusicItem[] {
-  return MUSIC_ITEMS.filter(item => item._id !== currentId && item.category === category).slice(
-    0,
-    limit
-  );
+): MusicItemWithArtist[] {
+  return MUSIC_ITEMS.filter(item => item._id !== currentId && item.category === category)
+    .slice(0, limit)
+    .map(item => {
+      const artist = populateArtist(item.artist) ?? { _id: item.artist, name: 'Unknown' };
+      return { ...item, artist };
+    });
 }
 
 /**

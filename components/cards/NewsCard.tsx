@@ -73,7 +73,7 @@ export const NewsCard = ({
     <motion.article
       whileHover={{ y: -4 }}
       transition={{ duration: 0.3 }}
-      className="group bg-card rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all cursor-pointer">
+      className="group h-full bg-card rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all cursor-pointer">
       <div className="aspect-[16/10] overflow-hidden">
         <img
           src={image}
@@ -99,7 +99,7 @@ export const NewsCard = ({
 
   if (linkId) {
     return (
-      <Link href={`/news/story/${linkId}`} className="block">
+      <Link href={`/news/story/${linkId}`} className="block h-full">
         {regularContent}
       </Link>
     );

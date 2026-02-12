@@ -1,13 +1,14 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Play, Heart, Clock, Sparkles, Eye } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { VideoCard } from '@/components/cards/VideoCard';
 
 export interface RecentVideoUpload {
   _id: string;
   title: string;
-  creator: string;
+  creator: { _id: string; name: string };
   thumbnail: string;
   uploadedAt: string;
   category: string;
@@ -47,52 +48,18 @@ export const RecentVideoUploads = ({ uploads: recentUploads }: RecentVideoUpload
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: index * 0.05 }}
-              whileHover={{ y: -4 }}
-              className="group flex gap-4 p-4 bg-card rounded-2xl hover:shadow-md transition-all cursor-pointer">
-              {/* Thumbnail */}
-              <div className="relative w-32 h-20 rounded-xl overflow-hidden shrink-0">
-                <img
-                  src={video.thumbnail}
-                  alt={video.title}
-                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-foreground/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <Play className="w-5 h-5 text-background fill-current" />
-                </div>
-                <span className="absolute bottom-1 right-1 px-1.5 py-0.5 bg-foreground/80 text-background text-[10px] rounded font-medium">
-                  {video.duration}
-                </span>
-              </div>
-
-              {/* Info */}
-              <div className="flex-1 min-w-0 flex flex-col justify-between">
-                <div>
-                  <h3 className="font-semibold text-sm truncate group-hover:text-primary transition-colors mb-1">
-                    {video.title}
-                  </h3>
-                  <p className="text-xs text-muted-foreground truncate mb-2">{video.creator}</p>
-                </div>
-                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <span className="px-2 py-0.5 bg-muted rounded-full">{video.category}</span>
-                  <span className="flex items-center gap-1">
-                    <Eye className="w-3 h-3" />
-                    {video.views}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Clock className="w-3 h-3" />
-                    {video.uploadedAt}
-                  </span>
-                </div>
-              </div>
-
-              {/* Action */}
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                className="shrink-0 self-center opacity-0 group-hover:opacity-100 transition-opacity">
-                <Heart className="w-4 h-4" />
-              </Button>
+              transition={{ delay: index * 0.05 }}>
+              <VideoCard
+                _id={video._id}
+                title={video.title}
+                creator={video.creator}
+                thumbnail={video.thumbnail}
+                views={video.views}
+                duration={video.duration}
+                category={video.category}
+                variant="recent"
+                uploadedAt={video.uploadedAt}
+              />
             </motion.div>
           ))}
         </div>

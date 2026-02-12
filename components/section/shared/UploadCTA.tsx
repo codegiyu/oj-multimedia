@@ -1,6 +1,6 @@
 'use client';
 
-import { Upload, Music, Video, Mic } from 'lucide-react';
+import { Upload, Music, Video, BookOpen } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { RegularBtn } from '@/components/atoms/RegularBtn';
 
@@ -32,31 +32,34 @@ export const UploadCTA = () => {
               Share Your Creativity
             </h2>
             <p className="text-primary-foreground/80 text-lg mb-8">
-              Upload your music, videos, or podcasts and reach thousands of listeners. Join our
-              growing community of creators.
+              Upload your music, videos, or share your story and reach thousands of listeners. Join
+              our growing community of creators.
             </p>
 
             <div className="flex flex-wrap justify-center gap-4 mb-8">
               <RegularBtn
-                variant="hero-outline"
+                variant="cta"
                 size="lg"
-                className="gap-2 bg-primary-foreground/10 border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/20 hover:border-primary-foreground/50">
+                className="gap-2 bg-primary-foreground/10 border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/20 hover:border-primary-foreground/50"
+                linkProps={{ href: '/community/promote-your-content' }}>
                 <Music className="w-5 h-5" />
                 Upload Music
               </RegularBtn>
               <RegularBtn
-                variant="hero-outline"
+                variant="cta"
                 size="lg"
-                className="gap-2 bg-primary-foreground/10 border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/20 hover:border-primary-foreground/50">
+                className="gap-2 bg-primary-foreground/10 border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/20 hover:border-primary-foreground/50"
+                linkProps={{ href: '/community/promote-your-content' }}>
                 <Video className="w-5 h-5" />
                 Upload Video
               </RegularBtn>
               <RegularBtn
-                variant="hero-outline"
+                variant="cta"
                 size="lg"
-                className="gap-2 bg-primary-foreground/10 border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/20 hover:border-primary-foreground/50">
-                <Mic className="w-5 h-5" />
-                Start Podcast
+                className="gap-2 bg-primary-foreground/10 border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/20 hover:border-primary-foreground/50"
+                linkProps={{ href: '/community/testimonies' }}>
+                <BookOpen className="w-5 h-5" />
+                Share Testimony
               </RegularBtn>
             </div>
 

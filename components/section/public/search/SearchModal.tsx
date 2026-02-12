@@ -22,6 +22,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { useRouter } from 'next/navigation';
 import { MUSIC_ITEMS, type MusicItem } from '@/lib/constants/music';
+import { populateArtist } from '@/lib/utils/community/artists';
 import { NEWS_ITEMS, type NewsItem } from '@/lib/constants/news';
 import { DEVOTIONALS_ITEMS } from '@/lib/constants/community/devotionals';
 import { TESTIMONIES_ITEMS } from '@/lib/constants/community/testimonies';
@@ -51,7 +52,7 @@ const transformMusicItems = (items: MusicItem[]): SearchItem[] => {
     _id: item._id,
     title: item.title,
     type: 'music',
-    artist: item.artist,
+    artist: populateArtist(item.artist)?.name ?? 'Unknown',
     category: item.category,
   }));
 };

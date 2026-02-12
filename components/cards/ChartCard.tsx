@@ -9,7 +9,7 @@ interface ChartCardProps {
   _id?: string;
   rank: number;
   title: string;
-  artist: string;
+  artist: string | { _id: string; name: string };
   cover: string;
   plays: string;
   trend: 'up' | 'down' | 'same';
@@ -26,6 +26,7 @@ export const ChartCard = ({
   trend,
   change,
 }: ChartCardProps) => {
+  const artistName = typeof artist === 'string' ? artist : artist.name;
   const TrendIcon = trend === 'up' ? TrendingUp : trend === 'down' ? TrendingDown : Minus;
   const trendColor =
     trend === 'up'
@@ -63,7 +64,7 @@ export const ChartCard = ({
       {/* Info */}
       <div className="flex-1 min-w-0">
         <h4 className="font-medium truncate group-hover:text-primary transition-colors">{title}</h4>
-        <p className="text-sm text-muted-foreground truncate">{artist}</p>
+        <p className="text-sm text-muted-foreground truncate">{artistName}</p>
       </div>
 
       {/* Stats */}

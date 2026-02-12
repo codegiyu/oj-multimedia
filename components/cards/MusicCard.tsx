@@ -8,7 +8,7 @@ import Link from 'next/link';
 interface MusicCardProps {
   _id: string;
   title: string;
-  artist: string;
+  artist: string | { _id: string; name: string };
   cover: string;
   plays: string;
   genre: string;
@@ -16,6 +16,8 @@ interface MusicCardProps {
 }
 
 export const MusicCard = ({ _id, title, artist, cover, plays, genre, isNew }: MusicCardProps) => {
+  const artistName = typeof artist === 'string' ? artist : artist.name;
+
   const cardContent = (
     <motion.div
       whileHover={{ y: -8 }}
@@ -76,7 +78,7 @@ export const MusicCard = ({ _id, title, artist, cover, plays, genre, isNew }: Mu
             <h3 className="font-semibold truncate group-hover:text-primary transition-colors">
               {title}
             </h3>
-            <p className="text-sm text-muted-foreground truncate">{artist}</p>
+            <p className="text-sm text-muted-foreground truncate">{artistName}</p>
           </div>
           <Button
             variant="ghost"

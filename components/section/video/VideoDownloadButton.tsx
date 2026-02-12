@@ -3,10 +3,10 @@
 import { useState } from 'react';
 import { Download, Lock, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import type { VideoItem } from '@/lib/constants/videos';
+import type { VideoItemWithCreator } from '@/lib/utils/videos';
 
 interface VideoDownloadButtonProps {
-  videoItem: VideoItem;
+  videoItem: VideoItemWithCreator;
 }
 
 export const VideoDownloadButton = ({ videoItem }: VideoDownloadButtonProps) => {
@@ -36,7 +36,9 @@ export const VideoDownloadButton = ({ videoItem }: VideoDownloadButtonProps) => 
       if (videoItem.downloadUrl) {
         const link = document.createElement('a');
         link.href = videoItem.downloadUrl;
-        link.download = `${videoItem.title} - ${videoItem.creator}.mp4`;
+        const creatorName =
+          typeof videoItem.creator === 'string' ? videoItem.creator : videoItem.creator.name;
+        link.download = `${videoItem.title} - ${creatorName}.mp4`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);

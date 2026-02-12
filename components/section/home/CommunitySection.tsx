@@ -1,9 +1,12 @@
 'use client';
 
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Users, MessageSquare, BarChart3, Sparkles, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { useAuthStore } from '@/lib/store/useAuthStore';
+import { LoginModal } from '@/components/auth/LoginModal';
 
 export interface CommunityPost {
   user: string;
@@ -29,6 +32,9 @@ export const CommunitySection = ({
   pollOptions,
   pollTotalVotes,
 }: CommunitySectionProps) => {
+  const user = useAuthStore(state => state.user);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+
   return (
     <section id="community" className="py-16 md:py-24 bg-muted/30">
       <div className="container mx-auto px-4">
@@ -43,12 +49,25 @@ export const CommunitySection = ({
               <p className="text-muted-foreground text-sm">Connect with creators</p>
             </div>
           </div>
-          <Button variant="secondary" className="gap-2" asChild>
-            <Link href="/community">
-              Join Community
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-          </Button>
+          {user ? (
+            <Button variant="secondary" className="gap-2" asChild>
+              <Link href="/community">
+                Visit community
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </Button>
+          ) : (
+            <>
+              <Button
+                variant="secondary"
+                className="gap-2"
+                onClick={() => setIsLoginModalOpen(true)}>
+                Join Community
+                <ArrowRight className="w-4 h-4" />
+              </Button>
+              <LoginModal open={isLoginModalOpen} onOpenChange={setIsLoginModalOpen} />
+            </>
+          )}
         </div>
 
         <div className="grid lg:grid-cols-3 gap-6">
@@ -148,8 +167,8 @@ export const CommunitySection = ({
                 <Link href="/community/devotionals" className="quick-link w-full justify-start">
                   📖 Daily Devotionals
                 </Link>
-                <Link href="/community/sermons" className="quick-link w-full justify-start">
-                  🎤 Looking for Sermons?
+                <Link href="/community/ask-a-pastor" className="quick-link w-full justify-start">
+                  💬 Ask a Pastor
                 </Link>
                 <Link
                   href="/community/devotionals/bible-study"

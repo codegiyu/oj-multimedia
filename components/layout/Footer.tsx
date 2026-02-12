@@ -19,9 +19,9 @@ const footerLinks = {
   creators: [
     { label: 'Upload Music', href: '/community/promote-your-content' },
     { label: 'Upload Video', href: '/community/promote-your-content' },
-    { label: 'Start Podcast', href: '/community/promote-your-content' },
+    // { label: 'Start Podcast', href: '/community/promote-your-content' },
     { label: 'Become a Vendor', href: '/marketplace/become-vendor' },
-    { label: 'Artist Portal', href: '/music/artists' },
+    { label: 'Artist Portal', href: '/community/artists' },
   ],
   resources: [
     { label: 'Daily Devotionals', href: '/community/devotionals' },

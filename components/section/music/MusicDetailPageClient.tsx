@@ -5,22 +5,25 @@ import { ArrowLeft, Clock, Eye, Calendar, Share2, Bookmark, Music } from 'lucide
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import type { MusicItem } from '@/lib/constants/music';
+import type { MusicItemWithArtist } from '@/lib/utils/music';
 import { AudioPlayer } from './AudioPlayer';
 import { DownloadButton } from './DownloadButton';
 import { MusicCard } from '@/components/cards/MusicCard';
 
 interface MusicDetailPageClientProps {
-  musicItem: MusicItem;
-  relatedSongs: MusicItem[];
+  musicItem: MusicItemWithArtist;
+  relatedSongs: MusicItemWithArtist[];
 }
 
 export const MusicDetailPageClient = ({ musicItem, relatedSongs }: MusicDetailPageClientProps) => {
+  const artistName =
+    typeof musicItem.artist === 'string' ? musicItem.artist : musicItem.artist.name;
+
   const handleShare = () => {
     if (navigator.share) {
       navigator.share({
         title: musicItem.title,
-        text: `${musicItem.title} by ${musicItem.artist}`,
+        text: `${musicItem.title} by ${typeof musicItem.artist === 'string' ? musicItem.artist : musicItem.artist.name}`,
         url: window.location.href,
       });
     } else {
@@ -80,9 +83,7 @@ export const MusicDetailPageClient = ({ musicItem, relatedSongs }: MusicDetailPa
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold mb-2">
                 {musicItem.title}
               </h1>
-              <p className="text-xl md:text-2xl text-primary-foreground/90 mb-4">
-                {musicItem.artist}
-              </p>
+              <p className="text-xl md:text-2xl text-primary-foreground/90 mb-4">{artistName}</p>
               <div className="flex items-center gap-4 text-sm text-primary-foreground/80 flex-wrap">
                 {musicItem.plays && (
                   <span className="flex items-center gap-1">
@@ -125,7 +126,9 @@ export const MusicDetailPageClient = ({ musicItem, relatedSongs }: MusicDetailPa
               <AudioPlayer
                 audioUrl={musicItem.audioUrl}
                 title={musicItem.title}
-                artist={musicItem.artist}
+                artist={
+                  typeof musicItem.artist === 'string' ? musicItem.artist : musicItem.artist.name
+                }
               />
             </motion.div>
           )}

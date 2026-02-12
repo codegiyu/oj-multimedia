@@ -8,8 +8,10 @@ import type { TrendingSong } from '@/components/section/music/TrendingSongs';
 import type { ChartSong } from '@/components/section/music/TopMusicCharts';
 import type { RecentUpload } from '@/components/section/music/RecentUploads';
 import type { FeaturedArtist } from '@/components/section/music/FeaturedArtists';
+import { ARTIST_PROFILES } from '@/lib/constants/community/artists';
 import { MUSIC_ITEMS } from '@/lib/constants/music';
 import { filterByCategory } from '@/lib/utils/music';
+import { populateArtist } from '@/lib/utils/community/artists';
 
 export const metadata: Metadata = {
   title: 'Music - Latest Songs & Downloads',
@@ -28,21 +30,24 @@ async function generateMusicData(category: string = 'all', period: string = 'wee
   // Filter MUSIC_ITEMS by category first
   const filteredItems = filterByCategory(MUSIC_ITEMS, category);
 
-  // Filter and transform trending songs (limit to 8)
+  // Filter and transform trending songs (limit to 8); artist populated to { _id, name }
   const trendingSongs: TrendingSong[] = filteredItems
     .filter(item => item.isTrending && item.plays !== undefined && item.duration !== undefined)
     .slice(0, 8)
-    .map(item => ({
-      _id: item._id,
-      title: item.title,
-      artist: item.artist,
-      cover: item.cover,
-      plays: item.plays!,
-      duration: item.duration!,
-      isNew: item.isNew || false,
-    }));
+    .map(item => {
+      const artist = populateArtist(item.artist) ?? { _id: item.artist, name: 'Unknown' };
+      return {
+        _id: item._id,
+        title: item.title,
+        artist,
+        cover: item.cover,
+        plays: item.plays!,
+        duration: item.duration!,
+        isNew: item.isNew || false,
+      };
+    });
 
-  // Filter and transform chart songs by period (limit to 10, sorted by rank)
+  // Filter and transform chart songs by period (limit to 10, sorted by rank); artist populated
   const chartSongs: ChartSong[] = filteredItems
     .filter(
       item =>
@@ -53,48 +58,47 @@ async function generateMusicData(category: string = 'all', period: string = 'wee
     )
     .sort((a, b) => (a.rank || 0) - (b.rank || 0))
     .slice(0, 10)
-    .map(item => ({
-      _id: item._id,
-      rank: item.rank!,
-      title: item.title,
-      artist: item.artist,
-      cover: item.cover,
-      plays: item.plays || '0',
-      trend: item.trend!,
-      change: item.change || 0,
-    }));
+    .map(item => {
+      const artist = populateArtist(item.artist) ?? { _id: item.artist, name: 'Unknown' };
+      return {
+        _id: item._id,
+        rank: item.rank!,
+        title: item.title,
+        artist,
+        cover: item.cover,
+        plays: item.plays || '0',
+        trend: item.trend!,
+        change: item.change || 0,
+      };
+    });
 
-  // Filter and transform recent uploads (limit to 6)
+  // Filter and transform recent uploads (limit to 6); artist populated
   const recentUploads: RecentUpload[] = filteredItems
     .filter(item => item.isRecent && item.uploadedAt !== undefined && item.genre !== undefined)
     .slice(0, 6)
-    .map(item => ({
-      _id: item._id,
-      title: item.title,
-      artist: item.artist,
-      cover: item.cover,
-      uploadedAt: item.uploadedAt!,
-      genre: item.genre!,
-    }));
+    .map(item => {
+      const artist = populateArtist(item.artist) ?? { _id: item.artist, name: 'Unknown' };
+      return {
+        _id: item._id,
+        title: item.title,
+        artist,
+        cover: item.cover,
+        uploadedAt: item.uploadedAt!,
+        genre: item.genre!,
+      };
+    });
 
-  // Filter and transform featured artists (limit to 6)
-  const featuredArtists: FeaturedArtist[] = filteredItems
-    .filter(
-      item =>
-        item.isFeaturedArtist &&
-        item.name !== undefined &&
-        item.followers !== undefined &&
-        item.songs !== undefined
-    )
+  // Featured artists from ARTIST_PROFILES (limit to 6)
+  const featuredArtists: FeaturedArtist[] = ARTIST_PROFILES.filter(p => p.isFeatured)
     .slice(0, 6)
-    .map(item => ({
-      _id: item._id,
-      name: item.name || item.artist,
-      genre: item.genre || '',
-      image: item.image || item.cover,
-      followers: item.followers!,
-      verified: item.verified || false,
-      songs: item.songs!,
+    .map(p => ({
+      _id: p._id,
+      name: p.name,
+      genre: p.genre ?? '',
+      image: p.image,
+      followers: p.followers ?? '0',
+      verified: p.verified ?? false,
+      songs: p.songs ?? 0,
     }));
 
   return {

@@ -1,4 +1,7 @@
+import { populateArtist } from '@/lib/utils/community/artists';
 import { VIDEOS_ITEMS, type VideoItem } from '@/lib/constants/videos';
+
+export type VideoItemCreator = { _id: string; name: string };
 
 /** Video category to display label for home section */
 function videoCategoryToLabel(category: VideoItem['category']): string {
@@ -40,31 +43,39 @@ export function getTrendingVideosForHome(limit: number = 12): Array<{
     }));
 }
 
+/** Video item with creator populated to { _id, name } */
+export type VideoItemWithCreator = Omit<VideoItem, 'creator'> & { creator: VideoItemCreator };
+
 /**
- * Get a video item by its ID
+ * Get a video item by its ID. Creator is populated to { _id, name }.
  * @param _id - The string ID of the video item
- * @returns The video item if found, undefined otherwise
+ * @returns The video item if found (with creator populated), undefined otherwise
  */
-export function getVideoItemById(_id: string): VideoItem | undefined {
-  return VIDEOS_ITEMS.find(item => item._id === _id);
+export function getVideoItemById(_id: string): VideoItemWithCreator | undefined {
+  const item = VIDEOS_ITEMS.find(i => i._id === _id);
+  if (!item) return undefined;
+  const creator = populateArtist(item.creator) ?? { _id: item.creator, name: 'Unknown' };
+  return { ...item, creator };
 }
 
 /**
- * Get related video items based on category
+ * Get related video items based on category. Creator is populated to { _id, name }.
  * @param currentId - The ID of the current video item (to exclude)
  * @param category - The category to match
  * @param limit - Maximum number of related items to return (default: 3)
- * @returns Array of related video items
+ * @returns Array of related video items with creator populated
  */
 export function getRelatedVideos(
   currentId: string,
   category: string,
   limit: number = 3
-): VideoItem[] {
-  return VIDEOS_ITEMS.filter(item => item._id !== currentId && item.category === category).slice(
-    0,
-    limit
-  );
+): VideoItemWithCreator[] {
+  return VIDEOS_ITEMS.filter(item => item._id !== currentId && item.category === category)
+    .slice(0, limit)
+    .map(item => {
+      const creator = populateArtist(item.creator) ?? { _id: item.creator, name: 'Unknown' };
+      return { ...item, creator };
+    });
 }
 
 /**
