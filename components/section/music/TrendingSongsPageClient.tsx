@@ -6,6 +6,7 @@ import { Flame, ArrowRight } from 'lucide-react';
 import { MusicCategories } from './MusicCategories';
 import { MusicUploadCTA } from '../shared/MusicUploadCTA';
 import { EmptyState } from '../news/EmptyState';
+import { SectionComp } from '@/components/general/SectionComp';
 import { MusicCard } from '@/components/cards/MusicCard';
 import type { TrendingSong } from './TrendingSongs';
 
@@ -30,54 +31,43 @@ export const TrendingSongsPageClient = ({ trendingSongs }: TrendingSongsPageClie
   return (
     <>
       <MusicCategories />
-      <section className="py-12">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                <Flame className="w-5 h-5 text-primary" />
-              </div>
-              <div>
-                <h2 className="text-2xl font-display font-bold text-foreground">Trending Now</h2>
-                <p className="text-sm text-muted-foreground">
-                  The most popular songs everyone is listening to
-                </p>
-              </div>
+      <SectionComp
+        icon={Flame}
+        iconColor="primary"
+        heading="Trending Now"
+        subtext="The most popular songs everyone is listening to"
+        viewAllLink="/music/trending"
+        contentProps={{ enableAnimation: false }}>
+        {itemsToShow.length === 0 ? (
+          <EmptyState
+            title="No Trending Songs"
+            description="We couldn't find any trending songs in this category. Try selecting a different category or check back later for new content."
+            icon={<Flame className="w-12 h-12 text-muted-foreground" />}
+          />
+        ) : (
+          <>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {itemsToShow.map((song, index) => (
+                <motion.div
+                  key={song._id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: index * 0.05 }}>
+                  <MusicCard
+                    _id={song._id}
+                    title={song.title}
+                    artist={song.artist}
+                    cover={song.cover}
+                    plays={song.plays}
+                    genre={song.category || 'Music'}
+                    isNew={song.isNew}
+                  />
+                </motion.div>
+              ))}
             </div>
-          </div>
 
-          <div>
-            {itemsToShow.length === 0 ? (
-              <EmptyState
-                title="No Trending Songs"
-                description="We couldn't find any trending songs in this category. Try selecting a different category or check back later for new content."
-                icon={<Flame className="w-12 h-12 text-muted-foreground" />}
-              />
-            ) : (
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {itemsToShow.map((song, index) => (
-                  <motion.div
-                    key={song._id}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.4, delay: index * 0.05 }}>
-                    <MusicCard
-                      _id={song._id}
-                      title={song.title}
-                      artist={song.artist}
-                      cover={song.cover}
-                      plays={song.plays}
-                      genre={song.category || 'Music'}
-                      isNew={song.isNew}
-                    />
-                  </motion.div>
-                ))}
-              </div>
-            )}
-
-            {/* Load More */}
-            {hasMore && itemsToShow.length > 0 && (
+            {hasMore && (
               <div className="flex justify-center mt-10">
                 <motion.button
                   onClick={loadMoreItems}
@@ -96,9 +86,9 @@ export const TrendingSongsPageClient = ({ trendingSongs }: TrendingSongsPageClie
                 </motion.button>
               </div>
             )}
-          </div>
-        </div>
-      </section>
+          </>
+        )}
+      </SectionComp>
       <MusicUploadCTA />
     </>
   );

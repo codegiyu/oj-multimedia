@@ -63,15 +63,37 @@ export const DevotionalsHero = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
             className="flex flex-wrap justify-center gap-4">
-            <Button variant="hero" size="lg" className="gap-2">
+            <Button
+              variant="hero"
+              size="lg"
+              className="gap-2"
+              onClick={() => {
+                document
+                  .getElementById('daily-devotionals')
+                  ?.scrollIntoView({ behavior: 'smooth' });
+              }}>
               <Calendar className="w-4 h-4" />
               Today's Devotional
             </Button>
-            <Button variant="hero-outline" size="lg" className="gap-2">
+            <Button
+              variant="hero-outline"
+              size="lg"
+              className="gap-2"
+              onClick={() => {
+                document
+                  .getElementById('bible-study-series')
+                  ?.scrollIntoView({ behavior: 'smooth' });
+              }}>
               <BookOpen className="w-4 h-4" />
               Bible Study Series
             </Button>
-            <Button variant="secondary" size="lg" className="gap-2">
+            <Button
+              variant="secondary"
+              size="lg"
+              className="gap-2"
+              onClick={() => {
+                document.getElementById('prayer-points')?.scrollIntoView({ behavior: 'smooth' });
+              }}>
               <Heart className="w-4 h-4" />
               Prayer Points
             </Button>

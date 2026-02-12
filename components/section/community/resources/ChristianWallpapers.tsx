@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Image, Download, ArrowRight } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { SectionComp } from '@/components/general/SectionComp';
 import type { Wallpaper } from './ResourcesPageClient';
 
 interface ChristianWallpapersProps {
@@ -12,23 +13,13 @@ interface ChristianWallpapersProps {
 
 export const ChristianWallpapers = ({ wallpapers }: ChristianWallpapersProps) => {
   return (
-    <section id="wallpapers" className="py-12">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="text-center mb-10">
-        <div className="flex items-center justify-center mb-4">
-          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-            <Image className="w-5 h-5 text-primary" />
-          </div>
-        </div>
-        <h2 className="section-header mb-3">Christian Wallpapers</h2>
-        <p className="text-muted-foreground max-w-lg mx-auto">
-          Download beautiful Christian wallpapers for your phone, tablet, and desktop
-        </p>
-      </motion.div>
-
+    <SectionComp
+      id="wallpapers"
+      icon={Image}
+      iconColor="primary"
+      heading="Christian Wallpapers"
+      subtext="Download beautiful Christian wallpapers for your phone, tablet, and desktop"
+      contentProps={{ enableAnimation: false }}>
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {wallpapers.map((wallpaper, index) => (
           <motion.div
@@ -68,6 +59,6 @@ export const ChristianWallpapers = ({ wallpapers }: ChristianWallpapersProps) =>
           </motion.div>
         ))}
       </div>
-    </section>
+    </SectionComp>
   );
 };

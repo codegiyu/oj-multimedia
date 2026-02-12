@@ -1,11 +1,11 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Users, Star, MessageSquare, ArrowRight, ExternalLink } from 'lucide-react';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
+import { Users, Star, MessageSquare, ExternalLink } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { SectionComp } from '@/components/general/SectionComp';
 import type { AvailablePastor } from './AskAPastorPageClient';
+import { Button } from '@/components/ui/button';
 
 interface AvailablePastorsSectionProps {
   pastors: AvailablePastor[];
@@ -13,27 +13,15 @@ interface AvailablePastorsSectionProps {
 
 export const AvailablePastorsSection = ({ pastors }: AvailablePastorsSectionProps) => {
   return (
-    <section className="container mx-auto px-4 py-12">
-      <div className="flex items-center justify-between mb-8">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
-            <Users className="w-5 h-5 text-accent" />
-          </div>
-          <div>
-            <h2 className="section-header">Available Pastors</h2>
-            <p className="text-muted-foreground text-sm">
-              Experienced pastors ready to answer your questions
-            </p>
-          </div>
-        </div>
-        <Button variant="ghost" className="gap-2 text-accent" asChild>
-          <Link href="/community/ask-a-pastor">
-            View All Pastors
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-        </Button>
-      </div>
-
+    <SectionComp
+      id="available-pastors"
+      icon={Users}
+      iconColor="accent"
+      heading="Available Pastors"
+      subtext="Experienced pastors ready to answer your questions"
+      viewAllLink="/community/ask-a-pastor"
+      viewAllLabel="View All Pastors"
+      contentProps={{ enableAnimation: false }}>
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
         {pastors.map((pastor, index) => (
           <motion.div
@@ -94,6 +82,6 @@ export const AvailablePastorsSection = ({ pastors }: AvailablePastorsSectionProp
           </motion.div>
         ))}
       </div>
-    </section>
+    </SectionComp>
   );
 };

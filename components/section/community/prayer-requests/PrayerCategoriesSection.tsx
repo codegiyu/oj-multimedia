@@ -1,10 +1,10 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Heart, DollarSign, Users, Briefcase, Sparkles, Shield, ArrowRight } from 'lucide-react';
+import { Heart, DollarSign, Users, Briefcase, Sparkles, Shield } from 'lucide-react';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { SectionComp } from '@/components/general/SectionComp';
 import type { PrayerCategory } from './PrayerRequestsPageClient';
 
 interface PrayerCategoriesSectionProps {
@@ -33,25 +33,14 @@ const categoryColors: Record<string, string> = {
 
 export const PrayerCategoriesSection = ({ categories }: PrayerCategoriesSectionProps) => {
   return (
-    <section className="container mx-auto px-4 py-12">
-      <div className="flex items-center justify-between mb-8">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-            <Heart className="w-5 h-5 text-primary" />
-          </div>
-          <div>
-            <h2 className="section-header">Browse by Category</h2>
-            <p className="text-muted-foreground text-sm">Find prayer requests in specific areas</p>
-          </div>
-        </div>
-        <Button variant="ghost" className="gap-2 text-primary" asChild>
-          <Link href="/community/prayer-requests">
-            View All Categories
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-        </Button>
-      </div>
-
+    <SectionComp
+      icon={Heart}
+      iconColor="primary"
+      heading="Browse by Category"
+      subtext="Find prayer requests in specific areas"
+      viewAllLink="/community/prayer-requests"
+      viewAllLabel="View All Categories"
+      contentProps={{ enableAnimation: false }}>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         {categories.map((category, index) => {
           const Icon = categoryIcons[category.name] || categoryIcons.Default;
@@ -88,6 +77,6 @@ export const PrayerCategoriesSection = ({ categories }: PrayerCategoriesSectionP
           );
         })}
       </div>
-    </section>
+    </SectionComp>
   );
 };

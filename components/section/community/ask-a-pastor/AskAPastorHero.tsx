@@ -62,15 +62,37 @@ export const AskAPastorHero = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
             className="flex flex-wrap justify-center gap-4">
-            <Button variant="hero" size="lg" className="gap-2">
+            <Button
+              variant="hero"
+              size="lg"
+              className="gap-2"
+              onClick={() => {
+                document.getElementById('submit-question')?.scrollIntoView({ behavior: 'smooth' });
+              }}>
               <HelpCircle className="w-4 h-4" />
               Ask a Question
             </Button>
-            <Button variant="hero-outline" size="lg" className="gap-2">
+            <Button
+              variant="hero-outline"
+              size="lg"
+              className="gap-2"
+              onClick={() => {
+                document
+                  .getElementById('answered-questions')
+                  ?.scrollIntoView({ behavior: 'smooth' });
+              }}>
               <BookOpen className="w-4 h-4" />
               Browse Answers
             </Button>
-            <Button variant="secondary" size="lg" className="gap-2">
+            <Button
+              variant="secondary"
+              size="lg"
+              className="gap-2"
+              onClick={() => {
+                document
+                  .getElementById('available-pastors')
+                  ?.scrollIntoView({ behavior: 'smooth' });
+              }}>
               <Users className="w-4 h-4" />
               View Pastors
             </Button>

@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Handshake, Mail, Phone, MessageSquare, CheckCircle } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { SectionComp } from '@/components/general/SectionComp';
 
 const contactMethods = [
   {
@@ -37,24 +38,13 @@ const partnershipBenefits = [
 
 export const ContactSponsorship = () => {
   return (
-    <section id="contact" className="py-12">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="text-center mb-10">
-        <div className="flex items-center justify-center mb-4">
-          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-            <Handshake className="w-5 h-5 text-primary" />
-          </div>
-        </div>
-        <h2 className="section-header mb-3">Contact for Sponsorship / Partnership</h2>
-        <p className="text-muted-foreground max-w-lg mx-auto">
-          Interested in long-term partnerships or sponsorship opportunities? We offer custom
-          solutions tailored to your brand and goals. Let's discuss how we can work together.
-        </p>
-      </motion.div>
-
+    <SectionComp
+      id="contact"
+      icon={Handshake}
+      iconColor="primary"
+      heading="Contact for Sponsorship / Partnership"
+      subtext="Interested in long-term partnerships or sponsorship opportunities? We offer custom solutions tailored to your brand and goals. Let's discuss how we can work together."
+      contentProps={{ enableAnimation: false }}>
       <div className="grid md:grid-cols-2 gap-8 mb-12">
         {/* Contact Methods */}
         <motion.div
@@ -161,6 +151,6 @@ export const ContactSponsorship = () => {
           </CardContent>
         </Card>
       </motion.div>
-    </section>
+    </SectionComp>
   );
 };

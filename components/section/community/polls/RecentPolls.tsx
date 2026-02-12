@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { BarChart3, CheckCircle, Lock } from 'lucide-react';
 import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
+import { SectionComp } from '@/components/general/SectionComp';
 import type { Poll } from './PollsPageClient';
 
 interface RecentPollsProps {
@@ -14,23 +15,12 @@ export const RecentPolls = ({ polls }: RecentPollsProps) => {
   if (polls.length === 0) return null;
 
   return (
-    <section className="py-12">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="text-center mb-10">
-        <div className="flex items-center justify-center mb-4">
-          <div className="w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center">
-            <BarChart3 className="w-5 h-5 text-secondary" />
-          </div>
-        </div>
-        <h2 className="section-header mb-3">Recent Polls</h2>
-        <p className="text-muted-foreground max-w-lg mx-auto">
-          View results from recently closed polls
-        </p>
-      </motion.div>
-
+    <SectionComp
+      icon={BarChart3}
+      iconColor="secondary"
+      heading="Recent Polls"
+      subtext="View results from recently closed polls"
+      contentProps={{ enableAnimation: false }}>
       <div className="grid md:grid-cols-3 gap-6">
         {polls.map((poll, index) => {
           const winningOption = poll.options.reduce((prev, current) =>
@@ -99,6 +89,6 @@ export const RecentPolls = ({ polls }: RecentPollsProps) => {
           );
         })}
       </div>
-    </section>
+    </SectionComp>
   );
 };

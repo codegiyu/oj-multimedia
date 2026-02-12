@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { ShoppingBag, ExternalLink, Book, Laptop } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { SectionComp } from '@/components/general/SectionComp';
 import type { AffiliateProduct } from './ResourcesPageClient';
 
 interface AffiliateProductsProps {
@@ -19,23 +20,13 @@ const iconMap: Record<string, typeof Book> = {
 
 export const AffiliateProducts = ({ products }: AffiliateProductsProps) => {
   return (
-    <section id="affiliate-products" className="py-12">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="text-center mb-10">
-        <div className="flex items-center justify-center mb-4">
-          <div className="w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center">
-            <ShoppingBag className="w-5 h-5 text-secondary" />
-          </div>
-        </div>
-        <h2 className="section-header mb-3">Affiliate Products</h2>
-        <p className="text-muted-foreground max-w-lg mx-auto">
-          Recommended books, gadgets, and resources to support your faith journey
-        </p>
-      </motion.div>
-
+    <SectionComp
+      id="affiliate-products"
+      icon={ShoppingBag}
+      iconColor="secondary"
+      heading="Affiliate Products"
+      subtext="Recommended books, gadgets, and resources to support your faith journey"
+      contentProps={{ enableAnimation: false }}>
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {products.map((product, index) => {
           const Icon = iconMap[product.category] || ShoppingBag;
@@ -73,6 +64,6 @@ export const AffiliateProducts = ({ products }: AffiliateProductsProps) => {
           );
         })}
       </div>
-    </section>
+    </SectionComp>
   );
 };

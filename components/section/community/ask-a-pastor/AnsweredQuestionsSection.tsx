@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useState } from 'react';
+import { SectionComp } from '@/components/general/SectionComp';
 import type { AnsweredQuestion } from './AskAPastorPageClient';
 
 interface AnsweredQuestionsSectionProps {
@@ -27,25 +28,15 @@ export const AnsweredQuestionsSection = ({ questions }: AnsweredQuestionsSection
   const itemsToShow = questions.slice(0, displayedItems);
 
   return (
-    <section className="container mx-auto px-4 py-12">
-      <div className="flex items-center justify-between mb-8">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center">
-            <CheckCircle2 className="w-5 h-5 text-secondary" />
-          </div>
-          <div>
-            <h2 className="section-header">Answered Questions</h2>
-            <p className="text-muted-foreground text-sm">Biblical guidance from our pastors</p>
-          </div>
-        </div>
-        <Button variant="ghost" className="gap-2 text-secondary" asChild>
-          <Link href="/community/ask-a-pastor/answered">
-            View All Answers
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-        </Button>
-      </div>
-
+    <SectionComp
+      id="answered-questions"
+      icon={CheckCircle2}
+      iconColor="secondary"
+      heading="Answered Questions"
+      subtext="Biblical guidance from our pastors"
+      viewAllLink="/community/ask-a-pastor/answered"
+      viewAllLabel="View All Answers"
+      contentProps={{ enableAnimation: false }}>
       <div className="grid md:grid-cols-2 gap-6">
         {itemsToShow.map((question, index) => (
           <motion.div
@@ -120,6 +111,6 @@ export const AnsweredQuestionsSection = ({ questions }: AnsweredQuestionsSection
           </motion.button>
         </div>
       )}
-    </section>
+    </SectionComp>
   );
 };

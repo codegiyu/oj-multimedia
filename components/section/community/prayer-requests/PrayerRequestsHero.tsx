@@ -62,15 +62,37 @@ export const PrayerRequestsHero = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
             className="flex flex-wrap justify-center gap-4">
-            <Button variant="hero" size="lg" className="gap-2">
+            <Button
+              variant="hero"
+              size="lg"
+              className="gap-2"
+              onClick={() => {
+                document
+                  .getElementById('submit-prayer-request')
+                  ?.scrollIntoView({ behavior: 'smooth' });
+              }}>
               <HandHeart className="w-4 h-4" />
               Submit Request
             </Button>
-            <Button variant="hero-outline" size="lg" className="gap-2">
+            <Button
+              variant="hero-outline"
+              size="lg"
+              className="gap-2"
+              onClick={() => {
+                document
+                  .getElementById('active-prayer-requests')
+                  ?.scrollIntoView({ behavior: 'smooth' });
+              }}>
               <Heart className="w-4 h-4" />
               Pray for Others
             </Button>
-            <Button variant="secondary" size="lg" className="gap-2">
+            <Button
+              variant="secondary"
+              size="lg"
+              className="gap-2"
+              onClick={() => {
+                document.getElementById('answered-prayers')?.scrollIntoView({ behavior: 'smooth' });
+              }}>
               <Sparkles className="w-4 h-4" />
               Answered Prayers
             </Button>

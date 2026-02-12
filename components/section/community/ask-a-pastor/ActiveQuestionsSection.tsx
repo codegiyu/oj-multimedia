@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useState } from 'react';
+import { SectionComp } from '@/components/general/SectionComp';
 import type { Question } from './AskAPastorPageClient';
 
 interface ActiveQuestionsSectionProps {
@@ -27,27 +28,13 @@ export const ActiveQuestionsSection = ({ questions }: ActiveQuestionsSectionProp
   const itemsToShow = questions.slice(0, displayedItems);
 
   return (
-    <section className="container mx-auto px-4 py-12">
-      <div className="flex items-center justify-between mb-8">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-            <HelpCircle className="w-5 h-5 text-primary" />
-          </div>
-          <div>
-            <h2 className="section-header">Active Questions</h2>
-            <p className="text-muted-foreground text-sm">
-              Questions awaiting answers from our pastors
-            </p>
-          </div>
-        </div>
-        <Button variant="ghost" className="gap-2 text-primary" asChild>
-          <Link href="/community/ask-a-pastor/active">
-            View All
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-        </Button>
-      </div>
-
+    <SectionComp
+      icon={HelpCircle}
+      iconColor="primary"
+      heading="Active Questions"
+      subtext="Questions awaiting answers from our pastors"
+      viewAllLink="/community/ask-a-pastor/active"
+      contentProps={{ enableAnimation: false }}>
       <div className="grid md:grid-cols-2 gap-6">
         {itemsToShow.map((question, index) => (
           <motion.div
@@ -123,6 +110,6 @@ export const ActiveQuestionsSection = ({ questions }: ActiveQuestionsSectionProp
           </motion.button>
         </div>
       )}
-    </section>
+    </SectionComp>
   );
 };

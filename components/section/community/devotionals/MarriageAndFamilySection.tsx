@@ -5,6 +5,7 @@ import { Heart, Users, Baby, Home, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { SectionComp } from '@/components/general/SectionComp';
 import type { MarriageFamily } from './DevotionalsPageClient';
 
 interface MarriageAndFamilySectionProps {
@@ -20,25 +21,13 @@ const categoryIcons: Record<string, typeof Heart> = {
 
 export const MarriageAndFamilySection = ({ content }: MarriageAndFamilySectionProps) => {
   return (
-    <section className="py-12">
-      <div className="flex items-center justify-between mb-8">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center">
-            <Users className="w-5 h-5 text-secondary" />
-          </div>
-          <div>
-            <h2 className="section-header">Marriage & Family</h2>
-            <p className="text-muted-foreground text-sm">Guidance for strong Christian families</p>
-          </div>
-        </div>
-        <Button variant="ghost" className="gap-2 text-secondary" asChild>
-          <Link href="/community/devotionals">
-            View All
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-        </Button>
-      </div>
-
+    <SectionComp
+      icon={Users}
+      iconColor="secondary"
+      heading="Marriage & Family"
+      subtext="Guidance for strong Christian families"
+      viewAllLink="/community/devotionals"
+      contentProps={{ enableAnimation: false }}>
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {content.map((item, index) => {
           const Icon = categoryIcons[item.category] || categoryIcons.Default;
@@ -86,6 +75,6 @@ export const MarriageAndFamilySection = ({ content }: MarriageAndFamilySectionPr
           );
         })}
       </div>
-    </section>
+    </SectionComp>
   );
 };

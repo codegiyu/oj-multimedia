@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Headphones, Download, ArrowRight, Music } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { SectionComp } from '@/components/general/SectionComp';
 import type { Beat } from './ResourcesPageClient';
 
 interface FreeBeatsProps {
@@ -12,23 +13,13 @@ interface FreeBeatsProps {
 
 export const FreeBeats = ({ beats }: FreeBeatsProps) => {
   return (
-    <section id="free-beats" className="py-12">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="text-center mb-10">
-        <div className="flex items-center justify-center mb-4">
-          <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
-            <Headphones className="w-5 h-5 text-accent" />
-          </div>
-        </div>
-        <h2 className="section-header mb-3">Free Beats & Loops</h2>
-        <p className="text-muted-foreground max-w-lg mx-auto">
-          Download free beats, instrumentals, and loops for your worship and music ministry
-        </p>
-      </motion.div>
-
+    <SectionComp
+      id="free-beats"
+      icon={Headphones}
+      iconColor="accent"
+      heading="Free Beats & Loops"
+      subtext="Download free beats, instrumentals, and loops for your worship and music ministry"
+      contentProps={{ enableAnimation: false }}>
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {beats.map((beat, index) => (
           <motion.div
@@ -68,6 +59,6 @@ export const FreeBeats = ({ beats }: FreeBeatsProps) => {
           </motion.div>
         ))}
       </div>
-    </section>
+    </SectionComp>
   );
 };

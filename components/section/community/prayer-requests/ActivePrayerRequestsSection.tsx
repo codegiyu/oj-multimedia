@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useState } from 'react';
 import { toast } from '@/components/atoms/Toast';
+import { SectionComp } from '@/components/general/SectionComp';
 import type { PrayerRequest } from './PrayerRequestsPageClient';
 
 interface ActivePrayerRequestsSectionProps {
@@ -58,25 +59,14 @@ export const ActivePrayerRequestsSection = ({ requests }: ActivePrayerRequestsSe
   };
 
   return (
-    <section className="container mx-auto px-4 py-12">
-      <div className="flex items-center justify-between mb-8">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
-            <HandHeart className="w-5 h-5 text-accent" />
-          </div>
-          <div>
-            <h2 className="section-header">Active Prayer Requests</h2>
-            <p className="text-muted-foreground text-sm">Join us in lifting these needs to God</p>
-          </div>
-        </div>
-        <Button variant="ghost" className="gap-2 text-accent" asChild>
-          <Link href="/community/prayer-requests/active">
-            View All
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-        </Button>
-      </div>
-
+    <SectionComp
+      id="active-prayer-requests"
+      icon={HandHeart}
+      iconColor="accent"
+      heading="Active Prayer Requests"
+      subtext="Join us in lifting these needs to God"
+      viewAllLink="/community/prayer-requests/active"
+      contentProps={{ enableAnimation: false }}>
       <div className="grid md:grid-cols-2 gap-6">
         {itemsToShow.map((request, index) => (
           <motion.div
@@ -173,6 +163,6 @@ export const ActivePrayerRequestsSection = ({ requests }: ActivePrayerRequestsSe
           </motion.button>
         </div>
       )}
-    </section>
+    </SectionComp>
   );
 };

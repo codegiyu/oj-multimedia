@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import Link from 'next/link';
 import { MessageCircle, Sparkles, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -62,17 +63,23 @@ export const CommunityHero = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
             className="flex flex-wrap justify-center gap-4">
-            <Button variant="hero" size="lg" className="gap-2">
-              <Heart className="w-4 h-4" />
-              Share a Testimony
+            <Button variant="hero" size="lg" className="gap-2" asChild>
+              <Link href="/community/testimonies#share-testimony">
+                <Heart className="w-4 h-4" />
+                Share a Testimony
+              </Link>
             </Button>
-            <Button variant="hero-outline" size="lg" className="gap-2">
-              <MessageCircle className="w-4 h-4" />
-              Ask a Question
+            <Button variant="hero-outline" size="lg" className="gap-2" asChild>
+              <Link href="/community/ask-a-pastor#submit-question">
+                <MessageCircle className="w-4 h-4" />
+                Ask a Question
+              </Link>
             </Button>
-            <Button variant="secondary" size="lg" className="gap-2">
-              <Sparkles className="w-4 h-4" />
-              Explore Devotionals
+            <Button variant="secondary" size="lg" className="gap-2" asChild>
+              <Link href="/community/devotionals">
+                <Sparkles className="w-4 h-4" />
+                Explore Devotionals
+              </Link>
             </Button>
           </motion.div>
         </div>
