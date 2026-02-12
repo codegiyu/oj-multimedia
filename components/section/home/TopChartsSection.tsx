@@ -2,32 +2,29 @@
 
 import { motion } from 'framer-motion';
 import { Trophy, TrendingUp } from 'lucide-react';
-import Link from 'next/link';
+import { ArtistCard } from '@/components/cards/ArtistCard';
 import { ChartCard } from '@/components/cards/ChartCard';
 import { SectionHeader } from '@/components/general/SectionHeader';
 import { SectionContent } from '@/components/general/SectionContent';
+import type { ArtistProfile } from '@/lib/types/artist';
 
 export interface ChartItem {
   _id?: string;
   rank: number;
   title: string;
-  artist: string;
+  artist: { _id: string; name: string };
   cover: string;
   plays: string;
   trend: 'up' | 'down' | 'same';
   change?: number;
 }
 
-export interface RisingArtist {
-  name: string;
-  genre: string;
-  image: string;
-  followers: string;
-}
+/** @deprecated Use ArtistProfile from @/lib/types/artist */
+export type RisingArtist = ArtistProfile;
 
 interface TopChartsSectionProps {
   chartData: ChartItem[];
-  risingArtists: RisingArtist[];
+  risingArtists: ArtistProfile[];
 }
 
 export const TopChartsSection = ({ chartData, risingArtists }: TopChartsSectionProps) => {
@@ -70,32 +67,21 @@ export const TopChartsSection = ({ chartData, risingArtists }: TopChartsSectionP
               iconColor="primary"
               heading="Rising Artists"
               subtext="New Talents"
-              viewAllLink="/music/artists"
+              viewAllLink="/community/artists"
               viewAllLabel="See All"
               className="mb-6"
             />
             <SectionContent className="grid grid-cols-2 gap-4" enableAnimation={false}>
-              {risingArtists.map((artist, index) => (
-                <Link key={index} href="/music/artists">
-                  <motion.div
-                    whileHover={{ y: -4 }}
-                    className="group p-4 rounded-2xl bg-muted/50 hover:bg-muted transition-colors cursor-pointer">
-                    <div className="w-16 h-16 rounded-full overflow-hidden mx-auto mb-3">
-                      <img
-                        src={artist.image}
-                        alt={artist.name}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <h4 className="font-semibold text-sm text-center group-hover:text-primary transition-colors">
-                      {artist.name}
-                    </h4>
-                    <p className="text-xs text-muted-foreground text-center">{artist.genre}</p>
-                    <p className="text-xs text-center mt-1 text-primary font-medium">
-                      {artist.followers} followers
-                    </p>
-                  </motion.div>
-                </Link>
+              {risingArtists.map(artist => (
+                <ArtistCard
+                  key={artist._id}
+                  _id={artist._id}
+                  name={artist.name}
+                  image={artist.image}
+                  genre={artist.genre}
+                  followers={artist.followers}
+                  verified={artist.verified}
+                />
               ))}
             </SectionContent>
           </motion.div>

@@ -9,7 +9,9 @@ import type { FeaturedVideo } from '@/components/section/video/FeaturedVideos';
 import type { RecentVideoUpload } from '@/components/section/video/RecentVideoUploads';
 import type { ShortFormVideo } from '@/components/section/video/ShortFormVideos';
 import type { FeaturedCreator } from '@/components/section/video/CreatorSpotlight';
+import { ARTIST_PROFILES } from '@/lib/constants/community/artists';
 import { VIDEOS_ITEMS } from '@/lib/constants/videos';
+import { populateArtist } from '@/lib/utils/community/artists';
 import { filterByCategory } from '@/lib/utils/videos';
 
 export const metadata: Metadata = {
@@ -42,7 +44,7 @@ async function generateVideoData(category: string = 'all') {
     .map(item => ({
       _id: item._id,
       title: item.title,
-      creator: item.creator,
+      creator: populateArtist(item.creator) ?? { _id: item.creator, name: 'Unknown' },
       thumbnail: item.thumbnail,
       views: item.views!,
       duration: item.duration!,
@@ -63,7 +65,7 @@ async function generateVideoData(category: string = 'all') {
     .map(item => ({
       _id: item._id,
       title: item.title,
-      creator: item.creator,
+      creator: populateArtist(item.creator) ?? { _id: item.creator, name: 'Unknown' },
       thumbnail: item.thumbnail,
       views: item.views!,
       duration: item.duration!,
@@ -100,7 +102,7 @@ async function generateVideoData(category: string = 'all') {
     .map(item => ({
       _id: item._id,
       title: item.title,
-      creator: item.creator,
+      creator: populateArtist(item.creator) ?? { _id: item.creator, name: 'Unknown' },
       thumbnail: item.thumbnail,
       uploadedAt: item.uploadedAt!,
       category:
@@ -134,48 +136,26 @@ async function generateVideoData(category: string = 'all') {
     .map(item => ({
       _id: item._id,
       title: item.title,
-      creator: item.creator,
+      creator: populateArtist(item.creator) ?? { _id: item.creator, name: 'Unknown' },
       thumbnail: item.thumbnail,
       views: item.views!,
       duration: item.duration!,
       likes: item.likes!,
     }));
 
-  // Filter and transform featured creators (limit to 6)
-  const featuredCreators: FeaturedCreator[] = filteredItems
-    .filter(
-      item =>
-        item.isFeaturedCreator &&
-        item.name !== undefined &&
-        item.followers !== undefined &&
-        item.videos !== undefined &&
-        item.views !== undefined &&
-        item.latestVideo !== undefined
-    )
+  // Featured creators from ARTIST_PROFILES (limit to 6)
+  const featuredCreators: FeaturedCreator[] = ARTIST_PROFILES.filter(p => p.isFeatured)
     .slice(0, 6)
-    .map(item => ({
-      _id: item._id,
-      name: item.name || item.creator,
-      category:
-        item.category === 'music'
-          ? 'Music Videos'
-          : item.category === 'short'
-            ? 'Short Clips'
-            : item.category === 'talks'
-              ? 'Talks & Speeches'
-              : item.category === 'creative'
-                ? 'Creative Content'
-                : item.category === 'inspirational'
-                  ? 'Inspirational'
-                  : item.category === 'live'
-                    ? 'Live Performances'
-                    : 'Podcasts / Video Talks',
-      avatar: item.avatar || item.thumbnail,
-      followers: item.followers!,
-      videos: item.videos!,
-      views: item.views!,
-      verified: item.verified || false,
-      latestVideo: item.latestVideo!,
+    .map(p => ({
+      _id: p._id,
+      name: p.name,
+      category: p.genre ?? 'Creator',
+      avatar: p.image,
+      followers: p.followers ?? '0',
+      videos: p.videos ?? 0,
+      views: '0',
+      verified: p.verified ?? false,
+      latestVideo: undefined,
     }));
 
   return {

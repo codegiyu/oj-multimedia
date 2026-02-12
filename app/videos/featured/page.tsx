@@ -7,6 +7,7 @@ import { VideoPageSkeleton } from '@/components/section/video/VideoPageSkeleton'
 import { filterByCategory } from '@/lib/utils/videos';
 import type { FeaturedVideo } from '@/components/section/video/FeaturedVideos';
 import { VIDEOS_ITEMS } from '@/lib/constants/videos';
+import { populateArtist } from '@/lib/utils/community/artists';
 
 export const metadata: Metadata = {
   title: 'Featured Videos - Editor Picks',
@@ -30,29 +31,32 @@ async function generateFeaturedVideosData(): Promise<{
       item.views !== undefined &&
       item.duration !== undefined &&
       item.category !== undefined
-  ).map(item => ({
-    _id: item._id,
-    title: item.title,
-    creator: item.creator,
-    thumbnail: item.thumbnail,
-    views: item.views!,
-    duration: item.duration!,
-    category:
-      item.category === 'music'
-        ? 'Music Videos'
-        : item.category === 'short'
-          ? 'Short Clips'
-          : item.category === 'talks'
-            ? 'Talks & Speeches'
-            : item.category === 'creative'
-              ? 'Creative Content'
-              : item.category === 'inspirational'
-                ? 'Inspirational'
-                : item.category === 'live'
-                  ? 'Live Performances'
-                  : 'Podcasts / Video Talks',
-    featured: item.featured || false,
-  }));
+  ).map(item => {
+    const creator = populateArtist(item.creator) ?? { _id: item.creator, name: 'Unknown' };
+    return {
+      _id: item._id,
+      title: item.title,
+      creator,
+      thumbnail: item.thumbnail,
+      views: item.views!,
+      duration: item.duration!,
+      category:
+        item.category === 'music'
+          ? 'Music Videos'
+          : item.category === 'short'
+            ? 'Short Clips'
+            : item.category === 'talks'
+              ? 'Talks & Speeches'
+              : item.category === 'creative'
+                ? 'Creative Content'
+                : item.category === 'inspirational'
+                  ? 'Inspirational'
+                  : item.category === 'live'
+                    ? 'Live Performances'
+                    : 'Podcasts / Video Talks',
+      featured: item.featured || false,
+    };
+  });
 
   return {
     featuredVideos,

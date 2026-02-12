@@ -68,6 +68,8 @@ export const FeaturedVideosPageClient = ({ featuredVideos }: FeaturedVideosPageC
                       views={video.views || '0'}
                       duration={video.duration}
                       category={video.category || 'Video'}
+                      variant="featured"
+                      featured={video.featured}
                     />
                   </motion.div>
                 ))}

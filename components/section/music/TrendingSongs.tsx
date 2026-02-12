@@ -10,7 +10,7 @@ import { MusicCard } from '@/components/cards/MusicCard';
 export interface TrendingSong {
   _id: string;
   title: string;
-  artist: string;
+  artist: { _id: string; name: string };
   cover: string;
   plays: string;
   duration: string;

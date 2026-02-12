@@ -10,20 +10,22 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import type { MusicItem } from '@/lib/constants/music';
+import type { MusicItemWithArtist } from '@/lib/utils/music';
 
 interface MusicCardOptionsProps {
-  musicItem: MusicItem;
+  musicItem: MusicItemWithArtist;
 }
 
 export const MusicCardOptions = ({ musicItem }: MusicCardOptionsProps) => {
   const router = useRouter();
 
+  const artistName =
+    typeof musicItem.artist === 'string' ? musicItem.artist : musicItem.artist.name;
   const handleShare = () => {
     if (navigator.share) {
       navigator.share({
         title: musicItem.title,
-        text: `${musicItem.title} by ${musicItem.artist}`,
+        text: `${musicItem.title} by ${artistName}`,
         url: `${window.location.origin}/music/${musicItem._id}`,
       });
     } else {
@@ -43,10 +45,9 @@ export const MusicCardOptions = ({ musicItem }: MusicCardOptionsProps) => {
 
   const handleDownload = () => {
     if (musicItem.downloadUrl) {
-      // Trigger download
       const link = document.createElement('a');
       link.href = musicItem.downloadUrl;
-      link.download = `${musicItem.title} - ${musicItem.artist}.mp3`;
+      link.download = `${musicItem.title} - ${artistName}.mp3`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);

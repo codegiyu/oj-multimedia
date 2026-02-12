@@ -29,11 +29,12 @@ export async function generateMetadata({ params }: VideoDetailPageProps): Promis
     };
   }
 
+  const creatorName = videoItem.creator.name;
   return {
-    title: `${videoItem.title} by ${videoItem.creator} - Videos`,
+    title: `${videoItem.title} by ${creatorName} - Videos`,
     description:
       videoItem.description ||
-      `Watch ${videoItem.title} by ${videoItem.creator}. ${videoItem.views || ''} views.`,
+      `Watch ${videoItem.title} by ${creatorName}. ${videoItem.views || ''} views.`,
   };
 }
 

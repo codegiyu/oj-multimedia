@@ -10,7 +10,7 @@ import { motion } from 'framer-motion';
 export interface TrendingMusicItem {
   _id: string;
   title: string;
-  artist: string;
+  artist: { _id: string; name: string };
   cover: string;
   plays: string;
   genre: string;

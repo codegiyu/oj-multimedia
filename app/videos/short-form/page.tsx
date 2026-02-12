@@ -7,6 +7,7 @@ import { VideoPageSkeleton } from '@/components/section/video/VideoPageSkeleton'
 import { filterByCategory } from '@/lib/utils/videos';
 import type { ShortFormVideo } from '@/components/section/video/ShortFormVideos';
 import { VIDEOS_ITEMS } from '@/lib/constants/videos';
+import { populateArtist } from '@/lib/utils/community/artists';
 
 export const metadata: Metadata = {
   title: 'Short Form Videos - Quick Clips',
@@ -30,16 +31,19 @@ async function generateShortFormVideosData(): Promise<{
       item.views !== undefined &&
       item.duration !== undefined &&
       item.likes !== undefined
-  ).map(item => ({
-    _id: item._id,
-    title: item.title,
-    creator: item.creator,
-    thumbnail: item.thumbnail,
-    views: item.views!,
-    duration: item.duration!,
-    likes: item.likes!,
-    category: item.category, // category is required in VideoItem, so this is always a string
-  }));
+  ).map(item => {
+    const creator = populateArtist(item.creator) ?? { _id: item.creator, name: 'Unknown' };
+    return {
+      _id: item._id,
+      title: item.title,
+      creator,
+      thumbnail: item.thumbnail,
+      views: item.views!,
+      duration: item.duration!,
+      likes: item.likes!,
+      category: item.category, // category is required in VideoItem, so this is always a string
+    };
+  });
 
   return {
     shortFormVideos,

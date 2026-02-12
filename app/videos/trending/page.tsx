@@ -7,6 +7,7 @@ import { VideoPageSkeleton } from '@/components/section/video/VideoPageSkeleton'
 import { filterByCategory } from '@/lib/utils/videos';
 import type { TrendingVideo } from '@/components/section/video/TrendingVideos';
 import { VIDEOS_ITEMS } from '@/lib/constants/videos';
+import { populateArtist } from '@/lib/utils/community/artists';
 
 export const metadata: Metadata = {
   title: 'Trending Videos - Latest Content',
@@ -30,17 +31,20 @@ async function generateTrendingVideosData(): Promise<{
       item.views !== undefined &&
       item.duration !== undefined &&
       item.uploadedAt !== undefined
-  ).map(item => ({
-    _id: item._id,
-    title: item.title,
-    creator: item.creator,
-    thumbnail: item.thumbnail,
-    views: item.views!,
-    duration: item.duration!,
-    uploadedAt: item.uploadedAt!,
-    isNew: item.isNew || false,
-    category: item.category, // category is required in VideoItem, so this is always a string
-  }));
+  ).map(item => {
+    const creator = populateArtist(item.creator) ?? { _id: item.creator, name: 'Unknown' };
+    return {
+      _id: item._id,
+      title: item.title,
+      creator,
+      thumbnail: item.thumbnail,
+      views: item.views!,
+      duration: item.duration!,
+      uploadedAt: item.uploadedAt!,
+      isNew: item.isNew || false,
+      category: item.category, // category is required in VideoItem, so this is always a string
+    };
+  });
 
   return {
     trendingVideos,

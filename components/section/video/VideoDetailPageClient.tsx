@@ -14,26 +14,27 @@ import {
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import type { VideoItem } from '@/lib/constants/videos';
+import type { VideoItemWithCreator } from '@/lib/utils/videos';
 import { VideoPlayer } from './VideoPlayer';
 import { VideoDownloadButton } from './VideoDownloadButton';
 import { VideoCard } from '@/components/cards/VideoCard';
 
 interface VideoDetailPageClientProps {
-  videoItem: VideoItem;
-  relatedVideos: VideoItem[];
+  videoItem: VideoItemWithCreator;
+  relatedVideos: VideoItemWithCreator[];
 }
 
 export const VideoDetailPageClient = ({ videoItem, relatedVideos }: VideoDetailPageClientProps) => {
+  const creatorName =
+    typeof videoItem.creator === 'string' ? videoItem.creator : videoItem.creator.name;
   const handleShare = () => {
     if (navigator.share) {
       navigator.share({
         title: videoItem.title,
-        text: `${videoItem.title} by ${videoItem.creator}`,
+        text: `${videoItem.title} by ${creatorName}`,
         url: window.location.href,
       });
     } else {
-      // Fallback: copy to clipboard
       navigator.clipboard.writeText(window.location.href);
     }
   };
@@ -107,9 +108,7 @@ export const VideoDetailPageClient = ({ videoItem, relatedVideos }: VideoDetailP
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold mb-2">
               {videoItem.title}
             </h1>
-            <p className="text-xl md:text-2xl text-primary-foreground/90 mb-4">
-              {videoItem.creator}
-            </p>
+            <p className="text-xl md:text-2xl text-primary-foreground/90 mb-4">{creatorName}</p>
             <div className="flex items-center gap-4 text-sm text-primary-foreground/80 flex-wrap">
               {videoItem.views && (
                 <span className="flex items-center gap-1">

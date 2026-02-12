@@ -1,9 +1,16 @@
 import mongoose, { Schema, model } from 'mongoose';
-import { ModelArtist } from '../lib/types/constants';
+import { ModelArtistProfile } from '../lib/types/constants';
 import { createSlugMiddleware } from '../lib/utils/slugify';
 
-const ArtistSchema = new Schema<ModelArtist>(
+const ArtistSchema = new Schema<ModelArtistProfile>(
   {
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+      unique: true,
+      index: true,
+    },
     name: {
       type: String,
       required: true,
@@ -27,6 +34,11 @@ const ArtistSchema = new Schema<ModelArtist>(
     coverImage: {
       type: String,
       default: '',
+    },
+    genre: {
+      type: String,
+      default: '',
+      index: true,
     },
     socials: {
       facebook: { type: String, default: '' },
@@ -57,10 +69,10 @@ const ArtistSchema = new Schema<ModelArtist>(
   }
 );
 
-const slugMiddleware = createSlugMiddleware<ModelArtist>('name');
+const slugMiddleware = createSlugMiddleware<ModelArtistProfile>('name');
 ArtistSchema.pre('save', slugMiddleware.preSave);
 ArtistSchema.pre(/update/i, slugMiddleware.preUpdate);
 
 ArtistSchema.index({ isActive: 1, isFeatured: 1, displayOrder: 1 });
 
-export const Artist = mongoose.models.Artist || model<ModelArtist>('Artist', ArtistSchema);
+export const Artist = mongoose.models.Artist || model<ModelArtistProfile>('Artist', ArtistSchema);

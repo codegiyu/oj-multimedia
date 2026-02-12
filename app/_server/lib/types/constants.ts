@@ -443,14 +443,16 @@ export interface IGospelVerse {
   updatedAt: Date;
 }
 
-// Artist Types
-export interface IArtist {
+// ArtistProfile Types (user-linked profile; replaces former IArtist)
+export interface IArtistProfile {
   _id: mongoose.Types.ObjectId;
+  user: mongoose.Types.ObjectId;
   name: string;
   slug: string;
   bio?: string;
   image?: string;
   coverImage?: string;
+  genre?: string;
   socials?: {
     facebook?: string;
     instagram?: string;
@@ -493,6 +495,27 @@ export interface IMusic {
     metaDescription?: string;
     keywords?: string[];
   };
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// Video Types
+export interface IVideo {
+  _id: mongoose.Types.ObjectId;
+  title: string;
+  slug: string;
+  artist: mongoose.Types.ObjectId;
+  thumbnail?: string;
+  category?: string;
+  description?: string;
+  videoUrl?: string;
+  downloadUrl?: string;
+  duration?: string;
+  views: number;
+  status: 'draft' | 'published' | 'archived';
+  isFeatured: boolean;
+  isMonetizable: boolean;
+  displayOrder: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -797,8 +820,9 @@ export type ModelAuditLog = IAuditLog & IModelIndex & Document;
 export type ModelUserActivityLog = IUserActivityLog & IModelIndex & Document;
 export type ModelNotification = INotification & IModelIndex & Document;
 export type ModelGospelVerse = IGospelVerse & IModelIndex & Document;
-export type ModelArtist = IArtist & IModelIndex & Document;
+export type ModelArtistProfile = IArtistProfile & IModelIndex & Document;
 export type ModelMusic = IMusic & IModelIndex & Document;
+export type ModelVideo = IVideo & IModelIndex & Document;
 export type ModelPastor = IPastor & IModelIndex & Document;
 export type ModelDevotional = IDevotional & IModelIndex & Document;
 export type ModelNewsArticle = INewsArticle & IModelIndex & Document;

@@ -3,10 +3,10 @@
 import { useState } from 'react';
 import { Download, Lock, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import type { MusicItem } from '@/lib/constants/music';
+import type { MusicItemWithArtist } from '@/lib/utils/music';
 
 interface DownloadButtonProps {
-  musicItem: MusicItem;
+  musicItem: MusicItemWithArtist;
 }
 
 export const DownloadButton = ({ musicItem }: DownloadButtonProps) => {
@@ -36,7 +36,9 @@ export const DownloadButton = ({ musicItem }: DownloadButtonProps) => {
       if (musicItem.downloadUrl) {
         const link = document.createElement('a');
         link.href = musicItem.downloadUrl;
-        link.download = `${musicItem.title} - ${musicItem.artist}.mp3`;
+        const artistName =
+          typeof musicItem.artist === 'string' ? musicItem.artist : musicItem.artist.name;
+        link.download = `${musicItem.title} - ${artistName}.mp3`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);

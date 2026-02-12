@@ -9,7 +9,7 @@ import { VideoCard } from '@/components/cards/VideoCard';
 export interface TrendingVideo {
   _id: string;
   title: string;
-  creator: string;
+  creator: { _id: string; name: string };
   thumbnail: string;
   views: string;
   duration: string;

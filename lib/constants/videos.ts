@@ -7,6 +7,7 @@
 export interface VideoItem {
   _id: string;
   title: string;
+  /** Artist profile _id (e.g. 'ap-1'). Getters populate to { _id, name }. */
   creator: string;
   thumbnail: string;
   category:
@@ -67,7 +68,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
   {
     _id: '1',
     title: 'Sunset Vibes - Official Music Video',
-    creator: 'DJ Flame',
+    creator: 'ap-1',
     thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=225&fit=crop',
     category: 'music',
     views: '2.4M',
@@ -88,7 +89,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
   {
     _id: '2',
     title: 'City Lights - Live Performance',
-    creator: 'Luna Belle',
+    creator: 'ap-5',
     thumbnail: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=225&fit=crop',
     category: 'music',
     views: '1.8M',
@@ -111,7 +112,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
   {
     _id: '3',
     title: 'Summer Feels - Music Video',
-    creator: 'Beach Vibes',
+    creator: 'ap-5',
     thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=169&fit=crop',
     category: 'music',
     uploadedAt: '12 hours ago',
@@ -129,7 +130,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
   {
     _id: '4',
     title: 'Electric Soul - Music Video',
-    creator: 'Marcus Jay',
+    creator: 'ap-3',
     thumbnail: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=225&fit=crop',
     category: 'music',
     views: '980K',
@@ -150,7 +151,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
   {
     _id: '5',
     title: 'Midnight Dreams - Creative Short',
-    creator: 'The Wave',
+    creator: 'ap-4',
     thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=225&fit=crop',
     category: 'short',
     views: '1.2M',
@@ -171,7 +172,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
   {
     _id: '6',
     title: 'Quick Tips: Creative Hacks',
-    creator: 'Quick Tips',
+    creator: 'ap-1',
     thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=200&h=300&fit=crop',
     category: 'short',
     views: '450K',
@@ -192,7 +193,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
   {
     _id: '7',
     title: '60 Second Motivation',
-    creator: 'Motivate Daily',
+    creator: 'ap-2',
     thumbnail: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=300&fit=crop',
     category: 'short',
     views: '380K',
@@ -212,7 +213,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
   {
     _id: '8',
     title: 'Behind the Scenes',
-    creator: 'Studio Life',
+    creator: 'ap-3',
     thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=200&h=300&fit=crop',
     category: 'short',
     views: '320K',
@@ -232,7 +233,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
   {
     _id: '9',
     title: 'Golden Hour - Inspirational Talk',
-    creator: 'Aria Rose',
+    creator: 'ap-6',
     thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=225&fit=crop',
     category: 'talks',
     views: '756K',
@@ -254,7 +255,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
   {
     _id: '10',
     title: 'Rise Up - Motivational Talk',
-    creator: 'Victory Sound',
+    creator: 'ap-2',
     thumbnail: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=169&fit=crop',
     category: 'talks',
     uploadedAt: '8 hours ago',
@@ -274,7 +275,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
   {
     _id: '11',
     title: 'The Art of Creative Expression',
-    creator: 'Creative Minds',
+    creator: 'ap-3',
     thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=225&fit=crop',
     category: 'talks',
     views: '3.2M',
@@ -295,7 +296,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
   {
     _id: '12',
     title: 'Street Dreams - Short Film',
-    creator: 'King Vibe',
+    creator: 'ap-4',
     thumbnail: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=225&fit=crop',
     category: 'creative',
     views: '654K',
@@ -315,7 +316,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
   {
     _id: '13',
     title: 'Ocean Waves - Creative Content',
-    creator: 'Crystal',
+    creator: 'ap-5',
     thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=225&fit=crop',
     category: 'creative',
     views: '543K',
@@ -335,7 +336,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
   {
     _id: '14',
     title: 'Creative Process: Behind the Scenes',
-    creator: 'Zen Beats',
+    creator: 'ap-4',
     thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=169&fit=crop',
     category: 'creative',
     uploadedAt: '6 hours ago',
@@ -353,7 +354,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
   {
     _id: '15',
     title: 'Heart & Soul - Creative Short',
-    creator: 'Melody Grace',
+    creator: 'ap-6',
     thumbnail: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=169&fit=crop',
     category: 'creative',
     uploadedAt: '1 day ago',
@@ -375,7 +376,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
   {
     _id: '16',
     title: 'Inspiring Stories: Journey to Success',
-    creator: 'Motivation Hub',
+    creator: 'ap-1',
     thumbnail: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=225&fit=crop',
     category: 'inspirational',
     views: '2.8M',
@@ -395,7 +396,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
   {
     _id: '17',
     title: 'Morning Inspiration - Daily Motivation',
-    creator: 'Sarah Grace',
+    creator: 'ap-6',
     thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=169&fit=crop',
     category: 'inspirational',
     uploadedAt: '2 hours ago',
@@ -414,7 +415,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
   {
     _id: '18',
     title: 'Deep Dive: Creative Process',
-    creator: 'Art Studio',
+    creator: 'ap-5',
     thumbnail: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=225&fit=crop',
     category: 'inspirational',
     views: '1.5M',
@@ -435,7 +436,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
   {
     _id: '19',
     title: 'Live Concert: Summer Vibes',
-    creator: 'Music Fest',
+    creator: 'ap-1',
     thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=225&fit=crop',
     category: 'live',
     views: '1.9M',
@@ -456,7 +457,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
   {
     _id: '20',
     title: 'Urban Flow - Street Performance',
-    creator: 'Metro Kid',
+    creator: 'ap-2',
     thumbnail: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=169&fit=crop',
     category: 'live',
     uploadedAt: '4 hours ago',
@@ -474,7 +475,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
   {
     _id: '21',
     title: 'Neon Nights - Live Stream',
-    creator: 'Summer',
+    creator: 'ap-5',
     thumbnail: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=225&fit=crop',
     category: 'live',
     views: '432K',
@@ -495,7 +496,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
   {
     _id: '22',
     title: 'The Creative Mindset Podcast',
-    creator: 'Mindset Masters',
+    creator: 'ap-2',
     thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=225&fit=crop',
     category: 'podcasts',
     views: '1.1M',
@@ -516,7 +517,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
   {
     _id: '23',
     title: 'Success Stories: Episode 5',
-    creator: 'Success Stories',
+    creator: 'ap-3',
     thumbnail: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=225&fit=crop',
     category: 'podcasts',
     views: '890K',
@@ -537,7 +538,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
   {
     _id: '24',
     title: 'Tech Talk: Future of Media',
-    creator: 'Tech Insights',
+    creator: 'ap-4',
     thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=169&fit=crop',
     category: 'podcasts',
     uploadedAt: '1 day ago',
@@ -557,7 +558,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
   {
     _id: '25',
     name: 'DJ Flame',
-    creator: 'DJ Flame',
+    creator: 'ap-1',
     title: 'DJ Flame',
     category: 'music',
     avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop',
@@ -577,7 +578,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
   {
     _id: '26',
     name: 'Luna Belle',
-    creator: 'Luna Belle',
+    creator: 'ap-5',
     title: 'Luna Belle',
     category: 'creative',
     avatar: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=100&h=100&fit=crop',
@@ -597,7 +598,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
   {
     _id: '27',
     name: 'Marcus Jay',
-    creator: 'Marcus Jay',
+    creator: 'ap-3',
     title: 'Marcus Jay',
     category: 'talks',
     avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop',
@@ -617,7 +618,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
   {
     _id: '28',
     name: 'Aria Rose',
-    creator: 'Aria Rose',
+    creator: 'ap-6',
     title: 'Aria Rose',
     category: 'inspirational',
     avatar: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=100&h=100&fit=crop',
@@ -637,7 +638,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
   {
     _id: '29',
     name: 'The Wave',
-    creator: 'The Wave',
+    creator: 'ap-4',
     title: 'The Wave',
     category: 'live',
     avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop',
@@ -657,7 +658,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
   {
     _id: '30',
     name: 'King Vibe',
-    creator: 'King Vibe',
+    creator: 'ap-4',
     title: 'King Vibe',
     category: 'short',
     avatar: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=100&h=100&fit=crop',
@@ -679,7 +680,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
   {
     _id: '31',
     title: 'Sunday Service: The Power of Prayer',
-    creator: 'Grace Church',
+    creator: 'ap-6',
     thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=225&fit=crop',
     category: 'sermon',
     views: '15K',
@@ -699,7 +700,7 @@ export const VIDEOS_ITEMS: VideoItem[] = [
   {
     _id: '32',
     title: 'Understanding the Scriptures',
-    creator: 'Bible Study Group',
+    creator: 'ap-6',
     thumbnail: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=225&fit=crop',
     category: 'sermon',
     views: '5K',

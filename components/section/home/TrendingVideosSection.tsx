@@ -30,7 +30,6 @@ const categories = [
   { id: 'Talks', label: 'Talks' },
   { id: 'Dance', label: 'Dance' },
   { id: 'Creative', label: 'Creative' },
-  { id: 'BTS', label: 'BTS' },
 ];
 
 export const TrendingVideosSection = ({ videos: trendingVideos }: TrendingVideosSectionProps) => {

@@ -7,6 +7,7 @@ import { MusicPageSkeleton } from '@/components/section/music/MusicPageSkeleton'
 import { filterByCategory } from '@/lib/utils/music';
 import type { ChartSong } from '@/components/section/music/TopMusicCharts';
 import { MUSIC_ITEMS } from '@/lib/constants/music';
+import { populateArtist } from '@/lib/utils/community/artists';
 
 export const metadata: Metadata = {
   title: 'Top Charts - Music Rankings',
@@ -30,17 +31,20 @@ async function generateChartSongsData(period: string = 'weekly') {
       (item.chartPeriod || 'weekly') === period
   )
     .sort((a, b) => (a.rank || 0) - (b.rank || 0))
-    .map(item => ({
-      _id: item._id,
-      rank: item.rank!,
-      title: item.title,
-      artist: item.artist,
-      cover: item.cover,
-      plays: item.plays || '0',
-      trend: item.trend!,
-      change: item.change || 0,
-      category: item.category, // category is required in MusicItem, so this is always a string
-    }));
+    .map(item => {
+      const artist = populateArtist(item.artist) ?? { _id: item.artist, name: 'Unknown' };
+      return {
+        _id: item._id,
+        rank: item.rank!,
+        title: item.title,
+        artist,
+        cover: item.cover,
+        plays: item.plays || '0',
+        trend: item.trend!,
+        change: item.change || 0,
+        category: item.category, // category is required in MusicItem, so this is always a string
+      };
+    });
 
   return {
     chartSongs,

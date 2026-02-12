@@ -11,7 +11,7 @@ export interface ChartSong {
   _id: string;
   rank: number;
   title: string;
-  artist: string;
+  artist: { _id: string; name: string };
   cover: string;
   plays: string;
   trend: 'up' | 'down' | 'same';

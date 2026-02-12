@@ -7,6 +7,7 @@ import { MusicPageSkeleton } from '@/components/section/music/MusicPageSkeleton'
 import { filterByCategory } from '@/lib/utils/music';
 import type { TrendingSong } from '@/components/section/music/TrendingSongs';
 import { MUSIC_ITEMS } from '@/lib/constants/music';
+import { populateArtist } from '@/lib/utils/community/artists';
 
 export const metadata: Metadata = {
   title: 'Trending Songs - Latest Music',
@@ -26,16 +27,19 @@ async function generateTrendingSongsData(): Promise<{
 
   const trendingSongs: (TrendingSong & { category: string })[] = MUSIC_ITEMS.filter(
     item => item.isTrending && item.plays !== undefined && item.duration !== undefined
-  ).map(item => ({
-    _id: item._id,
-    title: item.title,
-    artist: item.artist,
-    cover: item.cover,
-    plays: item.plays!,
-    duration: item.duration!,
-    isNew: item.isNew || false,
-    category: item.category, // category is required in MusicItem, so this is always a string
-  }));
+  ).map(item => {
+    const artist = populateArtist(item.artist) ?? { _id: item.artist, name: 'Unknown' };
+    return {
+      _id: item._id,
+      title: item.title,
+      artist,
+      cover: item.cover,
+      plays: item.plays!,
+      duration: item.duration!,
+      isNew: item.isNew || false,
+      category: item.category, // category is required in MusicItem, so this is always a string
+    };
+  });
 
   return {
     trendingSongs,

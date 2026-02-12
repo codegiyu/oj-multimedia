@@ -29,11 +29,12 @@ export async function generateMetadata({ params }: MusicDetailPageProps): Promis
     };
   }
 
+  const artistName = musicItem.artist.name;
   return {
-    title: `${musicItem.title} by ${musicItem.artist} - Music`,
+    title: `${musicItem.title} by ${artistName} - Music`,
     description:
       musicItem.description ||
-      `Listen to ${musicItem.title} by ${musicItem.artist}. ${musicItem.plays || ''} plays.`,
+      `Listen to ${musicItem.title} by ${artistName}. ${musicItem.plays || ''} plays.`,
   };
 }
 

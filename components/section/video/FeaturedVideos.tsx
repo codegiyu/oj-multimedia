@@ -1,13 +1,14 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Play, Star, Eye } from 'lucide-react';
+import { Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { VideoCard } from '@/components/cards/VideoCard';
 
 export interface FeaturedVideo {
   _id: string;
   title: string;
-  creator: string;
+  creator: { _id: string; name: string };
   thumbnail: string;
   views: string;
   duration: string;
@@ -47,60 +48,18 @@ export const FeaturedVideos = ({ videos: featuredVideos }: FeaturedVideosProps) 
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-              whileHover={{ y: -8 }}
-              className="group relative">
-              <div className="bg-card rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow">
-                {/* Thumbnail */}
-                <div className="relative aspect-video overflow-hidden">
-                  <img
-                    src={video.thumbnail}
-                    alt={video.title}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
-
-                  {/* Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-                  {/* Play Button */}
-                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <Button variant="play" size="icon-lg" className="shadow-glow">
-                      <Play className="w-6 h-6 fill-current ml-1" />
-                    </Button>
-                  </div>
-
-                  {/* Duration Badge */}
-                  <span className="absolute bottom-3 right-3 px-2 py-1 bg-foreground/80 text-background text-xs rounded-md font-medium">
-                    {video.duration}
-                  </span>
-
-                  {/* Featured Badge */}
-                  {video.featured && (
-                    <span className="absolute top-3 left-3 px-2 py-1 bg-primary text-primary-foreground text-xs font-bold rounded-full">
-                      FEATURED
-                    </span>
-                  )}
-                </div>
-
-                {/* Info */}
-                <div className="p-4">
-                  <div className="mb-2">
-                    <span className="text-xs text-primary font-medium mb-1 block">
-                      {video.category}
-                    </span>
-                    <h3 className="font-semibold text-sm line-clamp-2 group-hover:text-primary transition-colors mb-1">
-                      {video.title}
-                    </h3>
-                    <p className="text-xs text-muted-foreground truncate">{video.creator}</p>
-                  </div>
-                  <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                    <span className="flex items-center gap-1">
-                      <Eye className="w-3 h-3" />
-                      {video.views}
-                    </span>
-                  </div>
-                </div>
-              </div>
+              transition={{ delay: index * 0.1 }}>
+              <VideoCard
+                _id={video._id}
+                title={video.title}
+                creator={video.creator}
+                thumbnail={video.thumbnail}
+                views={video.views}
+                duration={video.duration}
+                category={video.category}
+                variant="featured"
+                featured={video.featured}
+              />
             </motion.div>
           ))}
         </div>
