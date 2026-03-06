@@ -1,6 +1,9 @@
 import AuthLayout from '@/components/layout/AuthLayout';
 import { LoginForm } from '@/components/section/admin/auth/LoginForm';
+import { LoginFormSkeleton } from '@/components/section/admin/auth/LoginFormSkeleton';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Metadata } from 'next';
+import { Suspense } from 'react';
 
 export const metadata: Metadata = {
   title: 'Admin Login',
@@ -10,7 +13,17 @@ export const metadata: Metadata = {
 export default function AdminLoginPage() {
   return (
     <AuthLayout subtitle="Sign in to your account">
-      <LoginForm />
+      <Card>
+        <CardHeader className="space-y-0 border-b border-foreground/20 pb-2">
+          <CardTitle className="text-2xl">Sign in to your account</CardTitle>
+          <CardDescription>Enter your credentials to access the admin dashboard</CardDescription>
+        </CardHeader>
+        <CardContent className="py-2">
+          <Suspense fallback={<LoginFormSkeleton />}>
+            <LoginForm />
+          </Suspense>
+        </CardContent>
+      </Card>
     </AuthLayout>
   );
 }

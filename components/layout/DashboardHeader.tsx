@@ -10,25 +10,58 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { User, Settings, HelpCircle, LogOut } from 'lucide-react';
+import { User, Settings, HelpCircle, LogOut, Menu } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { RegularSelect } from '@/components/atoms/RegularSelect';
 import type { SelectOption } from '@/lib/types/general';
-import { SidebarTrigger } from '../ui/sidebar';
+import { SidebarTrigger, useSidebar } from '../ui/sidebar';
 import { useAuthStore } from '@/lib/store/useAuthStore';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { GhostBtn } from '../atoms/GhostBtn';
+import { getPersonDisplayName, getPersonInitials } from '@/lib/utils/general';
+import { Logo } from '../icons';
 
 export const DashboardHeader = () => {
   return (
     <header className="sticky top-0 z-50 h-14 flex items-center gap-4 border-b border-border bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 px-4">
-      <div className="flex items-center gap-2">
+      <Link href="/admin/dashboard/home" className="flex items-center gap-2 lg:hidden">
+        <LogoHeaderIcon />
+        <span className="hidden md:inline-block text-lg font-semibold">Admin</span>
+      </Link>
+
+      <div className="hidden lg:flex items-center gap-2">
         <SidebarTrigger className="ml-0" />
       </div>
+
       <div className="flex-1" />
 
-      {/* Profile menu */}
-      <ProfileMenu />
+      <div className="flex items-center gap-2">
+        <ProfileMenu />
+        <MobileMenuButton />
+      </div>
     </header>
+  );
+};
+
+function LogoHeaderIcon() {
+  return (
+    <i className="text-primary text-4xl">
+      <Logo />
+    </i>
+  );
+}
+
+const MobileMenuButton = () => {
+  const { toggleSidebar } = useSidebar();
+  return (
+    <GhostBtn
+      LucideIcon={Menu}
+      className="lg:hidden group"
+      iconClass="size-5 group-hover:text-primary"
+      onClick={toggleSidebar}
+      srOnlyText="Toggle Sidebar"
+    />
   );
 };
 
@@ -40,13 +73,8 @@ const ProfileMenu = () => {
   const { theme, setTheme } = useTheme();
   const { push } = useRouter();
 
-  const name = `${user?.firstName ?? ''} ${user?.lastName ?? ''}`.trim();
-  const initials = name
-    .split(' ')
-    .map(n => n[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase();
+  const name = getPersonDisplayName(user?.firstName, user?.lastName, user?.email ?? '');
+  const initials = getPersonInitials(user?.firstName, user?.lastName);
 
   return (
     <DropdownMenu>

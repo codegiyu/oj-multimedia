@@ -248,6 +248,41 @@ export function createFileList(files: File[]): FileList {
   return dataTransfer.files;
 }
 
+export const countStartingChar = (str: string, char: string) => {
+  let count = 0;
+  for (let i = 0; i < str.length; i++) {
+    if (str[i] !== char) break;
+    count++;
+  }
+  return count;
+};
+
+/**
+ * Person display name helper used across headers, drawers, and modals.
+ */
+export function getPersonDisplayName(
+  firstName?: string | null,
+  lastName?: string | null,
+  fallback = ''
+): string {
+  const first = (firstName ?? '').trim();
+  const last = (lastName ?? '').trim();
+  const name = [first, last].filter(Boolean).join(' ').trim();
+  return name || fallback;
+}
+
+/**
+ * Initials from first/last name (e.g. John Smith → JS).
+ */
+export function getPersonInitials(
+  firstName?: string | null,
+  lastName?: string | null,
+  maxChars = 2
+): string {
+  const initials = [firstName?.[0], lastName?.[0]].filter(Boolean).join('').toUpperCase();
+  return initials.slice(0, maxChars) || '?';
+}
+
 export function fixedPick<TObj, TKeys extends keyof TObj>(
   obj: TObj,
   keys: TKeys[]

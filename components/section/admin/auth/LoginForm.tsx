@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useAuthStore } from '@/lib/store/useAuthStore';
 import { useForm } from '@/lib/hooks/use-form';
 import { RegularInput } from '@/components/atoms/RegularInput';
@@ -17,7 +17,6 @@ const loginSchema = z.object({
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 export const LoginForm = () => {
-  const router = useRouter();
   const {
     actions: { login },
   } = useAuthStore(state => state);
@@ -30,6 +29,8 @@ export const LoginForm = () => {
     handleInputChange,
     handleSubmit,
     setFormErrors,
+    isValid,
+    validateForm,
   } = useForm<typeof loginSchema>({
     formSchema: loginSchema,
     defaultFormValues: {
@@ -40,7 +41,6 @@ export const LoginForm = () => {
       const result = await login(values.email, values.password);
 
       if (result.success) {
-        router.replace('/admin/dashboard/home');
         return true;
       } else {
         setFormErrors({ root: [result.error || 'Login failed'] });
@@ -50,24 +50,25 @@ export const LoginForm = () => {
   });
 
   return (
-    <form onSubmit={handleSubmit} className="mt-8 grid gap-6">
+    <form onSubmit={handleSubmit} className="space-y-10">
       {errorsVisible && formErrors.root && formErrors.root.length > 0 && (
         <div className="bg-destructive/10 border border-destructive/30 text-destructive px-4 py-3 rounded-lg text-sm">
           {formErrors.root[0]}
         </div>
       )}
 
-      <div className="grid gap-4">
+      <div className="grid gap-6">
         <RegularInput
-          label="Email address"
+          label="Email or Username"
           name="email"
-          type="email"
-          autoComplete="email"
+          type="text"
+          autoComplete="username"
           required
-          placeholder="admin@example.com"
+          placeholder="Enter your email or username"
           value={formValues.email}
           onChange={handleInputChange}
-          errors={errorsVisible ? formErrors.email : []}
+          errors={errorsVisible ? (formErrors.email ?? []) : []}
+          disabled={loading}
         />
 
         <PasswordInput
@@ -75,28 +76,34 @@ export const LoginForm = () => {
           name="password"
           autoComplete="current-password"
           required
-          placeholder="••••••••"
+          placeholder="Enter your password"
           value={formValues.password}
           onChange={handleInputChange}
-          errors={errorsVisible ? formErrors.password : []}
+          errors={errorsVisible ? (formErrors.password ?? []) : []}
+          disabled={loading}
+          subtext={
+            <Link
+              href="/admin/auth/request-password-reset"
+              className="text-xs text-primary hover:underline disabled:text-muted-foreground">
+              Forgot password?
+            </Link>
+          }
         />
       </div>
 
-      <RegularBtn
-        type="submit"
-        text="Sign in"
-        LeftIcon={LogIn}
-        leftIconProps={{ className: 'h-5 w-5' }}
-        loading={loading}
-        size="full"
-      />
-
-      <p className="text-center text-sm text-muted-foreground">
-        Forgot your password?{' '}
-        <a href="#" className="text-primary hover:text-primary/80 font-medium transition-colors">
-          Reset it here
-        </a>
-      </p>
+      <div className="space-y-2 mt-8">
+        <RegularBtn
+          type="submit"
+          text={loading ? 'Signing in...' : 'Sign in'}
+          className="w-full"
+          disabled={loading || !isValid}
+          loading={loading}
+          onDisabledClick={validateForm}
+          LeftIcon={LogIn}
+          leftIconProps={{ className: 'h-5 w-5' }}
+          size="full"
+        />
+      </div>
     </form>
   );
 };

@@ -1,7 +1,7 @@
 'use client';
 
 import { PropsWithChildren, ReactNode } from 'react';
-import { PageHeader, PageHeaderProps } from './PageHeader';
+import { PageHeader, type PageHeaderProps } from './PageHeader';
 import { cn } from '@/lib/utils';
 
 export interface DashboardPageWrapperProps extends PropsWithChildren {

@@ -51,8 +51,8 @@ export function UserMenu() {
       // If logout fails, still clear session locally
       actions.clearSession();
       console.error('Logout failed:', error);
+      router.push('/');
     }
-    router.push('/');
   };
 
   const getInitials = (firstName?: string, lastName?: string) => {
@@ -130,11 +130,11 @@ export function UserMenu() {
                 <span>Account</span>
               </Link>
               <Link
-                href="/account/favourites"
+                href="/account/wishlist"
                 className="flex items-center gap-3 px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors"
                 onClick={() => setIsOpen(false)}>
                 <Heart className="w-4 h-4 text-muted-foreground" />
-                <span>My Favourites</span>
+                <span>Wishlist</span>
               </Link>
               <Link
                 href="/account/settings"
@@ -184,8 +184,8 @@ export function UserMobileMenu({ onMenuClose }: { onMenuClose: () => void }) {
       // If logout fails, still clear session locally
       actions.clearSession();
       console.error('Logout failed:', error);
+      router.push('/');
     }
-    router.push('/');
   };
 
   const getInitials = (firstName?: string, lastName?: string) => {
@@ -258,14 +258,14 @@ export function UserMobileMenu({ onMenuClose }: { onMenuClose: () => void }) {
             <span>Account</span>
           </Link>
           <Link
-            href="/account/favourites"
+            href="/account/wishlist"
             className="flex items-center gap-3 px-3 py-2 text-sm text-foreground hover:bg-muted rounded-md transition-colors"
             onClick={() => {
               setIsUserMenuOpen(false);
               onMenuClose();
             }}>
             <Heart className="w-4 h-4" />
-            <span>My Favourites</span>
+            <span>Wishlist</span>
           </Link>
           <Link
             href="/account/settings"

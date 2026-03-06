@@ -26,16 +26,20 @@ export const InputWrapper = ({
   return (
     <label className={cn(`w-full`, wrapClassName)} {...otherLabelProps}>
       <div className={`flex flex-col justify-center gap-2`}>
-        {label && (
-          <span
-            className={cn(
-              'text-[0.75rem] leading-[1.2] font-medium text-foreground font-poppins',
-              labelTextClassName
-            )}>
-            {label}
-            {required ? ' *' : ''}
-            {subtext && <span className="text-muted-foreground font-normal ml-1">{subtext}</span>}
-          </span>
+        {(label || subtext) && (
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            {label && (
+              <span
+                className={cn(
+                  'text-[0.75rem] leading-[1.2] font-medium text-foreground font-poppins',
+                  labelTextClassName
+                )}>
+                {label}
+                {required ? ' *' : ''}
+              </span>
+            )}
+            {subtext ? <div className="text-xs font-medium text-primary">{subtext}</div> : null}
+          </div>
         )}
         <div className="relative w-full">{children}</div>
       </div>
