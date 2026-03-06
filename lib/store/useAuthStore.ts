@@ -97,7 +97,7 @@ export const useInitAuthStore = create<AuthStore>()((set, get) => ({
         }
 
         setUser(data.user, {
-          pauseNavigatingAwayFromAuth: true,
+          pauseNavigatingAwayFromAuth: false,
         });
 
         return { success: true };
@@ -145,6 +145,7 @@ export const useInitAuthStore = create<AuthStore>()((set, get) => ({
     logout: async () => {
       const {
         actions: { clearSession },
+        user,
       } = get();
 
       try {
@@ -154,10 +155,11 @@ export const useInitAuthStore = create<AuthStore>()((set, get) => ({
       } finally {
         clearSession();
 
-        // Redirect to login page
+        // Redirect: admin to admin login, customer/marketplace to home (IUser has phoneNumber, IAdmin does not)
         const router = getRouter();
         if (router) {
-          router.replace('/admin/auth/login');
+          const isCustomer = user && 'phoneNumber' in user;
+          router.replace(isCustomer ? '/' : '/admin/auth/login');
         }
       }
     },

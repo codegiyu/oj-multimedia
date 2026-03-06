@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -9,29 +8,8 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { useAuthStore } from '@/lib/store/useAuthStore';
+import { useGoogleLogin } from '@/lib/hooks/use-google-login';
 import { LogIn, Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
-
-declare global {
-  interface Window {
-    google?: {
-      accounts: {
-        oauth2: {
-          initCodeClient: (config: {
-            client_id: string;
-            scope: string;
-            ux_mode: 'popup' | 'redirect';
-            callback: (response: { code: string }) => void;
-            error_callback?: (error: unknown) => void;
-          }) => {
-            requestCode: () => void;
-          };
-        };
-      };
-    };
-  }
-}
 
 interface LoginModalProps {
   open: boolean;
@@ -46,85 +24,10 @@ export function LoginModal({
   title = 'Welcome Back',
   description = 'Sign in to continue to your account',
 }: LoginModalProps) {
-  const { loginLoading, actions } = useAuthStore(state => ({
-    loginLoading: state.loginLoading,
-    actions: state.actions,
-  }));
-  const [isGoogleScriptLoaded, setIsGoogleScriptLoaded] = useState(false);
-
-  // Load Google Identity Services script
-  useEffect(() => {
-    if (!open || isGoogleScriptLoaded) return;
-
-    const script = document.createElement('script');
-    script.src = 'https://accounts.google.com/gsi/client';
-    script.async = true;
-    script.defer = true;
-    script.onload = () => {
-      setIsGoogleScriptLoaded(true);
-    };
-    script.onerror = () => {
-      toast.error('Failed to load Google Sign-In');
-    };
-
-    document.head.appendChild(script);
-
-    return () => {
-      // Cleanup script if component unmounts
-      const existingScript = document.querySelector(
-        'script[src="https://accounts.google.com/gsi/client"]'
-      );
-      if (existingScript) {
-        existingScript.remove();
-      }
-    };
-  }, [open, isGoogleScriptLoaded]);
-
-  const handleGoogleLogin = async () => {
-    if (!isGoogleScriptLoaded || !window.google) {
-      toast.error('Google Sign-In is not available. Please try again.');
-      return;
-    }
-
-    // Get Google Client ID from environment (you'll need to add this to your .env)
-    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
-
-    if (!clientId) {
-      toast.error('Google Sign-In is not configured');
-      return;
-    }
-
-    try {
-      const client = window.google.accounts.oauth2.initCodeClient({
-        client_id: clientId,
-        scope: 'email profile',
-        ux_mode: 'popup',
-        callback: async (response: { code: string }) => {
-          try {
-            const result = await actions.googleLogin(response.code);
-            if (result.success) {
-              toast.success('Successfully signed in!');
-              onOpenChange(false);
-            } else {
-              toast.error(result.error || 'Login failed');
-            }
-          } catch (error) {
-            console.error('Login error:', error);
-            toast.error('An error occurred during login');
-          }
-        },
-        error_callback: (error: unknown) => {
-          console.error('Google OAuth error:', error);
-          toast.error('Google sign-in was cancelled or failed');
-        },
-      });
-
-      client.requestCode();
-    } catch (error) {
-      console.error('Error initializing Google OAuth:', error);
-      toast.error('Failed to initialize Google Sign-In');
-    }
-  };
+  const { isGoogleScriptLoaded, loginLoading, handleGoogleLogin } = useGoogleLogin({
+    enabled: open,
+    onSuccess: () => onOpenChange(false),
+  });
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

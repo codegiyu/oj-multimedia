@@ -18,19 +18,19 @@ export type HttpMethods = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
  * Recursively applies to nested objects and arrays.
  * Preserves optional (undefined) and null types appropriately.
  */
-export type ClientFriendly<T> = T extends mongoose.Types.ObjectId
+export type ClientFriendly<T> = T extends Date
   ? string
-  : T extends Date
-    ? string
-    : T extends (infer U)[]
-      ? ClientFriendly<U>[]
-      : T extends readonly (infer U)[]
-        ? readonly ClientFriendly<U>[]
-        : T extends Record<string, any>
-          ? {
-              [K in keyof T]: ClientFriendly<T[K]>;
-            }
-          : T;
+  : T extends mongoose.Types.ObjectId
+    ? string // MongoDB ObjectId
+    : T extends { toDate(): Date }
+      ? string // Firestore Timestamp
+      : T extends (infer U)[]
+        ? ClientFriendly<U>[]
+        : T extends readonly (infer U)[]
+          ? readonly ClientFriendly<U>[]
+          : T extends Record<string, any>
+            ? { [K in keyof T]: ClientFriendly<T[K]> }
+            : T;
 
 // Client-friendly type aliases for backend types
 export type ClientSiteSettings = ClientFriendly<ISiteSettings>;
@@ -62,9 +62,27 @@ export type EndpointDetails = {
 export interface AllEndpoints {
   // Authentication
   AUTH_LOGIN: EndpointDefinition<IAuthLoginPayload, IAuthLoginRes, undefined>;
+  /** Google OAuth for users only. Admins use AUTH_LOGIN (email/password). */
   AUTH_GOOGLE_LOGIN: EndpointDefinition<IAuthGoogleLoginPayload, IAuthGoogleLoginRes, undefined>;
   AUTH_LOGOUT: EndpointDefinition<undefined, { success: boolean }, undefined>;
   AUTH_SESSION: EndpointDefinition<undefined, IAuthSessionRes, undefined>;
+  AUTH_REQUEST_OTP: EndpointDefinition<IAuthRequestOtpPayload, IAuthRequestOtpRes, undefined>;
+  AUTH_VERIFY_OTP: EndpointDefinition<IAuthVerifyOtpPayload, IAuthVerifyOtpRes, undefined>;
+  AUTH_REQUEST_PASSWORD_RESET: EndpointDefinition<
+    IAuthRequestPasswordResetPayload,
+    IAuthRequestPasswordResetRes,
+    undefined
+  >;
+  AUTH_RESET_PASSWORD: EndpointDefinition<
+    IAuthResetPasswordPayload,
+    IAuthResetPasswordRes,
+    undefined
+  >;
+  AUTH_CHANGE_PASSWORD: EndpointDefinition<
+    IAuthChangePasswordPayload,
+    IAuthChangePasswordRes,
+    undefined
+  >;
 
   // File Upload (Public)
   GENERATE_PRESIGNED_URL: EndpointDefinition<
@@ -93,6 +111,98 @@ export interface AllEndpoints {
     Partial<ClientSiteSettings>,
     undefined
   >;
+
+  // Notifications
+  NOTIFICATIONS_LIST: EndpointDefinition<undefined, INotificationsListRes, `?${string}`>;
+  NOTIFICATIONS_CREATE: EndpointDefinition<
+    INotificationCreatePayload,
+    INotificationCreateRes,
+    undefined
+  >;
+  NOTIFICATIONS_READ_ONE: EndpointDefinition<undefined, INotificationReadRes, `/${string}`>;
+  NOTIFICATIONS_READ_ALL: EndpointDefinition<
+    INotificationsReadAllPayload,
+    { count?: number },
+    undefined
+  >;
+  NOTIFICATIONS_GET_PREFERENCES: EndpointDefinition<
+    undefined,
+    INotificationPreferencesRes,
+    undefined
+  >;
+  NOTIFICATIONS_UPDATE_PREFERENCES: EndpointDefinition<
+    INotificationUpdatePreferencesPayload,
+    INotificationPreferencesRes,
+    undefined
+  >;
+  NOTIFICATIONS_UPDATE_PUSH_TOKEN: EndpointDefinition<
+    INotificationUpdatePushTokenPayload,
+    INotificationUpdatePushTokenRes,
+    undefined
+  >;
+
+  // Document verify
+  DOCUMENTS_VERIFY: EndpointDefinition<IDocumentVerifyPayload, IDocumentVerifyRes, undefined>;
+
+  // Documents (Admin)
+  ADMIN_DOCUMENTS_LIST: EndpointDefinition<undefined, IDocumentsListRes, `?${string}`>;
+  ADMIN_DOCUMENT_DETAILS: EndpointDefinition<undefined, IDocumentDetailsRes, `/${string}`>;
+  ADMIN_DOCUMENTS_VERIFY: EndpointDefinition<undefined, IDocumentVerifyRes, `/${string}`>;
+
+  // Email logs (Admin)
+  ADMIN_EMAIL_LOGS_LIST: EndpointDefinition<undefined, IEmailLogsListRes, `?${string}`>;
+  ADMIN_EMAIL_LOG_DETAILS: EndpointDefinition<undefined, IEmailLogDetailsRes, `/${string}`>;
+  ADMIN_EMAIL_LOGS_RESEND: EndpointDefinition<undefined, IEmailLogResendRes, `/${string}`>;
+
+  // Marketplace (public)
+  MARKETPLACE_GET_CATEGORIES: EndpointDefinition<undefined, IMarketplaceCategoriesRes, undefined>;
+  MARKETPLACE_GET_VENDORS: EndpointDefinition<undefined, IMarketplaceVendorsRes, undefined>;
+  MARKETPLACE_GET_VENDOR_BY_SLUG: EndpointDefinition<
+    undefined,
+    IMarketplaceVendorRes,
+    `/${string}`
+  >;
+  MARKETPLACE_GET_PRODUCTS: EndpointDefinition<
+    undefined,
+    IMarketplaceProductsListRes,
+    `?${string}`
+  >;
+  MARKETPLACE_GET_PRODUCT_BY_SLUG: EndpointDefinition<
+    undefined,
+    IMarketplaceProductRes,
+    `/${string}`
+  >;
+  MARKETPLACE_BECOME_VENDOR: EndpointDefinition<
+    IMarketplaceBecomeVendorPayload,
+    IMarketplaceBecomeVendorRes,
+    undefined
+  >;
+  MARKETPLACE_PLACE_ORDER: EndpointDefinition<
+    IMarketplacePlaceOrderPayload,
+    IMarketplacePlaceOrderRes,
+    undefined
+  >;
+  MARKETPLACE_GET_MY_ORDERS: EndpointDefinition<undefined, IMarketplaceMyOrdersRes, undefined>;
+
+  // Vendor dashboard (authenticated client with vendorId)
+  VENDOR_GET_ME: EndpointDefinition<undefined, IVendorMeRes, undefined>;
+  VENDOR_GET_PRODUCTS: EndpointDefinition<undefined, IVendorProductsRes, undefined>;
+  VENDOR_CREATE_PRODUCT: EndpointDefinition<
+    IVendorCreateProductPayload,
+    IMarketplaceProduct,
+    undefined
+  >;
+  VENDOR_UPDATE_PRODUCT: EndpointDefinition<
+    IVendorUpdateProductPayload,
+    IMarketplaceProduct,
+    `/${string}`
+  >;
+  VENDOR_GET_ORDERS: EndpointDefinition<undefined, IVendorOrdersRes, `?${string}`>;
+  VENDOR_UPDATE_SETTINGS: EndpointDefinition<
+    IVendorUpdateSettingsPayload,
+    IMarketplaceVendor,
+    undefined
+  >;
 }
 
 export const ENDPOINTS: Record<keyof AllEndpoints, EndpointDetails> = {
@@ -103,7 +213,7 @@ export const ENDPOINTS: Record<keyof AllEndpoints, EndpointDetails> = {
     isNotAuthenticated: true,
   },
   AUTH_GOOGLE_LOGIN: {
-    path: '/auth/google-login',
+    path: '/auth/google',
     method: 'POST',
     isNotAuthenticated: true,
   },
@@ -114,6 +224,30 @@ export const ENDPOINTS: Record<keyof AllEndpoints, EndpointDetails> = {
   AUTH_SESSION: {
     path: '/auth/session',
     method: 'GET',
+  },
+  AUTH_REQUEST_OTP: {
+    path: '/auth/request-otp',
+    method: 'POST',
+    isNotAuthenticated: true,
+  },
+  AUTH_VERIFY_OTP: {
+    path: '/auth/verify-otp',
+    method: 'POST',
+    isNotAuthenticated: true,
+  },
+  AUTH_REQUEST_PASSWORD_RESET: {
+    path: '/auth/request-password-reset',
+    method: 'POST',
+    isNotAuthenticated: true,
+  },
+  AUTH_RESET_PASSWORD: {
+    path: '/auth/reset-password',
+    method: 'POST',
+    isNotAuthenticated: true,
+  },
+  AUTH_CHANGE_PASSWORD: {
+    path: '/auth/change-password',
+    method: 'PATCH',
   },
 
   // File Upload (Public)
@@ -141,6 +275,74 @@ export const ENDPOINTS: Record<keyof AllEndpoints, EndpointDetails> = {
     path: '/admin/site-settings',
     method: 'PATCH',
   },
+
+  // Notifications
+  NOTIFICATIONS_LIST: { path: '/notifications', method: 'GET' },
+  NOTIFICATIONS_CREATE: { path: '/notifications/create', method: 'POST' },
+  NOTIFICATIONS_READ_ONE: { path: '/notifications/read/:notificationId', method: 'PATCH' },
+  NOTIFICATIONS_READ_ALL: { path: '/notifications/read-all', method: 'PATCH' },
+  NOTIFICATIONS_GET_PREFERENCES: { path: '/notifications/preferences', method: 'GET' },
+  NOTIFICATIONS_UPDATE_PREFERENCES: { path: '/notifications/preferences', method: 'PATCH' },
+  NOTIFICATIONS_UPDATE_PUSH_TOKEN: { path: '/notifications/push-token', method: 'PATCH' },
+
+  // Document verify
+  DOCUMENTS_VERIFY: { path: '/documents/verify', method: 'POST' },
+
+  // Documents (Admin)
+  ADMIN_DOCUMENTS_LIST: { path: '/admin/documents', method: 'GET' },
+  ADMIN_DOCUMENT_DETAILS: { path: '/admin/documents/:documentId', method: 'GET' },
+  ADMIN_DOCUMENTS_VERIFY: { path: '/admin/documents/verify/:documentId', method: 'POST' },
+
+  // Email logs (Admin)
+  ADMIN_EMAIL_LOGS_LIST: { path: '/admin/email-logs', method: 'GET' },
+  ADMIN_EMAIL_LOG_DETAILS: { path: '/admin/email-logs/:emailLogId', method: 'GET' },
+  ADMIN_EMAIL_LOGS_RESEND: { path: '/admin/email-logs/resend/:emailLogId', method: 'POST' },
+
+  // Marketplace
+  MARKETPLACE_GET_CATEGORIES: {
+    path: '/marketplace/categories',
+    method: 'GET',
+    isNotAuthenticated: true,
+  },
+  MARKETPLACE_GET_VENDORS: {
+    path: '/marketplace/vendors',
+    method: 'GET',
+    isNotAuthenticated: true,
+  },
+  MARKETPLACE_GET_VENDOR_BY_SLUG: {
+    path: '/marketplace/vendors',
+    method: 'GET',
+    isNotAuthenticated: true,
+  },
+  MARKETPLACE_GET_PRODUCTS: {
+    path: '/marketplace/products',
+    method: 'GET',
+    isNotAuthenticated: true,
+  },
+  MARKETPLACE_GET_PRODUCT_BY_SLUG: {
+    path: '/marketplace/products',
+    method: 'GET',
+    isNotAuthenticated: true,
+  },
+  MARKETPLACE_BECOME_VENDOR: {
+    path: '/marketplace/become-vendor',
+    method: 'POST',
+    isNotAuthenticated: true,
+  },
+  MARKETPLACE_PLACE_ORDER: {
+    path: '/marketplace/orders',
+    method: 'POST',
+    isNotAuthenticated: true,
+  },
+  MARKETPLACE_GET_MY_ORDERS: { path: '/marketplace/orders', method: 'GET' },
+
+  // Vendor dashboard
+  VENDOR_GET_ME: { path: '/vendor/me', method: 'GET' },
+  VENDOR_GET_PRODUCTS: { path: '/vendor/products', method: 'GET' },
+  VENDOR_CREATE_PRODUCT: { path: '/vendor/products', method: 'POST' },
+  VENDOR_UPDATE_PRODUCT: { path: '/vendor/products', method: 'PATCH' },
+  VENDOR_GET_ORDERS: { path: '/vendor/orders', method: 'GET' },
+  VENDOR_UPDATE_SETTINGS: { path: '/vendor/settings', method: 'PATCH' },
 };
 
 // Pagination Query Type
@@ -296,6 +498,7 @@ export interface IAuthLoginRes {
   user: ClientAdmin;
 }
 
+/** Payload for Google OAuth (users only). Admins use email/password login. */
 export interface IAuthGoogleLoginPayload {
   googleCode: string;
 }
@@ -306,4 +509,303 @@ export interface IAuthGoogleLoginRes {
 
 export interface IAuthSessionRes {
   user: ClientAdmin | ClientUser | null;
+}
+
+export interface IAuthRequestOtpPayload {
+  email: string;
+  scope: 'verify-email';
+}
+
+export interface IAuthRequestOtpRes {
+  message: string;
+}
+
+export interface IAuthVerifyOtpPayload {
+  code: string;
+  email: string;
+  scope: string;
+}
+
+export interface IAuthVerifyOtpRes {
+  message: string;
+  user?: Record<string, unknown>;
+}
+
+export interface IAuthRequestPasswordResetPayload {
+  email: string;
+  scope: 'reset-password';
+  accessType?: 'client' | 'console';
+}
+
+export interface IAuthRequestPasswordResetRes {
+  success: boolean;
+  message: string;
+}
+
+export interface IAuthResetPasswordPayload {
+  scopeToken: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+
+export interface IAuthResetPasswordRes {
+  message: string;
+  user: ClientAdmin | ClientUser;
+}
+
+export interface IAuthChangePasswordPayload {
+  currentPassword: string;
+  password: string;
+  confirmPassword: string;
+}
+
+export interface IAuthChangePasswordRes {
+  message: string;
+  user: ClientAdmin | ClientUser;
+}
+
+// Notifications
+export interface INotificationsListRes {
+  notifications: Array<Record<string, unknown>>;
+  meta: { page: number; limit: number; total: number; totalPages: number };
+}
+export interface INotificationCreatePayload {
+  userId: string;
+  userModel: 'User' | 'Admin';
+  title: string;
+  message: string;
+  eventType?: string;
+  triggerDate?: string;
+  expiresAt?: string;
+  sendRealTime?: boolean;
+  sendEmail?: boolean;
+  subject?: string;
+  context?: Record<string, unknown>;
+}
+export interface INotificationCreateRes {
+  notification: Record<string, unknown>;
+}
+export interface INotificationReadRes {
+  notification: Record<string, unknown>;
+}
+export interface INotificationsReadAllPayload {
+  isRead?: boolean;
+}
+export interface INotificationPreferencesRes {
+  realtime?: boolean;
+  email?: boolean;
+  sms?: boolean;
+  marketingEmails?: boolean;
+}
+export interface INotificationUpdatePreferencesPayload {
+  realtime?: boolean;
+  email?: boolean;
+  sms?: boolean;
+  marketingEmails?: boolean;
+}
+
+export interface INotificationUpdatePushTokenPayload {
+  pushTokenUpdate: { pushToken: string | null };
+}
+
+export interface INotificationUpdatePushTokenRes {
+  registered: boolean;
+}
+
+// Document verify
+export interface IDocumentVerifyPayload {
+  documentId?: string;
+  key?: string;
+}
+export interface IDocumentVerifyRes {
+  document: { id: string; status: string; key?: string; publicUrl?: string; verifiedAt?: string };
+}
+
+// Documents (Admin)
+export interface IDocumentsListRes {
+  documents: Array<Record<string, unknown>>;
+  pagination: { page: number; limit: number; total: number; totalPages: number };
+}
+
+export interface IDocumentDetailsRes {
+  document: Record<string, unknown>;
+}
+
+// Email logs (Admin)
+export interface IEmailLog {
+  _id: string;
+  to?: string;
+  from?: string;
+  subject?: string;
+  type?: string;
+  status: string;
+  jobId?: string;
+  messageId?: string;
+  provider?: string;
+  metadata?: Record<string, unknown> & { company?: string };
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface IEmailLogsListRes {
+  emailLogs: IEmailLog[];
+  pagination: { page: number; limit: number; total: number; totalPages: number };
+}
+
+export interface IEmailLogDetailsRes {
+  emailLog: Record<string, unknown>;
+}
+
+export interface IEmailLogResendRes {
+  emailLog: {
+    _id: string;
+    status: string;
+    jobId: string | null;
+    to: string;
+    type: string;
+    retryCount: number;
+  };
+}
+
+// Marketplace types (aligned with backend and lib/utils/marketplace)
+export type ProductCategory =
+  | 'fashion'
+  | 'food'
+  | 'health-beauty'
+  | 'accessories'
+  | 'electronics'
+  | 'books'
+  | 'other';
+
+export interface IMarketplaceProduct {
+  _id: string;
+  name: string;
+  slug: string;
+  vendor: string;
+  vendorName?: string;
+  vendorSlug?: string;
+  description?: string;
+  category: ProductCategory;
+  price: number;
+  images: string[];
+  inStock: boolean;
+  stockQuantity: number;
+  status: 'draft' | 'published' | 'archived';
+  isFeatured: boolean;
+  displayOrder: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface IMarketplaceVendor {
+  _id: string;
+  name: string;
+  slug: string;
+  storeName: string;
+  storeDescription?: string;
+  logo?: string;
+  coverImage?: string;
+  status: string;
+  isVerified: boolean;
+  productCount?: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface IMarketplaceOrderItem {
+  product: string;
+  productName?: string;
+  quantity: number;
+  price: number;
+}
+
+export interface IMarketplaceOrder {
+  _id: string;
+  orderNumber: string;
+  customer: { name: string; email: string; phone: string; address?: string };
+  vendor: string;
+  vendorName?: string;
+  vendorSlug?: string;
+  items: IMarketplaceOrderItem[];
+  totalAmount: number;
+  status: string;
+  paymentStatus: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface IMarketplaceCategoriesRes {
+  categories: Array<{ name: string; slug: ProductCategory; count: number }>;
+}
+export interface IMarketplaceVendorsRes {
+  vendors: IMarketplaceVendor[];
+}
+export type IMarketplaceVendorRes = IMarketplaceVendor;
+export interface IMarketplaceProductsListRes {
+  products: IMarketplaceProduct[];
+  pagination: { page: number; limit: number; total: number; totalPages: number };
+}
+export type IMarketplaceProductRes = IMarketplaceProduct;
+export interface IMarketplaceBecomeVendorPayload {
+  storeName: string;
+  storeDescription?: string;
+  email: string;
+  phone: string;
+  whatsapp?: string;
+  address?: string;
+  bankAccountName?: string;
+  bankAccountNumber?: string;
+  bankName?: string;
+}
+export interface IMarketplaceBecomeVendorRes {
+  vendor: IMarketplaceVendor;
+  message?: string;
+}
+export interface IMarketplacePlaceOrderPayload {
+  customer: { name: string; email: string; phone: string; address?: string };
+  items: Array<{ productId: string; productName?: string; quantity: number; price: number }>;
+}
+export interface IMarketplacePlaceOrderRes {
+  order: IMarketplaceOrder;
+}
+export interface IMarketplaceMyOrdersRes {
+  orders: IMarketplaceOrder[];
+}
+
+// Vendor dashboard
+export type IVendorMeRes = IMarketplaceVendor;
+export interface IVendorProductsRes {
+  products: IMarketplaceProduct[];
+}
+export interface IVendorCreateProductPayload {
+  name: string;
+  description?: string;
+  category: ProductCategory;
+  price: number;
+  images?: string[];
+  stockQuantity?: number;
+  isFeatured?: boolean;
+}
+export interface IVendorUpdateProductPayload {
+  name?: string;
+  description?: string;
+  category?: ProductCategory;
+  price?: number;
+  images?: string[];
+  inStock?: boolean;
+  stockQuantity?: number;
+  status?: 'draft' | 'published' | 'archived';
+  isFeatured?: boolean;
+}
+export interface IVendorOrdersRes {
+  orders: IMarketplaceOrder[];
+}
+export interface IVendorUpdateSettingsPayload {
+  storeName?: string;
+  storeDescription?: string;
+  email?: string;
+  phone?: string;
+  logo?: string;
+  coverImage?: string;
 }

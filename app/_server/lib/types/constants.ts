@@ -17,6 +17,10 @@ export interface IUser {
   gender?: Gender;
   auth: UserAuth;
   kyc: KYC;
+  /** Link to Artist profile for artist dashboard. */
+  artistId?: mongoose.Types.ObjectId;
+  /** Link to Vendor for vendor dashboard. */
+  vendorId?: mongoose.Types.ObjectId;
   isDeleted?: boolean;
   deleteRequestedAt?: Date;
   deletionApprovedAt?: Date;
@@ -33,6 +37,8 @@ export interface UserAuth {
   roles: AuthUserRole[];
   lastLogin?: string;
   refreshTokenJTI?: string;
+  /** FCM push token for admin notifications */
+  pushToken?: string;
 }
 
 export interface AuthUserRole {
@@ -712,6 +718,18 @@ export interface IPoll {
   updatedAt: Date;
 }
 
+// Marketplace product category (aligned with backend)
+export const PRODUCT_CATEGORIES = [
+  'fashion',
+  'food',
+  'health-beauty',
+  'accessories',
+  'electronics',
+  'books',
+  'other',
+] as const;
+export type ProductCategory = (typeof PRODUCT_CATEGORIES)[number];
+
 // Vendor Types
 export interface IVendor {
   _id: mongoose.Types.ObjectId;
@@ -743,14 +761,7 @@ export interface IProduct {
   slug: string;
   vendor: mongoose.Types.ObjectId;
   description?: string;
-  category:
-    | 'fashion'
-    | 'food'
-    | 'health-beauty'
-    | 'accessories'
-    | 'electronics'
-    | 'books'
-    | 'other';
+  category: ProductCategory;
   price: number;
   images: string[];
   inStock: boolean;
@@ -777,6 +788,7 @@ export interface IOrder {
     phone: string;
     address?: string;
   };
+  customerId?: mongoose.Types.ObjectId;
   vendor: mongoose.Types.ObjectId;
   items: Array<{
     _id?: mongoose.Types.ObjectId;

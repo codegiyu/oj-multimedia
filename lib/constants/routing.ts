@@ -11,12 +11,16 @@ import {
   Heart,
   MessageSquare,
   TrendingUp,
+  Mail,
 } from 'lucide-react';
 import type { ISidebarLinkGroup } from '@/lib/types/general';
 
 export const unprotectedRoutes = new Set([
   '/admin/auth/login',
   '/admin/auth/accept-invite/create-password',
+  '/admin/auth/request-password-reset',
+  '/admin/auth/reset-password-mail-notification',
+  '/admin/auth/reset-password',
 ]);
 
 export const authenticatedAuthRoutes = new Set<string>([]);
@@ -81,6 +85,11 @@ export const sidebarLinksData: ISidebarLinkGroup[] = [
   {
     groupName: 'System',
     links: [
+      {
+        LucideIcon: Mail,
+        page: 'Email Logs',
+        path: { prefix: '/admin', suffix: '/dashboard/email-logs' },
+      },
       {
         LucideIcon: Settings,
         page: 'Settings',

@@ -8,6 +8,7 @@ interface BaseGhostBtnProps extends Omit<RegularBtnProps, 'text'> {
   iconClass?: string;
   Icon?: IconComp;
   LucideIcon?: LucideIconComp;
+  srOnlyText?: string;
 }
 interface GhostBtnPropsWithIcon extends BaseGhostBtnProps {
   Icon?: IconComp;
@@ -23,25 +24,26 @@ export const GhostBtn = ({
   LucideIcon,
   iconClass,
   className,
-  size = 'icon',
+  srOnlyText,
   ...props
 }: GhostBtnProps) => {
   return (
     <RegularBtn
       variant="none"
-      size={size}
+      size="icon"
       typo="custom"
       className={cn('p-0 flex-none', className)}
       {...props}>
       {Icon ? (
-        <i className={cn('text-2xl text-foreground', iconClass)}>
+        <i className={cn('text-2xl text-current', iconClass)}>
           <Icon />
         </i>
       ) : LucideIcon ? (
-        <LucideIcon className={cn('size-4 text-foreground', iconClass)} />
+        <LucideIcon className={cn('size-4 text-current', iconClass)} />
       ) : (
         children
       )}
+      {srOnlyText && <span className="sr-only">{srOnlyText}</span>}
     </RegularBtn>
   );
 };

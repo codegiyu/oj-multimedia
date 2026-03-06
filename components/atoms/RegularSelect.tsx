@@ -12,11 +12,16 @@ import {
 } from '../ui/select';
 import { cn } from '@/lib/utils';
 import { InputWrapper } from '../general/InputWrapper';
-import { ComponentPropsWithRef, FocusEvent, ReactNode } from 'react';
+import { ComponentPropsWithRef, FocusEvent, useEffect, useRef, useState } from 'react';
+import { Loader2 } from 'lucide-react';
+
+const LOAD_MORE_SENTINEL_VALUE = '__load_more__';
 
 export interface RegularSelectProps extends Omit<ComponentPropsWithRef<'div'>, 'className'> {
   label?: string;
-  subtext?: ReactNode;
+  subtext?: React.ReactNode;
+  /** When true, the default "Clear" subtext button is not shown. Ignored if subtext is passed. */
+  hideClearSubtext?: boolean;
   labelClassName?: string;
   value: string;
   name?: string;
@@ -26,17 +31,25 @@ export interface RegularSelectProps extends Omit<ComponentPropsWithRef<'div'>, '
   optionsTitle?: string;
   options: SelectOption[];
   disabled?: boolean;
+  loading?: boolean;
   required?: boolean;
   wrapClassName?: string;
   triggerClassName?: string;
   valueClassName?: string;
   hideCaretIfDisabled?: boolean;
   errors?: string[];
+  /** Optional class for the dropdown content (e.g. max-h-60 for scrollable list). */
+  contentClassName?: string;
+  /** When true, a "load more" sentinel is shown and onLoadMore is used for infinite scroll. */
+  hasMore?: boolean;
+  loadingMore?: boolean;
+  onLoadMore?: () => void;
 }
 
 export const RegularSelect = ({
   label = '',
   subtext,
+  hideClearSubtext = false,
   labelClassName = '',
   value,
   name,
@@ -46,6 +59,7 @@ export const RegularSelect = ({
   optionsTitle,
   options,
   disabled = false,
+  loading = false,
   wrapClassName = '',
   triggerClassName = '',
   valueClassName = '',
@@ -54,13 +68,60 @@ export const RegularSelect = ({
   onFocus,
   onBlur,
   errors = [],
+  contentClassName = '',
+  hasMore = false,
+  loadingMore = false,
+  onLoadMore,
   ...props
 }: RegularSelectProps) => {
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  useEffect(() => {
+    if (!hasMore || !onLoadMore || loadingMore || !isDropdownOpen) {
+      observerRef.current?.disconnect();
+      observerRef.current = null;
+      return;
+    }
+    const id = setTimeout(() => {
+      const el = sentinelRef.current;
+      if (!el) return;
+      const observer = new IntersectionObserver(
+        entries => {
+          if (entries[0]?.isIntersecting) onLoadMore();
+        },
+        { root: null, rootMargin: '100px', threshold: 0 }
+      );
+      observer.observe(el);
+      observerRef.current = observer;
+    }, 0);
+    return () => {
+      clearTimeout(id);
+      observerRef.current?.disconnect();
+      observerRef.current = null;
+    };
+  }, [hasMore, loadingMore, options.length, isDropdownOpen, onLoadMore]);
+
+  const defaultClearSubtext =
+    !hideClearSubtext && value !== '' ? (
+      <button
+        type="button"
+        onClick={e => {
+          e.preventDefault();
+          onSelectChange('');
+        }}
+        className="text-xs font-medium text-primary hover:underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded">
+        Clear
+      </button>
+    ) : null;
+  const effectiveSubtext = subtext !== undefined ? subtext : defaultClearSubtext;
+
   return (
     <InputWrapper
       wrapClassName={wrapClassName}
       label={label}
-      subtext={subtext}
+      subtext={effectiveSubtext}
       labelTextClassName={labelClassName}
       required={required}
       errors={errors}>
@@ -73,36 +134,109 @@ export const RegularSelect = ({
         }}
         className={cn('w-full flex items-center', className)}
         {...props}>
-        <Select value={value} onValueChange={value => value && onSelectChange(value)} name={name}>
+        <Select
+          value={value}
+          onValueChange={v => v && v !== LOAD_MORE_SENTINEL_VALUE && onSelectChange(v)}
+          onOpenChange={open => setIsDropdownOpen(open === true)}
+          name={name}>
           <SelectTrigger
-            disabled={disabled}
+            disabled={disabled || loading}
             hidecaretifdisabled={hideCaretIfDisabled}
             className={cn(``, triggerClassName)}>
             <SelectValue
               className={cn('', valueClassName)}
               placeholder={
-                <span className="block text-start text-muted-foreground">{placeholder}</span>
+                loading ? (
+                  <span className="flex items-center gap-2 text-muted-foreground">
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                    Loading...
+                  </span>
+                ) : (
+                  <span className="block text-start text-muted-foreground">{placeholder}</span>
+                )
               }
             />
           </SelectTrigger>
           <SelectContent
             side="bottom"
             position="popper"
-            className="bg-white rounded-[6px] border p-2 shadow-md outline-hidden">
+            className={cn(
+              'bg-background rounded-[6px] border p-2 shadow-md outline-hidden overflow-y-auto',
+              contentClassName
+            )}>
             {optionsTitle && (
               <SelectLabel className="py-1 px-3 text-sm font-medium text-muted-foreground">
                 {optionsTitle}
               </SelectLabel>
             )}
-            {options.map(({ text, altText, value, disabled = false }, idx) => (
-              <SelectItem key={idx} value={value} disabled={disabled} className="overflow-hidden">
+            {loading ? (
+              <SelectItem
+                value="__loading__"
+                disabled
+                className="overflow-hidden cursor-default opacity-70">
+                <div className="flex w-full items-center gap-2 overflow-hidden">
+                  <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                  <span className="text-muted-foreground text-sm truncate">Loading options...</span>
+                </div>
+              </SelectItem>
+            ) : options.length === 0 ? (
+              <SelectItem
+                value="__no_options__"
+                disabled
+                className="overflow-hidden cursor-default opacity-70">
                 <div className="flex w-full items-center gap-3 overflow-hidden">
-                  <span className={cn('text-foreground truncate', valueClassName)}>
-                    {altText || text}
+                  <span className="text-muted-foreground text-sm truncate">
+                    No options available
                   </span>
                 </div>
               </SelectItem>
-            ))}
+            ) : (
+              <>
+                {options.map(
+                  ({ text, altText, value: optValue, disabled: optDisabled = false }, idx) => (
+                    <SelectItem
+                      key={idx}
+                      value={optValue}
+                      disabled={optDisabled}
+                      className="overflow-hidden">
+                      <div className="flex w-full items-center gap-3 overflow-hidden">
+                        <span className={cn('text-foreground truncate', valueClassName)}>
+                          {altText || text}
+                        </span>
+                      </div>
+                    </SelectItem>
+                  )
+                )}
+                {hasMore && (
+                  <SelectItem
+                    value={LOAD_MORE_SENTINEL_VALUE}
+                    disabled
+                    className="overflow-hidden cursor-default opacity-70 [&_button]:pointer-events-auto">
+                    <div
+                      ref={sentinelRef}
+                      className="flex w-full items-center justify-center gap-2 overflow-hidden py-1">
+                      {loadingMore ? (
+                        <>
+                          <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                          <span className="text-muted-foreground text-sm">Loading more...</span>
+                        </>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={e => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            onLoadMore?.();
+                          }}
+                          className="text-muted-foreground text-sm hover:text-foreground hover:underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1 rounded">
+                          Load more
+                        </button>
+                      )}
+                    </div>
+                  </SelectItem>
+                )}
+              </>
+            )}
           </SelectContent>
         </Select>
       </SelectGroup>
