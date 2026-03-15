@@ -1,8 +1,12 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Zap, ArrowRight } from 'lucide-react';
+import { Zap, ArrowRight, Video } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { SectionContainer } from '@/components/general/SectionContainer';
+import { DataLoadError } from '@/components/general/DataLoadError';
 import { VideoCategories } from './VideoCategories';
 import { VideoUploadCTA } from './VideoUploadCTA';
 import { EmptyState } from '../news/EmptyState';
@@ -11,10 +15,15 @@ import { VideoCard } from '@/components/cards/VideoCard';
 import type { ShortFormVideo } from './ShortFormVideos';
 
 interface ShortFormVideosPageClientProps {
-  shortFormVideos: (ShortFormVideo & { category: string })[];
+  shortFormVideos: ShortFormVideo[];
+  initialErrorMessage?: string | null;
 }
 
-export const ShortFormVideosPageClient = ({ shortFormVideos }: ShortFormVideosPageClientProps) => {
+export const ShortFormVideosPageClient = ({
+  shortFormVideos,
+  initialErrorMessage = null,
+}: ShortFormVideosPageClientProps) => {
+  const router = useRouter();
   const [displayedItems, setDisplayedItems] = useState(20);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -28,9 +37,32 @@ export const ShortFormVideosPageClient = ({ shortFormVideos }: ShortFormVideosPa
   const hasMore = displayedItems < shortFormVideos.length;
   const itemsToShow = shortFormVideos.slice(0, displayedItems);
 
+  if (initialErrorMessage && shortFormVideos.length === 0) {
+    return (
+      <SectionContainer>
+        <DataLoadError
+          title="Unable to load short form videos"
+          message={initialErrorMessage}
+          onRetry={() => router.refresh()}
+          icon={<Video className="w-8 h-8 text-destructive" />}
+        />
+      </SectionContainer>
+    );
+  }
+
   return (
     <>
       <VideoCategories />
+      {initialErrorMessage && (
+        <div className="container mx-auto px-4 mb-4">
+          <div className="rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive flex items-center justify-between gap-4">
+            <span>{initialErrorMessage}</span>
+            <Button variant="outline" size="sm" onClick={() => router.refresh()}>
+              Retry
+            </Button>
+          </div>
+        </div>
+      )}
       <SectionComp
         icon={Zap}
         iconColor="primary"

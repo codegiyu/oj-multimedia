@@ -3,9 +3,9 @@
 import { motion } from 'framer-motion';
 import { HelpCircle, Send, CheckCircle } from 'lucide-react';
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+import { RegularBtn } from '@/components/atoms/RegularBtn';
+import { RegularInput } from '@/components/atoms/RegularInput';
+import { RegularTextarea } from '@/components/atoms/RegularTextarea';
 import {
   Select,
   SelectContent,
@@ -77,8 +77,10 @@ export const SubmitQuestionSection = () => {
                     <label htmlFor="name" className="text-sm font-medium">
                       Your Name (Optional)
                     </label>
-                    <Input
+                    <RegularInput
                       id="name"
+                      name="name"
+                      label=""
                       placeholder="Enter your name"
                       value={name}
                       onChange={e => setName(e.target.value)}
@@ -109,21 +111,37 @@ export const SubmitQuestionSection = () => {
                   <label htmlFor="question" className="text-sm font-medium">
                     Your Question
                   </label>
-                  <Textarea
+                  <RegularTextarea
                     id="question"
+                    name="question"
+                    label=""
                     placeholder="Ask your question here... Be as specific as possible to get the best answer."
                     rows={6}
-                    className="resize-none"
                     value={question}
                     onChange={e => setQuestion(e.target.value)}
                     required
                   />
                 </div>
 
-                <Button type="submit" size="lg" className="w-full gap-2" disabled={isSubmitting}>
-                  <Send className="w-4 h-4" />
-                  {isSubmitting ? 'Submitting...' : 'Submit Question'}
-                </Button>
+                <RegularBtn
+                  type="submit"
+                  size="full"
+                  className="w-full gap-2"
+                  disabled={isSubmitting}
+                  loading={isSubmitting}
+                  RightIcon={Send}
+                  rightIconProps={{ className: 'w-4 h-4' }}
+                  text={isSubmitting ? 'Submitting...' : 'Submit Question'}
+                  onDisabledClick={() => {
+                    if (isSubmitting) {
+                      toast({
+                        title: 'Please wait',
+                        description: 'Submitting your question…',
+                        variant: 'info',
+                      });
+                    }
+                  }}
+                />
               </form>
             </CardContent>
           </Card>

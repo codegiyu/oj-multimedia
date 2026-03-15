@@ -1,6 +1,5 @@
 'use client';
 
-import { useRouter, usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useQueryState, parseAsString } from 'nuqs';
 import { Sparkles, Lightbulb, GraduationCap, Briefcase, Film, Church, Star } from 'lucide-react';
@@ -16,15 +15,13 @@ const categories = [
 ];
 
 export const NewsCategories = () => {
-  const router = useRouter();
-  const pathname = usePathname();
-  const [activeCategory] = useQueryState('category', parseAsString.withDefault('all'));
+  const [activeCategory, setActiveCategory] = useQueryState(
+    'category',
+    parseAsString.withDefault('all')
+  );
 
   const handleCategoryChange = (categoryId: string) => {
-    // Use router.push to trigger server-side re-render with new searchParams
-    // nuqs will automatically sync from the URL change
-    const newUrl = categoryId === 'all' ? pathname : `${pathname}?category=${categoryId}`;
-    router.push(newUrl, { scroll: false });
+    setActiveCategory(categoryId === 'all' ? null : categoryId);
   };
 
   return (

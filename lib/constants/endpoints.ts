@@ -5,6 +5,10 @@ import {
   IUser,
   UploadIntent,
   EntityType,
+  IArtistProfile,
+  IMusic,
+  IVideo,
+  INewsArticle,
 } from '@/app/_server/lib/types/constants';
 import mongoose from 'mongoose';
 
@@ -36,6 +40,168 @@ export type ClientFriendly<T> = T extends Date
 export type ClientSiteSettings = ClientFriendly<ISiteSettings>;
 export type ClientAdmin = ClientFriendly<IAdmin>;
 export type ClientUser = ClientFriendly<IUser>;
+export type ClientArtistProfile = ClientFriendly<IArtistProfile>;
+export type ClientMusic = ClientFriendly<IMusic>;
+export type ClientVideo = ClientFriendly<IVideo>;
+export type ClientNewsArticle = ClientFriendly<INewsArticle>;
+
+// Populated variants for responses where related entities are populated
+export type PopulatedArtistSummary = {
+  _id: string;
+  name: string;
+  slug: string;
+  image?: string;
+};
+
+export type PopulatedVendorSummary = {
+  _id: string;
+  name?: string;
+  slug: string;
+  storeName: string;
+};
+
+export type PopulatedUser = ClientUser & {
+  artist?: PopulatedArtistSummary;
+  vendor?: PopulatedVendorSummary;
+};
+
+// User account & wishlist types
+export interface IUserMeRes {
+  user: PopulatedUser;
+}
+
+export interface IUserUpdateMePayload {
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  phoneNumber?: string;
+  avatar?: string;
+}
+
+export interface IUserWishlistProductSummary {
+  _id: string;
+  name: string;
+  slug: string;
+  price: number;
+  images: string[];
+  vendor?: {
+    name: string;
+    slug: string;
+  };
+}
+
+export interface IUserWishlistItem {
+  _id: string;
+  createdAt: string;
+  product: IUserWishlistProductSummary;
+}
+
+export type IUserWishlistListRes = GetListRes<IUserWishlistItem, 'items'>;
+
+export interface IUserWishlistAddPayload {
+  productId: string;
+}
+
+export interface IUserWishlistAddRes {
+  item: IUserWishlistItem;
+}
+
+// Artist dashboard types
+export interface IArtistMeRes {
+  artist: ClientArtistProfile;
+}
+
+export interface IArtistDashboardStatsRes {
+  tracksCount: number;
+  videosCount: number;
+  totalPlays: number;
+  totalViews?: number;
+}
+
+export interface IArtistUpdateMePayload {
+  name?: string;
+  bio?: string;
+  image?: string;
+  coverImage?: string;
+  genre?: string;
+  socials?: {
+    facebook?: string;
+    instagram?: string;
+    twitter?: string;
+    youtube?: string;
+    website?: string;
+  };
+}
+
+export type ArtistMusicListItem = Omit<ClientMusic, 'artist'> & {
+  artist?: string | PopulatedArtistSummary;
+};
+
+export type IArtistMusicListRes = GetListRes<ArtistMusicListItem, 'music'>;
+
+export interface IArtistMusicItemRes {
+  music: ArtistMusicListItem;
+}
+
+export interface IArtistCreateMusicPayload {
+  title: string;
+  description?: string;
+  lyrics?: string;
+  coverImage?: string;
+  audioUrl?: string;
+  videoUrl?: string;
+  category?: string;
+  isMonetizable?: boolean;
+}
+
+export interface IArtistUpdateMusicPayload extends Partial<IArtistCreateMusicPayload> {
+  status?: 'draft' | 'published' | 'archived';
+}
+
+export type ArtistVideoListItem = Omit<ClientVideo, 'artist'> & {
+  artist?: string | PopulatedArtistSummary;
+};
+
+export type IArtistVideosListRes = GetListRes<ArtistVideoListItem, 'videos'>;
+
+export interface IArtistVideoItemRes {
+  video: ArtistVideoListItem;
+}
+
+export interface IArtistCreateVideoPayload {
+  title: string;
+  description?: string;
+  thumbnail?: string;
+  videoUrl?: string;
+  category?: string;
+  isMonetizable?: boolean;
+}
+
+export interface IArtistUpdateVideoPayload extends Partial<IArtistCreateVideoPayload> {
+  status?: 'draft' | 'published' | 'archived';
+}
+
+// Public (music, videos, news) – list and detail types
+export type PublicMusicListItem = ArtistMusicListItem;
+export type IPublicMusicListRes = GetListRes<PublicMusicListItem, 'music'>;
+export interface IPublicMusicItemRes {
+  music: PublicMusicListItem;
+}
+
+export type PublicVideoListItem = ArtistVideoListItem;
+export type IPublicVideosListRes = GetListRes<PublicVideoListItem, 'videos'>;
+export interface IPublicVideoItemRes {
+  video: PublicVideoListItem;
+}
+
+export type PublicNewsListItem = ClientNewsArticle & {
+  readTime?: string;
+  comments?: number;
+};
+export type IPublicNewsListRes = GetListRes<PublicNewsListItem, 'articles'>;
+export interface IPublicNewsItemRes {
+  article: PublicNewsListItem;
+}
 
 export type EndpointDefinition<
   Payload extends Record<string, any> | undefined = undefined,
@@ -83,6 +249,13 @@ export interface AllEndpoints {
     IAuthChangePasswordRes,
     undefined
   >;
+
+  // User account (profile & wishlist)
+  USER_GET_ME: EndpointDefinition<undefined, IUserMeRes, undefined>;
+  USER_UPDATE_ME: EndpointDefinition<IUserUpdateMePayload, IUserMeRes, undefined>;
+  USER_WISHLIST_LIST: EndpointDefinition<undefined, IUserWishlistListRes, `?${string}`>;
+  USER_WISHLIST_ADD: EndpointDefinition<IUserWishlistAddPayload, IUserWishlistAddRes, undefined>;
+  USER_WISHLIST_REMOVE: EndpointDefinition<undefined, { success: boolean }, `/${string}`>;
 
   // File Upload (Public)
   GENERATE_PRESIGNED_URL: EndpointDefinition<
@@ -155,7 +328,16 @@ export interface AllEndpoints {
   ADMIN_EMAIL_LOGS_RESEND: EndpointDefinition<undefined, IEmailLogResendRes, `/${string}`>;
 
   // Marketplace (public)
-  MARKETPLACE_GET_CATEGORIES: EndpointDefinition<undefined, IMarketplaceCategoriesRes, undefined>;
+  MARKETPLACE_GET_CATEGORIES: EndpointDefinition<
+    undefined,
+    IMarketplaceCategoriesRes,
+    `?${string}` | undefined
+  >;
+  MARKETPLACE_GET_SUBCATEGORIES: EndpointDefinition<
+    undefined,
+    IMarketplaceSubCategoriesRes,
+    `?${string}` | undefined
+  >;
   MARKETPLACE_GET_VENDORS: EndpointDefinition<undefined, IMarketplaceVendorsRes, undefined>;
   MARKETPLACE_GET_VENDOR_BY_SLUG: EndpointDefinition<
     undefined,
@@ -182,11 +364,42 @@ export interface AllEndpoints {
     IMarketplacePlaceOrderRes,
     undefined
   >;
-  MARKETPLACE_GET_MY_ORDERS: EndpointDefinition<undefined, IMarketplaceMyOrdersRes, undefined>;
+  MARKETPLACE_GET_MY_ORDERS: EndpointDefinition<undefined, IMarketplaceMyOrdersRes, `?${string}`>;
+
+  // Artist dashboard
+  ARTIST_GET_ME: EndpointDefinition<undefined, IArtistMeRes, undefined>;
+  ARTIST_UPDATE_ME: EndpointDefinition<IArtistUpdateMePayload, IArtistMeRes, undefined>;
+  ARTIST_GET_DASHBOARD_STATS: EndpointDefinition<undefined, IArtistDashboardStatsRes, undefined>;
+  ARTIST_GET_MUSIC: EndpointDefinition<undefined, IArtistMusicListRes, `?${string}`>;
+  ARTIST_GET_MUSIC_ITEM: EndpointDefinition<undefined, IArtistMusicItemRes, `/${string}`>;
+  ARTIST_CREATE_MUSIC: EndpointDefinition<
+    IArtistCreateMusicPayload,
+    IArtistMusicItemRes,
+    undefined
+  >;
+  ARTIST_UPDATE_MUSIC: EndpointDefinition<
+    IArtistUpdateMusicPayload,
+    IArtistMusicItemRes,
+    `/${string}`
+  >;
+  ARTIST_DELETE_MUSIC: EndpointDefinition<undefined, { success: boolean }, `/${string}`>;
+  ARTIST_GET_VIDEOS: EndpointDefinition<undefined, IArtistVideosListRes, `?${string}`>;
+  ARTIST_GET_VIDEO_ITEM: EndpointDefinition<undefined, IArtistVideoItemRes, `/${string}`>;
+  ARTIST_CREATE_VIDEO: EndpointDefinition<
+    IArtistCreateVideoPayload,
+    IArtistVideoItemRes,
+    undefined
+  >;
+  ARTIST_UPDATE_VIDEO: EndpointDefinition<
+    IArtistUpdateVideoPayload,
+    IArtistVideoItemRes,
+    `/${string}`
+  >;
+  ARTIST_DELETE_VIDEO: EndpointDefinition<undefined, { success: boolean }, `/${string}`>;
 
   // Vendor dashboard (authenticated client with vendorId)
   VENDOR_GET_ME: EndpointDefinition<undefined, IVendorMeRes, undefined>;
-  VENDOR_GET_PRODUCTS: EndpointDefinition<undefined, IVendorProductsRes, undefined>;
+  VENDOR_GET_PRODUCTS: EndpointDefinition<undefined, IVendorProductsRes, PageAndSizeQuery>;
   VENDOR_CREATE_PRODUCT: EndpointDefinition<
     IVendorCreateProductPayload,
     IMarketplaceProduct,
@@ -203,6 +416,15 @@ export interface AllEndpoints {
     IMarketplaceVendor,
     undefined
   >;
+  VENDOR_GET_DASHBOARD_STATS: EndpointDefinition<undefined, IVendorDashboardStatsRes, undefined>;
+
+  // Public (music, videos, news)
+  PUBLIC_GET_MUSIC: EndpointDefinition<undefined, IPublicMusicListRes, `?${string}`>;
+  PUBLIC_GET_MUSIC_ITEM: EndpointDefinition<undefined, IPublicMusicItemRes, `/${string}`>;
+  PUBLIC_GET_VIDEOS: EndpointDefinition<undefined, IPublicVideosListRes, `?${string}`>;
+  PUBLIC_GET_VIDEO_ITEM: EndpointDefinition<undefined, IPublicVideoItemRes, `/${string}`>;
+  PUBLIC_GET_NEWS: EndpointDefinition<undefined, IPublicNewsListRes, `?${string}`>;
+  PUBLIC_GET_NEWS_ITEM: EndpointDefinition<undefined, IPublicNewsItemRes, `/${string}`>;
 }
 
 export const ENDPOINTS: Record<keyof AllEndpoints, EndpointDetails> = {
@@ -250,6 +472,28 @@ export const ENDPOINTS: Record<keyof AllEndpoints, EndpointDetails> = {
     method: 'PATCH',
   },
 
+  // User account (profile & wishlist)
+  USER_GET_ME: {
+    path: '/user/me',
+    method: 'GET',
+  },
+  USER_UPDATE_ME: {
+    path: '/user/me',
+    method: 'PATCH',
+  },
+  USER_WISHLIST_LIST: {
+    path: '/user/wishlist',
+    method: 'GET',
+  },
+  USER_WISHLIST_ADD: {
+    path: '/user/wishlist',
+    method: 'POST',
+  },
+  USER_WISHLIST_REMOVE: {
+    path: '/user/wishlist', // /:productId
+    method: 'DELETE',
+  },
+
   // File Upload (Public)
   GENERATE_PRESIGNED_URL: {
     path: '/upload/presigned-url',
@@ -279,7 +523,10 @@ export const ENDPOINTS: Record<keyof AllEndpoints, EndpointDetails> = {
   // Notifications
   NOTIFICATIONS_LIST: { path: '/notifications', method: 'GET' },
   NOTIFICATIONS_CREATE: { path: '/notifications/create', method: 'POST' },
-  NOTIFICATIONS_READ_ONE: { path: '/notifications/read/:notificationId', method: 'PATCH' },
+  NOTIFICATIONS_READ_ONE: {
+    path: '/notifications/read', // /:notificationId
+    method: 'PATCH',
+  },
   NOTIFICATIONS_READ_ALL: { path: '/notifications/read-all', method: 'PATCH' },
   NOTIFICATIONS_GET_PREFERENCES: { path: '/notifications/preferences', method: 'GET' },
   NOTIFICATIONS_UPDATE_PREFERENCES: { path: '/notifications/preferences', method: 'PATCH' },
@@ -290,17 +537,34 @@ export const ENDPOINTS: Record<keyof AllEndpoints, EndpointDetails> = {
 
   // Documents (Admin)
   ADMIN_DOCUMENTS_LIST: { path: '/admin/documents', method: 'GET' },
-  ADMIN_DOCUMENT_DETAILS: { path: '/admin/documents/:documentId', method: 'GET' },
-  ADMIN_DOCUMENTS_VERIFY: { path: '/admin/documents/verify/:documentId', method: 'POST' },
+  ADMIN_DOCUMENT_DETAILS: {
+    path: '/admin/documents', // /:documentId
+    method: 'GET',
+  },
+  ADMIN_DOCUMENTS_VERIFY: {
+    path: '/admin/documents/verify', // /:documentId
+    method: 'POST',
+  },
 
   // Email logs (Admin)
   ADMIN_EMAIL_LOGS_LIST: { path: '/admin/email-logs', method: 'GET' },
-  ADMIN_EMAIL_LOG_DETAILS: { path: '/admin/email-logs/:emailLogId', method: 'GET' },
-  ADMIN_EMAIL_LOGS_RESEND: { path: '/admin/email-logs/resend/:emailLogId', method: 'POST' },
+  ADMIN_EMAIL_LOG_DETAILS: {
+    path: '/admin/email-logs', // /:emailLogId
+    method: 'GET',
+  },
+  ADMIN_EMAIL_LOGS_RESEND: {
+    path: '/admin/email-logs/resend', // /:emailLogId
+    method: 'POST',
+  },
 
   // Marketplace
   MARKETPLACE_GET_CATEGORIES: {
     path: '/marketplace/categories',
+    method: 'GET',
+    isNotAuthenticated: true,
+  },
+  MARKETPLACE_GET_SUBCATEGORIES: {
+    path: '/marketplace/subcategories',
     method: 'GET',
     isNotAuthenticated: true,
   },
@@ -310,7 +574,7 @@ export const ENDPOINTS: Record<keyof AllEndpoints, EndpointDetails> = {
     isNotAuthenticated: true,
   },
   MARKETPLACE_GET_VENDOR_BY_SLUG: {
-    path: '/marketplace/vendors',
+    path: '/marketplace/vendors', // /:slug
     method: 'GET',
     isNotAuthenticated: true,
   },
@@ -320,7 +584,7 @@ export const ENDPOINTS: Record<keyof AllEndpoints, EndpointDetails> = {
     isNotAuthenticated: true,
   },
   MARKETPLACE_GET_PRODUCT_BY_SLUG: {
-    path: '/marketplace/products',
+    path: '/marketplace/products', // /:slug
     method: 'GET',
     isNotAuthenticated: true,
   },
@@ -336,13 +600,79 @@ export const ENDPOINTS: Record<keyof AllEndpoints, EndpointDetails> = {
   },
   MARKETPLACE_GET_MY_ORDERS: { path: '/marketplace/orders', method: 'GET' },
 
+  // Artist dashboard
+  ARTIST_GET_ME: {
+    path: '/artist/me',
+    method: 'GET',
+  },
+  ARTIST_UPDATE_ME: {
+    path: '/artist/me',
+    method: 'PATCH',
+  },
+  ARTIST_GET_DASHBOARD_STATS: {
+    path: '/artist/dashboard-stats',
+    method: 'GET',
+  },
+  ARTIST_GET_MUSIC: {
+    path: '/artist/music',
+    method: 'GET',
+  },
+  ARTIST_GET_MUSIC_ITEM: {
+    path: '/artist/music', // /:id - musicId
+    method: 'GET',
+  },
+  ARTIST_CREATE_MUSIC: {
+    path: '/artist/music',
+    method: 'POST',
+  },
+  ARTIST_UPDATE_MUSIC: {
+    path: '/artist/music', // /:id - musicId
+    method: 'PATCH',
+  },
+  ARTIST_DELETE_MUSIC: {
+    path: '/artist/music', // /:id - musicId
+    method: 'DELETE',
+  },
+  ARTIST_GET_VIDEOS: {
+    path: '/artist/videos',
+    method: 'GET',
+  },
+  ARTIST_GET_VIDEO_ITEM: {
+    path: '/artist/videos', // /:id - videoId
+    method: 'GET',
+  },
+  ARTIST_CREATE_VIDEO: {
+    path: '/artist/videos',
+    method: 'POST',
+  },
+  ARTIST_UPDATE_VIDEO: {
+    path: '/artist/videos', // /:id - videoId
+    method: 'PATCH',
+  },
+  ARTIST_DELETE_VIDEO: {
+    path: '/artist/videos', // /:id - videoId
+    method: 'DELETE',
+  },
+
   // Vendor dashboard
   VENDOR_GET_ME: { path: '/vendor/me', method: 'GET' },
   VENDOR_GET_PRODUCTS: { path: '/vendor/products', method: 'GET' },
   VENDOR_CREATE_PRODUCT: { path: '/vendor/products', method: 'POST' },
-  VENDOR_UPDATE_PRODUCT: { path: '/vendor/products', method: 'PATCH' },
+  VENDOR_UPDATE_PRODUCT: {
+    path: '/vendor/products', // /:id - productId
+    method: 'PATCH',
+  },
   VENDOR_GET_ORDERS: { path: '/vendor/orders', method: 'GET' },
   VENDOR_UPDATE_SETTINGS: { path: '/vendor/settings', method: 'PATCH' },
+  VENDOR_GET_DASHBOARD_STATS: { path: '/vendor/dashboard-stats', method: 'GET' },
+
+  // Public (music, videos, news)
+  PUBLIC_GET_MUSIC: { path: '/public/music', method: 'GET', isNotAuthenticated: true },
+  PUBLIC_GET_MUSIC_ITEM: { path: '/public/music', method: 'GET', isNotAuthenticated: true }, // /:idOrSlug
+  PUBLIC_GET_VIDEOS: { path: '/public/videos', method: 'GET', isNotAuthenticated: true },
+  PUBLIC_GET_VIDEO_ITEM: { path: '/public/videos', method: 'GET', isNotAuthenticated: true }, // /:idOrSlug
+  PUBLIC_GET_NEWS: { path: '/public/news', method: 'GET', isNotAuthenticated: true },
+  PUBLIC_GET_NEWS_ITEM: { path: '/public/news', method: 'GET', isNotAuthenticated: true }, // /:idOrSlug
 };
 
 // Pagination Query Type
@@ -508,7 +838,7 @@ export interface IAuthGoogleLoginRes {
 }
 
 export interface IAuthSessionRes {
-  user: ClientAdmin | ClientUser | null;
+  user: ClientAdmin | PopulatedUser | null;
 }
 
 export interface IAuthRequestOtpPayload {
@@ -551,7 +881,7 @@ export interface IAuthResetPasswordPayload {
 
 export interface IAuthResetPasswordRes {
   message: string;
-  user: ClientAdmin | ClientUser;
+  user: ClientAdmin | PopulatedUser;
 }
 
 export interface IAuthChangePasswordPayload {
@@ -562,14 +892,11 @@ export interface IAuthChangePasswordPayload {
 
 export interface IAuthChangePasswordRes {
   message: string;
-  user: ClientAdmin | ClientUser;
+  user: ClientAdmin | PopulatedUser;
 }
 
 // Notifications
-export interface INotificationsListRes {
-  notifications: Array<Record<string, unknown>>;
-  meta: { page: number; limit: number; total: number; totalPages: number };
-}
+export type INotificationsListRes = GetListRes<Record<string, unknown>, 'notifications'>;
 export interface INotificationCreatePayload {
   userId: string;
   userModel: 'User' | 'Admin';
@@ -623,10 +950,7 @@ export interface IDocumentVerifyRes {
 }
 
 // Documents (Admin)
-export interface IDocumentsListRes {
-  documents: Array<Record<string, unknown>>;
-  pagination: { page: number; limit: number; total: number; totalPages: number };
-}
+export type IDocumentsListRes = GetListRes<Record<string, unknown>, 'documents'>;
 
 export interface IDocumentDetailsRes {
   document: Record<string, unknown>;
@@ -648,10 +972,7 @@ export interface IEmailLog {
   updatedAt?: string;
 }
 
-export interface IEmailLogsListRes {
-  emailLogs: IEmailLog[];
-  pagination: { page: number; limit: number; total: number; totalPages: number };
-}
+export type IEmailLogsListRes = GetListRes<IEmailLog, 'emailLogs'>;
 
 export interface IEmailLogDetailsRes {
   emailLog: Record<string, unknown>;
@@ -668,7 +989,34 @@ export interface IEmailLogResendRes {
   };
 }
 
-// Marketplace types (aligned with backend and lib/utils/marketplace)
+// Marketplace types (aligned with backend and MARKETPLACE-CATEGORIES-PRODUCTS.md)
+export interface IMarketplaceCategory {
+  _id: string;
+  name: string;
+  slug: string;
+  displayOrder?: number;
+  isActive?: boolean;
+}
+
+export interface IMarketplaceSubCategory {
+  _id: string;
+  category: string;
+  name: string;
+  slug: string;
+  displayOrder?: number;
+  isActive?: boolean;
+}
+
+/** Populated category/subcategory in product responses (at least name + slug) */
+export type ProductCategoryRef = { _id: string; name: string; slug: string };
+export type ProductSubCategoryRef = {
+  _id: string;
+  name: string;
+  slug: string;
+  category?: string;
+};
+
+/** @deprecated Use IMarketplaceCategory from API; kept for backward compatibility where slug union is used */
 export type ProductCategory =
   | 'fashion'
   | 'food'
@@ -678,6 +1026,22 @@ export type ProductCategory =
   | 'books'
   | 'other';
 
+/** Variation option (e.g. Colour with values [Red, Blue]) */
+export interface IMarketplaceVariationOption {
+  name: string;
+  values: string[];
+}
+
+/** Product variant: one combination with price, inStock, isDefault; only one variant per product has isDefault true */
+export interface IMarketplaceProductVariant {
+  options: Record<string, string>;
+  price: number;
+  inStock: boolean;
+  isDefault: boolean;
+  sku?: string;
+  image?: string;
+}
+
 export interface IMarketplaceProduct {
   _id: string;
   name: string;
@@ -686,16 +1050,40 @@ export interface IMarketplaceProduct {
   vendorName?: string;
   vendorSlug?: string;
   description?: string;
-  category: ProductCategory;
+  /** Populated in API responses with at least { _id, name, slug } */
+  category?: ProductCategoryRef;
+  /** Populated in API responses with at least { _id, name, slug } */
+  subCategory?: ProductSubCategoryRef;
+  tags?: string[];
   price: number;
   images: string[];
   inStock: boolean;
-  stockQuantity: number;
+  /** Optional; when present, product has variants and listing may show "from" price */
+  variationOptions?: IMarketplaceVariationOption[];
+  /** Optional; when present, one variant must have isDefault true */
+  variants?: IMarketplaceProductVariant[];
   status: 'draft' | 'published' | 'archived';
   isFeatured: boolean;
   displayOrder: number;
   createdAt?: string;
   updatedAt?: string;
+}
+
+/** Get category display name from product (populated from API) */
+export function getProductCategoryName(product: { category?: ProductCategoryRef }): string {
+  return product.category?.name ?? 'Other';
+}
+
+/** Get category slug from product for URLs (populated from API) */
+export function getProductCategorySlug(product: { category?: ProductCategoryRef }): string {
+  return product.category?.slug ?? 'other';
+}
+
+/** Get subcategory display name from product (populated from API) */
+export function getProductSubCategoryName(product: {
+  subCategory?: ProductSubCategoryRef;
+}): string {
+  return product.subCategory?.name ?? 'Other';
 }
 
 export interface IMarketplaceVendor {
@@ -711,6 +1099,11 @@ export interface IMarketplaceVendor {
   productCount?: number;
   createdAt?: string;
   updatedAt?: string;
+  whatsapp?: string;
+  address?: string;
+  bankAccountName?: string;
+  bankAccountNumber?: string;
+  bankName?: string;
 }
 
 export interface IMarketplaceOrderItem {
@@ -718,6 +1111,11 @@ export interface IMarketplaceOrderItem {
   productName?: string;
   quantity: number;
   price: number;
+  totalPrice: number;
+  /** Variant SKU when product has variants */
+  sku?: string;
+  /** Selected variant options for display (e.g. { Colour: 'Red', Size: 'M' }) */
+  selectedOptions?: Record<string, string>;
 }
 
 export interface IMarketplaceOrder {
@@ -735,17 +1133,34 @@ export interface IMarketplaceOrder {
   updatedAt?: string;
 }
 
+// Populated order variants for dashboard views
+export type PopulatedOrderProduct = {
+  _id: string;
+  name: string;
+  slug: string;
+  image?: string;
+};
+
+export interface PopulatedMarketplaceOrderItem extends Omit<IMarketplaceOrderItem, 'product'> {
+  product: PopulatedOrderProduct;
+}
+
+export interface PopulatedMarketplaceOrder
+  extends Omit<IMarketplaceOrder, 'vendor' | 'items' | 'vendorName' | 'vendorSlug'> {
+  vendor: PopulatedVendorSummary;
+  items: PopulatedMarketplaceOrderItem[];
+}
+
 export interface IMarketplaceCategoriesRes {
-  categories: Array<{ name: string; slug: ProductCategory; count: number }>;
+  categories: IMarketplaceCategory[];
 }
-export interface IMarketplaceVendorsRes {
-  vendors: IMarketplaceVendor[];
+
+export interface IMarketplaceSubCategoriesRes {
+  subcategories: IMarketplaceSubCategory[];
 }
+export type IMarketplaceVendorsRes = GetListRes<IMarketplaceVendor, 'vendors'>;
 export type IMarketplaceVendorRes = IMarketplaceVendor;
-export interface IMarketplaceProductsListRes {
-  products: IMarketplaceProduct[];
-  pagination: { page: number; limit: number; total: number; totalPages: number };
-}
+export type IMarketplaceProductsListRes = GetListRes<IMarketplaceProduct, 'products'>;
 export type IMarketplaceProductRes = IMarketplaceProduct;
 export interface IMarketplaceBecomeVendorPayload {
   storeName: string;
@@ -764,43 +1179,65 @@ export interface IMarketplaceBecomeVendorRes {
 }
 export interface IMarketplacePlaceOrderPayload {
   customer: { name: string; email: string; phone: string; address?: string };
-  items: Array<{ productId: string; productName?: string; quantity: number; price: number }>;
+  items: Array<{
+    productId: string;
+    productName?: string;
+    quantity: number;
+    price: number;
+    /** Required when product has variants; variant SKU (uppercase) */
+    sku?: string;
+  }>;
 }
 export interface IMarketplacePlaceOrderRes {
-  order: IMarketplaceOrder;
+  order: PopulatedMarketplaceOrder;
 }
-export interface IMarketplaceMyOrdersRes {
-  orders: IMarketplaceOrder[];
-}
+export type IMarketplaceMyOrdersRes = GetListRes<PopulatedMarketplaceOrder, 'orders'>;
 
 // Vendor dashboard
 export type IVendorMeRes = IMarketplaceVendor;
-export interface IVendorProductsRes {
-  products: IMarketplaceProduct[];
-}
+export type IVendorProductsRes = GetListRes<IMarketplaceProduct, 'products'>;
 export interface IVendorCreateProductPayload {
   name: string;
   description?: string;
-  category: ProductCategory;
+  category?: string | null;
+  subCategory?: string | null;
+  tags?: string[];
   price: number;
   images?: string[];
-  stockQuantity?: number;
+  inStock?: boolean;
   isFeatured?: boolean;
+  variationOptions?: IMarketplaceVariationOption[];
+  variants?: Array<{
+    options: Record<string, string>;
+    price: number;
+    inStock: boolean;
+    isDefault?: boolean;
+    sku?: string;
+    image?: string;
+  }>;
 }
 export interface IVendorUpdateProductPayload {
   name?: string;
   description?: string;
-  category?: ProductCategory;
+  category?: string | null;
+  subCategory?: string | null;
+  tags?: string[];
   price?: number;
   images?: string[];
   inStock?: boolean;
-  stockQuantity?: number;
   status?: 'draft' | 'published' | 'archived';
   isFeatured?: boolean;
+  variationOptions?: IMarketplaceVariationOption[];
+  variants?: Array<{
+    options: Record<string, string>;
+    price: number;
+    inStock: boolean;
+    isDefault?: boolean;
+    sku?: string;
+    image?: string;
+  }>;
 }
-export interface IVendorOrdersRes {
-  orders: IMarketplaceOrder[];
-}
+export type IVendorOrdersRes = GetListRes<PopulatedMarketplaceOrder, 'orders'>;
 export interface IVendorUpdateSettingsPayload {
   storeName?: string;
   storeDescription?: string;
@@ -808,4 +1245,15 @@ export interface IVendorUpdateSettingsPayload {
   phone?: string;
   logo?: string;
   coverImage?: string;
+  whatsapp?: string;
+  address?: string;
+  bankAccountName?: string;
+  bankAccountNumber?: string;
+  bankName?: string;
+}
+
+export interface IVendorDashboardStatsRes {
+  productsCount: number;
+  pendingOrdersCount: number;
+  totalPaidRevenue: number;
 }

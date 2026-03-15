@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Star } from 'lucide-react';
 import { SectionComp } from '@/components/general/SectionComp';
 import { VideoCard } from '@/components/cards/VideoCard';
+import { EmptyState } from '../news/EmptyState';
 
 export interface FeaturedVideo {
   _id: string;
@@ -21,6 +22,25 @@ interface FeaturedVideosProps {
 }
 
 export const FeaturedVideos = ({ videos: featuredVideos }: FeaturedVideosProps) => {
+  if (featuredVideos.length === 0) {
+    return (
+      <SectionComp
+        icon={Star}
+        iconColor="primary"
+        heading="Featured Videos"
+        subtext="Editor's picks and popular uploads"
+        viewAllLink="/videos/featured"
+        background="bg-muted/30"
+        contentProps={{ enableAnimation: false }}>
+        <EmptyState
+          title="No featured videos"
+          description="No featured videos in this category yet. Check back later."
+          icon={<Star className="w-12 h-12 text-muted-foreground" />}
+        />
+      </SectionComp>
+    );
+  }
+
   return (
     <SectionComp
       icon={Star}

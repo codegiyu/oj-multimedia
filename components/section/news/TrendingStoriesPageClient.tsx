@@ -1,10 +1,14 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Flame, ArrowRight, Clock, Eye, TrendingUp } from 'lucide-react';
+import { Flame, ArrowRight, Clock, Eye, TrendingUp, Newspaper } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { SectionContainer } from '@/components/general/SectionContainer';
+import { DataLoadError } from '@/components/general/DataLoadError';
 import { NewsCategories } from './NewsCategories';
 import { NewsletterCTA } from '../shared';
 import { EmptyState } from './EmptyState';
@@ -13,9 +17,14 @@ import type { TrendingStory } from './TrendingSidebar';
 
 interface TrendingStoriesPageClientProps {
   trendingStories: TrendingStory[];
+  initialErrorMessage?: string | null;
 }
 
-export const TrendingStoriesPageClient = ({ trendingStories }: TrendingStoriesPageClientProps) => {
+export const TrendingStoriesPageClient = ({
+  trendingStories,
+  initialErrorMessage = null,
+}: TrendingStoriesPageClientProps) => {
+  const router = useRouter();
   const [displayedItems, setDisplayedItems] = useState(15);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -29,9 +38,32 @@ export const TrendingStoriesPageClient = ({ trendingStories }: TrendingStoriesPa
   const hasMore = displayedItems < trendingStories.length;
   const itemsToShow = trendingStories.slice(0, displayedItems);
 
+  if (initialErrorMessage && trendingStories.length === 0) {
+    return (
+      <SectionContainer>
+        <DataLoadError
+          title="Unable to load trending stories"
+          message={initialErrorMessage}
+          onRetry={() => router.refresh()}
+          icon={<Newspaper className="w-8 h-8 text-destructive" />}
+        />
+      </SectionContainer>
+    );
+  }
+
   return (
     <>
       <NewsCategories />
+      {initialErrorMessage && (
+        <div className="container mx-auto px-4 mb-4">
+          <div className="rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive flex items-center justify-between gap-4">
+            <span>{initialErrorMessage}</span>
+            <Button variant="outline" size="sm" onClick={() => router.refresh()}>
+              Retry
+            </Button>
+          </div>
+        </div>
+      )}
       <SectionComp
         icon={Flame}
         iconColor="primary"

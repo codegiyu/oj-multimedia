@@ -4,9 +4,8 @@ import { useState } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { SectionContainer } from '@/components/general/SectionContainer';
 import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { RegularBtn } from '@/components/atoms/RegularBtn';
+import { RegularInput } from '@/components/atoms/RegularInput';
 import { Textarea } from '@/components/ui/textarea';
 import { UserPlus, CheckCircle } from 'lucide-react';
 import { toast } from 'sonner';
@@ -53,9 +52,11 @@ export function BecomeVendorPageClient() {
               Thank you for applying to become a vendor. We will review your details and contact you
               shortly.
             </p>
-            <Button asChild variant="outline">
-              <a href="/marketplace">Back to Marketplace</a>
-            </Button>
+            <RegularBtn
+              variant="outline"
+              linkProps={{ href: '/marketplace' }}
+              text="Back to Marketplace"
+            />
           </div>
         </SectionContainer>
       </MainLayout>
@@ -81,74 +82,60 @@ export function BecomeVendorPageClient() {
               <div>
                 <h2 className="text-lg font-semibold text-foreground mb-4">Store details</h2>
                 <div className="space-y-4">
-                  <div>
-                    <Label htmlFor="storeName">Store name</Label>
-                    <Input
-                      id="storeName"
-                      required
-                      value={form.storeName}
-                      onChange={e => setForm(f => ({ ...f, storeName: e.target.value }))}
-                      className="mt-2"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="storeDescription">Store description</Label>
-                    <Textarea
-                      id="storeDescription"
-                      value={form.storeDescription}
-                      onChange={e => setForm(f => ({ ...f, storeDescription: e.target.value }))}
-                      className="mt-2"
-                      rows={3}
-                    />
-                  </div>
+                  <RegularInput
+                    label="Store name"
+                    name="storeName"
+                    required
+                    value={form.storeName}
+                    onChange={e => setForm(f => ({ ...f, storeName: e.target.value }))}
+                    placeholder="Enter store name"
+                  />
+                  <Textarea
+                    id="storeDescription"
+                    value={form.storeDescription}
+                    onChange={e => setForm(f => ({ ...f, storeDescription: e.target.value }))}
+                    className="mt-2"
+                    rows={3}
+                  />
                 </div>
               </div>
 
               <div>
                 <h2 className="text-lg font-semibold text-foreground mb-4">Contact</h2>
                 <div className="space-y-4">
-                  <div>
-                    <Label htmlFor="email">Email</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      required
-                      value={form.email}
-                      onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
-                      className="mt-2"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="phone">Phone</Label>
-                    <Input
-                      id="phone"
-                      type="tel"
-                      required
-                      value={form.phone}
-                      onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
-                      className="mt-2"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="whatsapp">WhatsApp (optional)</Label>
-                    <Input
-                      id="whatsapp"
-                      type="tel"
-                      value={form.whatsapp}
-                      onChange={e => setForm(f => ({ ...f, whatsapp: e.target.value }))}
-                      className="mt-2"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="address">Address (optional)</Label>
-                    <Textarea
-                      id="address"
-                      value={form.address}
-                      onChange={e => setForm(f => ({ ...f, address: e.target.value }))}
-                      className="mt-2"
-                      rows={2}
-                    />
-                  </div>
+                  <RegularInput
+                    label="Email"
+                    name="email"
+                    type="email"
+                    required
+                    value={form.email}
+                    onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
+                    placeholder="Enter email"
+                  />
+                  <RegularInput
+                    label="Phone"
+                    name="phone"
+                    type="tel"
+                    required
+                    value={form.phone}
+                    onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
+                    placeholder="Enter phone number"
+                  />
+                  <RegularInput
+                    label="WhatsApp (optional)"
+                    name="whatsapp"
+                    type="tel"
+                    value={form.whatsapp}
+                    onChange={e => setForm(f => ({ ...f, whatsapp: e.target.value }))}
+                    placeholder="Enter WhatsApp number"
+                  />
+                  <Textarea
+                    id="address"
+                    value={form.address}
+                    onChange={e => setForm(f => ({ ...f, address: e.target.value }))}
+                    className="mt-2"
+                    rows={2}
+                  />
                 </div>
               </div>
 
@@ -158,42 +145,43 @@ export function BecomeVendorPageClient() {
                   For receiving payments. You can update this later in vendor settings.
                 </p>
                 <div className="space-y-4">
-                  <div>
-                    <Label htmlFor="bankAccountName">Account name</Label>
-                    <Input
-                      id="bankAccountName"
-                      value={form.bankAccountName}
-                      onChange={e => setForm(f => ({ ...f, bankAccountName: e.target.value }))}
-                      className="mt-2"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="bankAccountNumber">Account number</Label>
-                    <Input
-                      id="bankAccountNumber"
-                      value={form.bankAccountNumber}
-                      onChange={e => setForm(f => ({ ...f, bankAccountNumber: e.target.value }))}
-                      className="mt-2"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="bankName">Bank name</Label>
-                    <Input
-                      id="bankName"
-                      value={form.bankName}
-                      onChange={e => setForm(f => ({ ...f, bankName: e.target.value }))}
-                      className="mt-2"
-                    />
-                  </div>
+                  <RegularInput
+                    label="Account name"
+                    name="bankAccountName"
+                    value={form.bankAccountName}
+                    onChange={e => setForm(f => ({ ...f, bankAccountName: e.target.value }))}
+                    placeholder="Bank account name"
+                  />
+                  <RegularInput
+                    label="Account number"
+                    name="bankAccountNumber"
+                    value={form.bankAccountNumber}
+                    onChange={e => setForm(f => ({ ...f, bankAccountNumber: e.target.value }))}
+                    placeholder="Bank account number"
+                  />
+                  <RegularInput
+                    label="Bank name"
+                    name="bankName"
+                    value={form.bankName}
+                    onChange={e => setForm(f => ({ ...f, bankName: e.target.value }))}
+                    placeholder="Bank name"
+                  />
                 </div>
               </div>
 
-              <Button
+              <RegularBtn
                 type="submit"
+                variant="default"
+                className="w-full bg-primary hover:bg-primary/90"
                 disabled={submitting}
-                className="w-full bg-primary hover:bg-primary/90">
+                loading={submitting}
+                onDisabledClick={() => {
+                  if (submitting) {
+                    toast.info('Please wait, submitting your application…');
+                  }
+                }}>
                 {submitting ? 'Submitting…' : 'Submit application'}
-              </Button>
+              </RegularBtn>
             </form>
           </Card>
         </div>

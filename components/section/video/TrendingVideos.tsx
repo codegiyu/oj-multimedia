@@ -5,6 +5,7 @@ import { Flame } from 'lucide-react';
 import { useRef } from 'react';
 import { SectionComp } from '@/components/general/SectionComp';
 import { VideoCard } from '@/components/cards/VideoCard';
+import { EmptyState } from '../news/EmptyState';
 
 export interface TrendingVideo {
   _id: string;
@@ -33,6 +34,24 @@ export const TrendingVideos = ({ videos: trendingVideos }: TrendingVideosProps) 
       });
     }
   };
+
+  if (trendingVideos.length === 0) {
+    return (
+      <SectionComp
+        icon={Flame}
+        iconColor="primary"
+        heading="Trending Now"
+        subtext="What everyone's watching"
+        viewAllLink="/videos/trending"
+        contentProps={{ enableAnimation: false }}>
+        <EmptyState
+          title="No trending videos"
+          description="No trending videos in this category yet. Try another category or check back later."
+          icon={<Flame className="w-12 h-12 text-muted-foreground" />}
+        />
+      </SectionComp>
+    );
+  }
 
   return (
     <SectionComp

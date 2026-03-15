@@ -5,6 +5,7 @@ import { Flame } from 'lucide-react';
 import { useRef } from 'react';
 import { SectionComp } from '@/components/general/SectionComp';
 import { MusicCard } from '@/components/cards/MusicCard';
+import { EmptyState } from '../news/EmptyState';
 
 export interface TrendingSong {
   _id: string;
@@ -33,6 +34,24 @@ export const TrendingSongs = ({ songs: trendingSongs }: TrendingSongsProps) => {
       });
     }
   };
+
+  if (trendingSongs.length === 0) {
+    return (
+      <SectionComp
+        icon={Flame}
+        iconColor="primary"
+        heading="Trending Now"
+        subtext="What everyone's listening to"
+        viewAllLink="/music/trending"
+        contentProps={{ enableAnimation: false }}>
+        <EmptyState
+          title="No trending songs"
+          description="No trending songs in this category yet. Try another category or check back later."
+          icon={<Flame className="w-12 h-12 text-muted-foreground" />}
+        />
+      </SectionComp>
+    );
+  }
 
   return (
     <SectionComp

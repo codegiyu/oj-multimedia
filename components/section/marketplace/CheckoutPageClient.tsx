@@ -5,13 +5,12 @@ import { useRouter } from 'next/navigation';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { SectionContainer } from '@/components/general/SectionContainer';
 import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { RegularBtn } from '@/components/atoms/RegularBtn';
+import { RegularInput } from '@/components/atoms/RegularInput';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useCartStore } from '@/lib/store/cartStore';
 import { formatPrice } from '@/lib/utils/marketplace';
-import Link from 'next/link';
 import { toast } from 'sonner';
 
 export function CheckoutPageClient() {
@@ -33,9 +32,12 @@ export function CheckoutPageClient() {
         <SectionContainer className="py-16 md:py-20">
           <div className="max-w-xl mx-auto text-center">
             <h1 className="text-2xl font-bold text-foreground mb-4">Your cart is empty</h1>
-            <Button asChild variant="default" className="bg-primary hover:bg-primary/90">
-              <Link href="/marketplace">Browse Marketplace</Link>
-            </Button>
+            <RegularBtn
+              variant="default"
+              className="bg-primary hover:bg-primary/90"
+              linkProps={{ href: '/marketplace' }}
+              text="Browse Marketplace"
+            />
           </div>
         </SectionContainer>
       </MainLayout>
@@ -70,34 +72,43 @@ export function CheckoutPageClient() {
               <div className="space-y-4">
                 <div>
                   <Label htmlFor="name">Full name</Label>
-                  <Input
+                  <RegularInput
                     id="name"
+                    name="name"
+                    label=""
                     required
                     value={form.name}
                     onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-                    className="mt-2"
+                    placeholder="Enter your full name"
+                    wrapClassName="mt-2"
                   />
                 </div>
                 <div>
                   <Label htmlFor="email">Email</Label>
-                  <Input
+                  <RegularInput
                     id="email"
+                    name="email"
                     type="email"
+                    label=""
                     required
                     value={form.email}
                     onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
-                    className="mt-2"
+                    placeholder="Enter your email"
+                    wrapClassName="mt-2"
                   />
                 </div>
                 <div>
                   <Label htmlFor="phone">Phone</Label>
-                  <Input
+                  <RegularInput
                     id="phone"
+                    name="phone"
                     type="tel"
+                    label=""
                     required
                     value={form.phone}
                     onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
-                    className="mt-2"
+                    placeholder="Enter your phone number"
+                    wrapClassName="mt-2"
                   />
                 </div>
                 <div>
@@ -146,15 +157,26 @@ export function CheckoutPageClient() {
                   Payment will be arranged with the vendor after you place the order (e.g. bank
                   transfer, WhatsApp).
                 </p>
-                <Button
+                <RegularBtn
                   type="submit"
+                  variant="default"
+                  className="w-full mt-6 bg-primary hover:bg-primary/90"
                   disabled={submitting}
-                  className="w-full mt-6 bg-primary hover:bg-primary/90">
-                  {submitting ? 'Placing order…' : 'Place order'}
-                </Button>
-                <Button type="button" variant="ghost" className="w-full mt-2" asChild>
-                  <Link href="/marketplace/cart">Back to cart</Link>
-                </Button>
+                  loading={submitting}
+                  text={submitting ? 'Placing order…' : 'Place order'}
+                  onDisabledClick={() => {
+                    if (submitting) {
+                      toast.info('Please wait, placing your order…');
+                    }
+                  }}
+                />
+                <RegularBtn
+                  type="button"
+                  variant="ghost"
+                  className="w-full mt-2"
+                  linkProps={{ href: '/marketplace/cart' }}
+                  text="Back to cart"
+                />
               </Card>
             </div>
           </form>

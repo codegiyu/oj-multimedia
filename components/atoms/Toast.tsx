@@ -7,7 +7,7 @@ export interface ToastProps {
   id: string | number;
   title?: string;
   description?: string;
-  variant: 'success' | 'error' | 'default';
+  variant: 'success' | 'error' | 'default' | 'info';
 }
 
 /** I recommend abstracting the toast function
@@ -26,6 +26,7 @@ function Toast(props: ToastProps) {
     success: 'bg-green-500',
     error: 'bg-red-500',
     default: 'bg-gray-59',
+    info: 'bg-blue-500',
   };
 
   return (

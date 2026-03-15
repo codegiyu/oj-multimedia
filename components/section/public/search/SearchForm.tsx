@@ -3,8 +3,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { useQueryState, parseAsString } from 'nuqs';
 import { Search as SearchIcon } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import { RegularInput } from '@/components/atoms/RegularInput';
+import { RegularBtn } from '@/components/atoms/RegularBtn';
 
 export const SearchForm = () => {
   const [queryParam, setQueryParam] = useQueryState('q', parseAsString.withDefault(''));
@@ -51,16 +51,22 @@ export const SearchForm = () => {
   return (
     <form onSubmit={handleSubmit} className="relative">
       <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-      <Input
+      <RegularInput
         type="text"
+        name="search"
         value={query}
         onChange={e => setQuery(e.target.value)}
         placeholder="Search music, news, videos, community..."
-        className="w-full pl-12 pr-24 py-6 text-lg rounded-2xl border-border bg-card"
+        wrapClassName="w-full"
+        className="pl-12 pr-24 py-6 text-lg rounded-2xl border-border bg-card"
+        label=""
       />
-      <Button type="submit" variant="hero" className="absolute right-2 top-1/2 -translate-y-1/2">
-        Search
-      </Button>
+      <RegularBtn
+        type="submit"
+        variant="hero"
+        className="absolute right-2 top-1/2 -translate-y-1/2"
+        text="Search"
+      />
     </form>
   );
 };

@@ -6,7 +6,10 @@ import { VideoNewsPageClient } from '@/components/section/news';
 import { filterByCategory } from '@/components/section/news/categoryUtils';
 import { NewsPageSkeleton } from '@/components/section/news/NewsPageSkeleton';
 import type { VideoNewsItem } from '@/components/section/news/VideoNews';
-import { NEWS_ITEMS } from '@/lib/constants/news';
+import { callServerApi } from '@/lib/services/serverApi';
+import type { ApiErrorResponse } from '@/lib/types/http';
+import type { IPublicNewsListRes } from '@/lib/constants/endpoints';
+import { mapPublicNewsToVideoNewsItem } from '@/lib/utils/publicApiMappers';
 
 export const metadata: Metadata = {
   title: 'Video Stories - News & Lifestyle Updates',
@@ -14,31 +17,26 @@ export const metadata: Metadata = {
     'Watch video stories covering behind-the-scenes content, inspiration, lifestyle, documentaries, and more.',
 };
 
-// Force dynamic rendering to ensure searchParams changes trigger re-renders
 export const dynamic = 'force-dynamic';
 
-// Generate video news data from central constants
-async function generateVideoNewsData() {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 1500));
+async function fetchVideoNews(category: string) {
+  const categoryParam =
+    category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';
+  const query = `?limit=50&page=1&status=published&type=video${categoryParam}` as const;
+  const res = await callServerApi('PUBLIC_GET_NEWS', { query });
 
-  // Filter items with videoUrl and duration (video stories)
-  const videoNews: VideoNewsItem[] = NEWS_ITEMS.filter(item => item.videoUrl && item.duration).map(
-    item => ({
-      _id: item._id,
-      title: item.title,
-      category: item.category,
-      duration: item.duration!,
-      image: item.image,
-      views: item.views,
-      author: item.author,
-      date: item.date,
-    })
-  );
+  if (res.error) {
+    return {
+      videoNews: [] as VideoNewsItem[],
+      initialErrorMessage:
+        (res.error as ApiErrorResponse)?.message ?? 'Failed to load video stories',
+    };
+  }
 
-  return {
-    videoNews,
-  };
+  const data = res.data as IPublicNewsListRes | undefined;
+  const raw = data?.articles ?? [];
+  const videoNews = filterByCategory(raw.map(mapPublicNewsToVideoNewsItem), category);
+  return { videoNews, initialErrorMessage: null as string | null };
 }
 
 interface VideoNewsPageProps {
@@ -47,13 +45,7 @@ interface VideoNewsPageProps {
 
 export default async function VideoNewsPage({ searchParams }: VideoNewsPageProps) {
   const params = await searchParams;
-  const category = params.category || 'all';
-  const data = await generateVideoNewsData();
-
-  // Filter data server-side based on category
-  const filteredData = {
-    videoNews: filterByCategory(data.videoNews, category),
-  };
+  const category = params.category ?? 'all';
 
   return (
     <MainLayout>
@@ -68,8 +60,13 @@ export default async function VideoNewsPage({ searchParams }: VideoNewsPageProps
         stats={[{ icon: 'Play', text: 'Video content' }, { text: 'Multiple categories' }]}
       />
       <Suspense fallback={<NewsPageSkeleton />}>
-        <VideoNewsPageClient {...filteredData} />
+        <VideoNewsServer category={category} />
       </Suspense>
     </MainLayout>
   );
+}
+
+async function VideoNewsServer({ category }: { category: string }) {
+  const data = await fetchVideoNews(category);
+  return <VideoNewsPageClient {...data} />;
 }

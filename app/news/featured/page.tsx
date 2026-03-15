@@ -6,7 +6,10 @@ import { FeaturedStoriesPageClient } from '@/components/section/news/FeaturedSto
 import { NewsPageSkeleton } from '@/components/section/news/NewsPageSkeleton';
 import { filterByCategory } from '@/components/section/news/categoryUtils';
 import type { FeaturedStory } from '@/components/section/news/FeaturedStories';
-import { NEWS_ITEMS } from '@/lib/constants/news';
+import { callServerApi } from '@/lib/services/serverApi';
+import type { ApiErrorResponse } from '@/lib/types/http';
+import type { IPublicNewsListRes } from '@/lib/constants/endpoints';
+import { mapPublicNewsToFeaturedStory } from '@/lib/utils/publicApiMappers';
 
 export const metadata: Metadata = {
   title: 'Featured Stories - News & Lifestyle Updates',
@@ -14,34 +17,26 @@ export const metadata: Metadata = {
     'Explore our featured stories - handpicked articles covering lifestyle, inspiration, culture, and trending topics.',
 };
 
-// Force dynamic rendering to ensure searchParams changes trigger re-renders
 export const dynamic = 'force-dynamic';
 
-// Generate featured stories data from central constants
-async function generateFeaturedStoriesData() {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 1500));
+async function fetchFeaturedStories(category: string) {
+  const categoryParam =
+    category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';
+  const query = `?limit=50&page=1&status=published&type=featured${categoryParam}` as const;
+  const res = await callServerApi('PUBLIC_GET_NEWS', { query });
 
-  const featuredStories: FeaturedStory[] = NEWS_ITEMS.filter(
-    item => item.isFeatured && item.excerpt !== undefined && item.comments !== undefined
-  ).map(item => ({
-    _id: item._id,
-    title: item.title,
-    excerpt: item.excerpt!,
-    category: item.category,
-    image: item.image,
-    readTime: item.readTime,
-    views: item.views,
-    comments: item.comments!,
-    featured: item.isFeatured,
-    videoUrl: item.videoUrl,
-    author: item.author,
-    date: item.date,
-  }));
+  if (res.error) {
+    return {
+      featuredStories: [] as FeaturedStory[],
+      initialErrorMessage:
+        (res.error as ApiErrorResponse)?.message ?? 'Failed to load featured stories',
+    };
+  }
 
-  return {
-    featuredStories,
-  };
+  const data = res.data as IPublicNewsListRes | undefined;
+  const raw = data?.articles ?? [];
+  const featuredStories = filterByCategory(raw.map(mapPublicNewsToFeaturedStory), category);
+  return { featuredStories, initialErrorMessage: null as string | null };
 }
 
 interface FeaturedStoriesPageProps {
@@ -50,13 +45,7 @@ interface FeaturedStoriesPageProps {
 
 export default async function FeaturedStoriesPage({ searchParams }: FeaturedStoriesPageProps) {
   const params = await searchParams;
-  const category = params.category || 'all';
-  const data = await generateFeaturedStoriesData();
-
-  // Filter data server-side based on category
-  const filteredData = {
-    featuredStories: filterByCategory(data.featuredStories, category),
-  };
+  const category = params.category ?? 'all';
 
   return (
     <MainLayout>
@@ -71,8 +60,13 @@ export default async function FeaturedStoriesPage({ searchParams }: FeaturedStor
         stats={[{ icon: 'Sparkles', text: 'Handpicked stories' }, { text: 'Updated regularly' }]}
       />
       <Suspense fallback={<NewsPageSkeleton />}>
-        <FeaturedStoriesPageClient {...filteredData} />
+        <FeaturedStoriesServer category={category} />
       </Suspense>
     </MainLayout>
   );
+}
+
+async function FeaturedStoriesServer({ category }: { category: string }) {
+  const data = await fetchFeaturedStories(category);
+  return <FeaturedStoriesPageClient {...data} />;
 }

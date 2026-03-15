@@ -4,10 +4,12 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { SubPageHero } from '@/components/general/SubPageHero';
 import { ShortFormVideosPageClient } from '@/components/section/video/ShortFormVideosPageClient';
 import { VideoPageSkeleton } from '@/components/section/video/VideoPageSkeleton';
-import { filterByCategory } from '@/lib/utils/videos';
 import type { ShortFormVideo } from '@/components/section/video/ShortFormVideos';
-import { VIDEOS_ITEMS } from '@/lib/constants/videos';
-import { populateArtist } from '@/lib/utils/community/artists';
+import { callServerApi } from '@/lib/services/serverApi';
+import type { ApiErrorResponse } from '@/lib/types/http';
+import type { IPublicVideosListRes } from '@/lib/constants/endpoints';
+import { filterByCategory } from '@/lib/utils/videos';
+import { mapPublicVideoToShortForm } from '@/lib/utils/publicApiMappers';
 
 export const metadata: Metadata = {
   title: 'Short Form Videos - Quick Clips',
@@ -15,39 +17,24 @@ export const metadata: Metadata = {
     'Discover short form videos - quick, engaging content perfect for quick viewing. Bite-sized entertainment and inspiration.',
 };
 
-// Force dynamic rendering to ensure searchParams changes trigger re-renders
 export const dynamic = 'force-dynamic';
 
-// Generate short form videos data from central constants
-async function generateShortFormVideosData(): Promise<{
-  shortFormVideos: (ShortFormVideo & { category: string })[];
-}> {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 1500));
-
-  const shortFormVideos: (ShortFormVideo & { category: string })[] = VIDEOS_ITEMS.filter(
-    item =>
-      item.isShortForm &&
-      item.views !== undefined &&
-      item.duration !== undefined &&
-      item.likes !== undefined
-  ).map(item => {
-    const creator = populateArtist(item.creator) ?? { _id: item.creator, name: 'Unknown' };
+async function fetchShortFormVideos(category: string) {
+  const categoryParam =
+    category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';
+  const query = `?limit=50&page=1&status=published&type=short-form${categoryParam}` as const;
+  const res = await callServerApi('PUBLIC_GET_VIDEOS', { query });
+  if (res.error) {
     return {
-      _id: item._id,
-      title: item.title,
-      creator,
-      thumbnail: item.thumbnail,
-      views: item.views!,
-      duration: item.duration!,
-      likes: item.likes!,
-      category: item.category, // category is required in VideoItem, so this is always a string
+      shortFormVideos: [] as ShortFormVideo[],
+      initialErrorMessage:
+        (res.error as ApiErrorResponse)?.message ?? 'Failed to load short form videos',
     };
-  });
-
-  return {
-    shortFormVideos,
-  };
+  }
+  const data = res.data as IPublicVideosListRes | undefined;
+  const raw = data?.videos ?? [];
+  const shortFormVideos = filterByCategory(raw, category).map(mapPublicVideoToShortForm);
+  return { shortFormVideos, initialErrorMessage: null as string | null };
 }
 
 interface ShortFormVideosPageProps {
@@ -56,13 +43,7 @@ interface ShortFormVideosPageProps {
 
 export default async function ShortFormVideosPage({ searchParams }: ShortFormVideosPageProps) {
   const params = await searchParams;
-  const category = params.category || 'all';
-  const data = await generateShortFormVideosData();
-
-  // Filter data server-side based on category
-  const filteredData = {
-    shortFormVideos: filterByCategory(data.shortFormVideos, category),
-  };
+  const category = params.category ?? 'all';
 
   return (
     <MainLayout>
@@ -77,8 +58,13 @@ export default async function ShortFormVideosPage({ searchParams }: ShortFormVid
         stats={[{ icon: 'Zap', text: 'Quick content' }, { text: 'Under 2 minutes' }]}
       />
       <Suspense fallback={<VideoPageSkeleton />}>
-        <ShortFormVideosPageClient {...filteredData} />
+        <ShortFormVideosServer category={category} />
       </Suspense>
     </MainLayout>
   );
+}
+
+async function ShortFormVideosServer({ category }: { category: string }) {
+  const data = await fetchShortFormVideos(category);
+  return <ShortFormVideosPageClient {...data} />;
 }

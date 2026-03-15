@@ -10,9 +10,16 @@ import type { RecentVideoUpload } from '@/components/section/video/RecentVideoUp
 import type { ShortFormVideo } from '@/components/section/video/ShortFormVideos';
 import type { FeaturedCreator } from '@/components/section/video/CreatorSpotlight';
 import { ARTIST_PROFILES } from '@/lib/constants/community/artists';
-import { VIDEOS_ITEMS } from '@/lib/constants/videos';
-import { populateArtist } from '@/lib/utils/community/artists';
+import { callServerApi } from '@/lib/services/serverApi';
+import type { ApiErrorResponse } from '@/lib/types/http';
+import type { IPublicVideosListRes } from '@/lib/constants/endpoints';
 import { filterByCategory } from '@/lib/utils/videos';
+import {
+  mapPublicVideoToTrendingVideo,
+  mapPublicVideoToFeaturedVideo,
+  mapPublicVideoToRecentUpload,
+  mapPublicVideoToShortForm,
+} from '@/lib/utils/publicApiMappers';
 
 export const metadata: Metadata = {
   title: 'Videos - Trending & Creative Content',
@@ -20,137 +27,60 @@ export const metadata: Metadata = {
     'Discover trending videos, watch creative content, explore music videos, short clips, talks, and inspirational videos from talented creators. Upload and share your own videos.',
 };
 
-// Force dynamic rendering to ensure searchParams changes trigger re-renders
 export const dynamic = 'force-dynamic';
 
-// Generate video data from central constants
-async function generateVideoData(category: string = 'all') {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 1500));
+async function fetchVideoSections(category: string) {
+  const categoryParam =
+    category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';
+  const baseQuery = `?limit=12&page=1&status=published${categoryParam}` as const;
 
-  // Filter VIDEOS_ITEMS by category first
-  const filteredItems = filterByCategory(VIDEOS_ITEMS, category);
+  const [trendingRes, featuredRes, recentRes, shortRes] = await Promise.all([
+    callServerApi('PUBLIC_GET_VIDEOS', { query: `${baseQuery}&type=trending` }),
+    callServerApi('PUBLIC_GET_VIDEOS', { query: `${baseQuery}&type=featured` }),
+    callServerApi('PUBLIC_GET_VIDEOS', { query: `${baseQuery}&type=recent` }),
+    callServerApi('PUBLIC_GET_VIDEOS', { query: `${baseQuery}&type=short-form` }),
+  ]);
 
-  // Filter and transform trending videos (limit to 8)
-  const trendingVideos: TrendingVideo[] = filteredItems
-    .filter(
-      item =>
-        item.isTrending &&
-        item.views !== undefined &&
-        item.duration !== undefined &&
-        item.uploadedAt !== undefined
-    )
-    .slice(0, 8)
-    .map(item => ({
-      _id: item._id,
-      title: item.title,
-      creator: populateArtist(item.creator) ?? { _id: item.creator, name: 'Unknown' },
-      thumbnail: item.thumbnail,
-      views: item.views!,
-      duration: item.duration!,
-      uploadedAt: item.uploadedAt!,
-      isNew: item.isNew || false,
-    }));
+  let errorMessage: string | null = null;
+  if (trendingRes.error)
+    errorMessage = (trendingRes.error as ApiErrorResponse)?.message ?? 'Failed to load videos';
+  else if (featuredRes.error)
+    errorMessage = (featuredRes.error as ApiErrorResponse)?.message ?? 'Failed to load featured';
+  else if (recentRes.error)
+    errorMessage = (recentRes.error as ApiErrorResponse)?.message ?? 'Failed to load recent';
+  else if (shortRes.error)
+    errorMessage = (shortRes.error as ApiErrorResponse)?.message ?? 'Failed to load short form';
 
-  // Filter and transform featured videos (limit to 4)
-  const featuredVideos: FeaturedVideo[] = filteredItems
-    .filter(
-      item =>
-        item.isFeatured &&
-        item.views !== undefined &&
-        item.duration !== undefined &&
-        item.category !== undefined
-    )
-    .slice(0, 4)
-    .map(item => ({
-      _id: item._id,
-      title: item.title,
-      creator: populateArtist(item.creator) ?? { _id: item.creator, name: 'Unknown' },
-      thumbnail: item.thumbnail,
-      views: item.views!,
-      duration: item.duration!,
-      category:
-        item.category === 'music'
-          ? 'Music Videos'
-          : item.category === 'short'
-            ? 'Short Clips'
-            : item.category === 'talks'
-              ? 'Talks & Speeches'
-              : item.category === 'creative'
-                ? 'Creative Content'
-                : item.category === 'inspirational'
-                  ? 'Inspirational'
-                  : item.category === 'live'
-                    ? 'Live Performances'
-                    : item.category === 'sermon'
-                      ? 'Sermons'
-                      : 'Podcasts / Video Talks',
-      featured: item.featured || false,
-    }));
+  const trendingData = trendingRes.data as IPublicVideosListRes | undefined;
+  const featuredData = featuredRes.data as IPublicVideosListRes | undefined;
+  const recentData = recentRes.data as IPublicVideosListRes | undefined;
+  const shortData = shortRes.data as IPublicVideosListRes | undefined;
 
-  // Filter and transform recent uploads (limit to 6)
-  const recentUploads: RecentVideoUpload[] = filteredItems
-    .filter(
-      item =>
-        item.isRecent &&
-        item.uploadedAt !== undefined &&
-        item.category !== undefined &&
-        item.views !== undefined &&
-        item.duration !== undefined
-    )
-    .slice(0, 6)
-    .map(item => ({
-      _id: item._id,
-      title: item.title,
-      creator: populateArtist(item.creator) ?? { _id: item.creator, name: 'Unknown' },
-      thumbnail: item.thumbnail,
-      uploadedAt: item.uploadedAt!,
-      category:
-        item.category === 'music'
-          ? 'Music Videos'
-          : item.category === 'short'
-            ? 'Short Clips'
-            : item.category === 'talks'
-              ? 'Talks & Speeches'
-              : item.category === 'creative'
-                ? 'Creative Content'
-                : item.category === 'inspirational'
-                  ? 'Inspirational'
-                  : item.category === 'live'
-                    ? 'Live Performances'
-                    : 'Podcasts / Video Talks',
-      views: item.views!,
-      duration: item.duration!,
-    }));
+  const rawTrending = trendingData?.videos ?? [];
+  const rawFeatured = featuredData?.videos ?? [];
+  const rawRecent = recentData?.videos ?? [];
+  const rawShort = shortData?.videos ?? [];
 
-  // Filter and transform short form videos (limit to 8)
-  const shortFormVideos: ShortFormVideo[] = filteredItems
-    .filter(
-      item =>
-        item.isShortForm &&
-        item.views !== undefined &&
-        item.duration !== undefined &&
-        item.likes !== undefined
-    )
-    .slice(0, 8)
-    .map(item => ({
-      _id: item._id,
-      title: item.title,
-      creator: populateArtist(item.creator) ?? { _id: item.creator, name: 'Unknown' },
-      thumbnail: item.thumbnail,
-      views: item.views!,
-      duration: item.duration!,
-      likes: item.likes!,
-    }));
+  const trendingVideos: TrendingVideo[] = filterByCategory(rawTrending, category)
+    .map(mapPublicVideoToTrendingVideo)
+    .slice(0, 8);
+  const featuredVideos: FeaturedVideo[] = filterByCategory(rawFeatured, category)
+    .map(mapPublicVideoToFeaturedVideo)
+    .slice(0, 4);
+  const recentUploads: RecentVideoUpload[] = filterByCategory(rawRecent, category)
+    .map(mapPublicVideoToRecentUpload)
+    .slice(0, 6);
+  const shortFormVideos: ShortFormVideo[] = filterByCategory(rawShort, category)
+    .map(mapPublicVideoToShortForm)
+    .slice(0, 8);
 
-  // Featured creators from ARTIST_PROFILES (limit to 6)
   const featuredCreators: FeaturedCreator[] = ARTIST_PROFILES.filter(p => p.isFeatured)
     .slice(0, 6)
     .map(p => ({
       _id: p._id,
       name: p.name,
       category: p.genre ?? 'Creator',
-      avatar: p.image,
+      avatar: p.image ?? '',
       followers: p.followers ?? '0',
       videos: p.videos ?? 0,
       views: '0',
@@ -164,6 +94,7 @@ async function generateVideoData(category: string = 'all') {
     recentUploads,
     shortFormVideos,
     featuredCreators,
+    initialErrorMessage: errorMessage,
   };
 }
 
@@ -173,15 +104,19 @@ interface VideosPageProps {
 
 export default async function VideosPage({ searchParams }: VideosPageProps) {
   const params = await searchParams;
-  const category = params.category || 'all';
-  const videoData = await generateVideoData(category);
+  const category = params.category ?? 'all';
 
   return (
     <MainLayout>
       <VideoHero />
       <Suspense fallback={<VideoPageSkeleton />}>
-        <VideoPageClient {...videoData} />
+        <VideosPageServer category={category} />
       </Suspense>
     </MainLayout>
   );
+}
+
+async function VideosPageServer({ category }: { category: string }) {
+  const data = await fetchVideoSections(category);
+  return <VideoPageClient {...data} />;
 }

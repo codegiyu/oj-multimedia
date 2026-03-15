@@ -1,12 +1,12 @@
 'use client';
 
-import { useRouter, usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Trophy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useQueryState, parseAsString } from 'nuqs';
 import { SectionComp } from '@/components/general/SectionComp';
 import { ChartCard } from '@/components/cards/ChartCard';
+import { EmptyState } from '../news/EmptyState';
 
 export interface ChartSong {
   _id: string;
@@ -25,23 +25,10 @@ interface TopMusicChartsProps {
 }
 
 export const TopMusicCharts = ({ songs: chartSongs }: TopMusicChartsProps) => {
-  const router = useRouter();
-  const pathname = usePathname();
-  const [activePeriod] = useQueryState('period', parseAsString.withDefault('weekly'));
-
-  const handlePeriodChange = (period: string) => {
-    const currentUrl = new URL(window.location.href);
-    const searchParams = new URLSearchParams(currentUrl.search);
-
-    if (period === 'weekly') {
-      searchParams.delete('period');
-    } else {
-      searchParams.set('period', period);
-    }
-
-    const newUrl = searchParams.toString() ? `${pathname}?${searchParams.toString()}` : pathname;
-    router.push(newUrl, { scroll: false });
-  };
+  const [activePeriod, setActivePeriod] = useQueryState(
+    'period',
+    parseAsString.withDefault('weekly')
+  );
 
   const getPeriodLabel = () => {
     switch (activePeriod) {
@@ -59,26 +46,45 @@ export const TopMusicCharts = ({ songs: chartSongs }: TopMusicChartsProps) => {
       <Button
         variant="ghost"
         size="sm"
-        onClick={() => handlePeriodChange('weekly')}
+        onClick={() => setActivePeriod('weekly')}
         className={activePeriod === 'weekly' ? 'bg-primary text-primary-foreground' : ''}>
         Weekly
       </Button>
       <Button
         variant="ghost"
         size="sm"
-        onClick={() => handlePeriodChange('monthly')}
+        onClick={() => setActivePeriod('monthly')}
         className={activePeriod === 'monthly' ? 'bg-primary text-primary-foreground' : ''}>
         Monthly
       </Button>
       <Button
         variant="ghost"
         size="sm"
-        onClick={() => handlePeriodChange('alltime')}
+        onClick={() => setActivePeriod('alltime')}
         className={activePeriod === 'alltime' ? 'bg-primary text-primary-foreground' : ''}>
         All Time
       </Button>
     </div>
   );
+
+  if (chartSongs.length === 0) {
+    return (
+      <SectionComp
+        icon={Trophy}
+        iconColor="accent"
+        heading="Top Charts"
+        subtext={getPeriodLabel()}
+        extraButtons={periodButtons}
+        background="bg-muted/30"
+        contentProps={{ enableAnimation: false }}>
+        <EmptyState
+          title="No chart data"
+          description="No chart data for this period or category yet. Try another period or check back later."
+          icon={<Trophy className="w-12 h-12 text-muted-foreground" />}
+        />
+      </SectionComp>
+    );
+  }
 
   return (
     <SectionComp

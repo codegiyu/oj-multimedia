@@ -6,7 +6,10 @@ import { TrendingStoriesPageClient } from '@/components/section/news';
 import { NewsPageSkeleton } from '@/components/section/news/NewsPageSkeleton';
 import { filterByCategory } from '@/components/section/news/categoryUtils';
 import type { TrendingStory } from '@/components/section/news/TrendingSidebar';
-import { NEWS_ITEMS } from '@/lib/constants/news';
+import { callServerApi } from '@/lib/services/serverApi';
+import type { ApiErrorResponse } from '@/lib/types/http';
+import type { IPublicNewsListRes } from '@/lib/constants/endpoints';
+import { mapPublicNewsToTrendingStory } from '@/lib/utils/publicApiMappers';
 
 export const metadata: Metadata = {
   title: 'Trending Stories - News & Lifestyle Updates',
@@ -14,33 +17,29 @@ export const metadata: Metadata = {
     "Discover what's trending now - the most popular stories, topics, and discussions everyone is talking about.",
 };
 
-// Force dynamic rendering to ensure searchParams changes trigger re-renders
 export const dynamic = 'force-dynamic';
 
-// Generate trending stories data from central constants
-async function generateTrendingStoriesData() {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 1500));
+async function fetchTrendingStories(category: string) {
+  const categoryParam =
+    category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';
+  const query = `?limit=50&page=1&status=published&type=trending${categoryParam}` as const;
+  const res = await callServerApi('PUBLIC_GET_NEWS', { query });
 
-  const trendingStories: TrendingStory[] = NEWS_ITEMS.filter(item => item.isTrending)
-    .sort((a, b) => (a.rank || 0) - (b.rank || 0))
-    .map(item => ({
-      _id: item._id,
-      title: item.title,
-      excerpt: item.excerpt,
-      category: item.category,
-      readTime: item.readTime,
-      rank: item.rank || 0,
-      image: item.image,
-      views: item.views,
-      videoUrl: item.videoUrl,
-      author: item.author,
-      date: item.date,
-    }));
+  if (res.error) {
+    return {
+      trendingStories: [] as TrendingStory[],
+      initialErrorMessage:
+        (res.error as ApiErrorResponse)?.message ?? 'Failed to load trending stories',
+    };
+  }
 
-  return {
-    trendingStories,
-  };
+  const data = res.data as IPublicNewsListRes | undefined;
+  const raw = data?.articles ?? [];
+  const trendingStories = filterByCategory(
+    raw.map((item, i) => mapPublicNewsToTrendingStory(item, i + 1)),
+    category
+  );
+  return { trendingStories, initialErrorMessage: null as string | null };
 }
 
 interface TrendingStoriesPageProps {
@@ -49,13 +48,7 @@ interface TrendingStoriesPageProps {
 
 export default async function TrendingStoriesPage({ searchParams }: TrendingStoriesPageProps) {
   const params = await searchParams;
-  const category = params.category || 'all';
-  const data = await generateTrendingStoriesData();
-
-  // Filter data server-side based on category
-  const filteredData = {
-    trendingStories: filterByCategory(data.trendingStories, category),
-  };
+  const category = params.category ?? 'all';
 
   return (
     <MainLayout>
@@ -70,8 +63,13 @@ export default async function TrendingStoriesPage({ searchParams }: TrendingStor
         stats={[{ icon: 'Flame', text: 'Most popular' }, { text: 'Updated in real-time' }]}
       />
       <Suspense fallback={<NewsPageSkeleton />}>
-        <TrendingStoriesPageClient {...filteredData} />
+        <TrendingStoriesServer category={category} />
       </Suspense>
     </MainLayout>
   );
+}
+
+async function TrendingStoriesServer({ category }: { category: string }) {
+  const data = await fetchTrendingStories(category);
+  return <TrendingStoriesPageClient {...data} />;
 }

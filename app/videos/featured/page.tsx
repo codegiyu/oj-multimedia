@@ -4,10 +4,12 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { SubPageHero } from '@/components/general/SubPageHero';
 import { FeaturedVideosPageClient } from '@/components/section/video/FeaturedVideosPageClient';
 import { VideoPageSkeleton } from '@/components/section/video/VideoPageSkeleton';
-import { filterByCategory } from '@/lib/utils/videos';
 import type { FeaturedVideo } from '@/components/section/video/FeaturedVideos';
-import { VIDEOS_ITEMS } from '@/lib/constants/videos';
-import { populateArtist } from '@/lib/utils/community/artists';
+import { callServerApi } from '@/lib/services/serverApi';
+import type { ApiErrorResponse } from '@/lib/types/http';
+import type { IPublicVideosListRes } from '@/lib/constants/endpoints';
+import { filterByCategory } from '@/lib/utils/videos';
+import { mapPublicVideoToFeaturedVideo } from '@/lib/utils/publicApiMappers';
 
 export const metadata: Metadata = {
   title: 'Featured Videos - Editor Picks',
@@ -15,52 +17,24 @@ export const metadata: Metadata = {
     'Discover featured videos - editor picks and popular uploads. Hand-selected content that stands out.',
 };
 
-// Force dynamic rendering to ensure searchParams changes trigger re-renders
 export const dynamic = 'force-dynamic';
 
-// Generate featured videos data from central constants
-async function generateFeaturedVideosData(): Promise<{
-  featuredVideos: (FeaturedVideo & { category: string })[];
-}> {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 1500));
-
-  const featuredVideos: (FeaturedVideo & { category: string })[] = VIDEOS_ITEMS.filter(
-    item =>
-      item.isFeatured &&
-      item.views !== undefined &&
-      item.duration !== undefined &&
-      item.category !== undefined
-  ).map(item => {
-    const creator = populateArtist(item.creator) ?? { _id: item.creator, name: 'Unknown' };
+async function fetchFeaturedVideos(category: string) {
+  const categoryParam =
+    category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';
+  const query = `?limit=50&page=1&status=published&type=featured${categoryParam}` as const;
+  const res = await callServerApi('PUBLIC_GET_VIDEOS', { query });
+  if (res.error) {
     return {
-      _id: item._id,
-      title: item.title,
-      creator,
-      thumbnail: item.thumbnail,
-      views: item.views!,
-      duration: item.duration!,
-      category:
-        item.category === 'music'
-          ? 'Music Videos'
-          : item.category === 'short'
-            ? 'Short Clips'
-            : item.category === 'talks'
-              ? 'Talks & Speeches'
-              : item.category === 'creative'
-                ? 'Creative Content'
-                : item.category === 'inspirational'
-                  ? 'Inspirational'
-                  : item.category === 'live'
-                    ? 'Live Performances'
-                    : 'Podcasts / Video Talks',
-      featured: item.featured || false,
+      featuredVideos: [] as FeaturedVideo[],
+      initialErrorMessage:
+        (res.error as ApiErrorResponse)?.message ?? 'Failed to load featured videos',
     };
-  });
-
-  return {
-    featuredVideos,
-  };
+  }
+  const data = res.data as IPublicVideosListRes | undefined;
+  const raw = data?.videos ?? [];
+  const featuredVideos = filterByCategory(raw, category).map(mapPublicVideoToFeaturedVideo);
+  return { featuredVideos, initialErrorMessage: null as string | null };
 }
 
 interface FeaturedVideosPageProps {
@@ -69,13 +43,7 @@ interface FeaturedVideosPageProps {
 
 export default async function FeaturedVideosPage({ searchParams }: FeaturedVideosPageProps) {
   const params = await searchParams;
-  const category = params.category || 'all';
-  const data = await generateFeaturedVideosData();
-
-  // Filter data server-side based on category
-  const filteredData = {
-    featuredVideos: filterByCategory(data.featuredVideos, category),
-  };
+  const category = params.category ?? 'all';
 
   return (
     <MainLayout>
@@ -90,8 +58,13 @@ export default async function FeaturedVideosPage({ searchParams }: FeaturedVideo
         stats={[{ icon: 'Star', text: 'Editor picks' }, { text: 'Top quality content' }]}
       />
       <Suspense fallback={<VideoPageSkeleton />}>
-        <FeaturedVideosPageClient {...filteredData} />
+        <FeaturedVideosServer category={category} />
       </Suspense>
     </MainLayout>
   );
+}
+
+async function FeaturedVideosServer({ category }: { category: string }) {
+  const data = await fetchFeaturedVideos(category);
+  return <FeaturedVideosPageClient {...data} />;
 }

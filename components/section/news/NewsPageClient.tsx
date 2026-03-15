@@ -1,6 +1,10 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { Newspaper } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { SectionContainer } from '@/components/general/SectionContainer';
+import { DataLoadError } from '@/components/general/DataLoadError';
 import { NewsCategories } from './NewsCategories';
 import { FeaturedStories, type FeaturedStory } from './FeaturedStories';
 import { NewsFeed, type NewsItem } from './NewsFeed';
@@ -14,6 +18,7 @@ interface NewsPageClientProps {
   newsItems: NewsItem[];
   trendingStories: TrendingStory[];
   videoNews: VideoNewsItem[];
+  initialErrorMessage?: string | null;
 }
 
 export const NewsPageClient = ({
@@ -21,10 +26,41 @@ export const NewsPageClient = ({
   newsItems,
   trendingStories,
   videoNews,
+  initialErrorMessage = null,
 }: NewsPageClientProps) => {
+  const router = useRouter();
+  const hasAnyContent =
+    featuredStories.length > 0 ||
+    newsItems.length > 0 ||
+    trendingStories.length > 0 ||
+    videoNews.length > 0;
+
+  if (initialErrorMessage && !hasAnyContent) {
+    return (
+      <SectionContainer>
+        <DataLoadError
+          title="Unable to load news"
+          message={initialErrorMessage}
+          onRetry={() => router.refresh()}
+          icon={<Newspaper className="w-8 h-8 text-destructive" />}
+        />
+      </SectionContainer>
+    );
+  }
+
   return (
     <>
       <NewsCategories />
+      {initialErrorMessage && (
+        <div className="container mx-auto px-4 mb-4">
+          <div className="rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive flex items-center justify-between gap-4">
+            <span>{initialErrorMessage}</span>
+            <Button variant="outline" size="sm" onClick={() => router.refresh()}>
+              Retry
+            </Button>
+          </div>
+        </div>
+      )}
       <FeaturedStories stories={featuredStories} />
 
       <SectionComp
