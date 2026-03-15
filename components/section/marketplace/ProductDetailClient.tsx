@@ -8,20 +8,12 @@ import Link from 'next/link';
 import type { MarketplaceProduct } from '@/lib/utils/marketplace';
 import { formatPrice } from '@/lib/utils/marketplace';
 import { useCartStore } from '@/lib/store/cartStore';
+import { getProductCategoryName, getProductCategorySlug } from '@/lib/constants/endpoints';
+import type { IMarketplaceProduct } from '@/lib/constants/endpoints';
 
 export interface ProductDetailClientProps {
-  product: MarketplaceProduct | null;
+  product: (MarketplaceProduct | IMarketplaceProduct) | null;
 }
-
-const CATEGORY_LABELS: Record<string, string> = {
-  fashion: 'Fashion',
-  food: 'Food',
-  'health-beauty': 'Health & Beauty',
-  accessories: 'Accessories',
-  electronics: 'Electronics',
-  books: 'Books',
-  other: 'Other',
-};
 
 export function ProductDetailClient({ product }: ProductDetailClientProps) {
   const { items, actions } = useCartStore();
@@ -54,7 +46,9 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
   };
 
   const imageUrl = product.images[0];
-  const categoryLabel = CATEGORY_LABELS[product.category] ?? product.category;
+  const productForCategory = product as IMarketplaceProduct;
+  const categoryLabel = getProductCategoryName(productForCategory);
+  const categorySlug = getProductCategorySlug(productForCategory);
 
   return (
     <MainLayout>
@@ -68,11 +62,11 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
             <Link href="/marketplace/products" className="hover:text-primary">
               Products
             </Link>
-            {categoryLabel && (
+            {categoryLabel && categoryLabel !== 'Other' && (
               <>
                 <ChevronRight className="w-4 h-4" />
                 <Link
-                  href={`/marketplace/products?category=${product.category}`}
+                  href={`/marketplace/products?category=${categorySlug}`}
                   className="hover:text-primary">
                   {categoryLabel}
                 </Link>

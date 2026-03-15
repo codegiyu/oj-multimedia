@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Sparkles } from 'lucide-react';
 import { SectionComp } from '@/components/general/SectionComp';
 import { VideoCard } from '@/components/cards/VideoCard';
+import { EmptyState } from '../news/EmptyState';
 
 export interface RecentVideoUpload {
   _id: string;
@@ -21,6 +22,24 @@ interface RecentVideoUploadsProps {
 }
 
 export const RecentVideoUploads = ({ uploads: recentUploads }: RecentVideoUploadsProps) => {
+  if (recentUploads.length === 0) {
+    return (
+      <SectionComp
+        icon={Sparkles}
+        iconColor="secondary"
+        heading="Fresh Uploads"
+        subtext="Just added by creators"
+        viewAllLink="/videos/recent"
+        contentProps={{ enableAnimation: false }}>
+        <EmptyState
+          title="No recent uploads"
+          description="No recent video uploads in this category yet. Check back later."
+          icon={<Sparkles className="w-12 h-12 text-muted-foreground" />}
+        />
+      </SectionComp>
+    );
+  }
+
   return (
     <SectionComp
       icon={Sparkles}

@@ -1,15 +1,42 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { SectionContainer } from '@/components/general/SectionContainer';
 import { Card } from '@/components/ui/card';
-import { Package, Heart, Store, Settings, ShoppingBag } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Package, Heart, Store, Settings, ShoppingBag, Mic2 } from 'lucide-react';
 import Link from 'next/link';
+import type { PopulatedUser } from '@/lib/constants/endpoints';
 
-export function AccountPageClient() {
+export interface AccountPageClientProps {
+  user: PopulatedUser | null;
+  errorMessage: string | null;
+}
+
+export function AccountPageClient({ user, errorMessage }: AccountPageClientProps) {
+  const router = useRouter();
+
   return (
     <SectionContainer>
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-8">Account</h1>
+        <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">Account</h1>
+        {user?.firstName != null && user.firstName !== '' && (
+          <p className="text-muted-foreground mb-8">Hi, {user.firstName}</p>
+        )}
+        {!user?.firstName && <div className="mb-8" />}
+
+        {errorMessage && (
+          <div className="rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive flex items-center justify-between gap-4 mb-6">
+            <span>{errorMessage}</span>
+            <Button
+              variant="outline"
+              size="sm"
+              className="border-destructive text-destructive hover:bg-destructive/10"
+              onClick={() => router.refresh()}>
+              Retry
+            </Button>
+          </div>
+        )}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <Link href="/account/orders">
@@ -35,6 +62,22 @@ export function AccountPageClient() {
                 <div>
                   <h2 className="font-semibold text-foreground">Wishlist</h2>
                   <p className="text-sm text-muted-foreground">Your saved items</p>
+                </div>
+              </div>
+            </Card>
+          </Link>
+
+          <Link href="/account/artist-portal">
+            <Card className="p-6 hover:shadow-lg transition-shadow">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <Mic2 className="w-6 h-6 text-primary" />
+                </div>
+                <div>
+                  <h2 className="font-semibold text-foreground">Artist Portal</h2>
+                  <p className="text-sm text-muted-foreground">
+                    Manage your artist profile and content
+                  </p>
                 </div>
               </div>
             </Card>

@@ -1,11 +1,35 @@
 'use client';
 
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, ArrowRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { RegularInput } from '@/components/atoms/RegularInput';
+import { RegularBtn } from '@/components/atoms/RegularBtn';
+import { toast } from 'sonner';
 
 export const NewsletterCTA = () => {
+  const [email, setEmail] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email.trim()) {
+      toast.error('Please enter your email address.');
+      return;
+    }
+    setSubmitting(true);
+    try {
+      // TODO: wire to newsletter subscription endpoint
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      toast.success('Subscribed successfully!');
+      setEmail('');
+    } catch {
+      toast.error('Failed to subscribe. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   return (
     <section className="py-16">
       <div className="container mx-auto px-4">
@@ -33,16 +57,32 @@ export const NewsletterCTA = () => {
               opportunities, and inspiration. No spam, just good content.
             </p>
 
-            <form className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-              <Input
+            <form
+              onSubmit={handleSubmit}
+              className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto text-left">
+              <RegularInput
                 type="email"
+                name="newsletterEmail"
+                label=""
                 placeholder="Enter your email"
-                className="flex-1 h-12 rounded-full px-6 bg-background border-border/50"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                wrapClassName="flex-1"
               />
-              <Button className="h-12 px-6 rounded-full gap-2">
-                Subscribe
-                <ArrowRight className="w-4 h-4" />
-              </Button>
+              <RegularBtn
+                type="submit"
+                className="h-12 px-6 rounded-full gap-2 w-full sm:w-auto"
+                text={submitting ? 'Subscribing...' : 'Subscribe'}
+                RightIcon={ArrowRight}
+                rightIconProps={{ className: 'w-4 h-4' }}
+                disabled={submitting}
+                loading={submitting}
+                onDisabledClick={() => {
+                  if (submitting) {
+                    toast.info('Please wait, subscribing…');
+                  }
+                }}
+              />
             </form>
 
             <p className="text-xs text-muted-foreground mt-4">

@@ -5,6 +5,7 @@ import { Zap } from 'lucide-react';
 import { useRef } from 'react';
 import { SectionComp } from '@/components/general/SectionComp';
 import { VideoCard } from '@/components/cards/VideoCard';
+import { EmptyState } from '../news/EmptyState';
 
 export interface ShortFormVideo {
   _id: string;
@@ -13,6 +14,7 @@ export interface ShortFormVideo {
   thumbnail: string;
   views: string;
   duration: string;
+  category: string;
   likes: string;
 }
 
@@ -32,6 +34,25 @@ export const ShortFormVideos = ({ videos: shortFormVideos }: ShortFormVideosProp
       });
     }
   };
+
+  if (shortFormVideos.length === 0) {
+    return (
+      <SectionComp
+        icon={Zap}
+        iconColor="primary"
+        heading="Short Clips"
+        subtext="Quick, engaging content"
+        viewAllLink="/videos/short-form"
+        background="bg-muted/30"
+        contentProps={{ enableAnimation: false }}>
+        <EmptyState
+          title="No short form videos"
+          description="No short form videos in this category yet. Check back later."
+          icon={<Zap className="w-12 h-12 text-muted-foreground" />}
+        />
+      </SectionComp>
+    );
+  }
 
   return (
     <SectionComp
@@ -63,7 +84,7 @@ export const ShortFormVideos = ({ videos: shortFormVideos }: ShortFormVideosProp
               thumbnail={video.thumbnail}
               views={video.views}
               duration={video.duration}
-              category=""
+              category={video.category}
               variant="shortForm"
               likes={video.likes}
             />

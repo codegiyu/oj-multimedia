@@ -1,9 +1,13 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Play, Clock, ArrowRight } from 'lucide-react';
+import { Play, Clock, ArrowRight, Newspaper } from 'lucide-react';
 import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { SectionContainer } from '@/components/general/SectionContainer';
+import { DataLoadError } from '@/components/general/DataLoadError';
 import { NewsCategories } from './NewsCategories';
 import { NewsletterCTA } from '../shared';
 import { EmptyState } from './EmptyState';
@@ -12,9 +16,14 @@ import type { VideoNewsItem } from './VideoNews';
 
 interface VideoNewsPageClientProps {
   videoNews: VideoNewsItem[];
+  initialErrorMessage?: string | null;
 }
 
-export const VideoNewsPageClient = ({ videoNews }: VideoNewsPageClientProps) => {
+export const VideoNewsPageClient = ({
+  videoNews,
+  initialErrorMessage = null,
+}: VideoNewsPageClientProps) => {
+  const router = useRouter();
   const [displayedItems, setDisplayedItems] = useState(12);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -28,9 +37,32 @@ export const VideoNewsPageClient = ({ videoNews }: VideoNewsPageClientProps) => 
   const hasMore = displayedItems < videoNews.length;
   const itemsToShow = videoNews.slice(0, displayedItems);
 
+  if (initialErrorMessage && videoNews.length === 0) {
+    return (
+      <SectionContainer>
+        <DataLoadError
+          title="Unable to load video stories"
+          message={initialErrorMessage}
+          onRetry={() => router.refresh()}
+          icon={<Newspaper className="w-8 h-8 text-destructive" />}
+        />
+      </SectionContainer>
+    );
+  }
+
   return (
     <>
       <NewsCategories />
+      {initialErrorMessage && (
+        <div className="container mx-auto px-4 mb-4">
+          <div className="rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive flex items-center justify-between gap-4">
+            <span>{initialErrorMessage}</span>
+            <Button variant="outline" size="sm" onClick={() => router.refresh()}>
+              Retry
+            </Button>
+          </div>
+        </div>
+      )}
       <SectionComp
         icon={Play}
         iconColor="primary"

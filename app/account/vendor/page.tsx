@@ -1,16 +1,82 @@
+import { Suspense } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { VendorPageClient } from '@/components/section/account/vendor/VendorPageClient';
 import type { Metadata } from 'next';
+import { callServerApi } from '@/lib/services/serverApi';
+import type { ApiErrorResponse } from '@/lib/types/http';
+import type { IVendorDashboardStatsRes, IVendorMeRes } from '@/lib/constants/endpoints';
 
 export const metadata: Metadata = {
   title: 'Vendor Dashboard',
   description: 'Manage your vendor account and store.',
 };
 
+function VendorDashboardSkeleton() {
+  return (
+    <div className="max-w-5xl mx-auto py-8 space-y-4">
+      <div className="h-7 w-40 rounded-md bg-muted" />
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="h-24 rounded-lg bg-muted" />
+        <div className="h-24 rounded-lg bg-muted" />
+        <div className="h-24 rounded-lg bg-muted" />
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+        <div className="h-40 rounded-lg bg-muted" />
+        <div className="h-40 rounded-lg bg-muted" />
+        <div className="h-40 rounded-lg bg-muted" />
+      </div>
+    </div>
+  );
+}
+
 export default function VendorPage() {
   return (
     <MainLayout hideHeader hideFooter>
-      <VendorPageClient />
+      <Suspense fallback={<VendorDashboardSkeleton />}>
+        <VendorPageClientServer />
+      </Suspense>
     </MainLayout>
+  );
+}
+
+async function VendorPageClientServer() {
+  const meRes = await callServerApi('VENDOR_GET_ME', {});
+
+  if (meRes.error || !meRes.data) {
+    const responseCode = (meRes.error as ApiErrorResponse | undefined)?.responseCode;
+
+    if (responseCode === 403 || responseCode === 404) {
+      return (
+        <VendorPageClient vendor={null} stats={null} hasVendorProfile={false} errorMessage={null} />
+      );
+    }
+
+    return (
+      <VendorPageClient
+        vendor={null}
+        stats={null}
+        hasVendorProfile={true}
+        errorMessage={meRes.message || 'Unable to load vendor profile.'}
+      />
+    );
+  }
+
+  const vendor: IVendorMeRes = meRes.data;
+  const statsRes = await callServerApi('VENDOR_GET_DASHBOARD_STATS', {});
+
+  const stats: IVendorDashboardStatsRes | null =
+    statsRes.error || !statsRes.data ? null : (statsRes.data as IVendorDashboardStatsRes);
+
+  return (
+    <VendorPageClient
+      vendor={vendor}
+      stats={stats}
+      hasVendorProfile={true}
+      errorMessage={
+        statsRes.error || !statsRes.data
+          ? statsRes.message || 'Unable to load dashboard stats.'
+          : null
+      }
+    />
   );
 }

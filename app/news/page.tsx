@@ -9,7 +9,15 @@ import type { FeaturedStory } from '@/components/section/news/FeaturedStories';
 import type { NewsItem as NewsFeedItem } from '@/components/section/news/NewsFeed';
 import type { TrendingStory } from '@/components/section/news/TrendingSidebar';
 import type { VideoNewsItem } from '@/components/section/news/VideoNews';
-import { NEWS_ITEMS } from '@/lib/constants/news';
+import { callServerApi } from '@/lib/services/serverApi';
+import type { ApiErrorResponse } from '@/lib/types/http';
+import type { IPublicNewsListRes } from '@/lib/constants/endpoints';
+import {
+  mapPublicNewsToFeaturedStory,
+  mapPublicNewsToFeedItem,
+  mapPublicNewsToTrendingStory,
+  mapPublicNewsToVideoNewsItem,
+} from '@/lib/utils/publicApiMappers';
 
 export const metadata: Metadata = {
   title: 'News & Lifestyle Updates',
@@ -17,89 +25,63 @@ export const metadata: Metadata = {
     'Stay updated with the latest news, announcements, inspirational stories, lifestyle content, and trending topics. Explore recent updates and popular stories.',
 };
 
-// Force dynamic rendering to ensure searchParams changes trigger re-renders
 export const dynamic = 'force-dynamic';
 
-// Generate news data from central constants
-async function generateNewsData() {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 1500));
+async function fetchNewsSections(category: string) {
+  const categoryParam =
+    category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';
+  const baseQuery = `?limit=15&page=1&status=published${categoryParam}` as const;
 
-  // Filter and transform featured stories (limit to 3)
-  const featuredStories: FeaturedStory[] = NEWS_ITEMS.filter(
-    item => item.isFeatured && item.excerpt !== undefined && item.comments !== undefined
-  )
-    .slice(0, 3)
-    .map(item => ({
-      _id: item._id,
-      title: item.title,
-      excerpt: item.excerpt!,
-      category: item.category,
-      image: item.image,
-      readTime: item.readTime,
-      views: item.views,
-      comments: item.comments!,
-      featured: item.isFeatured,
-      videoUrl: item.videoUrl,
-      author: item.author,
-      date: item.date,
-    }));
+  const [featuredRes, latestRes, trendingRes, videoRes] = await Promise.all([
+    callServerApi('PUBLIC_GET_NEWS', { query: `${baseQuery}&type=featured` }),
+    callServerApi('PUBLIC_GET_NEWS', { query: `${baseQuery}&type=latest` }),
+    callServerApi('PUBLIC_GET_NEWS', { query: `${baseQuery}&type=trending` }),
+    callServerApi('PUBLIC_GET_NEWS', { query: `${baseQuery}&type=video` }),
+  ]);
 
-  // Filter and transform latest/news feed items (limit to 10)
-  const newsItems: NewsFeedItem[] = NEWS_ITEMS.filter(
-    item => item.isLatest && item.excerpt !== undefined && item.comments !== undefined
-  )
-    .slice(0, 10)
-    .map(item => ({
-      _id: item._id,
-      title: item.title,
-      excerpt: item.excerpt!,
-      category: item.category,
-      image: item.image,
-      readTime: item.readTime,
-      views: item.views,
-      comments: item.comments!,
-      likes: item.likes || 0,
-      videoUrl: item.videoUrl,
-      author: item.author,
-      date: item.date,
-    }));
+  let errorMessage: string | null = null;
+  if (featuredRes.error)
+    errorMessage = (featuredRes.error as ApiErrorResponse)?.message ?? 'Failed to load news';
+  else if (latestRes.error)
+    errorMessage = (latestRes.error as ApiErrorResponse)?.message ?? 'Failed to load latest';
+  else if (trendingRes.error)
+    errorMessage = (trendingRes.error as ApiErrorResponse)?.message ?? 'Failed to load trending';
+  else if (videoRes.error)
+    errorMessage = (videoRes.error as ApiErrorResponse)?.message ?? 'Failed to load video stories';
 
-  // Filter and transform trending stories (limit to 6)
-  const trendingStories: TrendingStory[] = NEWS_ITEMS.filter(item => item.isTrending)
-    .sort((a, b) => (a.rank || 0) - (b.rank || 0))
-    .slice(0, 6)
-    .map(item => ({
-      _id: item._id,
-      title: item.title,
-      excerpt: item.excerpt,
-      category: item.category,
-      readTime: item.readTime,
-      rank: item.rank || 0,
-      image: item.image,
-      views: item.views,
-      videoUrl: item.videoUrl,
-    }));
+  const featuredData = featuredRes.data as IPublicNewsListRes | undefined;
+  const latestData = latestRes.data as IPublicNewsListRes | undefined;
+  const trendingData = trendingRes.data as IPublicNewsListRes | undefined;
+  const videoData = videoRes.data as IPublicNewsListRes | undefined;
 
-  // Filter and transform video news (items with videoUrl and duration, limit to 4)
-  const videoNews: VideoNewsItem[] = NEWS_ITEMS.filter(item => item.videoUrl && item.duration)
-    .slice(0, 4)
-    .map(item => ({
-      _id: item._id,
-      title: item.title,
-      category: item.category,
-      duration: item.duration!,
-      image: item.image,
-      views: item.views,
-      author: item.author,
-      date: item.date,
-    }));
+  const rawFeatured = featuredData?.articles ?? [];
+  const rawLatest = latestData?.articles ?? [];
+  const rawTrending = trendingData?.articles ?? [];
+  const rawVideo = videoData?.articles ?? [];
+
+  const featuredStories: FeaturedStory[] = filterByCategory(
+    rawFeatured.map(mapPublicNewsToFeaturedStory),
+    category
+  ).slice(0, 3);
+  const newsItems: NewsFeedItem[] = filterByCategory(
+    rawLatest.map(mapPublicNewsToFeedItem),
+    category
+  ).slice(0, 10);
+  const trendingStories: TrendingStory[] = filterByCategory(
+    rawTrending.map((item, i) => mapPublicNewsToTrendingStory(item, i + 1)),
+    category
+  ).slice(0, 6);
+  const videoNews: VideoNewsItem[] = filterByCategory(
+    rawVideo.map(mapPublicNewsToVideoNewsItem),
+    category
+  ).slice(0, 4);
 
   return {
     featuredStories,
     newsItems,
     trendingStories,
     videoNews,
+    initialErrorMessage: errorMessage,
   };
 }
 
@@ -109,23 +91,19 @@ interface NewsPageProps {
 
 export default async function NewsPage({ searchParams }: NewsPageProps) {
   const params = await searchParams;
-  const category = params.category || 'all';
-  const newsData = await generateNewsData();
-
-  // Filter data server-side based on category
-  const filteredData = {
-    featuredStories: filterByCategory(newsData.featuredStories, category),
-    newsItems: filterByCategory(newsData.newsItems, category),
-    trendingStories: filterByCategory(newsData.trendingStories, category),
-    videoNews: filterByCategory(newsData.videoNews, category),
-  };
+  const category = params.category ?? 'all';
 
   return (
     <MainLayout>
       <NewsHero />
       <Suspense fallback={<NewsPageSkeleton />}>
-        <NewsPageClient {...filteredData} />
+        <NewsPageServer category={category} />
       </Suspense>
     </MainLayout>
   );
+}
+
+async function NewsPageServer({ category }: { category: string }) {
+  const data = await fetchNewsSections(category);
+  return <NewsPageClient {...data} />;
 }

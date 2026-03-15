@@ -3,9 +3,9 @@
 import { motion } from 'framer-motion';
 import { HandHeart, Send, CheckCircle } from 'lucide-react';
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+import { RegularBtn } from '@/components/atoms/RegularBtn';
+import { RegularInput } from '@/components/atoms/RegularInput';
+import { RegularTextarea } from '@/components/atoms/RegularTextarea';
 import {
   Select,
   SelectContent,
@@ -81,8 +81,10 @@ export const SubmitPrayerRequestSection = () => {
                     <label htmlFor="name" className="text-sm font-medium">
                       Your Name (Optional)
                     </label>
-                    <Input
+                    <RegularInput
                       id="name"
+                      name="name"
+                      label=""
                       placeholder="Enter your name"
                       value={name}
                       onChange={e => setName(e.target.value)}
@@ -113,8 +115,10 @@ export const SubmitPrayerRequestSection = () => {
                   <label htmlFor="title" className="text-sm font-medium">
                     Prayer Request Title
                   </label>
-                  <Input
+                  <RegularInput
                     id="title"
+                    name="title"
+                    label=""
                     placeholder="Brief title for your request"
                     value={title}
                     onChange={e => setTitle(e.target.value)}
@@ -126,11 +130,12 @@ export const SubmitPrayerRequestSection = () => {
                   <label htmlFor="content" className="text-sm font-medium">
                     Prayer Request Details
                   </label>
-                  <Textarea
+                  <RegularTextarea
                     id="content"
+                    name="content"
+                    label=""
                     placeholder="Share your prayer need here..."
                     rows={6}
-                    className="resize-none"
                     value={content}
                     onChange={e => setContent(e.target.value)}
                     required
@@ -150,10 +155,25 @@ export const SubmitPrayerRequestSection = () => {
                   </label>
                 </div>
 
-                <Button type="submit" size="lg" className="w-full gap-2" disabled={isSubmitting}>
-                  <Send className="w-4 h-4" />
-                  {isSubmitting ? 'Submitting...' : 'Submit Prayer Request'}
-                </Button>
+                <RegularBtn
+                  type="submit"
+                  size="full"
+                  className="w-full gap-2"
+                  disabled={isSubmitting}
+                  loading={isSubmitting}
+                  RightIcon={Send}
+                  rightIconProps={{ className: 'w-4 h-4' }}
+                  text={isSubmitting ? 'Submitting...' : 'Submit Prayer Request'}
+                  onDisabledClick={() => {
+                    if (isSubmitting) {
+                      toast({
+                        title: 'Please wait',
+                        description: 'Submitting your prayer request…',
+                        variant: 'info',
+                      });
+                    }
+                  }}
+                />
               </form>
             </CardContent>
           </Card>

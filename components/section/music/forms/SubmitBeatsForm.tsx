@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Upload, Music, Image as ImageIcon, FileAudio, X, Drum } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { RegularBtn } from '@/components/atoms/RegularBtn';
 import { RegularInput } from '@/components/atoms/RegularInput';
 import { RegularSelect } from '@/components/atoms/RegularSelect';
 import { RegularTextarea } from '@/components/atoms/RegularTextarea';
@@ -239,7 +239,7 @@ export const SubmitBeatsForm = () => {
               <div className="relative aspect-square rounded-lg overflow-hidden border border-border">
                 <Image src={coverPreview} alt="Cover preview" fill className="object-cover" />
               </div>
-              <Button
+              <RegularBtn
                 type="button"
                 variant="ghost"
                 size="icon-sm"
@@ -249,7 +249,7 @@ export const SubmitBeatsForm = () => {
                   setCoverFile(null);
                 }}>
                 <X className="w-4 h-4" />
-              </Button>
+              </RegularBtn>
             </div>
           ) : (
             <label
@@ -287,7 +287,7 @@ export const SubmitBeatsForm = () => {
             <div className="flex items-center gap-2 p-4 border border-border rounded-lg bg-muted/50">
               <FileAudio className="w-5 h-5 text-primary" />
               <span className="flex-1 text-sm">{beatPreview}</span>
-              <Button
+              <RegularBtn
                 type="button"
                 variant="ghost"
                 size="icon-sm"
@@ -296,7 +296,7 @@ export const SubmitBeatsForm = () => {
                   setBeatFile(null);
                 }}>
                 <X className="w-4 h-4" />
-              </Button>
+              </RegularBtn>
             </div>
           ) : (
             <label
@@ -329,7 +329,7 @@ export const SubmitBeatsForm = () => {
             <div className="flex items-center gap-2 p-4 border border-border rounded-lg bg-muted/50">
               <FileAudio className="w-5 h-5 text-primary" />
               <span className="flex-1 text-sm">{instrumentalPreview}</span>
-              <Button
+              <RegularBtn
                 type="button"
                 variant="ghost"
                 size="icon-sm"
@@ -338,7 +338,7 @@ export const SubmitBeatsForm = () => {
                   setInstrumentalFile(null);
                 }}>
                 <X className="w-4 h-4" />
-              </Button>
+              </RegularBtn>
             </div>
           ) : (
             <label
@@ -412,19 +412,29 @@ export const SubmitBeatsForm = () => {
 
       {/* Submit Button */}
       <div className="flex gap-4 pt-4">
-        <Button type="submit" size="lg" disabled={isSubmitting} className="flex-1">
-          {isSubmitting ? (
-            'Submitting...'
-          ) : (
-            <>
-              <Upload className="w-5 h-5 mr-2" />
-              Submit Beat
-            </>
-          )}
-        </Button>
-        <Button type="button" variant="outline" size="lg" asChild>
-          <a href="/music">Cancel</a>
-        </Button>
+        <RegularBtn
+          type="submit"
+          size="full"
+          className="flex-1"
+          disabled={isSubmitting}
+          loading={isSubmitting}
+          LeftIcon={Upload}
+          leftIconProps={{ className: 'w-5 h-5 mr-2' }}
+          text={isSubmitting ? 'Submitting...' : 'Submit Beat'}
+          onDisabledClick={() => {
+            if (isSubmitting) {
+              // Keep using alert-style feedback here to avoid extra dependencies
+              alert('Please wait, submitting your beat…');
+            }
+          }}
+        />
+        <RegularBtn
+          type="button"
+          variant="outline"
+          size="default"
+          linkProps={{ href: '/music' }}
+          text="Cancel"
+        />
       </div>
     </form>
   );

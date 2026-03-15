@@ -478,7 +478,7 @@ export interface IMusic {
   _id: mongoose.Types.ObjectId;
   title: string;
   slug: string;
-  artist: mongoose.Types.ObjectId;
+  artist?: mongoose.Types.ObjectId;
   description?: string;
   lyrics?: string;
   meaning?: string;
@@ -510,7 +510,7 @@ export interface IVideo {
   _id: mongoose.Types.ObjectId;
   title: string;
   slug: string;
-  artist: mongoose.Types.ObjectId;
+  artist?: mongoose.Types.ObjectId;
   thumbnail?: string;
   category?: string;
   description?: string;

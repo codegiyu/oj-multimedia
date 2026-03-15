@@ -1,20 +1,30 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Flame, ArrowRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { SectionContainer } from '@/components/general/SectionContainer';
+import { DataLoadError } from '@/components/general/DataLoadError';
 import { VideoCategories } from './VideoCategories';
 import { VideoUploadCTA } from './VideoUploadCTA';
 import { EmptyState } from '../news/EmptyState';
 import { SectionComp } from '@/components/general/SectionComp';
 import { VideoCard } from '@/components/cards/VideoCard';
 import type { TrendingVideo } from './TrendingVideos';
+import { Video } from 'lucide-react';
 
 interface TrendingVideosPageClientProps {
-  trendingVideos: (TrendingVideo & { category: string })[];
+  trendingVideos: TrendingVideo[];
+  initialErrorMessage?: string | null;
 }
 
-export const TrendingVideosPageClient = ({ trendingVideos }: TrendingVideosPageClientProps) => {
+export const TrendingVideosPageClient = ({
+  trendingVideos,
+  initialErrorMessage = null,
+}: TrendingVideosPageClientProps) => {
+  const router = useRouter();
   const [displayedItems, setDisplayedItems] = useState(20);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -28,9 +38,32 @@ export const TrendingVideosPageClient = ({ trendingVideos }: TrendingVideosPageC
   const hasMore = displayedItems < trendingVideos.length;
   const itemsToShow = trendingVideos.slice(0, displayedItems);
 
+  if (initialErrorMessage && trendingVideos.length === 0) {
+    return (
+      <SectionContainer>
+        <DataLoadError
+          title="Unable to load trending videos"
+          message={initialErrorMessage}
+          onRetry={() => router.refresh()}
+          icon={<Video className="w-8 h-8 text-destructive" />}
+        />
+      </SectionContainer>
+    );
+  }
+
   return (
     <>
       <VideoCategories />
+      {initialErrorMessage && (
+        <div className="container mx-auto px-4 mb-4">
+          <div className="rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive flex items-center justify-between gap-4">
+            <span>{initialErrorMessage}</span>
+            <Button variant="outline" size="sm" onClick={() => router.refresh()}>
+              Retry
+            </Button>
+          </div>
+        </div>
+      )}
       <SectionComp
         icon={Flame}
         iconColor="primary"

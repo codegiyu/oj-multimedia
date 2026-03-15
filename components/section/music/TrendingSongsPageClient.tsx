@@ -1,20 +1,30 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Flame, ArrowRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { SectionContainer } from '@/components/general/SectionContainer';
+import { DataLoadError } from '@/components/general/DataLoadError';
 import { MusicCategories } from './MusicCategories';
 import { MusicUploadCTA } from '../shared/MusicUploadCTA';
 import { EmptyState } from '../news/EmptyState';
 import { SectionComp } from '@/components/general/SectionComp';
 import { MusicCard } from '@/components/cards/MusicCard';
 import type { TrendingSong } from './TrendingSongs';
+import { Music } from 'lucide-react';
 
 interface TrendingSongsPageClientProps {
-  trendingSongs: (TrendingSong & { category: string })[];
+  trendingSongs: (TrendingSong & { category?: string })[];
+  initialErrorMessage?: string | null;
 }
 
-export const TrendingSongsPageClient = ({ trendingSongs }: TrendingSongsPageClientProps) => {
+export const TrendingSongsPageClient = ({
+  trendingSongs,
+  initialErrorMessage = null,
+}: TrendingSongsPageClientProps) => {
+  const router = useRouter();
   const [displayedItems, setDisplayedItems] = useState(20);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -28,9 +38,32 @@ export const TrendingSongsPageClient = ({ trendingSongs }: TrendingSongsPageClie
   const hasMore = displayedItems < trendingSongs.length;
   const itemsToShow = trendingSongs.slice(0, displayedItems);
 
+  if (initialErrorMessage && trendingSongs.length === 0) {
+    return (
+      <SectionContainer>
+        <DataLoadError
+          title="Unable to load trending songs"
+          message={initialErrorMessage}
+          onRetry={() => router.refresh()}
+          icon={<Music className="w-8 h-8 text-destructive" />}
+        />
+      </SectionContainer>
+    );
+  }
+
   return (
     <>
       <MusicCategories />
+      {initialErrorMessage && (
+        <div className="container mx-auto px-4 mb-4">
+          <div className="rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive flex items-center justify-between gap-4">
+            <span>{initialErrorMessage}</span>
+            <Button variant="outline" size="sm" onClick={() => router.refresh()}>
+              Retry
+            </Button>
+          </div>
+        </div>
+      )}
       <SectionComp
         icon={Flame}
         iconColor="primary"

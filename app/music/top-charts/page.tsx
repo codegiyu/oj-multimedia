@@ -4,10 +4,12 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { SubPageHero } from '@/components/general/SubPageHero';
 import { TopChartsPageClient } from '@/components/section/music/TopChartsPageClient';
 import { MusicPageSkeleton } from '@/components/section/music/MusicPageSkeleton';
-import { filterByCategory } from '@/lib/utils/music';
 import type { ChartSong } from '@/components/section/music/TopMusicCharts';
-import { MUSIC_ITEMS } from '@/lib/constants/music';
-import { populateArtist } from '@/lib/utils/community/artists';
+import { callServerApi } from '@/lib/services/serverApi';
+import type { ApiErrorResponse } from '@/lib/types/http';
+import type { IPublicMusicListRes } from '@/lib/constants/endpoints';
+import { filterByCategory } from '@/lib/utils/music';
+import { mapPublicMusicToChartSong } from '@/lib/utils/publicApiMappers';
 
 export const metadata: Metadata = {
   title: 'Top Charts - Music Rankings',
@@ -15,40 +17,27 @@ export const metadata: Metadata = {
     'View the top music charts across all genres. See what songs are ranking highest this week, month, or all-time.',
 };
 
-// Force dynamic rendering to ensure searchParams changes trigger re-renders
 export const dynamic = 'force-dynamic';
 
-// Generate chart songs data from central constants
-async function generateChartSongsData(period: string = 'weekly') {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 1500));
-
-  const chartSongs: (ChartSong & { category: string })[] = MUSIC_ITEMS.filter(
-    item =>
-      item.isChart &&
-      item.rank !== undefined &&
-      item.trend !== undefined &&
-      (item.chartPeriod || 'weekly') === period
-  )
-    .sort((a, b) => (a.rank || 0) - (b.rank || 0))
-    .map(item => {
-      const artist = populateArtist(item.artist) ?? { _id: item.artist, name: 'Unknown' };
-      return {
-        _id: item._id,
-        rank: item.rank!,
-        title: item.title,
-        artist,
-        cover: item.cover,
-        plays: item.plays || '0',
-        trend: item.trend!,
-        change: item.change || 0,
-        category: item.category, // category is required in MusicItem, so this is always a string
-      };
-    });
-
-  return {
-    chartSongs,
-  };
+async function fetchChartSongs(category: string, period: string) {
+  const categoryParam =
+    category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';
+  const query =
+    `?limit=100&page=1&status=published&type=charts&period=${encodeURIComponent(period)}${categoryParam}` as const;
+  const res = await callServerApi('PUBLIC_GET_MUSIC', { query });
+  if (res.error) {
+    return {
+      chartSongs: [] as (ChartSong & { category?: string })[],
+      initialErrorMessage: (res.error as ApiErrorResponse)?.message ?? 'Failed to load charts',
+    };
+  }
+  const data = res.data as IPublicMusicListRes | undefined;
+  const raw = data?.music ?? [];
+  const chartSongs = filterByCategory(
+    raw.map((item, i) => mapPublicMusicToChartSong(item, i + 1)),
+    category
+  ) as (ChartSong & { category?: string })[];
+  return { chartSongs, initialErrorMessage: null as string | null };
 }
 
 interface TopChartsPageProps {
@@ -57,14 +46,8 @@ interface TopChartsPageProps {
 
 export default async function TopChartsPage({ searchParams }: TopChartsPageProps) {
   const params = await searchParams;
-  const category = params.category || 'all';
-  const period = params.period || 'weekly';
-  const data = await generateChartSongsData(period);
-
-  // Filter data server-side based on category
-  const filteredData = {
-    chartSongs: filterByCategory(data.chartSongs, category),
-  };
+  const category = params.category ?? 'all';
+  const period = params.period ?? 'weekly';
 
   return (
     <MainLayout>
@@ -89,8 +72,13 @@ export default async function TopChartsPage({ searchParams }: TopChartsPageProps
         ]}
       />
       <Suspense fallback={<MusicPageSkeleton />}>
-        <TopChartsPageClient {...filteredData} period={period} />
+        <TopChartsServer category={category} period={period} />
       </Suspense>
     </MainLayout>
   );
+}
+
+async function TopChartsServer({ category, period }: { category: string; period: string }) {
+  const data = await fetchChartSongs(category, period);
+  return <TopChartsPageClient {...data} period={period} />;
 }

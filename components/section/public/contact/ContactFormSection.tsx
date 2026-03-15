@@ -23,33 +23,41 @@ type ContactFormValues = z.infer<typeof contactSchema>;
 export const ContactFormSection = () => {
   const { siteLoading } = useSiteStore(state => state);
 
-  const { formValues, formErrors, errorsVisible, loading, handleInputChange, handleSubmit } =
-    useForm<typeof contactSchema>({
-      formSchema: contactSchema,
-      defaultFormValues: {
-        name: '',
-        email: '',
-        subject: '',
-        message: '',
-      },
-      onSubmit: async (values: ContactFormValues) => {
-        try {
-          console.log({ values });
-          // Simulate form submission - replace with actual API call
-          await new Promise(resolve => setTimeout(resolve, 1500));
+  const {
+    formValues,
+    formErrors,
+    errorsVisible,
+    loading,
+    handleInputChange,
+    handleSubmit,
+    isValid,
+    validateForm,
+  } = useForm<typeof contactSchema>({
+    formSchema: contactSchema,
+    defaultFormValues: {
+      name: '',
+      email: '',
+      subject: '',
+      message: '',
+    },
+    onSubmit: async (values: ContactFormValues) => {
+      try {
+        console.log({ values });
+        // Simulate form submission - replace with actual API call
+        await new Promise(resolve => setTimeout(resolve, 1500));
 
-          // TODO: Replace with actual API call
-          // const { data, error } = await callApi('SUBMIT_CONTACT_FORM', { payload: values });
+        // TODO: Replace with actual API call
+        // const { data, error } = await callApi('SUBMIT_CONTACT_FORM', { payload: values });
 
-          toast.success("Message sent successfully! We'll get back to you soon.");
-          return true;
-        } catch (error) {
-          toast.error('Failed to send message. Please try again.');
-          console.error(error);
-          return false;
-        }
-      },
-    });
+        toast.success("Message sent successfully! We'll get back to you soon.");
+        return true;
+      } catch (error) {
+        toast.error('Failed to send message. Please try again.');
+        console.error(error);
+        return false;
+      }
+    },
+  });
 
   return (
     <SectionContainer className="bg-card">
@@ -124,10 +132,18 @@ export const ContactFormSection = () => {
           <RegularBtn
             type="submit"
             className="w-full sm:w-auto bg-gradient-to-r from-[#2563EB] to-[#3B82F6] text-white"
-            disabled={loading}
+            disabled={loading || !isValid}
+            loading={loading}
             RightIcon={Send}
             rightIconProps={{ className: 'size-4' }}
             text={loading ? 'Sending...' : 'Send Message'}
+            onDisabledClick={() => {
+              if (!isValid) {
+                validateForm();
+              } else if (loading) {
+                toast.info('Please wait, sending your message…');
+              }
+            }}
           />
         </form>
       </motion.div>

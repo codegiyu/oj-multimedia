@@ -1,8 +1,12 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Sparkles, ArrowRight } from 'lucide-react';
+import { Sparkles, ArrowRight, Video } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { SectionContainer } from '@/components/general/SectionContainer';
+import { DataLoadError } from '@/components/general/DataLoadError';
 import { VideoCategories } from './VideoCategories';
 import { VideoUploadCTA } from './VideoUploadCTA';
 import { EmptyState } from '../news/EmptyState';
@@ -11,10 +15,15 @@ import { VideoCard } from '@/components/cards/VideoCard';
 import type { RecentVideoUpload } from './RecentVideoUploads';
 
 interface RecentVideosPageClientProps {
-  recentUploads: (RecentVideoUpload & { category: string })[];
+  recentUploads: RecentVideoUpload[];
+  initialErrorMessage?: string | null;
 }
 
-export const RecentVideosPageClient = ({ recentUploads }: RecentVideosPageClientProps) => {
+export const RecentVideosPageClient = ({
+  recentUploads,
+  initialErrorMessage = null,
+}: RecentVideosPageClientProps) => {
+  const router = useRouter();
   const [displayedItems, setDisplayedItems] = useState(20);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -28,9 +37,32 @@ export const RecentVideosPageClient = ({ recentUploads }: RecentVideosPageClient
   const hasMore = displayedItems < recentUploads.length;
   const itemsToShow = recentUploads.slice(0, displayedItems);
 
+  if (initialErrorMessage && recentUploads.length === 0) {
+    return (
+      <SectionContainer>
+        <DataLoadError
+          title="Unable to load recent videos"
+          message={initialErrorMessage}
+          onRetry={() => router.refresh()}
+          icon={<Video className="w-8 h-8 text-destructive" />}
+        />
+      </SectionContainer>
+    );
+  }
+
   return (
     <>
       <VideoCategories />
+      {initialErrorMessage && (
+        <div className="container mx-auto px-4 mb-4">
+          <div className="rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive flex items-center justify-between gap-4">
+            <span>{initialErrorMessage}</span>
+            <Button variant="outline" size="sm" onClick={() => router.refresh()}>
+              Retry
+            </Button>
+          </div>
+        </div>
+      )}
       <SectionComp
         icon={Sparkles}
         iconColor="secondary"

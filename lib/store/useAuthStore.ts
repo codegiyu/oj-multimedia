@@ -3,7 +3,7 @@ import { create } from 'zustand';
 import type { SelectorFn } from '../types/general';
 import { useShallow } from 'zustand/react/shallow';
 import type { Permission } from '@/app/_server/lib/types/constants';
-import type { ClientAdmin, ClientUser } from '../constants/endpoints';
+import type { ClientAdmin, PopulatedUser } from '../constants/endpoints';
 import { callApi } from '../services/callApi';
 import { getRouter } from '../utils/navigation';
 
@@ -11,11 +11,11 @@ export interface AuthStore {
   initLoading: boolean;
   loginLoading: boolean;
   pauseNavigatingAwayFromAuth: boolean;
-  user: ClientAdmin | ClientUser | null;
+  user: ClientAdmin | PopulatedUser | null;
   permissions: Permission[];
   actions: {
     setUser: (
-      user: ClientAdmin | ClientUser | null,
+      user: ClientAdmin | PopulatedUser | null,
       options?: {
         permissions?: Permission[];
         initLoading?: boolean;

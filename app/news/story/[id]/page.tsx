@@ -2,31 +2,38 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { NewsDetailPageClient } from '@/components/section/news/NewsDetailPageClient';
-import { getNewsItemById, getRelatedNewsItems } from '@/lib/utils/news';
+import { callServerApi } from '@/lib/services/serverApi';
+import type { IPublicNewsItemRes, IPublicNewsListRes } from '@/lib/constants/endpoints';
+import { mapPublicNewsToDetailItem } from '@/lib/utils/publicApiMappers';
+import type { NewsItem } from '@/lib/constants/news';
 
 interface NewsStoryPageProps {
   params: Promise<{ id: string }>;
 }
 
-// Generate metadata for the news story page
 export async function generateMetadata({ params }: NewsStoryPageProps): Promise<Metadata> {
   const resolvedParams = await params;
   const id = resolvedParams.id;
-  const newsItem = id ? getNewsItemById(id) : undefined;
-
-  if (!newsItem) {
+  if (!id) {
     return {
       title: 'Story Not Found',
       description: 'The requested news story could not be found.',
     };
   }
-
+  const res = await callServerApi('PUBLIC_GET_NEWS_ITEM', { query: `/${encodeURIComponent(id)}` });
+  if (res.error || !res.data) {
+    return {
+      title: 'Story Not Found',
+      description: 'The requested news story could not be found.',
+    };
+  }
+  const data = res.data as IPublicNewsItemRes;
+  const newsItem = mapPublicNewsToDetailItem(data.article);
   const title = `${newsItem.title} - News & Lifestyle Updates`;
   const description = newsItem.excerpt || newsItem.title;
-  const imageUrl = newsItem.image.startsWith('/')
+  const imageUrl = newsItem.image?.startsWith('/')
     ? `${process.env.NEXT_PUBLIC_SITE_URL || ''}${newsItem.image}`
     : newsItem.image;
-
   return {
     title,
     description,
@@ -36,46 +43,44 @@ export async function generateMetadata({ params }: NewsStoryPageProps): Promise<
       type: 'article',
       publishedTime: newsItem.date,
       authors: newsItem.author ? [newsItem.author] : undefined,
-      images: [
-        {
-          url: imageUrl,
-          width: 1200,
-          height: 630,
-          alt: newsItem.title,
-        },
-      ],
+      images: imageUrl
+        ? [{ url: imageUrl, width: 1200, height: 630, alt: newsItem.title }]
+        : undefined,
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
-      images: [imageUrl],
+      images: imageUrl ? [imageUrl] : undefined,
     },
   };
 }
 
-// Force dynamic rendering
 export const dynamic = 'force-dynamic';
 
 export default async function NewsStoryPage({ params }: NewsStoryPageProps) {
   const resolvedParams = await params;
   const id = resolvedParams.id;
+  if (!id) notFound();
 
-  // Validate ID
-  if (!id) {
-    notFound();
-  }
+  const res = await callServerApi('PUBLIC_GET_NEWS_ITEM', { query: `/${encodeURIComponent(id)}` });
+  if (res.error || !res.data) notFound();
 
-  // Get news item
-  const newsItem = getNewsItemById(id);
+  const data = res.data as IPublicNewsItemRes;
+  const rawArticle = data.article;
+  const newsItem = mapPublicNewsToDetailItem(rawArticle) as NewsItem;
 
-  // Return 404 if not found
-  if (!newsItem) {
-    notFound();
-  }
-
-  // Get related stories
-  const relatedStories = getRelatedNewsItems(id, newsItem.category, 3);
+  const categorySlug = rawArticle.category
+    ? `&category=${encodeURIComponent(rawArticle.category)}`
+    : '';
+  const relatedRes = await callServerApi('PUBLIC_GET_NEWS', {
+    query: `?limit=4&page=1&status=published&type=latest${categorySlug}`,
+  });
+  const relatedList = (relatedRes.data as IPublicNewsListRes | undefined)?.articles ?? [];
+  const relatedStories: NewsItem[] = relatedList
+    .filter(a => String(a._id) !== id)
+    .slice(0, 3)
+    .map(a => mapPublicNewsToDetailItem(a) as NewsItem);
 
   return (
     <MainLayout>

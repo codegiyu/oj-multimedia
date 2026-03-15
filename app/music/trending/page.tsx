@@ -4,10 +4,12 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { SubPageHero } from '@/components/general/SubPageHero';
 import { TrendingSongsPageClient } from '@/components/section/music/TrendingSongsPageClient';
 import { MusicPageSkeleton } from '@/components/section/music/MusicPageSkeleton';
-import { filterByCategory } from '@/lib/utils/music';
 import type { TrendingSong } from '@/components/section/music/TrendingSongs';
-import { MUSIC_ITEMS } from '@/lib/constants/music';
-import { populateArtist } from '@/lib/utils/community/artists';
+import { callServerApi } from '@/lib/services/serverApi';
+import type { ApiErrorResponse } from '@/lib/types/http';
+import type { IPublicMusicListRes } from '@/lib/constants/endpoints';
+import { filterByCategory } from '@/lib/utils/music';
+import { mapPublicMusicToTrendingSong } from '@/lib/utils/publicApiMappers';
 
 export const metadata: Metadata = {
   title: 'Trending Songs - Latest Music',
@@ -15,35 +17,27 @@ export const metadata: Metadata = {
     "Discover what's trending now - the most popular songs everyone is listening to. Stay ahead of the music scene.",
 };
 
-// Force dynamic rendering to ensure searchParams changes trigger re-renders
 export const dynamic = 'force-dynamic';
 
-// Generate trending songs data from central constants
-async function generateTrendingSongsData(): Promise<{
-  trendingSongs: (TrendingSong & { category: string })[];
-}> {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 1500));
-
-  const trendingSongs: (TrendingSong & { category: string })[] = MUSIC_ITEMS.filter(
-    item => item.isTrending && item.plays !== undefined && item.duration !== undefined
-  ).map(item => {
-    const artist = populateArtist(item.artist) ?? { _id: item.artist, name: 'Unknown' };
+async function fetchTrendingSongs(category: string) {
+  const categoryParam =
+    category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';
+  const query = `?limit=50&page=1&status=published&type=trending${categoryParam}` as const;
+  const res = await callServerApi('PUBLIC_GET_MUSIC', { query });
+  if (res.error) {
     return {
-      _id: item._id,
-      title: item.title,
-      artist,
-      cover: item.cover,
-      plays: item.plays!,
-      duration: item.duration!,
-      isNew: item.isNew || false,
-      category: item.category, // category is required in MusicItem, so this is always a string
+      trendingSongs: [] as (TrendingSong & { category?: string })[],
+      initialErrorMessage:
+        (res.error as ApiErrorResponse)?.message ?? 'Failed to load trending songs',
     };
-  });
-
-  return {
-    trendingSongs,
-  };
+  }
+  const data = res.data as IPublicMusicListRes | undefined;
+  const raw = data?.music ?? [];
+  const trendingSongs = filterByCategory(
+    raw.map(mapPublicMusicToTrendingSong),
+    category
+  ) as (TrendingSong & { category?: string })[];
+  return { trendingSongs, initialErrorMessage: null as string | null };
 }
 
 interface TrendingSongsPageProps {
@@ -52,13 +46,7 @@ interface TrendingSongsPageProps {
 
 export default async function TrendingSongsPage({ searchParams }: TrendingSongsPageProps) {
   const params = await searchParams;
-  const category = params.category || 'all';
-  const data = await generateTrendingSongsData();
-
-  // Filter data server-side based on category
-  const filteredData = {
-    trendingSongs: filterByCategory(data.trendingSongs, category),
-  };
+  const category = params.category ?? 'all';
 
   return (
     <MainLayout>
@@ -73,8 +61,13 @@ export default async function TrendingSongsPage({ searchParams }: TrendingSongsP
         stats={[{ icon: 'Flame', text: 'Most popular' }, { text: 'Updated in real-time' }]}
       />
       <Suspense fallback={<MusicPageSkeleton />}>
-        <TrendingSongsPageClient {...filteredData} />
+        <TrendingSongsServer category={category} />
       </Suspense>
     </MainLayout>
   );
+}
+
+async function TrendingSongsServer({ category }: { category: string }) {
+  const data = await fetchTrendingSongs(category);
+  return <TrendingSongsPageClient {...data} />;
 }

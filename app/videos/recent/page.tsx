@@ -4,10 +4,12 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { SubPageHero } from '@/components/general/SubPageHero';
 import { RecentVideosPageClient } from '@/components/section/video/RecentVideosPageClient';
 import { VideoPageSkeleton } from '@/components/section/video/VideoPageSkeleton';
-import { filterByCategory } from '@/lib/utils/videos';
 import type { RecentVideoUpload } from '@/components/section/video/RecentVideoUploads';
-import { VIDEOS_ITEMS } from '@/lib/constants/videos';
-import { populateArtist } from '@/lib/utils/community/artists';
+import { callServerApi } from '@/lib/services/serverApi';
+import type { ApiErrorResponse } from '@/lib/types/http';
+import type { IPublicVideosListRes } from '@/lib/constants/endpoints';
+import { filterByCategory } from '@/lib/utils/videos';
+import { mapPublicVideoToRecentUpload } from '@/lib/utils/publicApiMappers';
 
 export const metadata: Metadata = {
   title: 'Recent Uploads - Fresh Videos',
@@ -15,68 +17,33 @@ export const metadata: Metadata = {
     'Discover the latest video uploads from creators. Fresh content just added to the platform.',
 };
 
-// Force dynamic rendering to ensure searchParams changes trigger re-renders
 export const dynamic = 'force-dynamic';
 
-// Generate recent uploads data from central constants
-async function generateRecentUploadsData(): Promise<{
-  recentUploads: (RecentVideoUpload & { category: string })[];
-}> {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 1500));
-
-  const recentUploads: (RecentVideoUpload & { category: string })[] = VIDEOS_ITEMS.filter(
-    item =>
-      item.isRecent &&
-      item.uploadedAt !== undefined &&
-      item.category !== undefined &&
-      item.views !== undefined &&
-      item.duration !== undefined
-  ).map(item => {
-    const creator = populateArtist(item.creator) ?? { _id: item.creator, name: 'Unknown' };
+async function fetchRecentVideos(category: string) {
+  const categoryParam =
+    category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';
+  const query = `?limit=50&page=1&status=published&type=recent${categoryParam}` as const;
+  const res = await callServerApi('PUBLIC_GET_VIDEOS', { query });
+  if (res.error) {
     return {
-      _id: item._id,
-      title: item.title,
-      creator,
-      thumbnail: item.thumbnail,
-      uploadedAt: item.uploadedAt!,
-      category:
-        item.category === 'music'
-          ? 'Music Videos'
-          : item.category === 'short'
-            ? 'Short Clips'
-            : item.category === 'talks'
-              ? 'Talks & Speeches'
-              : item.category === 'creative'
-                ? 'Creative Content'
-                : item.category === 'inspirational'
-                  ? 'Inspirational'
-                  : item.category === 'live'
-                    ? 'Live Performances'
-                    : 'Podcasts / Video Talks',
-      views: item.views!,
-      duration: item.duration!,
+      recentUploads: [] as RecentVideoUpload[],
+      initialErrorMessage:
+        (res.error as ApiErrorResponse)?.message ?? 'Failed to load recent videos',
     };
-  });
-
-  return {
-    recentUploads,
-  };
+  }
+  const data = res.data as IPublicVideosListRes | undefined;
+  const raw = data?.videos ?? [];
+  const recentUploads = filterByCategory(raw, category).map(mapPublicVideoToRecentUpload);
+  return { recentUploads, initialErrorMessage: null as string | null };
 }
 
-interface RecentUploadsPageProps {
+interface RecentVideosPageProps {
   searchParams: Promise<{ category?: string }>;
 }
 
-export default async function RecentUploadsPage({ searchParams }: RecentUploadsPageProps) {
+export default async function RecentVideosPage({ searchParams }: RecentVideosPageProps) {
   const params = await searchParams;
-  const category = params.category || 'all';
-  const data = await generateRecentUploadsData();
-
-  // Filter data server-side based on category
-  const filteredData = {
-    recentUploads: filterByCategory(data.recentUploads, category),
-  };
+  const category = params.category ?? 'all';
 
   return (
     <MainLayout>
@@ -91,8 +58,13 @@ export default async function RecentUploadsPage({ searchParams }: RecentUploadsP
         stats={[{ icon: 'Sparkles', text: 'Just added' }, { text: 'Updated daily' }]}
       />
       <Suspense fallback={<VideoPageSkeleton />}>
-        <RecentVideosPageClient {...filteredData} />
+        <RecentVideosServer category={category} />
       </Suspense>
     </MainLayout>
   );
+}
+
+async function RecentVideosServer({ category }: { category: string }) {
+  const data = await fetchRecentVideos(category);
+  return <RecentVideosPageClient {...data} />;
 }

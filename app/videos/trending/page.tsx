@@ -4,10 +4,12 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { SubPageHero } from '@/components/general/SubPageHero';
 import { TrendingVideosPageClient } from '@/components/section/video/TrendingVideosPageClient';
 import { VideoPageSkeleton } from '@/components/section/video/VideoPageSkeleton';
-import { filterByCategory } from '@/lib/utils/videos';
 import type { TrendingVideo } from '@/components/section/video/TrendingVideos';
-import { VIDEOS_ITEMS } from '@/lib/constants/videos';
-import { populateArtist } from '@/lib/utils/community/artists';
+import { callServerApi } from '@/lib/services/serverApi';
+import type { ApiErrorResponse } from '@/lib/types/http';
+import type { IPublicVideosListRes } from '@/lib/constants/endpoints';
+import { filterByCategory } from '@/lib/utils/videos';
+import { mapPublicVideoToTrendingVideo } from '@/lib/utils/publicApiMappers';
 
 export const metadata: Metadata = {
   title: 'Trending Videos - Latest Content',
@@ -15,40 +17,24 @@ export const metadata: Metadata = {
     "Discover what's trending now - the most popular videos everyone is watching. Stay ahead of the video content scene.",
 };
 
-// Force dynamic rendering to ensure searchParams changes trigger re-renders
 export const dynamic = 'force-dynamic';
 
-// Generate trending videos data from central constants
-async function generateTrendingVideosData(): Promise<{
-  trendingVideos: (TrendingVideo & { category: string })[];
-}> {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 1500));
-
-  const trendingVideos: (TrendingVideo & { category: string })[] = VIDEOS_ITEMS.filter(
-    item =>
-      item.isTrending &&
-      item.views !== undefined &&
-      item.duration !== undefined &&
-      item.uploadedAt !== undefined
-  ).map(item => {
-    const creator = populateArtist(item.creator) ?? { _id: item.creator, name: 'Unknown' };
+async function fetchTrendingVideos(category: string) {
+  const categoryParam =
+    category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';
+  const query = `?limit=50&page=1&status=published&type=trending${categoryParam}` as const;
+  const res = await callServerApi('PUBLIC_GET_VIDEOS', { query });
+  if (res.error) {
     return {
-      _id: item._id,
-      title: item.title,
-      creator,
-      thumbnail: item.thumbnail,
-      views: item.views!,
-      duration: item.duration!,
-      uploadedAt: item.uploadedAt!,
-      isNew: item.isNew || false,
-      category: item.category, // category is required in VideoItem, so this is always a string
+      trendingVideos: [] as TrendingVideo[],
+      initialErrorMessage:
+        (res.error as ApiErrorResponse)?.message ?? 'Failed to load trending videos',
     };
-  });
-
-  return {
-    trendingVideos,
-  };
+  }
+  const data = res.data as IPublicVideosListRes | undefined;
+  const raw = data?.videos ?? [];
+  const trendingVideos = filterByCategory(raw, category).map(mapPublicVideoToTrendingVideo);
+  return { trendingVideos, initialErrorMessage: null as string | null };
 }
 
 interface TrendingVideosPageProps {
@@ -57,13 +43,7 @@ interface TrendingVideosPageProps {
 
 export default async function TrendingVideosPage({ searchParams }: TrendingVideosPageProps) {
   const params = await searchParams;
-  const category = params.category || 'all';
-  const data = await generateTrendingVideosData();
-
-  // Filter data server-side based on category
-  const filteredData = {
-    trendingVideos: filterByCategory(data.trendingVideos, category),
-  };
+  const category = params.category ?? 'all';
 
   return (
     <MainLayout>
@@ -78,8 +58,13 @@ export default async function TrendingVideosPage({ searchParams }: TrendingVideo
         stats={[{ icon: 'Flame', text: 'Most popular' }, { text: 'Updated in real-time' }]}
       />
       <Suspense fallback={<VideoPageSkeleton />}>
-        <TrendingVideosPageClient {...filteredData} />
+        <TrendingVideosServer category={category} />
       </Suspense>
     </MainLayout>
   );
+}
+
+async function TrendingVideosServer({ category }: { category: string }) {
+  const data = await fetchTrendingVideos(category);
+  return <TrendingVideosPageClient {...data} />;
 }
