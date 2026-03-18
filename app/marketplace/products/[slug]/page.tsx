@@ -3,18 +3,17 @@ import { Suspense } from 'react';
 import { ProductDetailClient } from '@/components/section/marketplace/ProductDetailClient';
 import { ProductDetailSkeleton } from '@/components/section/marketplace/ProductDetailSkeleton';
 import { callServerApi } from '@/lib/services/serverApi';
-import type { IMarketplaceProductRes } from '@/lib/constants/endpoints';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
-async function fetchProductBySlug(slug: string): Promise<IMarketplaceProductRes | null> {
+async function fetchProductBySlug(slug: string) {
   const res = await callServerApi('MARKETPLACE_GET_PRODUCT_BY_SLUG', {
     query: `/${encodeURIComponent(slug)}` as `/${string}`,
   });
-  if (res.error || !res.data) return null;
-  return res.data as IMarketplaceProductRes;
+  if (res.type === 'error') return null;
+  return res.data;
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {

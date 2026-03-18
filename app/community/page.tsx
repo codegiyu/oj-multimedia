@@ -8,8 +8,6 @@ import type { Testimony } from '@/components/section/community/FeaturedTestimoni
 import type { Devotional } from '@/components/section/community/TrendingDevotionals';
 import type { Discussion } from '@/components/section/community/ActiveDiscussions';
 import { callServerApi } from '@/lib/services/serverApi';
-import type { ApiErrorResponse } from '@/lib/types/http';
-import type { ICommunityCategoryCountsRes } from '@/lib/constants/endpoints';
 import { mapToTestimony, mapToDevotional, mapToDiscussion } from '@/lib/utils/communityApiMappers';
 
 export const metadata: Metadata = {
@@ -39,17 +37,16 @@ async function fetchCommunityData(): Promise<{
   initialErrorMessage: string | null;
 }> {
   const res = await callServerApi('PUBLIC_GET_COMMUNITY', {});
-  if (res.error) {
+  if (res.type === 'error') {
     return {
       categoryCounts: DEFAULT_CATEGORY_COUNTS,
       testimonies: [],
       devotionals: [],
       discussions: [],
-      initialErrorMessage:
-        (res.error as ApiErrorResponse)?.message ?? 'Failed to load community data',
+      initialErrorMessage: res.error?.message ?? 'Failed to load community data',
     };
   }
-  const data = res.data as ICommunityCategoryCountsRes | undefined;
+  const data = res.data;
   if (!data) {
     return {
       categoryCounts: DEFAULT_CATEGORY_COUNTS,

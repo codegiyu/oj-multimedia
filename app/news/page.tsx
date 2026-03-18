@@ -10,8 +10,6 @@ import type { NewsItem as NewsFeedItem } from '@/components/section/news/NewsFee
 import type { TrendingStory } from '@/components/section/news/TrendingSidebar';
 import type { VideoNewsItem } from '@/components/section/news/VideoNews';
 import { callServerApi } from '@/lib/services/serverApi';
-import type { ApiErrorResponse } from '@/lib/types/http';
-import type { IPublicNewsListRes } from '@/lib/constants/endpoints';
 import {
   mapPublicNewsToFeaturedStory,
   mapPublicNewsToFeedItem,
@@ -40,24 +38,19 @@ async function fetchNewsSections(category: string) {
   ]);
 
   let errorMessage: string | null = null;
-  if (featuredRes.error)
-    errorMessage = (featuredRes.error as ApiErrorResponse)?.message ?? 'Failed to load news';
-  else if (latestRes.error)
-    errorMessage = (latestRes.error as ApiErrorResponse)?.message ?? 'Failed to load latest';
-  else if (trendingRes.error)
-    errorMessage = (trendingRes.error as ApiErrorResponse)?.message ?? 'Failed to load trending';
-  else if (videoRes.error)
-    errorMessage = (videoRes.error as ApiErrorResponse)?.message ?? 'Failed to load video stories';
+  if (featuredRes.type === 'error')
+    errorMessage = featuredRes.error?.message ?? 'Failed to load news';
+  else if (latestRes.type === 'error')
+    errorMessage = latestRes.error?.message ?? 'Failed to load latest';
+  else if (trendingRes.type === 'error')
+    errorMessage = trendingRes.error?.message ?? 'Failed to load trending';
+  else if (videoRes.type === 'error')
+    errorMessage = videoRes.error?.message ?? 'Failed to load video stories';
 
-  const featuredData = featuredRes.data as IPublicNewsListRes | undefined;
-  const latestData = latestRes.data as IPublicNewsListRes | undefined;
-  const trendingData = trendingRes.data as IPublicNewsListRes | undefined;
-  const videoData = videoRes.data as IPublicNewsListRes | undefined;
-
-  const rawFeatured = featuredData?.articles ?? [];
-  const rawLatest = latestData?.articles ?? [];
-  const rawTrending = trendingData?.articles ?? [];
-  const rawVideo = videoData?.articles ?? [];
+  const rawFeatured = featuredRes.type === 'success' ? (featuredRes.data?.articles ?? []) : [];
+  const rawLatest = latestRes.type === 'success' ? (latestRes.data?.articles ?? []) : [];
+  const rawTrending = trendingRes.type === 'success' ? (trendingRes.data?.articles ?? []) : [];
+  const rawVideo = videoRes.type === 'success' ? (videoRes.data?.articles ?? []) : [];
 
   const featuredStories: FeaturedStory[] = filterByCategory(
     rawFeatured.map(mapPublicNewsToFeaturedStory),

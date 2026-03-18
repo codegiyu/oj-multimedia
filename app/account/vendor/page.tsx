@@ -3,7 +3,6 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { VendorPageClient } from '@/components/section/account/vendor/VendorPageClient';
 import type { Metadata } from 'next';
 import { callServerApi } from '@/lib/services/serverApi';
-import type { ApiErrorResponse } from '@/lib/types/http';
 import type { IVendorDashboardStatsRes, IVendorMeRes } from '@/lib/constants/endpoints';
 
 export const metadata: Metadata = {
@@ -42,8 +41,8 @@ export default function VendorPage() {
 async function VendorPageClientServer() {
   const meRes = await callServerApi('VENDOR_GET_ME', {});
 
-  if (meRes.error || !meRes.data) {
-    const responseCode = (meRes.error as ApiErrorResponse | undefined)?.responseCode;
+  if (meRes.type === 'error') {
+    const responseCode = meRes.error?.responseCode;
 
     if (responseCode === 403 || responseCode === 404) {
       return (
@@ -64,8 +63,7 @@ async function VendorPageClientServer() {
   const vendor: IVendorMeRes = meRes.data;
   const statsRes = await callServerApi('VENDOR_GET_DASHBOARD_STATS', {});
 
-  const stats: IVendorDashboardStatsRes | null =
-    statsRes.error || !statsRes.data ? null : (statsRes.data as IVendorDashboardStatsRes);
+  const stats: IVendorDashboardStatsRes | null = statsRes.type === 'success' ? statsRes.data : null;
 
   return (
     <VendorPageClient
@@ -73,9 +71,7 @@ async function VendorPageClientServer() {
       stats={stats}
       hasVendorProfile={true}
       errorMessage={
-        statsRes.error || !statsRes.data
-          ? statsRes.message || 'Unable to load dashboard stats.'
-          : null
+        statsRes.type === 'error' ? statsRes.message || 'Unable to load dashboard stats.' : null
       }
     />
   );

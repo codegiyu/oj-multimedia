@@ -3,7 +3,6 @@ import { notFound } from 'next/navigation';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { DevotionalDetailPageClient } from '@/components/section/community/devotionals/DevotionalDetailPageClient';
 import { callServerApi } from '@/lib/services/serverApi';
-import type { IPublicDevotionalItemRes } from '@/lib/constants/endpoints';
 import { mapToDailyDevotional } from '@/lib/utils/communityApiMappers';
 
 interface DevotionalDetailPageProps {
@@ -24,13 +23,13 @@ export async function generateMetadata({ params }: DevotionalDetailPageProps): P
   const res = await callServerApi('PUBLIC_GET_DEVOTIONAL_ITEM', {
     query: `/${encodeURIComponent(id)}`,
   });
-  if (res.error || !res.data) {
+  if (res.type === 'error') {
     return {
       title: 'Devotional Not Found',
       description: 'The requested devotional could not be found.',
     };
   }
-  const data = res.data as IPublicDevotionalItemRes;
+  const data = res.data;
   const d = data.devotional as unknown as Record<string, unknown>;
   const title = String(d?.title ?? 'Devotional');
   const excerpt = d?.excerpt ?? d?.description ?? title;
@@ -48,9 +47,9 @@ export default async function DevotionalDetailPage({ params }: DevotionalDetailP
   const res = await callServerApi('PUBLIC_GET_DEVOTIONAL_ITEM', {
     query: `/${encodeURIComponent(id)}`,
   });
-  if (res.error || !res.data) notFound();
+  if (res.type === 'error') notFound();
 
-  const data = res.data as IPublicDevotionalItemRes;
+  const data = res.data;
   const raw = data.devotional as unknown as Record<string, unknown>;
   const base = mapToDailyDevotional(raw);
   const devotional = {

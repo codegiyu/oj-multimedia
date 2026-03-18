@@ -3,7 +3,6 @@ import { notFound } from 'next/navigation';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { PollDetailPageClient } from '@/components/section/community/polls/PollDetailPageClient';
 import { callServerApi } from '@/lib/services/serverApi';
-import type { IPublicPollItemRes } from '@/lib/constants/endpoints';
 import { mapToPoll } from '@/lib/utils/communityApiMappers';
 
 interface PollDetailPageProps {
@@ -19,10 +18,10 @@ export async function generateMetadata({ params }: PollDetailPageProps): Promise
     return { title: 'Poll Not Found', description: 'The requested poll could not be found.' };
   }
   const res = await callServerApi('PUBLIC_GET_POLL_ITEM', { query: `/${encodeURIComponent(id)}` });
-  if (res.error || !res.data) {
+  if (res.type === 'error') {
     return { title: 'Poll Not Found', description: 'The requested poll could not be found.' };
   }
-  const data = res.data as IPublicPollItemRes;
+  const data = res.data;
   const poll = data.poll as unknown as Record<string, unknown>;
   return {
     title: `${String(poll?.question ?? 'Poll')} - Polls & Voting`,
@@ -36,9 +35,9 @@ export default async function PollDetailPage({ params }: PollDetailPageProps) {
   if (!id) notFound();
 
   const res = await callServerApi('PUBLIC_GET_POLL_ITEM', { query: `/${encodeURIComponent(id)}` });
-  if (res.error || !res.data) notFound();
+  if (res.type === 'error') notFound();
 
-  const data = res.data as IPublicPollItemRes;
+  const data = res.data;
   const poll = mapToPoll(data.poll as unknown as Record<string, unknown>);
 
   return (

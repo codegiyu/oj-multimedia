@@ -6,8 +6,6 @@ import { TrendingVideosPageClient } from '@/components/section/video/TrendingVid
 import { VideoPageSkeleton } from '@/components/section/video/VideoPageSkeleton';
 import type { TrendingVideo } from '@/components/section/video/TrendingVideos';
 import { callServerApi } from '@/lib/services/serverApi';
-import type { ApiErrorResponse } from '@/lib/types/http';
-import type { IPublicVideosListRes } from '@/lib/constants/endpoints';
 import { filterByCategory } from '@/lib/utils/videos';
 import { mapPublicVideoToTrendingVideo } from '@/lib/utils/publicApiMappers';
 
@@ -24,15 +22,14 @@ async function fetchTrendingVideos(category: string) {
     category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';
   const query = `?limit=50&page=1&status=published&type=trending${categoryParam}` as const;
   const res = await callServerApi('PUBLIC_GET_VIDEOS', { query });
-  if (res.error) {
+  if (res.type === 'error') {
     return {
       trendingVideos: [] as TrendingVideo[],
-      initialErrorMessage:
-        (res.error as ApiErrorResponse)?.message ?? 'Failed to load trending videos',
+      initialErrorMessage: res.error?.message ?? 'Failed to load trending videos',
     };
   }
-  const data = res.data as IPublicVideosListRes | undefined;
-  const raw = data?.videos ?? [];
+
+  const raw = res.data?.videos ?? [];
   const trendingVideos = filterByCategory(raw, category).map(mapPublicVideoToTrendingVideo);
   return { trendingVideos, initialErrorMessage: null as string | null };
 }

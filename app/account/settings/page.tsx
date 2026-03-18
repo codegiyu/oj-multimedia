@@ -3,8 +3,6 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { AccountSettingsPageClient } from '@/components/section/account/AccountSettingsPageClient';
 import type { Metadata } from 'next';
 import { callServerApi } from '@/lib/services/serverApi';
-import type { ApiErrorResponse } from '@/lib/types/http';
-import type { IUserMeRes } from '@/lib/constants/endpoints';
 
 export const metadata: Metadata = {
   title: 'Account Settings',
@@ -37,8 +35,8 @@ export default function AccountSettingsPage() {
 async function AccountSettingsPageClientServer() {
   const res = await callServerApi('USER_GET_ME', {});
 
-  if (res.error || !res.data) {
-    const responseCode = (res.error as ApiErrorResponse | undefined)?.responseCode;
+  if (res.type === 'error') {
+    const responseCode = res.error?.responseCode;
     return (
       <AccountSettingsPageClient
         initialUser={null}
@@ -49,6 +47,5 @@ async function AccountSettingsPageClientServer() {
     );
   }
 
-  const data = res.data as IUserMeRes;
-  return <AccountSettingsPageClient initialUser={data.user} initialLoadError={null} />;
+  return <AccountSettingsPageClient initialUser={res.data.user} initialLoadError={null} />;
 }

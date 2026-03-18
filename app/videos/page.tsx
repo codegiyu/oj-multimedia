@@ -11,8 +11,6 @@ import type { ShortFormVideo } from '@/components/section/video/ShortFormVideos'
 import type { FeaturedCreator } from '@/components/section/video/CreatorSpotlight';
 import { ARTIST_PROFILES } from '@/lib/constants/community/artists';
 import { callServerApi } from '@/lib/services/serverApi';
-import type { ApiErrorResponse } from '@/lib/types/http';
-import type { IPublicVideosListRes } from '@/lib/constants/endpoints';
 import { filterByCategory } from '@/lib/utils/videos';
 import {
   mapPublicVideoToTrendingVideo,
@@ -42,24 +40,19 @@ async function fetchVideoSections(category: string) {
   ]);
 
   let errorMessage: string | null = null;
-  if (trendingRes.error)
-    errorMessage = (trendingRes.error as ApiErrorResponse)?.message ?? 'Failed to load videos';
-  else if (featuredRes.error)
-    errorMessage = (featuredRes.error as ApiErrorResponse)?.message ?? 'Failed to load featured';
-  else if (recentRes.error)
-    errorMessage = (recentRes.error as ApiErrorResponse)?.message ?? 'Failed to load recent';
-  else if (shortRes.error)
-    errorMessage = (shortRes.error as ApiErrorResponse)?.message ?? 'Failed to load short form';
+  if (trendingRes.type === 'error')
+    errorMessage = trendingRes.error?.message ?? 'Failed to load videos';
+  else if (featuredRes.type === 'error')
+    errorMessage = featuredRes.error?.message ?? 'Failed to load featured';
+  else if (recentRes.type === 'error')
+    errorMessage = recentRes.error?.message ?? 'Failed to load recent';
+  else if (shortRes.type === 'error')
+    errorMessage = shortRes.error?.message ?? 'Failed to load short form';
 
-  const trendingData = trendingRes.data as IPublicVideosListRes | undefined;
-  const featuredData = featuredRes.data as IPublicVideosListRes | undefined;
-  const recentData = recentRes.data as IPublicVideosListRes | undefined;
-  const shortData = shortRes.data as IPublicVideosListRes | undefined;
-
-  const rawTrending = trendingData?.videos ?? [];
-  const rawFeatured = featuredData?.videos ?? [];
-  const rawRecent = recentData?.videos ?? [];
-  const rawShort = shortData?.videos ?? [];
+  const rawTrending = trendingRes.type === 'success' ? (trendingRes.data?.videos ?? []) : [];
+  const rawFeatured = featuredRes.type === 'success' ? (featuredRes.data?.videos ?? []) : [];
+  const rawRecent = recentRes.type === 'success' ? (recentRes.data?.videos ?? []) : [];
+  const rawShort = shortRes.type === 'success' ? (shortRes.data?.videos ?? []) : [];
 
   const trendingVideos: TrendingVideo[] = filterByCategory(rawTrending, category)
     .map(mapPublicVideoToTrendingVideo)

@@ -156,7 +156,7 @@ export function VendorEditProductPageClient({ productId }: { productId: string }
       if (categoriesRes.data?.categories) setCategories(categoriesRes.data.categories);
       if (subcategoriesRes.data?.subcategories)
         setSubcategories(subcategoriesRes.data.subcategories);
-      if (vendorRes.data?._id) setVendorId((vendorRes.data as { _id: string })._id);
+      if (vendorRes.type === 'success' && vendorRes.data?._id) setVendorId(vendorRes.data._id);
 
       setLoadingProduct(false);
       setLoadingCategories(false);

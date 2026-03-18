@@ -8,8 +8,6 @@ import {
 } from '@/components/section/community/testimonies/TestimoniesPageClient';
 import { TestimoniesPageSkeleton } from '@/components/section/community/testimonies/TestimoniesPageSkeleton';
 import { callServerApi } from '@/lib/services/serverApi';
-import type { ApiErrorResponse } from '@/lib/types/http';
-import type { IPublicTestimoniesListRes } from '@/lib/constants/endpoints';
 import { mapToTestimony } from '@/lib/utils/communityApiMappers';
 import type { Pagination } from '@/lib/types/community';
 
@@ -37,18 +35,15 @@ async function fetchTestimoniesData(page: number): Promise<{
       query: '?limit=3&page=1&type=featured' as `?${string}`,
     }),
   ]);
-  const errorMessage = allRes.error
-    ? ((allRes.error as ApiErrorResponse)?.message ?? 'Failed to load testimonies')
-    : null;
-  const allData = allRes.data as IPublicTestimoniesListRes | undefined;
-  const featuredData = featuredRes.data as IPublicTestimoniesListRes | undefined;
-  const testimonies = (allData?.testimonies ?? []).map(t =>
+  const errorMessage =
+    allRes.type === 'error' ? (allRes.error?.message ?? 'Failed to load testimonies') : null;
+  const testimonies = (allRes.type === 'success' ? (allRes.data?.testimonies ?? []) : []).map(t =>
     mapToTestimony(t as unknown as Record<string, unknown>)
   ) as Testimony[];
-  const featured = (featuredData?.testimonies ?? []).map(t =>
-    mapToTestimony(t as unknown as Record<string, unknown>)
-  ) as Testimony[];
-  const pagination = allData?.pagination ?? null;
+  const featured = (
+    featuredRes.type === 'success' ? (featuredRes.data?.testimonies ?? []) : []
+  ).map(t => mapToTestimony(t as unknown as Record<string, unknown>)) as Testimony[];
+  const pagination = allRes.type === 'success' ? (allRes.data?.pagination ?? null) : null;
   return {
     testimonies,
     featured: featured.length > 0 ? featured : testimonies.slice(0, 3),

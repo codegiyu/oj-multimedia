@@ -3,7 +3,6 @@ import { notFound } from 'next/navigation';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { NewsDetailPageClient } from '@/components/section/news/NewsDetailPageClient';
 import { callServerApi } from '@/lib/services/serverApi';
-import type { IPublicNewsItemRes, IPublicNewsListRes } from '@/lib/constants/endpoints';
 import { mapPublicNewsToDetailItem } from '@/lib/utils/publicApiMappers';
 import type { NewsItem } from '@/lib/constants/news';
 
@@ -21,13 +20,13 @@ export async function generateMetadata({ params }: NewsStoryPageProps): Promise<
     };
   }
   const res = await callServerApi('PUBLIC_GET_NEWS_ITEM', { query: `/${encodeURIComponent(id)}` });
-  if (res.error || !res.data) {
+  if (res.type === 'error') {
     return {
       title: 'Story Not Found',
       description: 'The requested news story could not be found.',
     };
   }
-  const data = res.data as IPublicNewsItemRes;
+  const data = res.data;
   const newsItem = mapPublicNewsToDetailItem(data.article);
   const title = `${newsItem.title} - News & Lifestyle Updates`;
   const description = newsItem.excerpt || newsItem.title;
@@ -64,9 +63,9 @@ export default async function NewsStoryPage({ params }: NewsStoryPageProps) {
   if (!id) notFound();
 
   const res = await callServerApi('PUBLIC_GET_NEWS_ITEM', { query: `/${encodeURIComponent(id)}` });
-  if (res.error || !res.data) notFound();
+  if (res.type === 'error') notFound();
 
-  const data = res.data as IPublicNewsItemRes;
+  const data = res.data;
   const rawArticle = data.article;
   const newsItem = mapPublicNewsToDetailItem(rawArticle) as NewsItem;
 
@@ -76,7 +75,7 @@ export default async function NewsStoryPage({ params }: NewsStoryPageProps) {
   const relatedRes = await callServerApi('PUBLIC_GET_NEWS', {
     query: `?limit=4&page=1&status=published&type=latest${categorySlug}`,
   });
-  const relatedList = (relatedRes.data as IPublicNewsListRes | undefined)?.articles ?? [];
+  const relatedList = relatedRes.type === 'success' ? (relatedRes.data?.articles ?? []) : [];
   const relatedStories: NewsItem[] = relatedList
     .filter(a => String(a._id) !== id)
     .slice(0, 3)

@@ -7,8 +7,6 @@ import { NewsPageSkeleton } from '@/components/section/news/NewsPageSkeleton';
 import { filterByCategory } from '@/components/section/news/categoryUtils';
 import type { FeaturedStory } from '@/components/section/news/FeaturedStories';
 import { callServerApi } from '@/lib/services/serverApi';
-import type { ApiErrorResponse } from '@/lib/types/http';
-import type { IPublicNewsListRes } from '@/lib/constants/endpoints';
 import { mapPublicNewsToFeaturedStory } from '@/lib/utils/publicApiMappers';
 
 export const metadata: Metadata = {
@@ -25,16 +23,14 @@ async function fetchFeaturedStories(category: string) {
   const query = `?limit=50&page=1&status=published&type=featured${categoryParam}` as const;
   const res = await callServerApi('PUBLIC_GET_NEWS', { query });
 
-  if (res.error) {
+  if (res.type === 'error') {
     return {
       featuredStories: [] as FeaturedStory[],
-      initialErrorMessage:
-        (res.error as ApiErrorResponse)?.message ?? 'Failed to load featured stories',
+      initialErrorMessage: res.error?.message ?? 'Failed to load featured stories',
     };
   }
 
-  const data = res.data as IPublicNewsListRes | undefined;
-  const raw = data?.articles ?? [];
+  const raw = res.data?.articles ?? [];
   const featuredStories = filterByCategory(raw.map(mapPublicNewsToFeaturedStory), category);
   return { featuredStories, initialErrorMessage: null as string | null };
 }

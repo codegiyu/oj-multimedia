@@ -3,8 +3,6 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { AccountWishlistPageClient } from '@/components/section/account/AccountWishlistPageClient';
 import type { Metadata } from 'next';
 import { callServerApi } from '@/lib/services/serverApi';
-import type { ApiErrorResponse } from '@/lib/types/http';
-import type { IUserWishlistListRes } from '@/lib/constants/endpoints';
 
 export const metadata: Metadata = {
   title: 'Wishlist',
@@ -36,8 +34,8 @@ export default function AccountWishlistPage() {
 async function AccountWishlistPageClientServer() {
   const res = await callServerApi('USER_WISHLIST_LIST', {});
 
-  if (res.error || !res.data) {
-    const responseCode = (res.error as ApiErrorResponse | undefined)?.responseCode;
+  if (res.type === 'error') {
+    const responseCode = res.error?.responseCode;
     return (
       <AccountWishlistPageClient
         initialItems={[]}
@@ -47,11 +45,10 @@ async function AccountWishlistPageClientServer() {
     );
   }
 
-  const data = res.data as IUserWishlistListRes;
   return (
     <AccountWishlistPageClient
-      initialItems={data.items}
-      initialPagination={data.pagination}
+      initialItems={res.data.items}
+      initialPagination={res.data.pagination}
       initialLoadError={null}
     />
   );

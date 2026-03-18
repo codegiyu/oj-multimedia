@@ -13,6 +13,31 @@ export const metadata: Metadata = {
 
 export const dynamic = 'force-dynamic';
 
+function isStringArray(value: unknown): value is string[] {
+  return Array.isArray(value) && value.every(v => typeof v === 'string');
+}
+
+function isContactInfo(value: unknown): value is ContactInfo {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
+  const v = value as Record<string, unknown>;
+  return (
+    isStringArray(v.address) &&
+    isStringArray(v.tel) &&
+    isStringArray(v.email) &&
+    typeof v.whatsapp === 'string' &&
+    typeof v.locationUrl === 'string' &&
+    typeof v.officeHours === 'object' &&
+    v.officeHours != null &&
+    !Array.isArray(v.officeHours)
+  );
+}
+
+function isSocial(value: unknown): value is Social {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
+  const v = value as Record<string, unknown>;
+  return typeof v.platform === 'string' && typeof v.href === 'string';
+}
+
 async function fetchContactPageData(): Promise<{
   contactInfo: ContactInfo | null;
   socials: Social[] | null;
@@ -28,18 +53,12 @@ async function fetchContactPageData(): Promise<{
   const error = contactError || socialsError;
 
   const contactInfo =
-    contactRes.data && typeof contactRes.data === 'object' && !Array.isArray(contactRes.data)
-      ? (contactRes.data as unknown as ContactInfo)
-      : null;
+    contactRes.type === 'success' && isContactInfo(contactRes.data) ? contactRes.data : null;
+
   const socials =
-    socialsRes.data != null && Array.isArray(socialsRes.data)
-      ? (socialsRes.data as Social[])
-      : socialsRes.data != null &&
-          typeof socialsRes.data === 'object' &&
-          'socials' in socialsRes.data &&
-          Array.isArray((socialsRes.data as { socials: Social[] }).socials)
-        ? (socialsRes.data as { socials: Social[] }).socials
-        : null;
+    socialsRes.type === 'success' && Array.isArray(socialsRes.data)
+      ? socialsRes.data.filter(isSocial)
+      : null;
 
   return { contactInfo, socials, error };
 }

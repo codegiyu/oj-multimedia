@@ -4,11 +4,7 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { MarketplaceProductsPageClient } from '@/components/section/marketplace/MarketplaceProductsPageClient';
 import { MarketplaceProductsPageSkeleton } from '@/components/section/marketplace/MarketplaceProductsPageSkeleton';
 import { callServerApi } from '@/lib/services/serverApi';
-import type { ApiErrorResponse } from '@/lib/types/http';
 import type {
-  IMarketplaceCategoriesRes,
-  IMarketplaceSubCategoriesRes,
-  IMarketplaceProductsListRes,
   IMarketplaceCategory,
   IMarketplaceSubCategory,
   IMarketplaceProduct,
@@ -60,33 +56,30 @@ async function fetchProductsPageData(params: {
   query.set('status', 'published');
 
   try {
-    const [categoriesRes, subcategoriesRes, productsRes] = await Promise.all([
+    const [categoriesRes, productsRes] = await Promise.all([
       callServerApi('MARKETPLACE_GET_CATEGORIES', {}),
-      params.category
-        ? callServerApi('MARKETPLACE_GET_SUBCATEGORIES', {
-            query: `?category=${encodeURIComponent(params.category)}` as `?${string}`,
-          })
-        : Promise.resolve({
-            data: { subcategories: [] as IMarketplaceSubCategory[] },
-            error: null,
-          }),
       callServerApi('MARKETPLACE_GET_PRODUCTS', {
         query: `?${query.toString()}` as `?${string}`,
       }),
     ]);
 
+    const subcategoriesRes = params.category
+      ? await callServerApi('MARKETPLACE_GET_SUBCATEGORIES', {
+          query: `?category=${encodeURIComponent(params.category)}` as `?${string}`,
+        })
+      : null;
+
     const error =
-      (categoriesRes.error as ApiErrorResponse)?.message ??
-      (productsRes.error as ApiErrorResponse)?.message ??
+      (categoriesRes.type === 'error' ? categoriesRes.error?.message : null) ??
+      (productsRes.type === 'error' ? productsRes.error?.message : null) ??
       null;
 
     const categories =
-      (categoriesRes.data as IMarketplaceCategoriesRes | undefined)?.categories ?? [];
+      categoriesRes.type === 'success' ? (categoriesRes.data?.categories ?? []) : [];
     const subcategories =
-      (subcategoriesRes.data as IMarketplaceSubCategoriesRes | undefined)?.subcategories ?? [];
-    const productsData = productsRes.data as IMarketplaceProductsListRes | undefined;
-    const products = productsData?.products ?? [];
-    const pagination = productsData?.pagination ?? {
+      subcategoriesRes?.type === 'success' ? (subcategoriesRes.data?.subcategories ?? []) : [];
+    const products = productsRes.type === 'success' ? (productsRes.data?.products ?? []) : [];
+    const pagination = (productsRes.type === 'success' ? productsRes.data?.pagination : null) ?? {
       page: 1,
       limit: DEFAULT_LIMIT,
       total: 0,

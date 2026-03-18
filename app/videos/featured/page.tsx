@@ -6,8 +6,6 @@ import { FeaturedVideosPageClient } from '@/components/section/video/FeaturedVid
 import { VideoPageSkeleton } from '@/components/section/video/VideoPageSkeleton';
 import type { FeaturedVideo } from '@/components/section/video/FeaturedVideos';
 import { callServerApi } from '@/lib/services/serverApi';
-import type { ApiErrorResponse } from '@/lib/types/http';
-import type { IPublicVideosListRes } from '@/lib/constants/endpoints';
 import { filterByCategory } from '@/lib/utils/videos';
 import { mapPublicVideoToFeaturedVideo } from '@/lib/utils/publicApiMappers';
 
@@ -24,15 +22,14 @@ async function fetchFeaturedVideos(category: string) {
     category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';
   const query = `?limit=50&page=1&status=published&type=featured${categoryParam}` as const;
   const res = await callServerApi('PUBLIC_GET_VIDEOS', { query });
-  if (res.error) {
+  if (res.type === 'error') {
     return {
       featuredVideos: [] as FeaturedVideo[],
-      initialErrorMessage:
-        (res.error as ApiErrorResponse)?.message ?? 'Failed to load featured videos',
+      initialErrorMessage: res.error?.message ?? 'Failed to load featured videos',
     };
   }
-  const data = res.data as IPublicVideosListRes | undefined;
-  const raw = data?.videos ?? [];
+
+  const raw = res.data?.videos ?? [];
   const featuredVideos = filterByCategory(raw, category).map(mapPublicVideoToFeaturedVideo);
   return { featuredVideos, initialErrorMessage: null as string | null };
 }

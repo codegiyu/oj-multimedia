@@ -31,7 +31,6 @@ import type {
   TestimonyListItem,
   PollListItem,
 } from '@/lib/types/community';
-import mongoose from 'mongoose';
 
 export type HttpMethods = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
@@ -43,28 +42,28 @@ export type HttpMethods = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
  * Recursively applies to nested objects and arrays.
  * Preserves optional (undefined) and null types appropriately.
  */
-export type ClientFriendly<T> = T extends Date
-  ? string
-  : T extends mongoose.Types.ObjectId
-    ? string // MongoDB ObjectId
-    : T extends { toDate(): Date }
-      ? string // Firestore Timestamp
-      : T extends (infer U)[]
-        ? ClientFriendly<U>[]
-        : T extends readonly (infer U)[]
-          ? readonly ClientFriendly<U>[]
-          : T extends Record<string, any>
-            ? { [K in keyof T]: ClientFriendly<T[K]> }
-            : T;
+// export type ClientFriendly<T> = T extends Date
+//   ? string
+//   : T extends mongoose.Types.ObjectId
+//     ? string // MongoDB ObjectId
+//     : T extends { toDate(): Date }
+//       ? string // Firestore Timestamp
+//       : T extends (infer U)[]
+//         ? ClientFriendly<U>[]
+//         : T extends readonly (infer U)[]
+//           ? readonly ClientFriendly<U>[]
+//           : T extends Record<string, any>
+//             ? { [K in keyof T]: ClientFriendly<T[K]> }
+//             : T;
 
 // Client-friendly type aliases for backend types
-export type ClientSiteSettings = ClientFriendly<ISiteSettings>;
-export type ClientAdmin = ClientFriendly<IAdmin>;
-export type ClientUser = ClientFriendly<IUser>;
-export type ClientArtistProfile = ClientFriendly<IArtistProfile>;
-export type ClientMusic = ClientFriendly<IMusic>;
-export type ClientVideo = ClientFriendly<IVideo>;
-export type ClientNewsArticle = ClientFriendly<INewsArticle>;
+export type ClientSiteSettings = ISiteSettings;
+export type ClientAdmin = IAdmin;
+export type ClientUser = IUser;
+export type ClientArtistProfile = IArtistProfile;
+export type ClientMusic = IMusic;
+export type ClientVideo = IVideo;
+export type ClientNewsArticle = INewsArticle;
 
 // Populated variants for responses where related entities are populated
 export type PopulatedArtistSummary = {

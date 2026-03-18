@@ -6,8 +6,6 @@ import { ShortFormVideosPageClient } from '@/components/section/video/ShortFormV
 import { VideoPageSkeleton } from '@/components/section/video/VideoPageSkeleton';
 import type { ShortFormVideo } from '@/components/section/video/ShortFormVideos';
 import { callServerApi } from '@/lib/services/serverApi';
-import type { ApiErrorResponse } from '@/lib/types/http';
-import type { IPublicVideosListRes } from '@/lib/constants/endpoints';
 import { filterByCategory } from '@/lib/utils/videos';
 import { mapPublicVideoToShortForm } from '@/lib/utils/publicApiMappers';
 
@@ -24,15 +22,14 @@ async function fetchShortFormVideos(category: string) {
     category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';
   const query = `?limit=50&page=1&status=published&type=short-form${categoryParam}` as const;
   const res = await callServerApi('PUBLIC_GET_VIDEOS', { query });
-  if (res.error) {
+  if (res.type === 'error') {
     return {
       shortFormVideos: [] as ShortFormVideo[],
-      initialErrorMessage:
-        (res.error as ApiErrorResponse)?.message ?? 'Failed to load short form videos',
+      initialErrorMessage: res.error?.message ?? 'Failed to load short form videos',
     };
   }
-  const data = res.data as IPublicVideosListRes | undefined;
-  const raw = data?.videos ?? [];
+
+  const raw = res.data?.videos ?? [];
   const shortFormVideos = filterByCategory(raw, category).map(mapPublicVideoToShortForm);
   return { shortFormVideos, initialErrorMessage: null as string | null };
 }

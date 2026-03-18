@@ -6,8 +6,6 @@ import { RecentVideosPageClient } from '@/components/section/video/RecentVideosP
 import { VideoPageSkeleton } from '@/components/section/video/VideoPageSkeleton';
 import type { RecentVideoUpload } from '@/components/section/video/RecentVideoUploads';
 import { callServerApi } from '@/lib/services/serverApi';
-import type { ApiErrorResponse } from '@/lib/types/http';
-import type { IPublicVideosListRes } from '@/lib/constants/endpoints';
 import { filterByCategory } from '@/lib/utils/videos';
 import { mapPublicVideoToRecentUpload } from '@/lib/utils/publicApiMappers';
 
@@ -24,15 +22,14 @@ async function fetchRecentVideos(category: string) {
     category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';
   const query = `?limit=50&page=1&status=published&type=recent${categoryParam}` as const;
   const res = await callServerApi('PUBLIC_GET_VIDEOS', { query });
-  if (res.error) {
+  if (res.type === 'error') {
     return {
       recentUploads: [] as RecentVideoUpload[],
-      initialErrorMessage:
-        (res.error as ApiErrorResponse)?.message ?? 'Failed to load recent videos',
+      initialErrorMessage: res.error?.message ?? 'Failed to load recent videos',
     };
   }
-  const data = res.data as IPublicVideosListRes | undefined;
-  const raw = data?.videos ?? [];
+
+  const raw = res.data?.videos ?? [];
   const recentUploads = filterByCategory(raw, category).map(mapPublicVideoToRecentUpload);
   return { recentUploads, initialErrorMessage: null as string | null };
 }
