@@ -1,22 +1,31 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Heart, Send } from 'lucide-react';
 import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
+import { callApi } from '@/lib/services/callApi';
+import { getErrorMessage } from '@/lib/utils/general';
 import { RegularBtn } from '@/components/atoms/RegularBtn';
 import { RegularInput } from '@/components/atoms/RegularInput';
+import { RegularSelect } from '@/components/atoms/RegularSelect';
 import { RegularTextarea } from '@/components/atoms/RegularTextarea';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { toast } from '@/components/atoms/Toast';
 
+const TESTIMONY_CATEGORY_OPTIONS = [
+  { value: 'healing', text: 'Healing' },
+  { value: 'purpose', text: 'Purpose' },
+  { value: 'prayer', text: 'Prayer' },
+  { value: 'marriage', text: 'Marriage' },
+  { value: 'provision', text: 'Provision' },
+  { value: 'deliverance', text: 'Deliverance' },
+  { value: 'salvation', text: 'Salvation' },
+  { value: 'blessing', text: 'Blessing' },
+];
+
 export const ShareTestimony = () => {
+  const router = useRouter();
   const [name, setName] = useState('');
   const [category, setCategory] = useState('');
   const [content, setContent] = useState('');
@@ -33,13 +42,35 @@ export const ShareTestimony = () => {
       });
       return;
     }
+    if (name.length > 200 || content.length > 5000) {
+      toast({
+        title: 'Length limit',
+        description: 'Name max 200 characters; testimony max 5000 characters.',
+        variant: 'error',
+      });
+      return;
+    }
 
     setIsSubmitting(true);
 
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    const res = await callApi('PUBLIC_SUBMIT_TESTIMONY', {
+      payload: {
+        content: content.trim(),
+        name: name.trim() || undefined,
+        category: category.trim() || undefined,
+      },
+    });
 
     setIsSubmitting(false);
+
+    if (res.error) {
+      toast({
+        title: 'Submission failed',
+        description: getErrorMessage(res.error),
+        variant: 'error',
+      });
+      return;
+    }
 
     toast({
       title: 'Testimony Submitted!',
@@ -48,10 +79,10 @@ export const ShareTestimony = () => {
       variant: 'success',
     });
 
-    // Reset form
     setName('');
     setCategory('');
     setContent('');
+    router.refresh();
   };
 
   return (
@@ -78,56 +109,35 @@ export const ShareTestimony = () => {
               </p>
 
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-2">
-                  <label htmlFor="name" className="text-sm font-medium">
-                    Your Name (Optional)
-                  </label>
-                  <RegularInput
-                    id="name"
-                    name="name"
-                    label=""
-                    placeholder="You can remain anonymous"
-                    value={name}
-                    onChange={e => setName(e.target.value)}
-                  />
-                </div>
+                <RegularInput
+                  id="name"
+                  name="name"
+                  label="Your Name (Optional)"
+                  placeholder="You can remain anonymous"
+                  value={name}
+                  onChange={e => setName(e.target.value)}
+                  maxLength={200}
+                />
 
-                <div className="space-y-2">
-                  <label htmlFor="category" className="text-sm font-medium">
-                    Category
-                  </label>
-                  <Select value={category} onValueChange={setCategory}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="healing">Healing</SelectItem>
-                      <SelectItem value="purpose">Purpose</SelectItem>
-                      <SelectItem value="prayer">Prayer</SelectItem>
-                      <SelectItem value="marriage">Marriage</SelectItem>
-                      <SelectItem value="provision">Provision</SelectItem>
-                      <SelectItem value="deliverance">Deliverance</SelectItem>
-                      <SelectItem value="salvation">Salvation</SelectItem>
-                      <SelectItem value="blessing">Blessing</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                <RegularSelect
+                  label="Category"
+                  value={category}
+                  onSelectChange={setCategory}
+                  placeholder="Select a category"
+                  options={TESTIMONY_CATEGORY_OPTIONS}
+                />
 
-                <div className="space-y-2">
-                  <label htmlFor="content" className="text-sm font-medium">
-                    Your Testimony
-                  </label>
-                  <RegularTextarea
-                    id="content"
-                    name="content"
-                    label=""
-                    placeholder="Share your story here... How has God worked in your life?"
-                    rows={8}
-                    value={content}
-                    onChange={e => setContent(e.target.value)}
-                    required
-                  />
-                </div>
+                <RegularTextarea
+                  id="content"
+                  name="content"
+                  label="Your Testimony"
+                  placeholder="Share your story here... How has God worked in your life?"
+                  rows={8}
+                  value={content}
+                  onChange={e => setContent(e.target.value)}
+                  required
+                  maxLength={5000}
+                />
 
                 <RegularBtn
                   type="submit"

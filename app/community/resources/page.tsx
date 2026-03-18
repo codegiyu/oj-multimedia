@@ -12,7 +12,16 @@ import {
   type AffiliateProduct,
 } from '@/components/section/community/resources/ResourcesPageClient';
 import { ResourcesPageSkeleton } from '@/components/section/community/resources/ResourcesPageSkeleton';
-import { RESOURCES_ITEMS } from '@/lib/constants/community/resources';
+import { callServerApi } from '@/lib/services/serverApi';
+import type { ApiErrorResponse } from '@/lib/types/http';
+import { RESOURCE_TYPES } from '@/lib/types/community';
+import {
+  mapToEbook,
+  mapToTemplate,
+  mapToBeat,
+  mapToWallpaper,
+  mapToAffiliateProduct,
+} from '@/lib/utils/communityApiMappers';
 
 export const metadata: Metadata = {
   title: 'Resources - Free Downloads & More',
@@ -20,71 +29,55 @@ export const metadata: Metadata = {
     'Download free e-books, sermon templates, beats, wallpapers, and explore affiliate products. Access resources to support your faith journey.',
 };
 
-// Force dynamic rendering to ensure searchParams changes trigger re-renders
 export const dynamic = 'force-dynamic';
 
-// Generate resources data from central constants
-async function generateResourcesData(): Promise<ResourceData> {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 1500));
+const RESOURCE_TYPE_ORDER: (typeof RESOURCE_TYPES)[number][] = [
+  'ebook',
+  'template',
+  'beat',
+  'wallpaper',
+  'affiliate',
+];
 
-  // Filter and transform ebooks
-  const ebooks: Ebook[] = RESOURCES_ITEMS.filter(item => item.type === 'ebook').map(item => ({
-    title: item.title,
-    description: item.description,
-    downloads: item.downloads,
-    cover: item.cover || '/placeholder.svg',
-  }));
-
-  // Filter and transform templates
-  const templates: Template[] = RESOURCES_ITEMS.filter(item => item.type === 'template').map(
-    item => ({
-      title: item.title,
-      description: item.description,
-      downloads: item.downloads,
-      type: item.templateType || '',
+async function fetchResourcesData(): Promise<
+  ResourceData & { initialErrorMessage: string | null }
+> {
+  const baseQuery = '?limit=50&page=1';
+  const requests = RESOURCE_TYPE_ORDER.map(type =>
+    callServerApi('PUBLIC_GET_RESOURCES', {
+      query: `${baseQuery}&type=${type}` as `?${string}`,
     })
   );
+  const results = await Promise.all(requests);
+  let initialErrorMessage: string | null = null;
+  const [ebookRes, templateRes, beatRes, wallpaperRes, affiliateRes] = results;
 
-  // Filter and transform beats
-  const beats: Beat[] = RESOURCES_ITEMS.filter(item => item.type === 'beat').map(item => ({
-    title: item.title,
-    description: item.description,
-    downloads: item.downloads,
-    genre: item.genre || '',
-  }));
+  if (ebookRes.error)
+    initialErrorMessage =
+      (ebookRes.error as ApiErrorResponse)?.message ?? 'Failed to load resources';
 
-  // Filter and transform wallpapers
-  const wallpapers: Wallpaper[] = RESOURCES_ITEMS.filter(item => item.type === 'wallpaper').map(
-    item => ({
-      title: item.title,
-      description: item.description,
-      downloads: item.downloads,
-      category: item.category || '',
-    })
-  );
-
-  // Filter and transform affiliate products
-  const affiliateProducts: AffiliateProduct[] = RESOURCES_ITEMS.filter(
-    item => item.type === 'affiliate'
-  ).map(item => ({
-    title: item.title,
-    description: item.description,
-    category: item.productCategory || '',
-    price: item.price || '',
-  }));
+  function mapResourceList<T>(
+    res: (typeof results)[number],
+    mapper: (i: Record<string, unknown>) => T
+  ): T[] {
+    if (res.error || !res.data) return [];
+    const data = res.data as unknown as { resources?: Array<Record<string, unknown>> };
+    const list = data?.resources ?? [];
+    return list.map((i: Record<string, unknown>) => mapper(i));
+  }
 
   return {
-    ebooks,
-    templates,
-    beats,
-    wallpapers,
-    affiliateProducts,
+    ebooks: mapResourceList(ebookRes, mapToEbook) as Ebook[],
+    templates: mapResourceList(templateRes, mapToTemplate) as Template[],
+    beats: mapResourceList(beatRes, mapToBeat) as Beat[],
+    wallpapers: mapResourceList(wallpaperRes, mapToWallpaper) as Wallpaper[],
+    affiliateProducts: mapResourceList(affiliateRes, mapToAffiliateProduct) as AffiliateProduct[],
+    initialErrorMessage,
   };
 }
 
 export default async function ResourcesPage() {
-  const resourcesData = await generateResourcesData();
+  const resourcesData = await fetchResourcesData();
 
   return (
     <MainLayout>

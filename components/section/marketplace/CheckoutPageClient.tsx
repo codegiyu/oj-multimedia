@@ -12,6 +12,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { useCartStore } from '@/lib/store/cartStore';
 import { formatPrice } from '@/lib/utils/marketplace';
 import { toast } from 'sonner';
+import { callApi } from '@/lib/services/callApi';
+import type { IMarketplacePlaceOrderRes } from '@/lib/constants/endpoints';
 
 export function CheckoutPageClient() {
   const router = useRouter();
@@ -48,10 +50,59 @@ export function CheckoutPageClient() {
     e.preventDefault();
     setSubmitting(true);
     try {
-      // Mock: simulate order placement
-      await new Promise(r => setTimeout(r, 800));
+      const payload = {
+        customer: {
+          name: form.name.trim(),
+          email: form.email.trim(),
+          phone: form.phone.trim(),
+          address: form.address.trim() || undefined,
+        },
+        items: items.map(item => ({
+          productId: item.productId,
+          productName: item.name,
+          quantity: item.quantity,
+          price: item.price,
+          ...(item.sku ? { sku: item.sku } : {}),
+        })),
+      };
+      const { data, error, message } = await callApi('MARKETPLACE_PLACE_ORDER', { payload });
+      if (error) {
+        toast.error(message ?? 'Failed to place order. Please try again.');
+        return;
+      }
       actions.clearCart();
-      toast.success('Order placed successfully! We will contact you for payment.');
+      const orderData = data as IMarketplacePlaceOrderRes | undefined;
+
+      const links: string[] = [];
+
+      if (orderData?.orders && orderData.orders.length > 0) {
+        for (const order of orderData.orders) {
+          if (order.whatsappLink) {
+            links.push(order.whatsappLink);
+          }
+        }
+      } else if (orderData?.order) {
+        if (orderData.order.whatsappLink) {
+          links.push(orderData.order.whatsappLink);
+        } else if (orderData.whatsappLink) {
+          links.push(orderData.whatsappLink);
+        }
+      } else if (orderData?.whatsappLink) {
+        links.push(orderData.whatsappLink);
+      }
+
+      if (links.length > 0) {
+        toast.success(
+          links.length === 1
+            ? 'Order placed! Opening WhatsApp to notify the vendor.'
+            : 'Order placed! Opening WhatsApp chats for your vendors.'
+        );
+        links.forEach(link => {
+          window.open(link, '_blank');
+        });
+      } else {
+        toast.success('Order placed successfully! We will contact you for payment.');
+      }
       router.push('/marketplace/orders');
     } catch {
       toast.error('Something went wrong. Please try again.');

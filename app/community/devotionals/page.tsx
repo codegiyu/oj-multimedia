@@ -3,7 +3,7 @@ import { Suspense } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { DevotionalsHero } from '@/components/section/community/devotionals/DevotionalsHero';
 import {
-  BibleStudy,
+  type BibleStudy,
   DevotionalsPageClient,
   type DailyDevotional,
   type PrayerPoint,
@@ -11,7 +11,16 @@ import {
   type MarriageFamily,
 } from '@/components/section/community/devotionals/DevotionalsPageClient';
 import { DevotionalsPageSkeleton } from '@/components/section/community/devotionals/DevotionalsPageSkeleton';
-import { DEVOTIONALS_ITEMS } from '@/lib/constants/community/devotionals';
+import { callServerApi } from '@/lib/services/serverApi';
+import type { ApiErrorResponse } from '@/lib/types/http';
+import type { IPublicDevotionalsListRes } from '@/lib/constants/endpoints';
+import {
+  mapToDailyDevotional,
+  mapToBibleStudy,
+  mapToPrayerPoint,
+  mapToLivingTip,
+  mapToMarriageFamily,
+} from '@/lib/utils/communityApiMappers';
 
 export const metadata: Metadata = {
   title: 'Devotionals - Daily Inspiration & Bible Study',
@@ -19,100 +28,61 @@ export const metadata: Metadata = {
     'Explore daily devotionals, Bible study series, prayer points, Christian living tips, and marriage & family guidance. Grow in your faith with inspiring content.',
 };
 
-// Force dynamic rendering to ensure searchParams changes trigger re-renders
 export const dynamic = 'force-dynamic';
 
-// Generate devotionals data from central constants
-async function generateDevotionalsData() {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 1500));
+const baseQuery = '?limit=12&page=1&status=published';
 
-  // Filter and transform daily devotionals (limit to 4)
-  const dailyDevotionals: DailyDevotional[] = DEVOTIONALS_ITEMS.filter(
-    item => item.isDaily && item.verse !== undefined && item.date !== undefined
-  )
-    .slice(0, 4)
-    .map(item => ({
-      _id: item._id,
-      title: item.title,
-      verse: item.verse!,
-      date: item.date!,
-      readingTime: item.readingTime || '5 min',
-      category: item.category,
-      excerpt: item.excerpt || '',
-      views: item.views || 0,
-    }));
+async function fetchDevotionalsData(): Promise<{
+  dailyDevotionals: DailyDevotional[];
+  bibleStudySeries: BibleStudy[];
+  prayerPoints: PrayerPoint[];
+  livingTips: LivingTip[];
+  marriageFamily: MarriageFamily[];
+  initialErrorMessage: string | null;
+}> {
+  const [dailyRes, bibleRes, prayerRes, livingRes, marriageRes] = await Promise.all([
+    callServerApi('PUBLIC_GET_DEVOTIONALS', {
+      query: `${baseQuery}&type=daily` as `?${string}`,
+    }),
+    callServerApi('PUBLIC_GET_DEVOTIONALS', {
+      query: `${baseQuery}&type=bible-study` as `?${string}`,
+    }),
+    callServerApi('PUBLIC_GET_DEVOTIONALS', {
+      query: `${baseQuery}&type=prayer-points` as `?${string}`,
+    }),
+    callServerApi('PUBLIC_GET_DEVOTIONALS', {
+      query: `${baseQuery}&type=living-tips` as `?${string}`,
+    }),
+    callServerApi('PUBLIC_GET_DEVOTIONALS', {
+      query: `${baseQuery}&type=marriage-family` as `?${string}`,
+    }),
+  ]);
 
-  // Filter and transform Bible study series
-  const bibleStudySeries: BibleStudy[] = DEVOTIONALS_ITEMS.filter(
-    item =>
-      item.isBibleStudy &&
-      item.description !== undefined &&
-      item.lessons !== undefined &&
-      item.duration !== undefined &&
-      item.participants !== undefined &&
-      item.status !== undefined
-  ).map(item => ({
-    _id: item._id,
-    title: item.title,
-    description: item.description!,
-    lessons: item.lessons!,
-    duration: item.duration!,
-    participants: item.participants!,
-    status: item.status!,
-  }));
+  let errorMessage: string | null = null;
+  if (dailyRes.error)
+    errorMessage = (dailyRes.error as ApiErrorResponse)?.message ?? 'Failed to load devotionals';
 
-  // Filter and transform prayer points
-  const prayerPoints: PrayerPoint[] = DEVOTIONALS_ITEMS.filter(
-    item =>
-      item.isPrayerPoint &&
-      item.points !== undefined &&
-      item.verse !== undefined &&
-      item.excerpt !== undefined
-  ).map(item => ({
-    _id: item._id,
-    title: item.title,
-    category: item.category,
-    points: item.points!,
-    readingTime: item.readingTime || '3 min',
-    verse: item.verse!,
-    excerpt: item.excerpt!,
-  }));
-
-  // Filter and transform living tips
-  const livingTips: LivingTip[] = DEVOTIONALS_ITEMS.filter(
-    item => item.isLivingTip && item.excerpt !== undefined
-  ).map(item => ({
-    _id: item._id,
-    title: item.title,
-    category: item.category,
-    excerpt: item.excerpt!,
-    views: item.views?.toString() || '0',
-    trending: item.trending || false,
-  }));
-
-  // Filter and transform marriage/family content
-  const marriageFamily: MarriageFamily[] = DEVOTIONALS_ITEMS.filter(
-    item => item.isMarriageFamily && item.excerpt !== undefined && item.articles !== undefined
-  ).map(item => ({
-    _id: item._id,
-    title: item.title,
-    category: item.category,
-    excerpt: item.excerpt!,
-    articles: item.articles!,
-  }));
+  const mapList = (
+    res: typeof dailyRes,
+    mapper: (i: Record<string, unknown>) => unknown
+  ): unknown[] => {
+    const data = res.data as IPublicDevotionalsListRes | undefined;
+    const list = (data?.devotionals ?? []) as unknown[];
+    return list.map(item => mapper(item as Record<string, unknown>));
+  };
 
   return {
-    dailyDevotionals,
-    bibleStudySeries,
-    prayerPoints,
-    livingTips,
-    marriageFamily,
+    dailyDevotionals: mapList(dailyRes, mapToDailyDevotional) as DailyDevotional[],
+    bibleStudySeries: mapList(bibleRes, mapToBibleStudy) as BibleStudy[],
+    prayerPoints: mapList(prayerRes, mapToPrayerPoint) as PrayerPoint[],
+    livingTips: mapList(livingRes, mapToLivingTip) as LivingTip[],
+    marriageFamily: mapList(marriageRes, mapToMarriageFamily) as MarriageFamily[],
+    initialErrorMessage: errorMessage,
   };
 }
 
 export default async function CommunityDevotionalsPage() {
-  const devotionalsData = await generateDevotionalsData();
+  const devotionalsData = await fetchDevotionalsData();
 
   return (
     <MainLayout>

@@ -1,59 +1,76 @@
 'use client';
 
-import { useState } from 'react';
 import { useQueryState, parseAsString } from 'nuqs';
 import { SearchFilters, SearchResults, SearchEmptyState } from './';
 import type { SearchResultItem } from './SearchResults';
+import { AlertCircle } from 'lucide-react';
+
+/** Filter tab value in URL; empty means "all". Server performs filtering. */
+export const SEARCH_TYPE_PARAM = 'type';
 
 interface SearchResultsClientProps {
   results: SearchResultItem[];
+  errorMessage?: string | null;
 }
 
-export const SearchResultsClient = ({ results }: SearchResultsClientProps) => {
+const COMMUNITY_TYPES = [
+  'devotional',
+  'testimony',
+  'prayer-request',
+  'question',
+  'poll',
+  'resource',
+  'artist',
+];
+
+export const SearchResultsClient = ({ results, errorMessage = null }: SearchResultsClientProps) => {
   const [query] = useQueryState('q', parseAsString.withDefault(''));
-  const [activeFilter, setActiveFilter] = useState('all');
+  const [type, setType] = useQueryState(SEARCH_TYPE_PARAM, parseAsString.withDefault(''));
 
-  // Community-related types
-  const communityTypes = [
-    'devotional',
-    'testimony',
-    'prayer-request',
-    'question',
-    'poll',
-    'resource',
-  ];
+  // Active filter for UI: URL type or 'all'
+  const activeFilter = type || 'all';
 
-  // Filter results by active filter
-  const filteredResults =
-    activeFilter === 'all'
-      ? results
-      : activeFilter === 'community'
-        ? results.filter(item => communityTypes.includes(item.type))
-        : results.filter(item => item.type === activeFilter);
+  const handleFilterChange = (value: string) => {
+    setType(value === 'all' ? null : value, { history: 'replace', scroll: false });
+  };
 
-  // Calculate results by type
+  // Counts from current result set (only meaningful when type is 'all')
   const resultsByType = [
     { value: 'music', count: results.filter(r => r.type === 'music').length },
     { value: 'news', count: results.filter(r => r.type === 'news').length },
     { value: 'video', count: results.filter(r => r.type === 'video').length },
-    { value: 'community', count: results.filter(r => communityTypes.includes(r.type)).length },
+    {
+      value: 'community',
+      count: results.filter(r => COMMUNITY_TYPES.includes(r.type)).length,
+    },
   ];
+
+  if (errorMessage) {
+    return (
+      <div className="container mx-auto px-4">
+        <div className="flex items-center gap-2 rounded-lg bg-destructive/10 border border-destructive/30 text-destructive px-4 py-4 text-sm">
+          <AlertCircle className="w-5 h-5 shrink-0" />
+          <span>{errorMessage}</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4">
-      {/* Filter Tabs */}
+      {/* Filter Tabs — changes cause new server request (debounced 500ms) */}
       {query && (
         <SearchFilters
           activeFilter={activeFilter}
-          onFilterChange={setActiveFilter}
+          onFilterChange={handleFilterChange}
           resultsByType={resultsByType}
         />
       )}
 
-      {/* Results */}
+      {/* Results — server-filtered; no client-side filtering */}
       {query ? (
-        filteredResults.length > 0 ? (
-          <SearchResults results={filteredResults} />
+        results.length > 0 ? (
+          <SearchResults results={results} />
         ) : (
           <SearchEmptyState hasQuery={true} />
         )

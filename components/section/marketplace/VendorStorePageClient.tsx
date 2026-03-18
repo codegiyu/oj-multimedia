@@ -3,17 +3,18 @@
 import { MainLayout } from '@/components/layout/MainLayout';
 import { SectionContainer } from '@/components/general/SectionContainer';
 import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { ProductCard } from './ProductCard';
-import { Store, ChevronRight } from 'lucide-react';
+import { Store, ChevronRight, MessageCircle } from 'lucide-react';
 import Link from 'next/link';
-import type { MarketplaceVendor } from '@/lib/utils/marketplace';
-import { getMockProductsByVendorId } from '@/lib/utils/marketplace';
+import type { IMarketplaceVendor, IMarketplaceProduct } from '@/lib/constants/endpoints';
 
 export interface VendorStorePageClientProps {
-  vendor: MarketplaceVendor | null;
+  vendor: IMarketplaceVendor | null;
+  products: IMarketplaceProduct[];
 }
 
-export function VendorStorePageClient({ vendor }: VendorStorePageClientProps) {
+export function VendorStorePageClient({ vendor, products = [] }: VendorStorePageClientProps) {
   if (!vendor) {
     return (
       <MainLayout>
@@ -28,8 +29,6 @@ export function VendorStorePageClient({ vendor }: VendorStorePageClientProps) {
       </MainLayout>
     );
   }
-
-  const products = getMockProductsByVendorId(vendor._id);
 
   return (
     <MainLayout>
@@ -67,11 +66,24 @@ export function VendorStorePageClient({ vendor }: VendorStorePageClientProps) {
                 {vendor.storeDescription && (
                   <p className="text-muted-foreground mb-4">{vendor.storeDescription}</p>
                 )}
-                {vendor.isVerified && (
-                  <span className="inline-block text-sm font-medium text-primary">
-                    Verified vendor
-                  </span>
-                )}
+                <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">
+                  {vendor.isVerified && (
+                    <span className="inline-block text-sm font-medium text-primary">
+                      Verified vendor
+                    </span>
+                  )}
+                  {vendor.whatsapp && (
+                    <Button variant="outline" size="sm" className="gap-2" asChild>
+                      <a
+                        href={`https://wa.me/${vendor.whatsapp.replace(/\D/g, '')}`}
+                        target="_blank"
+                        rel="noopener noreferrer">
+                        <MessageCircle className="w-4 h-4" />
+                        Chat on WhatsApp
+                      </a>
+                    </Button>
+                  )}
+                </div>
               </div>
             </div>
           </Card>

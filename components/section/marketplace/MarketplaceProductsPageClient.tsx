@@ -1,32 +1,70 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { SectionContainer } from '@/components/general/SectionContainer';
 import { ProductCard } from './ProductCard';
-import { getMockCategories, getMockProducts, type ProductCategory } from '@/lib/utils/marketplace';
-import { Package } from 'lucide-react';
+import { DataLoadError } from '@/components/general/DataLoadError';
+import { ListPagination } from '@/components/general/ListPagination';
+import { Package, ShoppingBag } from 'lucide-react';
 import Link from 'next/link';
+import { useQueryState, parseAsString, parseAsInteger } from 'nuqs';
+import type {
+  IMarketplaceCategory,
+  IMarketplaceSubCategory,
+  IMarketplaceProduct,
+} from '@/lib/constants/endpoints';
 
 export interface MarketplaceProductsPageClientProps {
-  category?: string;
+  categories: IMarketplaceCategory[];
+  subcategories: IMarketplaceSubCategory[];
+  products: IMarketplaceProduct[];
+  pagination: { page: number; limit: number; total: number; totalPages: number };
+  error: string | null;
 }
 
-const CATEGORY_LABELS: Record<string, string> = {
-  fashion: 'Fashion',
-  food: 'Food',
-  'health-beauty': 'Health & Beauty',
-  accessories: 'Accessories',
-  electronics: 'Electronics',
-  books: 'Books',
-  other: 'Other',
-};
+const SORT_OPTIONS = [
+  { value: 'recent', label: 'Recent' },
+  { value: 'price-asc', label: 'Price: Low to High' },
+  { value: 'price-desc', label: 'Price: High to Low' },
+  { value: 'hot', label: 'Popular' },
+] as const;
 
 export function MarketplaceProductsPageClient({
-  category: categorySlug,
+  categories = [],
+  subcategories = [],
+  products = [],
+  pagination,
+  error = null,
 }: MarketplaceProductsPageClientProps) {
-  const category = categorySlug && isValidCategory(categorySlug) ? categorySlug : undefined;
-  const products = getMockProducts({ category, limit: 50 });
-  const categories = getMockCategories();
+  const router = useRouter();
+  const [category, setCategory] = useQueryState('category', parseAsString.withDefault(''));
+  const [sort, setSort] = useQueryState('sort', parseAsString.withDefault('recent'));
+  const [page] = useQueryState('page', parseAsInteger.withDefault(1));
+
+  const activeCategorySlug = category || undefined;
+  const categoryLabel =
+    activeCategorySlug && categories.find(c => c.slug === activeCategorySlug)?.name;
+
+  const handleSortChange = (value: string) => {
+    setSort(value || null).then(() => router.refresh());
+  };
+
+  if (error && products.length === 0 && categories.length === 0) {
+    return (
+      <MainLayout>
+        <SectionContainer className="py-16 md:py-20">
+          <DataLoadError
+            title="Unable to load products"
+            message={error}
+            onRetry={() => router.refresh()}
+            icon={<ShoppingBag className="w-8 h-8 text-destructive" />}
+          />
+        </SectionContainer>
+      </MainLayout>
+    );
+  }
 
   return (
     <MainLayout>
@@ -38,7 +76,7 @@ export function MarketplaceProductsPageClient({
             </Link>
             <span>/</span>
             <span className="text-foreground">
-              {category ? (CATEGORY_LABELS[category] ?? category) : 'All Products'}
+              {categoryLabel ?? activeCategorySlug ?? 'All Products'}
             </span>
           </nav>
 
@@ -53,7 +91,9 @@ export function MarketplaceProductsPageClient({
                   <Link
                     href="/marketplace/products"
                     className={`block py-2 px-3 rounded-lg transition-colors ${
-                      !category ? 'bg-primary/10 text-primary font-medium' : 'hover:bg-muted'
+                      !activeCategorySlug
+                        ? 'bg-primary/10 text-primary font-medium'
+                        : 'hover:bg-muted'
                     }`}>
                     All Products
                   </Link>
@@ -61,9 +101,9 @@ export function MarketplaceProductsPageClient({
                 {categories.map(cat => (
                   <li key={cat.slug}>
                     <Link
-                      href={`/marketplace/products?category=${cat.slug}`}
+                      href={`/marketplace/products?category=${cat.slug}&page=1`}
                       className={`block py-2 px-3 rounded-lg transition-colors ${
-                        category === cat.slug
+                        activeCategorySlug === cat.slug
                           ? 'bg-primary/10 text-primary font-medium'
                           : 'hover:bg-muted'
                       }`}>
@@ -75,17 +115,46 @@ export function MarketplaceProductsPageClient({
             </aside>
 
             <div className="flex-1">
-              <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-6">
-                {category ? (CATEGORY_LABELS[category] ?? category) : 'All Products'}
-              </h1>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                <h1 className="text-2xl md:text-3xl font-bold text-foreground">
+                  {categoryLabel ?? activeCategorySlug ?? 'All Products'}
+                </h1>
+                <div className="flex items-center gap-2">
+                  <label htmlFor="sort" className="text-sm text-muted-foreground whitespace-nowrap">
+                    Sort:
+                  </label>
+                  <select
+                    id="sort"
+                    value={sort}
+                    onChange={e => handleSortChange(e.target.value)}
+                    className="rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                    {SORT_OPTIONS.map(opt => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
               {products.length === 0 ? (
                 <p className="text-muted-foreground py-12">No products in this category yet.</p>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {products.map(product => (
-                    <ProductCard key={product._id} product={product} />
-                  ))}
-                </div>
+                <>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {products.map(product => (
+                      <ProductCard key={product._id} product={product} />
+                    ))}
+                  </div>
+                  <div className="mt-8">
+                    <ListPagination
+                      page={pagination.page}
+                      totalPages={pagination.totalPages}
+                      total={pagination.total}
+                      limit={pagination.limit}
+                    />
+                  </div>
+                </>
               )}
             </div>
           </div>
@@ -93,16 +162,4 @@ export function MarketplaceProductsPageClient({
       </SectionContainer>
     </MainLayout>
   );
-}
-
-function isValidCategory(s: string): s is ProductCategory {
-  return [
-    'fashion',
-    'food',
-    'health-beauty',
-    'accessories',
-    'electronics',
-    'books',
-    'other',
-  ].includes(s);
 }

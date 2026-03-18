@@ -6,13 +6,24 @@ import { SectionContainer } from '@/components/general/SectionContainer';
 import { motion } from 'motion/react';
 import { useSiteStore } from '@/lib/store/siteStore';
 import { useSiteSettingsStore } from '@/lib/store/useSiteSettingsStore';
-import { MapPin, Phone, Mail, Clock } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, AlertCircle } from 'lucide-react';
 import { SocialBtn } from '@/components/layout/Footer';
 import { getSocialIcon, formatSocialLabel } from '@/lib/utils/socials';
 import { formatOfficeHours } from '@/lib/utils/contactInfo';
 import { Skeleton } from '@/components/ui/skeleton';
+import type { ContactInfo, Social } from '@/lib/types/site-settings';
 
-export const ContactInfoSection = () => {
+export interface ContactInfoSectionProps {
+  initialContactInfo?: ContactInfo | null;
+  initialSocials?: Social[] | null;
+  errorMessage?: string | null;
+}
+
+export const ContactInfoSection = ({
+  initialContactInfo,
+  initialSocials,
+  errorMessage,
+}: ContactInfoSectionProps = {}) => {
   const { siteLoading } = useSiteStore(state => state);
 
   const { settings, isLoading, fetchSettings } = useSiteSettingsStore(state => ({
@@ -22,19 +33,21 @@ export const ContactInfoSection = () => {
   }));
 
   useEffect(() => {
-    fetchSettings('contactInfo');
-    fetchSettings('socials');
+    if (initialContactInfo == null) fetchSettings('contactInfo');
+    if (initialSocials == null) fetchSettings('socials');
   }, []);
 
-  const contactInfo = settings?.contactInfo;
+  const contactInfo = initialContactInfo ?? settings?.contactInfo;
   const officeHours = formatOfficeHours(contactInfo?.officeHours);
 
-  const socials =
-    settings?.socials?.map(social => ({
-      Icon: getSocialIcon(social.platform),
-      href: social.href,
-      label: formatSocialLabel(social.platform),
-    })) || [];
+  const socialsSource = initialSocials ?? settings?.socials ?? [];
+  const socials = Array.isArray(socialsSource)
+    ? socialsSource.map((social: { platform: string; href: string }) => ({
+        Icon: getSocialIcon(social.platform as Parameters<typeof getSocialIcon>[0]),
+        href: social.href,
+        label: formatSocialLabel(social.platform as Parameters<typeof formatSocialLabel>[0]),
+      }))
+    : [];
 
   const contactItems = [
     {
@@ -63,7 +76,8 @@ export const ContactInfoSection = () => {
     },
   ];
 
-  const showContactSkeleton = isLoading && !contactInfo;
+  const showContactSkeleton = contactInfo == null && initialContactInfo == null && isLoading;
+  const showError = !!errorMessage;
 
   return (
     <SectionContainer className="bg-secondary text-secondary-foreground h-full">
@@ -78,6 +92,13 @@ export const ContactInfoSection = () => {
         <p className="text-secondary-foreground/80 mb-8">
           Reach out through any of these channels.
         </p>
+
+        {showError && (
+          <div className="mb-6 flex items-center gap-2 rounded-lg bg-destructive/10 border border-destructive/30 text-destructive px-4 py-3 text-sm">
+            <AlertCircle className="w-4 h-4 shrink-0" />
+            <span>{errorMessage}</span>
+          </div>
+        )}
 
         <div className="grid gap-6">
           {showContactSkeleton ? (

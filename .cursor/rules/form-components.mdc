@@ -1,0 +1,68 @@
+---
+description: Use custom form components with built-in labels; no separate label elements or raw Select
+globs: **/*.tsx
+alwaysApply: false
+---
+
+# Form components
+
+Use the project’s custom form components for all form fields. They already provide labels, error display, and consistent styling via `InputWrapper`.
+
+## Do
+
+- **RegularInput** – text/email/number etc. Pass `label="Field label"` (and optional `required`, `errors`, `placeholder`).
+- **RegularSelect** – dropdowns. Pass `label="Field label"`, `value`, `onSelectChange`, `options` (array of `{ value, text }` or `SelectOption`), and `placeholder`. Do not use raw `Select`/`SelectTrigger`/`SelectContent`/`SelectItem` for form fields.
+- **RegularTextarea** – multi-line text. Pass `label="Field label"` (and optional `required`, `errors`, `rows`).
+
+Use the components’ `label` prop for the visible label. Do not add a separate `<label>` element for the same field.
+
+```tsx
+// ✅ GOOD – single component with label prop
+<RegularInput
+  label="Your Name (Optional)"
+  placeholder="Enter your name"
+  value={name}
+  onChange={e => setName(e.target.value)}
+/>
+<RegularSelect
+  label="Category"
+  value={category}
+  onSelectChange={setCategory}
+  placeholder="Select category"
+  options={CATEGORY_OPTIONS}
+/>
+<RegularTextarea
+  label="Your Testimony"
+  placeholder="Share your story..."
+  value={content}
+  onChange={e => setContent(e.target.value)}
+  required
+/>
+```
+
+## Don’t
+
+- Do not wrap these components in a separate `<label>` or `<div>` just to show a label; use the component’s `label` prop.
+- Do not use the raw UI `Select`, `SelectTrigger`, `SelectContent`, `SelectItem` for standard form dropdowns; use **RegularSelect** with an `options` array (e.g. `{ value: string, text: string }[]`).
+- Do not use raw `Input` or `Textarea` from `@/components/ui/*` when a labeled field is needed; use **RegularInput** or **RegularTextarea** with the `label` prop.
+
+```tsx
+// ❌ BAD – redundant label + raw Select
+<label htmlFor="category" className="text-sm font-medium">Category</label>
+<Select value={category} onValueChange={setCategory}>
+  <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
+  <SelectContent>
+    <SelectItem value="a">A</SelectItem>
+  </SelectContent>
+</Select>
+
+// ❌ BAD – separate label when component has label prop
+<label htmlFor="name">Your Name</label>
+<RegularInput id="name" label="" placeholder="..." value={name} onChange={...} />
+```
+
+## Exceptions
+
+- **Group labels**: A single heading/label for a group of inputs (e.g. “Poll Options”) is fine; use the components’ `label` prop for each individual field, or `label=""` for repeated fields in the group.
+- **Checkboxes / custom controls**: Native `<input type="checkbox">` with a `<label>` is acceptable when no custom checkbox component exists.
+- **Low-level UI**: Using raw `Select`/`Input`/`Textarea` inside shared components (e.g. `RegularSelect`, `PhoneInput`) is fine.

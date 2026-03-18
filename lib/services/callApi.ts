@@ -6,7 +6,7 @@ import { getRouter } from '../utils/navigation';
 import { useInitAuthStore } from '../store/useAuthStore';
 
 // Base URL for API routes - using relative path since we're using Next.js API routes
-const BASE_URL = process.env.NEXT_CLIENT_BASE_URL || 'https://example.com';
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://api.ojmultimedia.com';
 
 export const api = axios.create({
   baseURL: BASE_URL,

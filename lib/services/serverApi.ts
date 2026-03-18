@@ -5,7 +5,9 @@ import { getDataFromRequest } from '../utils/general';
 import { ENDPOINTS, type AllEndpoints } from '../constants/endpoints';
 
 const SERVER_BASE_URL =
-  process.env.NEXT_SERVER_BASE_URL || process.env.NEXT_CLIENT_BASE_URL || 'https://example.com';
+  process.env.NEXT_SERVER_BASE_URL ||
+  process.env.NEXT_PUBLIC_BASE_URL ||
+  'https://api.ojmultimedia.com';
 
 export const callServerApi = async <T extends keyof AllEndpoints>(
   endpoint: T,
@@ -48,7 +50,16 @@ export const callServerApi = async <T extends keyof AllEndpoints>(
       return getDataFromRequest<T>({ error: json as ApiErrorResponse }, endpoint);
     }
 
-    return getDataFromRequest<T>({ data: json as any }, endpoint);
+    // Backend may send { success, message, responseCode, data } or the payload directly
+    const wrapped =
+      json &&
+      typeof json === 'object' &&
+      'data' in json &&
+      (json as { success?: boolean }).success === true
+        ? (json as { message: string; data: unknown })
+        : { success: true, message: '', responseCode: 200, data: json };
+
+    return getDataFromRequest<T>({ data: wrapped as any }, endpoint);
   } catch (err) {
     const error: ApiErrorResponse = {
       success: false,

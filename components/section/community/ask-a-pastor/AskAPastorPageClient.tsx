@@ -1,11 +1,15 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { ActiveQuestionsSection } from './ActiveQuestionsSection';
 import { SubmitQuestionSection } from './SubmitQuestionSection';
 import { AnsweredQuestionsSection } from './AnsweredQuestionsSection';
 import { AvailablePastorsSection } from './AvailablePastorsSection';
 import { QuestionCategoriesSection } from './QuestionCategoriesSection';
 import { CommunityCTA } from '../../shared';
+import { SectionContainer } from '@/components/general/SectionContainer';
+import { DataLoadError } from '@/components/general/DataLoadError';
+import { HelpCircle } from 'lucide-react';
 
 export interface Question {
   _id: string;
@@ -59,6 +63,7 @@ interface AskAPastorPageClientProps {
   answeredQuestions: AnsweredQuestion[];
   availablePastors: AvailablePastor[];
   categoryCounts: Record<string, number>;
+  initialErrorMessage?: string | null;
 }
 
 export const AskAPastorPageClient = ({
@@ -66,7 +71,25 @@ export const AskAPastorPageClient = ({
   answeredQuestions,
   availablePastors,
   categoryCounts,
+  initialErrorMessage = null,
 }: AskAPastorPageClientProps) => {
+  const router = useRouter();
+  const hasAnyContent =
+    activeQuestions.length > 0 || answeredQuestions.length > 0 || availablePastors.length > 0;
+
+  if (initialErrorMessage && !hasAnyContent) {
+    return (
+      <SectionContainer>
+        <DataLoadError
+          title="Unable to load questions"
+          message={initialErrorMessage}
+          onRetry={() => router.refresh()}
+          icon={<HelpCircle className="w-8 h-8 text-destructive" />}
+        />
+      </SectionContainer>
+    );
+  }
+
   // Merge static category definitions with dynamic counts from server
   const categories: QuestionCategory[] = categoryDefinitions.map(def => ({
     name: def.name,

@@ -9,7 +9,28 @@ import {
   IMusic,
   IVideo,
   INewsArticle,
-} from '@/app/_server/lib/types/constants';
+} from '@/lib/types/server-models';
+import type {
+  CommunityHubData,
+  DevotionalsListData,
+  DevotionalDetailData,
+  TestimoniesListData,
+  TestimonyDetailData,
+  PrayerRequestsListData,
+  PrayerRequestDetailData,
+  QuestionsListData,
+  QuestionDetailData,
+  PastorsListData,
+  PollsListData,
+  PollDetailData,
+  ArtistsListData,
+  ArtistDetailData,
+  ResourcesListData,
+  PrayerRequestListItem,
+  QuestionListItem,
+  TestimonyListItem,
+  PollListItem,
+} from '@/lib/types/community';
 import mongoose from 'mongoose';
 
 export type HttpMethods = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
@@ -58,6 +79,8 @@ export type PopulatedVendorSummary = {
   name?: string;
   slug: string;
   storeName: string;
+  /** Vendor WhatsApp number; used to build "Chat with vendor" link (wa.me) */
+  whatsapp?: string;
 };
 
 export type PopulatedUser = ClientUser & {
@@ -104,6 +127,51 @@ export interface IUserWishlistAddPayload {
 
 export interface IUserWishlistAddRes {
   item: IUserWishlistItem;
+}
+
+// User cart (marketplace)
+export interface ICartProductSummary {
+  _id: string;
+  name: string;
+  slug: string;
+  price: number;
+  image?: string;
+  images?: string[];
+  vendorSlug?: string;
+  vendorName?: string;
+  /** Backend exposes vendor WhatsApp for chat links (named `whatsapp` in API); we keep vendorWhatsapp for backwards compatibility. */
+  whatsapp?: string;
+  vendorWhatsapp?: string;
+  variationOptions?: IMarketplaceVariationOption[];
+  variants?: IMarketplaceProductVariant[];
+}
+
+export interface ICartItem {
+  productId: string;
+  quantity: number;
+  sku?: string;
+  product: ICartProductSummary;
+}
+
+export interface ICartRes {
+  items: ICartItem[];
+  totalItems: number;
+  subtotal: number;
+}
+
+export interface IUserCartAddPayload {
+  productId: string;
+  quantity: number;
+  sku?: string;
+}
+
+export interface IUserCartUpdatePayload {
+  productId: string;
+  quantity: number;
+}
+
+export interface IUserCartBulkUpdatePayload {
+  updates: Array<{ productId: string; quantity: number }>;
 }
 
 // Artist dashboard types
@@ -203,6 +271,145 @@ export interface IPublicNewsItemRes {
   article: PublicNewsListItem;
 }
 
+// Community (public) – list and detail types (from COMMUNITY-API-FRONTEND.md)
+export type ICommunityCategoryCountsRes = CommunityHubData;
+
+export type IPublicDevotionalsListRes = DevotionalsListData;
+export type IPublicDevotionalItemRes = DevotionalDetailData;
+
+export type IPublicTestimoniesListRes = TestimoniesListData;
+export type IPublicTestimonyItemRes = TestimonyDetailData;
+
+export type IPublicPrayerRequestsListRes = PrayerRequestsListData;
+export type IPublicPrayerRequestItemRes = PrayerRequestDetailData;
+
+export type IPublicQuestionsListRes = QuestionsListData;
+export type IPublicQuestionItemRes = QuestionDetailData;
+
+export type IPublicPastorsListRes = PastorsListData;
+
+export type IPublicPollsListRes = PollsListData;
+export type IPublicPollItemRes = PollDetailData;
+
+export type IPublicArtistsListRes = ArtistsListData;
+export type IPublicArtistItemRes = ArtistDetailData;
+
+export type IPublicResourcesRes = ResourcesListData;
+
+// Community mutation payloads and responses
+export interface ISubmitPrayerRequestPayload {
+  name?: string;
+  email?: string;
+  title: string;
+  content: string;
+  category?: string;
+  urgent?: boolean;
+}
+export interface ISubmitPrayerRequestRes {
+  prayerRequest: PrayerRequestListItem;
+}
+
+export interface ISubmitQuestionPayload {
+  name?: string;
+  email?: string;
+  question: string;
+  category?: string;
+}
+export interface ISubmitQuestionRes {
+  question: QuestionListItem;
+}
+
+export interface ISubmitTestimonyPayload {
+  name?: string;
+  category?: string;
+  content: string;
+}
+export interface ISubmitTestimonyRes {
+  testimony: TestimonyListItem;
+}
+
+export interface IPollVotePayload {
+  optionId: string;
+}
+export interface IPollVoteRes {
+  poll: PollListItem;
+}
+
+export interface ICreatePollPayload {
+  question: string;
+  description?: string;
+  category?: string;
+  options: string[];
+}
+export interface ICreatePollRes {
+  poll: PollListItem;
+}
+
+// Contact (public)
+export interface ISubmitContactPayload {
+  name: string;
+  phone: string;
+  email?: string;
+  subject: string;
+  message: string;
+}
+export interface ISubmitContactRes {
+  message: string;
+  contactSubmission: { _id: string; createdAt: string };
+}
+
+/** Full ContactSubmission document (backend model). Public API only returns _id + createdAt. */
+export interface ContactSubmission {
+  _id: string;
+  name: string;
+  phone: string;
+  email?: string;
+  subject: string;
+  message: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Search (public)
+export type SearchResultType =
+  | 'music'
+  | 'news'
+  | 'video'
+  | 'devotional'
+  | 'testimony'
+  | 'prayer-request'
+  | 'question'
+  | 'poll'
+  | 'resource'
+  | 'artist';
+
+/**
+ * Query params for GET /public/search.
+ * Build query string as ?q=...&type=...&page=...&limit=...
+ * - q: required for results; empty q returns empty results.
+ * - type: optional; one of SearchResultType or 'community' (backend expands to all community types).
+ * - page, limit: optional; default 1 and 24, limit max 50.
+ */
+export interface IPublicSearchQuery {
+  q: string;
+  type?: SearchResultType | 'community';
+  page?: number;
+  limit?: number;
+}
+
+export interface ISearchResultItem {
+  _id: string;
+  title: string;
+  subtitle: string;
+  type: SearchResultType;
+  image?: string;
+  meta: string;
+}
+export interface IPublicSearchRes {
+  results: ISearchResultItem[];
+  pagination: { page: number; limit: number; total: number; totalPages: number };
+}
+
 export type EndpointDefinition<
   Payload extends Record<string, any> | undefined = undefined,
   Response = unknown,
@@ -256,6 +463,17 @@ export interface AllEndpoints {
   USER_WISHLIST_LIST: EndpointDefinition<undefined, IUserWishlistListRes, `?${string}`>;
   USER_WISHLIST_ADD: EndpointDefinition<IUserWishlistAddPayload, IUserWishlistAddRes, undefined>;
   USER_WISHLIST_REMOVE: EndpointDefinition<undefined, { success: boolean }, `/${string}`>;
+
+  // User cart (marketplace)
+  USER_CART_GET: EndpointDefinition<undefined, ICartRes, undefined>;
+  USER_CART_ADD: EndpointDefinition<IUserCartAddPayload, ICartRes, undefined>;
+  USER_CART_UPDATE: EndpointDefinition<
+    IUserCartUpdatePayload | IUserCartBulkUpdatePayload,
+    ICartRes,
+    undefined
+  >;
+  USER_CART_REMOVE: EndpointDefinition<undefined, { success: boolean } | ICartRes, `/${string}`>;
+  USER_CART_CLEAR: EndpointDefinition<undefined, { success: boolean } | ICartRes, undefined>;
 
   // File Upload (Public)
   GENERATE_PRESIGNED_URL: EndpointDefinition<
@@ -338,7 +556,11 @@ export interface AllEndpoints {
     IMarketplaceSubCategoriesRes,
     `?${string}` | undefined
   >;
-  MARKETPLACE_GET_VENDORS: EndpointDefinition<undefined, IMarketplaceVendorsRes, undefined>;
+  MARKETPLACE_GET_VENDORS: EndpointDefinition<
+    undefined,
+    IMarketplaceVendorsRes,
+    `?${string}` | undefined
+  >;
   MARKETPLACE_GET_VENDOR_BY_SLUG: EndpointDefinition<
     undefined,
     IMarketplaceVendorRes,
@@ -365,6 +587,11 @@ export interface AllEndpoints {
     undefined
   >;
   MARKETPLACE_GET_MY_ORDERS: EndpointDefinition<undefined, IMarketplaceMyOrdersRes, `?${string}`>;
+  MARKETPLACE_ORDER_WHATSAPP_LINK: EndpointDefinition<
+    undefined,
+    { whatsappLink: string | null; message: string },
+    `/${string}`
+  >;
 
   // Artist dashboard
   ARTIST_GET_ME: EndpointDefinition<undefined, IArtistMeRes, undefined>;
@@ -425,6 +652,62 @@ export interface AllEndpoints {
   PUBLIC_GET_VIDEO_ITEM: EndpointDefinition<undefined, IPublicVideoItemRes, `/${string}`>;
   PUBLIC_GET_NEWS: EndpointDefinition<undefined, IPublicNewsListRes, `?${string}`>;
   PUBLIC_GET_NEWS_ITEM: EndpointDefinition<undefined, IPublicNewsItemRes, `/${string}`>;
+
+  // Public community (read)
+  PUBLIC_GET_COMMUNITY: EndpointDefinition<undefined, ICommunityCategoryCountsRes, undefined>;
+  PUBLIC_GET_DEVOTIONALS: EndpointDefinition<undefined, IPublicDevotionalsListRes, `?${string}`>;
+  PUBLIC_GET_DEVOTIONAL_ITEM: EndpointDefinition<undefined, IPublicDevotionalItemRes, `/${string}`>;
+  PUBLIC_GET_TESTIMONIES: EndpointDefinition<undefined, IPublicTestimoniesListRes, `?${string}`>;
+  PUBLIC_GET_TESTIMONY_ITEM: EndpointDefinition<undefined, IPublicTestimonyItemRes, `/${string}`>;
+  PUBLIC_GET_PRAYER_REQUESTS: EndpointDefinition<
+    undefined,
+    IPublicPrayerRequestsListRes,
+    `?${string}`
+  >;
+  PUBLIC_GET_PRAYER_REQUEST_ITEM: EndpointDefinition<
+    undefined,
+    IPublicPrayerRequestItemRes,
+    `/${string}`
+  >;
+  PUBLIC_GET_ASK_A_PASTOR_QUESTIONS: EndpointDefinition<
+    undefined,
+    IPublicQuestionsListRes,
+    `?${string}`
+  >;
+  PUBLIC_GET_ASK_A_PASTOR_QUESTION_ITEM: EndpointDefinition<
+    undefined,
+    IPublicQuestionItemRes,
+    `/${string}`
+  >;
+  PUBLIC_GET_ASK_A_PASTOR_PASTORS: EndpointDefinition<
+    undefined,
+    IPublicPastorsListRes,
+    `?${string}` | undefined
+  >;
+  PUBLIC_GET_POLLS: EndpointDefinition<undefined, IPublicPollsListRes, `?${string}`>;
+  PUBLIC_GET_POLL_ITEM: EndpointDefinition<undefined, IPublicPollItemRes, `/${string}`>;
+  PUBLIC_GET_ARTISTS: EndpointDefinition<undefined, IPublicArtistsListRes, `?${string}`>;
+  PUBLIC_GET_ARTIST_ITEM: EndpointDefinition<undefined, IPublicArtistItemRes, `/${string}`>;
+  PUBLIC_GET_RESOURCES: EndpointDefinition<undefined, IPublicResourcesRes, `?${string}`>;
+
+  // Public community (write)
+  PUBLIC_SUBMIT_PRAYER_REQUEST: EndpointDefinition<
+    ISubmitPrayerRequestPayload,
+    ISubmitPrayerRequestRes,
+    undefined
+  >;
+  PUBLIC_SUBMIT_QUESTION: EndpointDefinition<ISubmitQuestionPayload, ISubmitQuestionRes, undefined>;
+  PUBLIC_SUBMIT_TESTIMONY: EndpointDefinition<
+    ISubmitTestimonyPayload,
+    ISubmitTestimonyRes,
+    undefined
+  >;
+  PUBLIC_POLL_VOTE: EndpointDefinition<IPollVotePayload, IPollVoteRes, `/${string}`>;
+  PUBLIC_CREATE_POLL: EndpointDefinition<ICreatePollPayload, ICreatePollRes, undefined>;
+
+  // Contact & Search (public)
+  PUBLIC_SUBMIT_CONTACT: EndpointDefinition<ISubmitContactPayload, ISubmitContactRes, undefined>;
+  PUBLIC_SEARCH: EndpointDefinition<undefined, IPublicSearchRes, `?${string}`>;
 }
 
 export const ENDPOINTS: Record<keyof AllEndpoints, EndpointDetails> = {
@@ -493,6 +776,13 @@ export const ENDPOINTS: Record<keyof AllEndpoints, EndpointDetails> = {
     path: '/user/wishlist', // /:productId
     method: 'DELETE',
   },
+
+  // User cart (marketplace)
+  USER_CART_GET: { path: '/user/cart', method: 'GET' },
+  USER_CART_ADD: { path: '/user/cart', method: 'POST' },
+  USER_CART_UPDATE: { path: '/user/cart', method: 'PATCH' },
+  USER_CART_REMOVE: { path: '/user/cart', method: 'DELETE' }, // /:productId
+  USER_CART_CLEAR: { path: '/user/cart', method: 'DELETE' },
 
   // File Upload (Public)
   GENERATE_PRESIGNED_URL: {
@@ -599,6 +889,10 @@ export const ENDPOINTS: Record<keyof AllEndpoints, EndpointDetails> = {
     isNotAuthenticated: true,
   },
   MARKETPLACE_GET_MY_ORDERS: { path: '/marketplace/orders', method: 'GET' },
+  MARKETPLACE_ORDER_WHATSAPP_LINK: {
+    path: '/marketplace/orders',
+    method: 'GET',
+  }, // /:orderId/whatsapp-link
 
   // Artist dashboard
   ARTIST_GET_ME: {
@@ -673,6 +967,74 @@ export const ENDPOINTS: Record<keyof AllEndpoints, EndpointDetails> = {
   PUBLIC_GET_VIDEO_ITEM: { path: '/public/videos', method: 'GET', isNotAuthenticated: true }, // /:idOrSlug
   PUBLIC_GET_NEWS: { path: '/public/news', method: 'GET', isNotAuthenticated: true },
   PUBLIC_GET_NEWS_ITEM: { path: '/public/news', method: 'GET', isNotAuthenticated: true }, // /:idOrSlug
+
+  // Public community (read)
+  PUBLIC_GET_COMMUNITY: { path: '/public/community', method: 'GET', isNotAuthenticated: true },
+  PUBLIC_GET_DEVOTIONALS: { path: '/public/devotionals', method: 'GET', isNotAuthenticated: true },
+  PUBLIC_GET_DEVOTIONAL_ITEM: {
+    path: '/public/devotionals',
+    method: 'GET',
+    isNotAuthenticated: true,
+  }, // /:idOrSlug
+  PUBLIC_GET_TESTIMONIES: { path: '/public/testimonies', method: 'GET', isNotAuthenticated: true },
+  PUBLIC_GET_TESTIMONY_ITEM: {
+    path: '/public/testimonies',
+    method: 'GET',
+    isNotAuthenticated: true,
+  }, // /:idOrSlug
+  PUBLIC_GET_PRAYER_REQUESTS: {
+    path: '/public/prayer-requests',
+    method: 'GET',
+    isNotAuthenticated: true,
+  },
+  PUBLIC_GET_PRAYER_REQUEST_ITEM: {
+    path: '/public/prayer-requests',
+    method: 'GET',
+    isNotAuthenticated: true,
+  }, // /:idOrSlug
+  PUBLIC_GET_ASK_A_PASTOR_QUESTIONS: {
+    path: '/public/ask-a-pastor/questions',
+    method: 'GET',
+    isNotAuthenticated: true,
+  },
+  PUBLIC_GET_ASK_A_PASTOR_QUESTION_ITEM: {
+    path: '/public/ask-a-pastor/questions',
+    method: 'GET',
+    isNotAuthenticated: true,
+  }, // /:idOrSlug
+  PUBLIC_GET_ASK_A_PASTOR_PASTORS: {
+    path: '/public/ask-a-pastor/pastors',
+    method: 'GET',
+    isNotAuthenticated: true,
+  },
+  PUBLIC_GET_POLLS: { path: '/public/polls', method: 'GET', isNotAuthenticated: true },
+  PUBLIC_GET_POLL_ITEM: { path: '/public/polls', method: 'GET', isNotAuthenticated: true }, // /:idOrSlug
+  PUBLIC_GET_ARTISTS: { path: '/public/artists', method: 'GET', isNotAuthenticated: true },
+  PUBLIC_GET_ARTIST_ITEM: { path: '/public/artists', method: 'GET', isNotAuthenticated: true }, // /:idOrSlug
+  PUBLIC_GET_RESOURCES: { path: '/public/resources', method: 'GET', isNotAuthenticated: true },
+
+  // Public community (write)
+  PUBLIC_SUBMIT_PRAYER_REQUEST: {
+    path: '/public/prayer-requests',
+    method: 'POST',
+    isNotAuthenticated: true,
+  },
+  PUBLIC_SUBMIT_QUESTION: {
+    path: '/public/ask-a-pastor/questions',
+    method: 'POST',
+    isNotAuthenticated: true,
+  },
+  PUBLIC_SUBMIT_TESTIMONY: {
+    path: '/public/testimonies',
+    method: 'POST',
+    isNotAuthenticated: true,
+  },
+  PUBLIC_POLL_VOTE: { path: '/public/polls', method: 'POST', isNotAuthenticated: true }, // /:idOrSlug/vote
+  PUBLIC_CREATE_POLL: { path: '/public/polls', method: 'POST', isNotAuthenticated: true },
+
+  // Contact & Search (public)
+  PUBLIC_SUBMIT_CONTACT: { path: '/public/contact', method: 'POST', isNotAuthenticated: true },
+  PUBLIC_SEARCH: { path: '/public/search', method: 'GET', isNotAuthenticated: true },
 };
 
 // Pagination Query Type
@@ -1049,6 +1411,8 @@ export interface IMarketplaceProduct {
   vendor: string;
   vendorName?: string;
   vendorSlug?: string;
+  /** When API populates vendor, includes whatsapp for "Chat with vendor" link */
+  vendorPopulated?: PopulatedVendorSummary;
   description?: string;
   /** Populated in API responses with at least { _id, name, slug } */
   category?: ProductCategoryRef;
@@ -1149,6 +1513,8 @@ export interface PopulatedMarketplaceOrder
   extends Omit<IMarketplaceOrder, 'vendor' | 'items' | 'vendorName' | 'vendorSlug'> {
   vendor: PopulatedVendorSummary;
   items: PopulatedMarketplaceOrderItem[];
+  /** Optional WhatsApp deep link built from current order state, when vendor has a WhatsApp number. */
+  whatsappLink?: string | null;
 }
 
 export interface IMarketplaceCategoriesRes {
@@ -1190,6 +1556,10 @@ export interface IMarketplacePlaceOrderPayload {
 }
 export interface IMarketplacePlaceOrderRes {
   order: PopulatedMarketplaceOrder;
+  /** Optional: wa.me link to send order details to vendor (single-vendor order) */
+  whatsappLink?: string | null;
+  /** When cart spans multiple vendors, backend may return one order per vendor */
+  orders?: PopulatedMarketplaceOrder[];
 }
 export type IMarketplaceMyOrdersRes = GetListRes<PopulatedMarketplaceOrder, 'orders'>;
 

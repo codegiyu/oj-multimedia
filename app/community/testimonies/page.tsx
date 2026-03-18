@@ -7,7 +7,11 @@ import {
   type Testimony,
 } from '@/components/section/community/testimonies/TestimoniesPageClient';
 import { TestimoniesPageSkeleton } from '@/components/section/community/testimonies/TestimoniesPageSkeleton';
-import { TESTIMONIES_ITEMS } from '@/lib/constants/community/testimonies';
+import { callServerApi } from '@/lib/services/serverApi';
+import type { ApiErrorResponse } from '@/lib/types/http';
+import type { IPublicTestimoniesListRes } from '@/lib/constants/endpoints';
+import { mapToTestimony } from '@/lib/utils/communityApiMappers';
+import type { Pagination } from '@/lib/types/community';
 
 export const metadata: Metadata = {
   title: 'Testimonies - Stories of Faith & Transformation',
@@ -15,37 +19,52 @@ export const metadata: Metadata = {
     "Read powerful testimonies from our community. Stories of healing, breakthrough, transformation, and God's faithfulness in the lives of believers.",
 };
 
-// Force dynamic rendering to ensure searchParams changes trigger re-renders
 export const dynamic = 'force-dynamic';
 
-// Generate testimonies data from central constants
-async function generateTestimoniesData(): Promise<{
+const DEFAULT_LIMIT = 12;
+
+async function fetchTestimoniesData(page: number): Promise<{
   testimonies: Testimony[];
   featured: Testimony[];
+  pagination: Pagination | null;
+  initialErrorMessage: string | null;
 }> {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 1500));
-
-  // Transform all testimonies
-  const allTestimonies: Testimony[] = TESTIMONIES_ITEMS.map(item => ({
-    _id: item._id,
-    author: item.author,
-    avatar: item.avatar,
-    content: item.content,
-    likes: item.likes,
-    comments: item.comments,
-    timeAgo: item.timeAgo,
-    category: item.category,
-  }));
-
+  const [allRes, featuredRes] = await Promise.all([
+    callServerApi('PUBLIC_GET_TESTIMONIES', {
+      query: `?limit=${DEFAULT_LIMIT}&page=${page}&type=all` as `?${string}`,
+    }),
+    callServerApi('PUBLIC_GET_TESTIMONIES', {
+      query: '?limit=3&page=1&type=featured' as `?${string}`,
+    }),
+  ]);
+  const errorMessage = allRes.error
+    ? ((allRes.error as ApiErrorResponse)?.message ?? 'Failed to load testimonies')
+    : null;
+  const allData = allRes.data as IPublicTestimoniesListRes | undefined;
+  const featuredData = featuredRes.data as IPublicTestimoniesListRes | undefined;
+  const testimonies = (allData?.testimonies ?? []).map(t =>
+    mapToTestimony(t as unknown as Record<string, unknown>)
+  ) as Testimony[];
+  const featured = (featuredData?.testimonies ?? []).map(t =>
+    mapToTestimony(t as unknown as Record<string, unknown>)
+  ) as Testimony[];
+  const pagination = allData?.pagination ?? null;
   return {
-    testimonies: allTestimonies,
-    featured: allTestimonies.filter(item => ['1', '2', '3'].includes(item._id)),
+    testimonies,
+    featured: featured.length > 0 ? featured : testimonies.slice(0, 3),
+    pagination,
+    initialErrorMessage: errorMessage,
   };
 }
 
-export default async function TestimoniesPage() {
-  const testimoniesData = await generateTestimoniesData();
+interface TestimoniesPageProps {
+  searchParams: Promise<{ page?: string }>;
+}
+
+export default async function TestimoniesPage({ searchParams }: TestimoniesPageProps) {
+  const { page: pageParam } = await searchParams;
+  const page = Math.max(1, parseInt(String(pageParam ?? '1'), 10) || 1);
+  const testimoniesData = await fetchTestimoniesData(page);
 
   return (
     <MainLayout>

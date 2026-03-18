@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import {
   BookOpen,
@@ -11,10 +12,13 @@ import {
   FolderOpen,
   Megaphone,
   LayoutGrid,
+  Users,
   type LucideIcon,
 } from 'lucide-react';
 import { CategoryCard } from '@/components/cards/CommunityCategoryCard';
 import { SectionComp } from '@/components/general/SectionComp';
+import { SectionContainer } from '@/components/general/SectionContainer';
+import { DataLoadError } from '@/components/general/DataLoadError';
 import { FeaturedTestimonies, type Testimony } from './FeaturedTestimonies';
 import { TrendingDevotionals, type Devotional } from './TrendingDevotionals';
 import { ActiveDiscussions, type Discussion } from './ActiveDiscussions';
@@ -39,6 +43,7 @@ const iconMap: Record<string, LucideIcon> = {
   BarChart3,
   FolderOpen,
   Megaphone,
+  Users,
 };
 
 // Static category definitions - hardcoded on the client side
@@ -93,6 +98,14 @@ const categoryDefinitions: Array<Omit<CommunityCategory, 'count'> & { key: strin
     href: '/community/resources',
   },
   {
+    key: 'artists',
+    icon: 'Users',
+    title: 'Artists',
+    description: 'Discover artists and creators in the community',
+    color: 'secondary',
+    href: '/community/artists',
+  },
+  {
     key: 'promoteYourContent',
     icon: 'Megaphone',
     title: 'Promote Your Content',
@@ -107,6 +120,7 @@ interface CommunityPageClientProps {
   testimonies: Testimony[];
   devotionals: Devotional[];
   discussions: Discussion[];
+  initialErrorMessage?: string | null;
 }
 
 export const CommunityPageClient = ({
@@ -114,7 +128,24 @@ export const CommunityPageClient = ({
   testimonies,
   devotionals,
   discussions,
+  initialErrorMessage = null,
 }: CommunityPageClientProps) => {
+  const router = useRouter();
+  const hasAnyContent = testimonies.length > 0 || devotionals.length > 0 || discussions.length > 0;
+
+  if (initialErrorMessage && !hasAnyContent) {
+    return (
+      <SectionContainer>
+        <DataLoadError
+          title="Unable to load community"
+          message={initialErrorMessage}
+          onRetry={() => router.refresh()}
+          icon={<Users className="w-8 h-8 text-destructive" />}
+        />
+      </SectionContainer>
+    );
+  }
+
   // Merge static category definitions with dynamic counts from server
   const categories: CommunityCategory[] = categoryDefinitions.map(def => ({
     icon: def.icon,

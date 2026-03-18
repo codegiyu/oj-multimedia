@@ -12,6 +12,7 @@ import {
   MessageSquare,
   TrendingUp,
   Mail,
+  Inbox,
 } from 'lucide-react';
 import type { ISidebarLinkGroup } from '@/lib/types/general';
 
@@ -89,6 +90,11 @@ export const sidebarLinksData: ISidebarLinkGroup[] = [
         LucideIcon: Mail,
         page: 'Email Logs',
         path: { prefix: '/admin', suffix: '/dashboard/email-logs' },
+      },
+      {
+        LucideIcon: Inbox,
+        page: 'Contact Submissions',
+        path: { prefix: '/admin', suffix: '/dashboard/contact-submissions' },
       },
       {
         LucideIcon: Settings,

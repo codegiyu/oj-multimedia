@@ -2,13 +2,24 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Search, Music, Video, Newspaper, ShoppingBag, Users } from 'lucide-react';
+import {
+  Menu,
+  X,
+  Search,
+  Music,
+  Video,
+  Newspaper,
+  ShoppingBag,
+  Users,
+  ShoppingCart,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { UserMenu, UserMobileMenu } from './UserMenu';
 import { Logo } from '@/components/atoms/Logo';
 import { SearchModal } from '../section/public/search/SearchModal';
+import { useCartStore } from '@/lib/store/cartStore';
 
 const navItems = [
   { label: 'Music', icon: Music, href: '/music' },
@@ -27,6 +38,10 @@ export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const pathname = usePathname();
+  const { actions } = useCartStore();
+  const cartCount = actions.getCount();
+
+  const isMarketplace = pathname === '/marketplace' || pathname.startsWith('/marketplace/');
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-card/80 backdrop-blur-md border-b border-border">
@@ -57,6 +72,19 @@ export const Header = () => {
 
           {/* Actions */}
           <div className="flex items-center gap-2">
+            {isMarketplace && (
+              <Link
+                href="/marketplace/cart"
+                className="relative inline-flex items-center justify-center rounded-full hover:bg-muted transition-colors h-9 w-9 lg:h-10 lg:w-10"
+                aria-label="View cart">
+                <ShoppingCart className="w-5 h-5" />
+                {cartCount > 0 && (
+                  <span className="absolute -top-1 -right-1 inline-flex items-center justify-center rounded-full bg-primary text-primary-foreground text-[10px] font-semibold px-1.5 py-0.5 min-w-[1.1rem]">
+                    {cartCount > 99 ? '99+' : cartCount}
+                  </span>
+                )}
+              </Link>
+            )}
             <Button
               variant="ghost"
               size="icon"

@@ -6,6 +6,9 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { toast } from '@/components/atoms/Toast';
+import { callApi } from '@/lib/services/callApi';
+import { getErrorMessage } from '@/lib/utils/general';
+import { mapToPoll } from '@/lib/utils/communityApiMappers';
 import type { PollItem } from '@/lib/constants/community/polls';
 
 interface PollDetailPageClientProps {
@@ -15,6 +18,7 @@ interface PollDetailPageClientProps {
 export const PollDetailPageClient = ({ poll }: PollDetailPageClientProps) => {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [hasVoted, setHasVoted] = useState(false);
+  const [isVoting, setIsVoting] = useState(false);
   const [localPoll, setLocalPoll] = useState(poll);
 
   const handleShare = async () => {
@@ -44,8 +48,8 @@ export const PollDetailPageClient = ({ poll }: PollDetailPageClientProps) => {
     }
   };
 
-  const handleVote = (optionId: string) => {
-    if (hasVoted || poll.status === 'closed') {
+  const handleVote = async (optionId: string) => {
+    if (hasVoted || poll.status === 'closed' || isVoting) {
       if (poll.status === 'closed') {
         toast({
           title: 'Poll Closed',
@@ -56,31 +60,54 @@ export const PollDetailPageClient = ({ poll }: PollDetailPageClientProps) => {
       return;
     }
 
+    setIsVoting(true);
+    const res = await callApi('PUBLIC_POLL_VOTE', {
+      query: `/${encodeURIComponent(poll._id)}/vote`,
+      payload: { optionId },
+    });
+    setIsVoting(false);
+
+    if (res.error) {
+      const isAlreadyVoted = res.error.responseCode === 409;
+      const msg = getErrorMessage(res.error);
+      toast({
+        title: isAlreadyVoted ? 'Already voted' : 'Vote failed',
+        description: isAlreadyVoted
+          ? "You've already voted on this poll."
+          : msg || 'You may have already voted, or the poll is closed.',
+        variant: 'error',
+      });
+      return;
+    }
+
     setSelectedOption(optionId);
     setHasVoted(true);
 
-    // Update local state to show vote
-    const updatedOptions = localPoll.options.map(opt => {
-      if (opt._id === optionId) {
-        const newVotes = opt.votes + 1;
-        const newTotal = localPoll.totalVotes + 1;
-        const newPercentage = Math.round((newVotes / newTotal) * 100);
-        return { ...opt, votes: newVotes, percentage: newPercentage };
-      }
-      return opt;
-    });
-
-    const newTotal = localPoll.totalVotes + 1;
-    const recalculatedOptions = updatedOptions.map(opt => ({
-      ...opt,
-      percentage: Math.round((opt.votes / newTotal) * 100),
-    }));
-
-    setLocalPoll({
-      ...localPoll,
-      options: recalculatedOptions,
-      totalVotes: newTotal,
-    });
+    const updatedPoll = res.data?.poll as Record<string, unknown> | undefined;
+    if (updatedPoll) {
+      setLocalPoll(mapToPoll(updatedPoll) as PollItem);
+    } else {
+      // Fallback: optimistic update
+      const updatedOptions = localPoll.options.map(opt => {
+        if (opt._id === optionId) {
+          const newVotes = opt.votes + 1;
+          const newTotal = localPoll.totalVotes + 1;
+          const newPercentage = Math.round((newVotes / newTotal) * 100);
+          return { ...opt, votes: newVotes, percentage: newPercentage };
+        }
+        return opt;
+      });
+      const newTotal = localPoll.totalVotes + 1;
+      const recalculatedOptions = updatedOptions.map(opt => ({
+        ...opt,
+        percentage: Math.round((opt.votes / newTotal) * 100),
+      }));
+      setLocalPoll({
+        ...localPoll,
+        options: recalculatedOptions,
+        totalVotes: newTotal,
+      });
+    }
 
     toast({
       title: 'Vote Cast!',
@@ -149,12 +176,12 @@ export const PollDetailPageClient = ({ poll }: PollDetailPageClientProps) => {
             className="space-y-4">
             {localPoll.options.map(option => {
               const isSelected = selectedOption === option._id;
-              const isDisabled = hasVoted || poll.status === 'closed';
+              const isDisabled = hasVoted || poll.status === 'closed' || isVoting;
 
               return (
                 <button
                   key={option._id}
-                  onClick={() => handleVote(option._id)}
+                  onClick={() => void handleVote(option._id)}
                   disabled={isDisabled}
                   className={`w-full p-4 rounded-lg border-2 text-left transition-all ${
                     isSelected

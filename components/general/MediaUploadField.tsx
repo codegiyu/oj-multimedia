@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
 import { useFileUpload } from '@/lib/hooks/use-file-upload';
-import type { EntityType, UploadIntent } from '@/app/_server/lib/types/constants';
+import type { EntityType, UploadIntent } from '@/lib/types/server-models';
 
 type BaseProps = {
   label: string;
