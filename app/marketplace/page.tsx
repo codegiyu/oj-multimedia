@@ -4,11 +4,7 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { MarketplacePageClient } from '@/components/section/marketplace/MarketplacePageClient';
 import { MarketplacePageSkeleton } from '@/components/section/marketplace/MarketplacePageSkeleton';
 import { callServerApi } from '@/lib/services/serverApi';
-import type { ApiErrorResponse } from '@/lib/types/http';
 import type {
-  IMarketplaceCategoriesRes,
-  IMarketplaceProductsListRes,
-  IMarketplaceVendorsRes,
   IMarketplaceProduct,
   IMarketplaceCategory,
   IMarketplaceVendor,
@@ -46,19 +42,18 @@ async function fetchMarketplaceLandingData(): Promise<{
     ]);
 
     const error =
-      (categoriesRes.error as ApiErrorResponse)?.message ??
-      (featuredRes.error as ApiErrorResponse)?.message ??
-      (hotRes.error as ApiErrorResponse)?.message ??
-      (vendorsRes.error as ApiErrorResponse)?.message ??
+      (categoriesRes.type === 'error' ? categoriesRes.error?.message : null) ??
+      (featuredRes.type === 'error' ? featuredRes.error?.message : null) ??
+      (hotRes.type === 'error' ? hotRes.error?.message : null) ??
+      (vendorsRes.type === 'error' ? vendorsRes.error?.message : null) ??
       null;
 
     const categories =
-      (categoriesRes.data as IMarketplaceCategoriesRes | undefined)?.categories ?? [];
+      categoriesRes.type === 'success' ? (categoriesRes.data?.categories ?? []) : [];
     const featuredProducts =
-      (featuredRes.data as IMarketplaceProductsListRes | undefined)?.products ?? [];
-    const hotOrRecentProducts =
-      (hotRes.data as IMarketplaceProductsListRes | undefined)?.products ?? [];
-    const vendors = (vendorsRes.data as IMarketplaceVendorsRes | undefined)?.vendors ?? [];
+      featuredRes.type === 'success' ? (featuredRes.data?.products ?? []) : [];
+    const hotOrRecentProducts = hotRes.type === 'success' ? (hotRes.data?.products ?? []) : [];
+    const vendors = vendorsRes.type === 'success' ? (vendorsRes.data?.vendors ?? []) : [];
 
     return {
       categories,

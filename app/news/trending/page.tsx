@@ -7,8 +7,6 @@ import { NewsPageSkeleton } from '@/components/section/news/NewsPageSkeleton';
 import { filterByCategory } from '@/components/section/news/categoryUtils';
 import type { TrendingStory } from '@/components/section/news/TrendingSidebar';
 import { callServerApi } from '@/lib/services/serverApi';
-import type { ApiErrorResponse } from '@/lib/types/http';
-import type { IPublicNewsListRes } from '@/lib/constants/endpoints';
 import { mapPublicNewsToTrendingStory } from '@/lib/utils/publicApiMappers';
 
 export const metadata: Metadata = {
@@ -25,16 +23,14 @@ async function fetchTrendingStories(category: string) {
   const query = `?limit=50&page=1&status=published&type=trending${categoryParam}` as const;
   const res = await callServerApi('PUBLIC_GET_NEWS', { query });
 
-  if (res.error) {
+  if (res.type === 'error') {
     return {
       trendingStories: [] as TrendingStory[],
-      initialErrorMessage:
-        (res.error as ApiErrorResponse)?.message ?? 'Failed to load trending stories',
+      initialErrorMessage: res.error?.message ?? 'Failed to load trending stories',
     };
   }
 
-  const data = res.data as IPublicNewsListRes | undefined;
-  const raw = data?.articles ?? [];
+  const raw = res.data?.articles ?? [];
   const trendingStories = filterByCategory(
     raw.map((item, i) => mapPublicNewsToTrendingStory(item, i + 1)),
     category

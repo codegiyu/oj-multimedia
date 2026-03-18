@@ -3,12 +3,7 @@ import { Suspense } from 'react';
 import { VendorStorePageClient } from '@/components/section/marketplace/VendorStorePageClient';
 import { VendorStorePageSkeleton } from '@/components/section/marketplace/VendorStorePageSkeleton';
 import { callServerApi } from '@/lib/services/serverApi';
-import type {
-  IMarketplaceVendorRes,
-  IMarketplaceProductsListRes,
-  IMarketplaceVendor,
-  IMarketplaceProduct,
-} from '@/lib/constants/endpoints';
+import type { IMarketplaceVendor, IMarketplaceProduct } from '@/lib/constants/endpoints';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -27,8 +22,8 @@ async function fetchVendorAndProducts(slug: string): Promise<{
     }),
   ]);
 
-  const vendor = (vendorRes.data as IMarketplaceVendorRes | undefined) ?? null;
-  const products = (productsRes.data as IMarketplaceProductsListRes | undefined)?.products ?? [];
+  const vendor = vendorRes.type === 'success' ? (vendorRes.data ?? null) : null;
+  const products = productsRes.type === 'success' ? (productsRes.data?.products ?? []) : [];
   return { vendor, products };
 }
 

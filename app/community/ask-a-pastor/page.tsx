@@ -10,8 +10,6 @@ import {
 } from '@/components/section/community/ask-a-pastor/AskAPastorPageClient';
 import { AskAPastorPageSkeleton } from '@/components/section/community/ask-a-pastor/AskAPastorPageSkeleton';
 import { callServerApi } from '@/lib/services/serverApi';
-import type { ApiErrorResponse } from '@/lib/types/http';
-import type { IPublicQuestionsListRes, IPublicPastorsListRes } from '@/lib/constants/endpoints';
 import { mapToQuestion, mapToAnsweredQuestion, mapToPastor } from '@/lib/utils/communityApiMappers';
 
 export const metadata: Metadata = {
@@ -38,24 +36,20 @@ async function fetchAskAPastorData(): Promise<{
     }),
     callServerApi('PUBLIC_GET_ASK_A_PASTOR_PASTORS', {}),
   ]);
-  const errorMessage = activeRes.error
-    ? ((activeRes.error as ApiErrorResponse)?.message ?? 'Failed to load questions')
-    : null;
-  const activeData = activeRes.data as IPublicQuestionsListRes | undefined;
-  const answeredData = answeredRes.data as IPublicQuestionsListRes | undefined;
-  const pastorsData = pastorsRes.data as IPublicPastorsListRes | undefined;
+  const errorMessage =
+    activeRes.type === 'error' ? (activeRes.error?.message ?? 'Failed to load questions') : null;
 
-  const activeQuestions = ((activeData?.questions as unknown[]) ?? []).map(i =>
-    mapToQuestion(i as Record<string, unknown>)
-  ) as Question[];
+  const activeQuestions = (
+    (activeRes.type === 'success' ? (activeRes.data?.questions as unknown[]) : []) ?? []
+  ).map(i => mapToQuestion(i as Record<string, unknown>)) as Question[];
 
-  const answeredQuestions = ((answeredData?.questions as unknown[]) ?? []).map(i =>
-    mapToAnsweredQuestion(i as Record<string, unknown>)
-  ) as AnsweredQuestion[];
+  const answeredQuestions = (
+    (answeredRes.type === 'success' ? (answeredRes.data?.questions as unknown[]) : []) ?? []
+  ).map(i => mapToAnsweredQuestion(i as Record<string, unknown>)) as AnsweredQuestion[];
 
-  const availablePastors = ((pastorsData?.pastors as unknown[]) ?? []).map(i =>
-    mapToPastor(i as Record<string, unknown>)
-  ) as AvailablePastor[];
+  const availablePastors = (
+    (pastorsRes.type === 'success' ? (pastorsRes.data?.pastors as unknown[]) : []) ?? []
+  ).map(i => mapToPastor(i as Record<string, unknown>)) as AvailablePastor[];
   const categoryCounts: Record<string, number> = {};
   [...activeQuestions, ...answeredQuestions].forEach(q => {
     if (q.category) categoryCounts[q.category] = (categoryCounts[q.category] || 0) + 1;

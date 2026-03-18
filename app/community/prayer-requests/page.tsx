@@ -9,8 +9,6 @@ import type {
   AnsweredPrayer,
 } from '@/components/section/community/prayer-requests/PrayerRequestsPageClient';
 import { callServerApi } from '@/lib/services/serverApi';
-import type { ApiErrorResponse } from '@/lib/types/http';
-import type { IPublicPrayerRequestsListRes } from '@/lib/constants/endpoints';
 import { mapToPrayerRequest, mapToAnsweredPrayer } from '@/lib/utils/communityApiMappers';
 import type { Pagination } from '@/lib/types/community';
 
@@ -39,22 +37,22 @@ async function fetchPrayerRequestsData(page: number): Promise<{
       query: '?limit=20&page=1&status=answered' as `?${string}`,
     }),
   ]);
-  const errorMessage = activeRes.error
-    ? ((activeRes.error as ApiErrorResponse)?.message ?? 'Failed to load prayer requests')
-    : null;
-  const activeData = activeRes.data as IPublicPrayerRequestsListRes | undefined;
-  const answeredData = answeredRes.data as IPublicPrayerRequestsListRes | undefined;
-  const activeRequests = (activeData?.prayerRequests ?? []).map(i =>
-    mapToPrayerRequest(i as unknown as Record<string, unknown>)
-  ) as PrayerRequest[];
-  const answeredPrayers = (answeredData?.prayerRequests ?? []).map(i =>
-    mapToAnsweredPrayer(i as unknown as Record<string, unknown>)
-  ) as AnsweredPrayer[];
+  const errorMessage =
+    activeRes.type === 'error'
+      ? (activeRes.error?.message ?? 'Failed to load prayer requests')
+      : null;
+  const activeRequests = (
+    activeRes.type === 'success' ? (activeRes.data?.prayerRequests ?? []) : []
+  ).map(i => mapToPrayerRequest(i as unknown as Record<string, unknown>)) as PrayerRequest[];
+  const answeredPrayers = (
+    answeredRes.type === 'success' ? (answeredRes.data?.prayerRequests ?? []) : []
+  ).map(i => mapToAnsweredPrayer(i as unknown as Record<string, unknown>)) as AnsweredPrayer[];
   const categoryCounts: Record<string, number> = {};
   activeRequests.forEach(r => {
     if (r.category) categoryCounts[r.category] = (categoryCounts[r.category] || 0) + 1;
   });
-  const activePagination = activeData?.pagination ?? null;
+  const activePagination =
+    activeRes.type === 'success' ? (activeRes.data?.pagination ?? null) : null;
   return {
     activeRequests,
     answeredPrayers,

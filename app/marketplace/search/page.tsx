@@ -4,11 +4,7 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { MarketplaceSearchPageClient } from '@/components/section/marketplace/MarketplaceSearchPageClient';
 import { MarketplaceProductsPageSkeleton } from '@/components/section/marketplace/MarketplaceProductsPageSkeleton';
 import { callServerApi } from '@/lib/services/serverApi';
-import type { ApiErrorResponse } from '@/lib/types/http';
 import type {
-  IMarketplaceCategoriesRes,
-  IMarketplaceProductsListRes,
-  IMarketplaceVendorsRes,
   IMarketplaceCategory,
   IMarketplaceVendor,
   IMarketplaceProduct,
@@ -63,13 +59,12 @@ async function fetchSearchData(
       }),
     ]);
 
-    const error = (productsRes.error as ApiErrorResponse)?.message ?? null;
+    const error = productsRes.type === 'error' ? (productsRes.error?.message ?? null) : null;
     const categories =
-      (categoriesRes.data as IMarketplaceCategoriesRes | undefined)?.categories ?? [];
-    const vendors = (vendorsRes.data as IMarketplaceVendorsRes | undefined)?.vendors ?? [];
-    const productsData = productsRes.data as IMarketplaceProductsListRes | undefined;
-    const products = productsData?.products ?? [];
-    const pagination = productsData?.pagination ?? {
+      categoriesRes.type === 'success' ? (categoriesRes.data?.categories ?? []) : [];
+    const vendors = vendorsRes.type === 'success' ? (vendorsRes.data?.vendors ?? []) : [];
+    const products = productsRes.type === 'success' ? (productsRes.data?.products ?? []) : [];
+    const pagination = (productsRes.type === 'success' ? productsRes.data?.pagination : null) ?? {
       page: 1,
       limit: DEFAULT_LIMIT,
       total: 0,

@@ -4,8 +4,6 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { SubPageHero } from '@/components/general/SubPageHero';
 import { ArtistsPageClient } from '@/components/section/community/artists/ArtistsPageClient';
 import { callServerApi } from '@/lib/services/serverApi';
-import type { ApiErrorResponse } from '@/lib/types/http';
-import type { IPublicArtistsListRes } from '@/lib/constants/endpoints';
 import { mapToCommunityArtist } from '@/lib/utils/communityApiMappers';
 import type { Pagination } from '@/lib/types/community';
 
@@ -35,18 +33,17 @@ async function fetchArtistsData(page: number): Promise<{
   const res = await callServerApi('PUBLIC_GET_ARTISTS', {
     query: `?limit=${ARTISTS_LIMIT}&page=${page}` as `?${string}`,
   });
-  if (res.error) {
+  if (res.type === 'error') {
     return {
       artists: [],
       pagination: null,
-      initialErrorMessage: (res.error as ApiErrorResponse)?.message ?? 'Failed to load artists',
+      initialErrorMessage: res.error?.message ?? 'Failed to load artists',
     };
   }
-  const data = res.data as IPublicArtistsListRes | undefined;
-  const artists = (data?.artists ?? []).map(i =>
+  const artists = (res.data?.artists ?? []).map(i =>
     mapToCommunityArtist(i as unknown as Record<string, unknown>)
   );
-  const pagination = data?.pagination ?? null;
+  const pagination = res.data?.pagination ?? null;
   return { artists, pagination, initialErrorMessage: null };
 }
 

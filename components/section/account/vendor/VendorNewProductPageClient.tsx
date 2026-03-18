@@ -122,8 +122,8 @@ export function VendorNewProductPageClient() {
       if (categoriesRes.data?.categories) {
         setCategories(categoriesRes.data.categories);
       }
-      if (vendorRes.data?._id) {
-        setVendorId((vendorRes.data as { _id: string })._id);
+      if (vendorRes.type === 'success' && vendorRes.data?._id) {
+        setVendorId(vendorRes.data._id);
       }
       setLoadingCategories(false);
     }

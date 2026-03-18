@@ -3,8 +3,6 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { AccountOrdersPageClient } from '@/components/section/account/AccountOrdersPageClient';
 import type { Metadata } from 'next';
 import { callServerApi } from '@/lib/services/serverApi';
-import type { ApiErrorResponse } from '@/lib/types/http';
-import type { IMarketplaceMyOrdersRes } from '@/lib/constants/endpoints';
 
 export const metadata: Metadata = {
   title: 'Orders',
@@ -59,8 +57,8 @@ async function AccountOrdersPageClientServer({
 
   const res = await callServerApi('MARKETPLACE_GET_MY_ORDERS', { query });
 
-  if (res.error || !res.data) {
-    const responseCode = (res.error as ApiErrorResponse | undefined)?.responseCode;
+  if (res.type === 'error') {
+    const responseCode = res.error?.responseCode;
     return (
       <AccountOrdersPageClient
         initialOrders={[]}
@@ -70,11 +68,10 @@ async function AccountOrdersPageClientServer({
     );
   }
 
-  const data = res.data as IMarketplaceMyOrdersRes;
   return (
     <AccountOrdersPageClient
-      initialOrders={data.orders}
-      initialTotalPages={data.pagination?.totalPages ?? 1}
+      initialOrders={res.data.orders}
+      initialTotalPages={res.data.pagination?.totalPages ?? 1}
       initialErrorMessage={null}
     />
   );

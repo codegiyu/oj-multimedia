@@ -1,14 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import type mongoose from 'mongoose';
-import type { Document } from 'mongoose';
 import type { SiteSettings } from '@/lib/types/site-settings';
 
 // Minimal JOB_TYPE placeholder for email log typing; frontend does not depend on concrete values.
 type JOB_TYPE = string;
 
 export interface IUser {
-  _id: mongoose.Types.ObjectId;
+  _id: string;
   googleId?: string;
   firstName: string;
   middleName?: string;
@@ -22,21 +20,21 @@ export interface IUser {
   auth: UserAuth;
   kyc: KYC;
   /** Link to Artist profile for artist dashboard. */
-  artistId?: mongoose.Types.ObjectId;
+  artistId?: string;
   /** Link to Vendor for vendor dashboard. */
-  vendorId?: mongoose.Types.ObjectId;
+  vendorId?: string;
   isDeleted?: boolean;
-  deleteRequestedAt?: Date;
-  deletionApprovedAt?: Date;
-  deletionApprovedBy?: mongoose.Types.ObjectId;
-  createdAt: Date;
-  updatedAt: Date;
+  deleteRequestedAt?: string;
+  deletionApprovedAt?: string;
+  deletionApprovedBy?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface UserAuth {
   password?: {
     value: string;
-    passwordChangedAt?: Date;
+    passwordChangedAt?: string;
   };
   roles: AuthUserRole[];
   lastLogin?: string;
@@ -51,25 +49,25 @@ export interface AuthUserRole {
 }
 
 export interface IAdmin {
-  _id: mongoose.Types.ObjectId;
+  _id: string;
   firstName: string;
   lastName: string;
   email: string;
   avatar?: string;
   accountStatus: AccountStatus;
   auth: UserAuth;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface IRole {
-  _id: mongoose.Types.ObjectId;
+  _id: string;
   name: string;
   slug: string;
   description: string;
   permissions: Permission[];
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Permission {
@@ -93,9 +91,9 @@ export interface KYC {
 export type ISiteSettings = SiteSettings;
 
 export interface IDocument {
-  _id: mongoose.Types.ObjectId;
+  _id: string;
   entityType: EntityType;
-  entityId: mongoose.Types.ObjectId;
+  entityId: string;
   intent: UploadIntent;
   filename: string;
   key: string;
@@ -104,23 +102,23 @@ export interface IDocument {
   fileExtension: string;
   contentType: string;
   status: DocumentStatus;
-  uploadedAt?: Date;
-  verifiedAt?: Date;
-  expiresAt: Date;
+  uploadedAt?: string;
+  verifiedAt?: string;
+  expiresAt: string;
   size?: number;
   metadata?: Record<string, unknown>;
-  uploadedBy?: mongoose.Types.ObjectId;
+  uploadedBy?: string;
   uploadedByModel?: 'Customer' | 'Admin';
   errorMessage?: string;
   isDeleted?: boolean;
-  deletedAt?: Date;
-  deletedBy?: mongoose.Types.ObjectId;
-  createdAt: Date;
-  updatedAt: Date;
+  deletedAt?: string;
+  deletedBy?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface IEmailLog {
-  _id: mongoose.Types.ObjectId;
+  _id: string;
   jobId: string;
   company: CompanyKey;
   type: JOB_TYPE;
@@ -133,61 +131,61 @@ export interface IEmailLog {
   error?: string;
   retryCount?: number;
   htmlContent?: string;
-  sentAt?: Date;
-  deliveredAt?: Date;
-  openedAt?: Date;
-  clickedAt?: Date;
+  sentAt?: string;
+  deliveredAt?: string;
+  openedAt?: string;
+  clickedAt?: string;
   metadata?: Record<string, any>;
   isDeleted?: boolean;
-  deleteRequestedAt?: Date;
-  deletionApprovedAt?: Date;
-  deletionApprovedBy?: mongoose.Types.ObjectId;
-  createdAt: Date;
-  updatedAt: Date;
+  deleteRequestedAt?: string;
+  deletionApprovedAt?: string;
+  deletionApprovedBy?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface IAuditLog {
-  _id: mongoose.Types.ObjectId;
-  actor: mongoose.Types.ObjectId;
+  _id: string;
+  actor: string;
   actorEmail?: string;
   action: AuditAction;
   resource: AuditLogResource;
-  resourceId?: mongoose.Types.ObjectId | string;
+  resourceId?: string | string;
   description?: string;
   metadata?: Record<string, unknown>;
   changes?: Record<string, unknown>;
   ipAddress?: string;
   userAgent?: string;
   requestId?: string;
-  performedAt: Date;
+  performedAt: string;
   isDeleted?: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface IUserActivityLog {
-  _id: mongoose.Types.ObjectId;
-  user: mongoose.Types.ObjectId;
+  _id: string;
+  user: string;
   action: UserActivityAction;
   resource: UserActivityResource;
-  resourceId?: mongoose.Types.ObjectId | string;
+  resourceId?: string | string;
   performedBy: ActivitySource;
   description?: string;
   metadata?: Record<string, unknown>;
   ipAddress?: string;
   userAgent?: string;
   requestId?: string;
-  performedAt: Date;
+  performedAt: string;
   isDeleted?: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export type NotificationEmailDelivery = {
   status: EmailStatus;
   jobId?: string;
-  lastAttemptAt?: Date;
-  lastSentAt?: Date;
+  lastAttemptAt?: string;
+  lastSentAt?: string;
   lastError?: string;
   statusReason?: string;
 };
@@ -195,8 +193,8 @@ export type NotificationEmailDelivery = {
 export type NotificationStatus = 'active' | 'expired';
 
 export type INotification = {
-  _id: mongoose.Types.ObjectId;
-  user: mongoose.Types.ObjectId;
+  _id: string;
+  user: string;
   userModel: 'User' | 'Admin';
   eventType?: string;
   title?: string;
@@ -205,9 +203,9 @@ export type INotification = {
   readAt: Date | null;
   status: NotificationStatus;
   expiredAt: Date | null;
-  createdAt: Date;
-  triggerDate: Date;
-  expiresAt: Date;
+  createdAt: string;
+  triggerDate: string;
+  expiresAt: string;
   context?: Record<string, unknown>;
   emailDelivery: NotificationEmailDelivery;
 };
@@ -332,18 +330,18 @@ export type UserActivityAction = (typeof USER_ACTIVITY_ACTIONS)[keyof typeof USE
 export type ActivitySource = 'self' | 'admin' | 'system';
 
 export interface IGospelVerse {
-  _id: mongoose.Types.ObjectId;
+  _id: string;
   verse: string;
   reference: string;
-  date: Date;
+  date: string;
   isActive: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface IArtistProfile {
-  _id: mongoose.Types.ObjectId;
-  user: mongoose.Types.ObjectId;
+  _id: string;
+  user: string;
   name: string;
   slug: string;
   bio?: string;
@@ -360,15 +358,15 @@ export interface IArtistProfile {
   isFeatured: boolean;
   isActive: boolean;
   displayOrder: number;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface IMusic {
-  _id: mongoose.Types.ObjectId;
+  _id: string;
   title: string;
   slug: string;
-  artist?: mongoose.Types.ObjectId;
+  artist?: string;
   description?: string;
   lyrics?: string;
   meaning?: string;
@@ -391,15 +389,15 @@ export interface IMusic {
     metaDescription?: string;
     keywords?: string[];
   };
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface IVideo {
-  _id: mongoose.Types.ObjectId;
+  _id: string;
   title: string;
   slug: string;
-  artist?: mongoose.Types.ObjectId;
+  artist?: string;
   thumbnail?: string;
   category?: string;
   description?: string;
@@ -411,12 +409,12 @@ export interface IVideo {
   isFeatured: boolean;
   isMonetizable: boolean;
   displayOrder: number;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface IPastor {
-  _id: mongoose.Types.ObjectId;
+  _id: string;
   name: string;
   slug: string;
   bio?: string;
@@ -432,15 +430,15 @@ export interface IPastor {
   isFeatured: boolean;
   isActive: boolean;
   displayOrder: number;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface ISermon {
-  _id: mongoose.Types.ObjectId;
+  _id: string;
   title: string;
   slug: string;
-  pastor?: mongoose.Types.ObjectId;
+  pastor?: string;
   description?: string;
   content?: string;
   topic?: string;
@@ -461,12 +459,12 @@ export interface ISermon {
     metaDescription?: string;
     keywords?: string[];
   };
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface IDevotional {
-  _id: mongoose.Types.ObjectId;
+  _id: string;
   title: string;
   slug: string;
   content: string;
@@ -482,7 +480,7 @@ export interface IDevotional {
     | 'testimony';
   series?: string;
   coverImage?: string;
-  date: Date;
+  date: string;
   status: 'draft' | 'published' | 'archived';
   isFeatured: boolean;
   views: number;
@@ -492,12 +490,12 @@ export interface IDevotional {
     metaDescription?: string;
     keywords?: string[];
   };
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface INewsArticle {
-  _id: mongoose.Types.ObjectId;
+  _id: string;
   title: string;
   slug: string;
   content: string;
@@ -522,12 +520,12 @@ export interface INewsArticle {
     metaDescription?: string;
     keywords?: string[];
   };
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface IResource {
-  _id: mongoose.Types.ObjectId;
+  _id: string;
   title: string;
   slug: string;
   description?: string;
@@ -546,12 +544,12 @@ export interface IResource {
     metaDescription?: string;
     keywords?: string[];
   };
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface IPrayerRequest {
-  _id: mongoose.Types.ObjectId;
+  _id: string;
   name: string;
   email: string;
   phone?: string;
@@ -560,12 +558,12 @@ export interface IPrayerRequest {
   isPublic: boolean;
   isAnonymous: boolean;
   ipAddress?: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface ITestimony {
-  _id: mongoose.Types.ObjectId;
+  _id: string;
   title: string;
   slug: string;
   content: string;
@@ -576,50 +574,25 @@ export interface ITestimony {
   status: 'pending' | 'approved' | 'rejected' | 'archived';
   isFeatured: boolean;
   displayOrder: number;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface IPoll {
-  _id: mongoose.Types.ObjectId;
+  _id: string;
   question: string;
   slug: string;
   description?: string;
   options: Array<{
-    _id?: mongoose.Types.ObjectId;
+    _id?: string;
     text: string;
     votes: number;
   }>;
   status: 'draft' | 'active' | 'closed';
-  startDate: Date;
-  endDate?: Date;
+  startDate: string;
+  endDate?: string;
   totalVotes: number;
   allowMultipleVotes: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }
-
-export interface IModelIndex {
-  find: any;
-}
-
-export type ModelUser = IUser & IModelIndex & Document;
-export type ModelAdmin = IAdmin & IModelIndex & Document;
-export type ModelRole = IRole & IModelIndex & Document;
-export type ModelSiteSettings = ISiteSettings & IModelIndex & Document;
-export type ModelDocument = IDocument & IModelIndex & Document;
-export type ModelEmailLog = IEmailLog & IModelIndex & Document;
-export type ModelAuditLog = IAuditLog & IModelIndex & Document;
-export type ModelUserActivityLog = IUserActivityLog & IModelIndex & Document;
-export type ModelNotification = INotification & IModelIndex & Document;
-export type ModelGospelVerse = IGospelVerse & IModelIndex & Document;
-export type ModelArtistProfile = IArtistProfile & IModelIndex & Document;
-export type ModelMusic = IMusic & IModelIndex & Document;
-export type ModelVideo = IVideo & IModelIndex & Document;
-export type ModelPastor = IPastor & IModelIndex & Document;
-export type ModelDevotional = IDevotional & IModelIndex & Document;
-export type ModelNewsArticle = INewsArticle & IModelIndex & Document;
-export type ModelResource = IResource & IModelIndex & Document;
-export type ModelPrayerRequest = IPrayerRequest & IModelIndex & Document;
-export type ModelTestimony = ITestimony & IModelIndex & Document;
-export type ModelPoll = IPoll & IModelIndex & Document;

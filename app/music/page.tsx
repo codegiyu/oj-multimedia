@@ -10,8 +10,6 @@ import type { RecentUpload } from '@/components/section/music/RecentUploads';
 import type { FeaturedArtist } from '@/components/section/music/FeaturedArtists';
 import { ARTIST_PROFILES } from '@/lib/constants/community/artists';
 import { callServerApi } from '@/lib/services/serverApi';
-import type { ApiErrorResponse } from '@/lib/types/http';
-import type { IPublicMusicListRes } from '@/lib/constants/endpoints';
 import { filterByCategory } from '@/lib/utils/music';
 import {
   mapPublicMusicToTrendingSong,
@@ -41,20 +39,16 @@ async function fetchMusicSections(category: string, period: string) {
   ]);
 
   let errorMessage: string | null = null;
-  if (trendingRes.error)
-    errorMessage = (trendingRes.error as ApiErrorResponse)?.message ?? 'Failed to load music';
-  else if (chartsRes.error)
-    errorMessage = (chartsRes.error as ApiErrorResponse)?.message ?? 'Failed to load charts';
-  else if (recentRes.error)
-    errorMessage = (recentRes.error as ApiErrorResponse)?.message ?? 'Failed to load recent';
+  if (trendingRes.type === 'error')
+    errorMessage = trendingRes.error?.message ?? 'Failed to load music';
+  else if (chartsRes.type === 'error')
+    errorMessage = chartsRes.error?.message ?? 'Failed to load charts';
+  else if (recentRes.type === 'error')
+    errorMessage = recentRes.error?.message ?? 'Failed to load recent';
 
-  const trendingData = trendingRes.data as IPublicMusicListRes | undefined;
-  const chartsData = chartsRes.data as IPublicMusicListRes | undefined;
-  const recentData = recentRes.data as IPublicMusicListRes | undefined;
-
-  const rawTrending = trendingData?.music ?? [];
-  const rawCharts = chartsData?.music ?? [];
-  const rawRecent = recentData?.music ?? [];
+  const rawTrending = trendingRes.type === 'success' ? (trendingRes.data?.music ?? []) : [];
+  const rawCharts = chartsRes.type === 'success' ? (chartsRes.data?.music ?? []) : [];
+  const rawRecent = recentRes.type === 'success' ? (recentRes.data?.music ?? []) : [];
 
   const trendingSongs: TrendingSong[] = filterByCategory(
     rawTrending.map(mapPublicMusicToTrendingSong),

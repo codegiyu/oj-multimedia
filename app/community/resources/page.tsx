@@ -13,7 +13,6 @@ import {
 } from '@/components/section/community/resources/ResourcesPageClient';
 import { ResourcesPageSkeleton } from '@/components/section/community/resources/ResourcesPageSkeleton';
 import { callServerApi } from '@/lib/services/serverApi';
-import type { ApiErrorResponse } from '@/lib/types/http';
 import { RESOURCE_TYPES } from '@/lib/types/community';
 import {
   mapToEbook,
@@ -52,18 +51,16 @@ async function fetchResourcesData(): Promise<
   let initialErrorMessage: string | null = null;
   const [ebookRes, templateRes, beatRes, wallpaperRes, affiliateRes] = results;
 
-  if (ebookRes.error)
-    initialErrorMessage =
-      (ebookRes.error as ApiErrorResponse)?.message ?? 'Failed to load resources';
+  if (ebookRes.type === 'error')
+    initialErrorMessage = ebookRes.error?.message ?? 'Failed to load resources';
 
   function mapResourceList<T>(
     res: (typeof results)[number],
     mapper: (i: Record<string, unknown>) => T
   ): T[] {
-    if (res.error || !res.data) return [];
-    const data = res.data as unknown as { resources?: Array<Record<string, unknown>> };
-    const list = data?.resources ?? [];
-    return list.map((i: Record<string, unknown>) => mapper(i));
+    if (res.type === 'error') return [];
+    const list = (res.data?.resources ?? []) as unknown[];
+    return list.map(i => mapper(i as Record<string, unknown>));
   }
 
   return {

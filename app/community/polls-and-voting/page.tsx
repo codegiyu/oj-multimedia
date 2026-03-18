@@ -5,8 +5,6 @@ import { PollsHero } from '@/components/section/community/polls/PollsHero';
 import { PollsPageClient, type Poll } from '@/components/section/community/polls/PollsPageClient';
 import { PollsPageSkeleton } from '@/components/section/community/polls/PollsPageSkeleton';
 import { callServerApi } from '@/lib/services/serverApi';
-import type { ApiErrorResponse } from '@/lib/types/http';
-import type { IPublicPollsListRes } from '@/lib/constants/endpoints';
 import { mapToPoll } from '@/lib/utils/communityApiMappers';
 
 export const metadata: Metadata = {
@@ -26,15 +24,12 @@ async function fetchPollsData(): Promise<{
     callServerApi('PUBLIC_GET_POLLS', { query: '?limit=20&page=1&status=active' as `?${string}` }),
     callServerApi('PUBLIC_GET_POLLS', { query: '?limit=3&page=1&status=closed' as `?${string}` }),
   ]);
-  const errorMessage = activeRes.error
-    ? ((activeRes.error as ApiErrorResponse)?.message ?? 'Failed to load polls')
-    : null;
-  const activeData = activeRes.data as IPublicPollsListRes | undefined;
-  const closedData = closedRes.data as IPublicPollsListRes | undefined;
-  const activePolls = (activeData?.polls ?? []).map(i =>
+  const errorMessage =
+    activeRes.type === 'error' ? (activeRes.error?.message ?? 'Failed to load polls') : null;
+  const activePolls = (activeRes.type === 'success' ? (activeRes.data?.polls ?? []) : []).map(i =>
     mapToPoll(i as unknown as Record<string, unknown>)
   ) as Poll[];
-  const recentPolls = (closedData?.polls ?? []).map(i =>
+  const recentPolls = (closedRes.type === 'success' ? (closedRes.data?.polls ?? []) : []).map(i =>
     mapToPoll(i as unknown as Record<string, unknown>)
   ) as Poll[];
   return {

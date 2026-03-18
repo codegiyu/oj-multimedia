@@ -4,8 +4,7 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { MarketplaceVendorsPageClient } from '@/components/section/marketplace/MarketplaceVendorsPageClient';
 import { MarketplaceVendorsPageSkeleton } from '@/components/section/marketplace/MarketplaceVendorsPageSkeleton';
 import { callServerApi } from '@/lib/services/serverApi';
-import type { ApiErrorResponse } from '@/lib/types/http';
-import type { IMarketplaceVendorsRes, IMarketplaceVendor } from '@/lib/constants/endpoints';
+import type { IMarketplaceVendor } from '@/lib/constants/endpoints';
 
 export const metadata: Metadata = {
   title: 'Vendors - Marketplace',
@@ -29,8 +28,8 @@ async function fetchVendorsData(params: { page?: string; limit?: string }): Prom
     const res = await callServerApi('MARKETPLACE_GET_VENDORS', {
       query: query as `?${string}`,
     });
-    const err = (res.error as ApiErrorResponse)?.message ?? null;
-    const data = res.data as IMarketplaceVendorsRes | undefined;
+    const err = res.type === 'error' ? (res.error?.message ?? null) : null;
+    const data = res.type === 'success' ? res.data : null;
     const vendors = data?.vendors ?? [];
     const pagination = data?.pagination ?? {
       page: 1,

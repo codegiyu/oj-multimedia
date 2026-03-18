@@ -1,5 +1,4 @@
 import { LucideProps } from 'lucide-react';
-import mongoose from 'mongoose';
 import { ForwardRefExoticComponent, RefAttributes, RefObject, SVGProps, type JSX } from 'react';
 
 export type PropsWithVideoDisplayRef<T = unknown> = T & {
@@ -61,7 +60,12 @@ interface JustVideoURL extends BaseImageOrVideoUrl {
 
 export type ImageOrVideoURL = JustImageURL | JustVideoURL;
 
-export type MongooseToFrontend<T> = T extends mongoose.Types.ObjectId
+type ObjectIdLike =
+  | { _bsontype: 'ObjectId' }
+  | { _bsontype: 'ObjectID' }
+  | { toHexString(): string };
+
+export type MongooseToFrontend<T> = T extends ObjectIdLike
   ? string
   : T extends Date
     ? string

@@ -7,8 +7,6 @@ import { DailyDevotionalsSection } from '@/components/section/community/devotion
 import { DevotionalsCategoryFilter } from '@/components/section/community/devotionals/DevotionalsCategoryFilter';
 import { filterByCategory } from '@/lib/utils/community/devotionals';
 import { callServerApi } from '@/lib/services/serverApi';
-import type { ApiErrorResponse } from '@/lib/types/http';
-import type { IPublicDevotionalsListRes } from '@/lib/constants/endpoints';
 import { mapToDailyDevotional } from '@/lib/utils/communityApiMappers';
 import type { DailyDevotional } from '@/components/section/community/devotionals/DevotionalsPageClient';
 
@@ -28,14 +26,13 @@ async function fetchLatestDevotionals(category: string): Promise<{
   const res = await callServerApi('PUBLIC_GET_DEVOTIONALS', {
     query: `?limit=50&page=1&status=published&type=latest${categoryParam}` as `?${string}`,
   });
-  if (res.error) {
+  if (res.type === 'error') {
     return {
       latestDevotionals: [],
-      initialErrorMessage: (res.error as ApiErrorResponse)?.message ?? 'Failed to load devotionals',
+      initialErrorMessage: res.error?.message ?? 'Failed to load devotionals',
     };
   }
-  const data = res.data as IPublicDevotionalsListRes | undefined;
-  const rawList = (data?.devotionals ?? []) as unknown[];
+  const rawList = (res.data?.devotionals ?? []) as unknown[];
   const list = rawList.map(i =>
     mapToDailyDevotional(i as Record<string, unknown>)
   ) as DailyDevotional[];

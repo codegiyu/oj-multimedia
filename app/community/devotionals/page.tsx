@@ -12,8 +12,6 @@ import {
 } from '@/components/section/community/devotionals/DevotionalsPageClient';
 import { DevotionalsPageSkeleton } from '@/components/section/community/devotionals/DevotionalsPageSkeleton';
 import { callServerApi } from '@/lib/services/serverApi';
-import type { ApiErrorResponse } from '@/lib/types/http';
-import type { IPublicDevotionalsListRes } from '@/lib/constants/endpoints';
 import {
   mapToDailyDevotional,
   mapToBibleStudy,
@@ -59,15 +57,15 @@ async function fetchDevotionalsData(): Promise<{
   ]);
 
   let errorMessage: string | null = null;
-  if (dailyRes.error)
-    errorMessage = (dailyRes.error as ApiErrorResponse)?.message ?? 'Failed to load devotionals';
+  if (dailyRes.type === 'error')
+    errorMessage = dailyRes.error?.message ?? 'Failed to load devotionals';
 
   const mapList = (
     res: typeof dailyRes,
     mapper: (i: Record<string, unknown>) => unknown
   ): unknown[] => {
-    const data = res.data as IPublicDevotionalsListRes | undefined;
-    const list = (data?.devotionals ?? []) as unknown[];
+    if (res.type === 'error') return [];
+    const list = (res.data?.devotionals ?? []) as unknown[];
     return list.map(item => mapper(item as Record<string, unknown>));
   };
 

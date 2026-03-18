@@ -3,7 +3,6 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { ArtistPortalPageClient } from '@/components/section/account/artist-portal/ArtistPortalPageClient';
 import type { Metadata } from 'next';
 import { callServerApi } from '@/lib/services/serverApi';
-import type { ApiErrorResponse } from '@/lib/types/http';
 import type { IArtistDashboardStatsRes, IArtistMeRes } from '@/lib/constants/endpoints';
 
 export const metadata: Metadata = {
@@ -42,8 +41,8 @@ export default function ArtistPortalPage() {
 async function ArtistPortalPageClientServer() {
   const meRes = await callServerApi('ARTIST_GET_ME', {});
 
-  if (meRes.error || !meRes.data) {
-    const responseCode = (meRes.error as ApiErrorResponse | undefined)?.responseCode;
+  if (meRes.type === 'error') {
+    const responseCode = meRes.error?.responseCode;
 
     if (responseCode === 403 || responseCode === 404) {
       return (
@@ -69,8 +68,7 @@ async function ArtistPortalPageClientServer() {
   const artist: IArtistMeRes['artist'] = meRes.data.artist;
   const statsRes = await callServerApi('ARTIST_GET_DASHBOARD_STATS', {});
 
-  const stats: IArtistDashboardStatsRes | null =
-    statsRes.error || !statsRes.data ? null : (statsRes.data as IArtistDashboardStatsRes);
+  const stats: IArtistDashboardStatsRes | null = statsRes.type === 'success' ? statsRes.data : null;
 
   return (
     <ArtistPortalPageClient
@@ -78,9 +76,7 @@ async function ArtistPortalPageClientServer() {
       stats={stats}
       hasArtistProfile={true}
       errorMessage={
-        statsRes.error || !statsRes.data
-          ? statsRes.message || 'Unable to load dashboard stats.'
-          : null
+        statsRes.type === 'error' ? statsRes.message || 'Unable to load dashboard stats.' : null
       }
     />
   );

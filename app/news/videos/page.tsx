@@ -7,8 +7,6 @@ import { filterByCategory } from '@/components/section/news/categoryUtils';
 import { NewsPageSkeleton } from '@/components/section/news/NewsPageSkeleton';
 import type { VideoNewsItem } from '@/components/section/news/VideoNews';
 import { callServerApi } from '@/lib/services/serverApi';
-import type { ApiErrorResponse } from '@/lib/types/http';
-import type { IPublicNewsListRes } from '@/lib/constants/endpoints';
 import { mapPublicNewsToVideoNewsItem } from '@/lib/utils/publicApiMappers';
 
 export const metadata: Metadata = {
@@ -25,16 +23,14 @@ async function fetchVideoNews(category: string) {
   const query = `?limit=50&page=1&status=published&type=video${categoryParam}` as const;
   const res = await callServerApi('PUBLIC_GET_NEWS', { query });
 
-  if (res.error) {
+  if (res.type === 'error') {
     return {
       videoNews: [] as VideoNewsItem[],
-      initialErrorMessage:
-        (res.error as ApiErrorResponse)?.message ?? 'Failed to load video stories',
+      initialErrorMessage: res.error?.message ?? 'Failed to load video stories',
     };
   }
 
-  const data = res.data as IPublicNewsListRes | undefined;
-  const raw = data?.articles ?? [];
+  const raw = res.data?.articles ?? [];
   const videoNews = filterByCategory(raw.map(mapPublicNewsToVideoNewsItem), category);
   return { videoNews, initialErrorMessage: null as string | null };
 }

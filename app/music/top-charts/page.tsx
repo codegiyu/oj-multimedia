@@ -6,8 +6,6 @@ import { TopChartsPageClient } from '@/components/section/music/TopChartsPageCli
 import { MusicPageSkeleton } from '@/components/section/music/MusicPageSkeleton';
 import type { ChartSong } from '@/components/section/music/TopMusicCharts';
 import { callServerApi } from '@/lib/services/serverApi';
-import type { ApiErrorResponse } from '@/lib/types/http';
-import type { IPublicMusicListRes } from '@/lib/constants/endpoints';
 import { filterByCategory } from '@/lib/utils/music';
 import { mapPublicMusicToChartSong } from '@/lib/utils/publicApiMappers';
 
@@ -25,14 +23,14 @@ async function fetchChartSongs(category: string, period: string) {
   const query =
     `?limit=100&page=1&status=published&type=charts&period=${encodeURIComponent(period)}${categoryParam}` as const;
   const res = await callServerApi('PUBLIC_GET_MUSIC', { query });
-  if (res.error) {
+  if (res.type === 'error') {
     return {
       chartSongs: [] as (ChartSong & { category?: string })[],
-      initialErrorMessage: (res.error as ApiErrorResponse)?.message ?? 'Failed to load charts',
+      initialErrorMessage: res.error?.message ?? 'Failed to load charts',
     };
   }
-  const data = res.data as IPublicMusicListRes | undefined;
-  const raw = data?.music ?? [];
+
+  const raw = res.data?.music ?? [];
   const chartSongs = filterByCategory(
     raw.map((item, i) => mapPublicMusicToChartSong(item, i + 1)),
     category
