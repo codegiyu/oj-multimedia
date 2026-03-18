@@ -1,4 +1,4 @@
-const liveUrl = process.env.live_url || 'https://example.com';
+const liveUrl = process.env.NEXT_PUBLIC_LIVE_URL || 'https://www.ojmultimedia.com';
 
 export const SEO_DETAILS = {
   title: {

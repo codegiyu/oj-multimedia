@@ -4,7 +4,10 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { PollsHero } from '@/components/section/community/polls/PollsHero';
 import { PollsPageClient, type Poll } from '@/components/section/community/polls/PollsPageClient';
 import { PollsPageSkeleton } from '@/components/section/community/polls/PollsPageSkeleton';
-import { POLLS_ITEMS } from '@/lib/constants/community/polls';
+import { callServerApi } from '@/lib/services/serverApi';
+import type { ApiErrorResponse } from '@/lib/types/http';
+import type { IPublicPollsListRes } from '@/lib/constants/endpoints';
+import { mapToPoll } from '@/lib/utils/communityApiMappers';
 
 export const metadata: Metadata = {
   title: 'Polls & Voting - Share Your Opinion',
@@ -12,34 +15,37 @@ export const metadata: Metadata = {
     'Participate in community polls, share your opinion, and see what others think. Vote on topics that matter to you and engage with the community.',
 };
 
-// Force dynamic rendering to ensure searchParams changes trigger re-renders
 export const dynamic = 'force-dynamic';
 
-// Generate polls data from central constants
-async function generatePollsData(): Promise<{ activePolls: Poll[]; recentPolls: Poll[] }> {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 1500));
-
-  // Transform poll items to Poll format
-  const allPolls: Poll[] = POLLS_ITEMS.map(item => ({
-    _id: item._id,
-    question: item.question,
-    description: item.description,
-    options: item.options,
-    totalVotes: item.totalVotes,
-    status: item.status,
-    timeAgo: item.timeAgo,
-    endDate: item.endDate,
-  }));
-
+async function fetchPollsData(): Promise<{
+  activePolls: Poll[];
+  recentPolls: Poll[];
+  initialErrorMessage: string | null;
+}> {
+  const [activeRes, closedRes] = await Promise.all([
+    callServerApi('PUBLIC_GET_POLLS', { query: '?limit=20&page=1&status=active' as `?${string}` }),
+    callServerApi('PUBLIC_GET_POLLS', { query: '?limit=3&page=1&status=closed' as `?${string}` }),
+  ]);
+  const errorMessage = activeRes.error
+    ? ((activeRes.error as ApiErrorResponse)?.message ?? 'Failed to load polls')
+    : null;
+  const activeData = activeRes.data as IPublicPollsListRes | undefined;
+  const closedData = closedRes.data as IPublicPollsListRes | undefined;
+  const activePolls = (activeData?.polls ?? []).map(i =>
+    mapToPoll(i as unknown as Record<string, unknown>)
+  ) as Poll[];
+  const recentPolls = (closedData?.polls ?? []).map(i =>
+    mapToPoll(i as unknown as Record<string, unknown>)
+  ) as Poll[];
   return {
-    activePolls: allPolls.filter(poll => poll.status === 'active'),
-    recentPolls: allPolls.filter(poll => poll.status === 'closed').slice(0, 3),
+    activePolls,
+    recentPolls,
+    initialErrorMessage: errorMessage,
   };
 }
 
 export default async function PollsAndVotingPage() {
-  const pollsData = await generatePollsData();
+  const pollsData = await fetchPollsData();
 
   return (
     <MainLayout>

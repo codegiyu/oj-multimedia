@@ -17,7 +17,8 @@ export interface SearchResultItem {
     | 'prayer-request'
     | 'question'
     | 'poll'
-    | 'resource';
+    | 'resource'
+    | 'artist';
   image?: string | { src: string };
   meta: string;
 }
@@ -30,8 +31,8 @@ const typeColors: Record<string, string> = {
 };
 
 function getDetailHref(item: SearchResultItem): string | null {
-  // Extract ID from prefix (m, n, v, d, t, pr, q, p, r) — match longer prefix first
-  const idPart = item._id.replace(/^(pr|m|n|v|d|t|q|p|r)/, '');
+  // Extract ID from prefix (m, n, v, d, t, pr, q, p, r, a) — match longer prefix first
+  const idPart = item._id.replace(/^(pr|m|n|v|d|t|q|p|r|a)/, '');
   switch (item.type) {
     case 'music':
       return `/music/${idPart}`;
@@ -51,6 +52,8 @@ function getDetailHref(item: SearchResultItem): string | null {
       return `/community/polls-and-voting/${idPart}`;
     case 'resource':
       return `/community/resources`;
+    case 'artist':
+      return `/community/artists/${idPart}`;
     default:
       return null;
   }
@@ -90,6 +93,7 @@ export const SearchResults = ({ results }: SearchResultsProps) => {
                     {result.type === 'question' && '❓'}
                     {result.type === 'poll' && '📊'}
                     {result.type === 'resource' && '📁'}
+                    {result.type === 'artist' && '🎤'}
                   </span>
                 </div>
               )}

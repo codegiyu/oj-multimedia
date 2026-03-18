@@ -1,12 +1,17 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { FreeEbooks } from './FreeEbooks';
 import { FreeBeats } from './FreeBeats';
 import { ChristianWallpapers } from './ChristianWallpapers';
 import { AffiliateProducts } from './AffiliateProducts';
 import { FreeDownloads } from './FreeDownloads';
+import { SectionContainer } from '@/components/general/SectionContainer';
+import { DataLoadError } from '@/components/general/DataLoadError';
+import { FolderOpen } from 'lucide-react';
 
 export interface Ebook {
+  _id: string;
   title: string;
   description: string;
   downloads: string;
@@ -14,6 +19,7 @@ export interface Ebook {
 }
 
 export interface Template {
+  _id: string;
   title: string;
   description: string;
   downloads: string;
@@ -21,6 +27,7 @@ export interface Template {
 }
 
 export interface Beat {
+  _id: string;
   title: string;
   description: string;
   downloads: string;
@@ -28,6 +35,7 @@ export interface Beat {
 }
 
 export interface Wallpaper {
+  _id: string;
   title: string;
   description: string;
   downloads: string;
@@ -35,6 +43,7 @@ export interface Wallpaper {
 }
 
 export interface AffiliateProduct {
+  _id: string;
   title: string;
   description: string;
   category: string;
@@ -47,6 +56,7 @@ export interface ResourceData {
   beats: Beat[];
   wallpapers: Wallpaper[];
   affiliateProducts: AffiliateProduct[];
+  initialErrorMessage?: string | null;
 }
 
 export const ResourcesPageClient = ({
@@ -55,7 +65,25 @@ export const ResourcesPageClient = ({
   beats,
   wallpapers,
   affiliateProducts,
+  initialErrorMessage = null,
 }: ResourceData) => {
+  const router = useRouter();
+  const hasAnyContent =
+    ebooks.length > 0 || beats.length > 0 || wallpapers.length > 0 || affiliateProducts.length > 0;
+
+  if (initialErrorMessage && !hasAnyContent) {
+    return (
+      <SectionContainer>
+        <DataLoadError
+          title="Unable to load resources"
+          message={initialErrorMessage}
+          onRetry={() => router.refresh()}
+          icon={<FolderOpen className="w-8 h-8 text-destructive" />}
+        />
+      </SectionContainer>
+    );
+  }
+
   return (
     <>
       <FreeDownloads />

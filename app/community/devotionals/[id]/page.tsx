@@ -2,58 +2,72 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { DevotionalDetailPageClient } from '@/components/section/community/devotionals/DevotionalDetailPageClient';
-import { getDevotionalById, getRelatedDevotionals } from '@/lib/utils/community/devotionals';
+import { callServerApi } from '@/lib/services/serverApi';
+import type { IPublicDevotionalItemRes } from '@/lib/constants/endpoints';
+import { mapToDailyDevotional } from '@/lib/utils/communityApiMappers';
 
 interface DevotionalDetailPageProps {
   params: Promise<{ id: string }>;
 }
 
-// Generate metadata for the devotional detail page
+export const dynamic = 'force-dynamic';
+
 export async function generateMetadata({ params }: DevotionalDetailPageProps): Promise<Metadata> {
   const resolvedParams = await params;
   const id = resolvedParams.id;
-
   if (!id) {
     return {
       title: 'Devotional Not Found',
       description: 'The requested devotional could not be found.',
     };
   }
-
-  const devotional = getDevotionalById(id);
-
-  if (!devotional) {
+  const res = await callServerApi('PUBLIC_GET_DEVOTIONAL_ITEM', {
+    query: `/${encodeURIComponent(id)}`,
+  });
+  if (res.error || !res.data) {
     return {
       title: 'Devotional Not Found',
       description: 'The requested devotional could not be found.',
     };
   }
-
+  const data = res.data as IPublicDevotionalItemRes;
+  const d = data.devotional as unknown as Record<string, unknown>;
+  const title = String(d?.title ?? 'Devotional');
+  const excerpt = d?.excerpt ?? d?.description ?? title;
   return {
-    title: `${devotional.title} - Devotionals`,
-    description: devotional.excerpt || devotional.title,
+    title: `${title} - Devotionals`,
+    description: String(excerpt),
   };
 }
 
 export default async function DevotionalDetailPage({ params }: DevotionalDetailPageProps) {
   const resolvedParams = await params;
   const id = resolvedParams.id;
+  if (!id) notFound();
 
-  // Validate ID
-  if (!id) {
-    notFound();
-  }
+  const res = await callServerApi('PUBLIC_GET_DEVOTIONAL_ITEM', {
+    query: `/${encodeURIComponent(id)}`,
+  });
+  if (res.error || !res.data) notFound();
 
-  // Get devotional item
-  const devotional = getDevotionalById(id);
+  const data = res.data as IPublicDevotionalItemRes;
+  const raw = data.devotional as unknown as Record<string, unknown>;
+  const base = mapToDailyDevotional(raw);
+  const devotional = {
+    ...base,
+    fullContent: raw.fullContent,
+    content: raw.content,
+  } as Parameters<typeof DevotionalDetailPageClient>[0]['devotional'];
 
-  // Return 404 if not found
-  if (!devotional) {
-    notFound();
-  }
-
-  // Get related devotionals
-  const relatedDevotionals = getRelatedDevotionals(id, devotional.category, 3);
+  const relatedRaw = (data.relatedDevotionals ?? []) as unknown[];
+  const relatedDevotionals = relatedRaw.map(r => {
+    const item = r as Record<string, unknown>;
+    return {
+      ...mapToDailyDevotional(item),
+      fullContent: item.fullContent,
+      content: item.content,
+    };
+  }) as Parameters<typeof DevotionalDetailPageClient>[0]['relatedDevotionals'];
 
   return (
     <MainLayout>

@@ -2,7 +2,7 @@
 import { create } from 'zustand';
 import type { SelectorFn } from '../types/general';
 import { useShallow } from 'zustand/react/shallow';
-import type { Permission } from '@/app/_server/lib/types/constants';
+import type { Permission } from '@/lib/types/server-models';
 import type { ClientAdmin, PopulatedUser } from '../constants/endpoints';
 import { callApi } from '../services/callApi';
 import { getRouter } from '../utils/navigation';

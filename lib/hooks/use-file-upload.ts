@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { callApi } from '../services/callApi';
 import { uploadFileWithProgress } from '../utils/general';
-import type { EntityType, UploadIntent } from '@/app/_server/lib/types/constants';
+import type { EntityType, UploadIntent } from '@/lib/types/server-models';
 import { toast } from 'sonner';
 
 interface UseFileUploadOptions {

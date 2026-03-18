@@ -1,36 +1,36 @@
-# ---- Base Stage ----
 FROM node:20-slim AS base
+
 WORKDIR /app
 COPY package*.json ./
 
-# Install dependencies (only production deps for speed)
-RUN npm ci --include=dev
+# Install all dependencies (dev + prod) once
+RUN npm ci
 
 # ---- Build Stage ----
 FROM base AS builder
+
+WORKDIR /app
 COPY . .
+
 # Build Next.js app
 RUN npm run build
 
 # ---- Production Stage ----
 FROM node:20-slim AS runner
+
 WORKDIR /app
 
 ENV NODE_ENV=production
-# Disable telemetry
-ENV NEXT_TELEMETRY_DISABLED 1
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=3009
 
-# Copy only required output
+# Copy only required output and runtime deps
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/next.config.ts ./
-
-# Next.js needs its standalone server
-RUN npm install next
+COPY --from=builder /app/node_modules ./node_modules
 
 EXPOSE 3009
-
-ENV PORT=3009
 
 CMD ["npm", "run", "start"]

@@ -9,6 +9,7 @@ import { RegularInput } from '@/components/atoms/RegularInput';
 import { Textarea } from '@/components/ui/textarea';
 import { UserPlus, CheckCircle } from 'lucide-react';
 import { toast } from 'sonner';
+import { callApi } from '@/lib/services/callApi';
 
 export function BecomeVendorPageClient() {
   const [submitted, setSubmitted] = useState(false);
@@ -29,7 +30,27 @@ export function BecomeVendorPageClient() {
     e.preventDefault();
     setSubmitting(true);
     try {
-      await new Promise(r => setTimeout(r, 600));
+      const payload = {
+        storeName: form.storeName.trim(),
+        storeDescription: form.storeDescription.trim() || undefined,
+        email: form.email.trim(),
+        phone: form.phone.trim(),
+        whatsapp: form.whatsapp.trim() || undefined,
+        address: form.address.trim() || undefined,
+        bankAccountName: form.bankAccountName.trim() || undefined,
+        bankAccountNumber: form.bankAccountNumber.trim() || undefined,
+        bankName: form.bankName.trim() || undefined,
+      };
+
+      const { error, message } = await callApi('MARKETPLACE_BECOME_VENDOR', {
+        payload,
+      });
+
+      if (error) {
+        toast.error(message ?? 'Failed to submit application. Please check your details.');
+        return;
+      }
+
       setSubmitted(true);
       toast.success('Application received! We will review and get back to you soon.');
     } catch {

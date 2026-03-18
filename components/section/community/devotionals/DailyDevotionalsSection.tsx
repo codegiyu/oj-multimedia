@@ -1,16 +1,49 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Calendar, Clock, Eye, Bookmark } from 'lucide-react';
 import Link from 'next/link';
 import { SectionComp } from '@/components/general/SectionComp';
+import { DataLoadError } from '@/components/general/DataLoadError';
+import { EmptyState } from '@/components/section/news/EmptyState';
 import type { DailyDevotional } from './DevotionalsPageClient';
 
 interface DailyDevotionalsSectionProps {
   devotionals: DailyDevotional[];
+  initialErrorMessage?: string | null;
 }
 
-export const DailyDevotionalsSection = ({ devotionals }: DailyDevotionalsSectionProps) => {
+export const DailyDevotionalsSection = ({
+  devotionals,
+  initialErrorMessage = null,
+}: DailyDevotionalsSectionProps) => {
+  const router = useRouter();
+  if (initialErrorMessage && devotionals.length === 0) {
+    return (
+      <div className="container mx-auto px-4 pb-16">
+        <DataLoadError
+          title="Unable to load devotionals"
+          message={initialErrorMessage}
+          onRetry={() => router.refresh()}
+          icon={<Calendar className="w-8 h-8 text-destructive" />}
+        />
+      </div>
+    );
+  }
+  if (devotionals.length === 0) {
+    return (
+      <div className="container mx-auto px-4 pb-16">
+        <EmptyState
+          title="No latest devotionals"
+          description="Check back later for new daily devotionals."
+          icon={<Calendar className="w-12 h-12 text-muted-foreground" />}
+          actionLabel="Back to Devotionals"
+          actionHref="/community/devotionals"
+        />
+      </div>
+    );
+  }
   return (
     <SectionComp
       id="daily-devotionals"

@@ -1,22 +1,31 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { BarChart3, Plus, Send, X } from 'lucide-react';
 import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
+import { callApi } from '@/lib/services/callApi';
+import { getErrorMessage } from '@/lib/utils/general';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { RegularInput } from '@/components/atoms/RegularInput';
+import { RegularSelect } from '@/components/atoms/RegularSelect';
+import { RegularTextarea } from '@/components/atoms/RegularTextarea';
 import { toast } from '@/components/atoms/Toast';
 
+const POLL_CATEGORY_OPTIONS = [
+  { value: 'worship', text: 'Worship' },
+  { value: 'spiritual-growth', text: 'Spiritual Growth' },
+  { value: 'content', text: 'Content' },
+  { value: 'devotionals', text: 'Devotionals' },
+  { value: 'sermons', text: 'Sermons' },
+  { value: 'ministry', text: 'Ministry' },
+  { value: 'prayer', text: 'Prayer' },
+  { value: 'social-media', text: 'Social Media' },
+];
+
 export const CreatePoll = () => {
+  const router = useRouter();
   const [question, setQuestion] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('');
@@ -65,10 +74,25 @@ export const CreatePoll = () => {
 
     setIsSubmitting(true);
 
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    const res = await callApi('PUBLIC_CREATE_POLL', {
+      payload: {
+        question: question.trim(),
+        description: description.trim() || undefined,
+        category: category.trim() || undefined,
+        options: validOptions,
+      },
+    });
 
     setIsSubmitting(false);
+
+    if (res.error) {
+      toast({
+        title: 'Creation failed',
+        description: getErrorMessage(res.error),
+        variant: 'error',
+      });
+      return;
+    }
 
     toast({
       title: 'Poll Created!',
@@ -77,11 +101,11 @@ export const CreatePoll = () => {
       variant: 'success',
     });
 
-    // Reset form
     setQuestion('');
     setDescription('');
     setCategory('');
     setOptions(['', '']);
+    router.refresh();
   };
 
   return (
@@ -106,63 +130,43 @@ export const CreatePoll = () => {
               </p>
 
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-2">
-                  <label htmlFor="question" className="text-sm font-medium">
-                    Poll Question *
-                  </label>
-                  <Input
-                    id="question"
-                    placeholder="What is your question?"
-                    value={question}
-                    onChange={e => setQuestion(e.target.value)}
-                    required
-                  />
-                </div>
+                <RegularInput
+                  id="question"
+                  label="Poll Question *"
+                  placeholder="What is your question?"
+                  value={question}
+                  onChange={e => setQuestion(e.target.value)}
+                  required
+                />
 
-                <div className="space-y-2">
-                  <label htmlFor="description" className="text-sm font-medium">
-                    Description (Optional)
-                  </label>
-                  <Textarea
-                    id="description"
-                    placeholder="Add more context to your poll..."
-                    rows={3}
-                    className="resize-none"
-                    value={description}
-                    onChange={e => setDescription(e.target.value)}
-                  />
-                </div>
+                <RegularTextarea
+                  id="description"
+                  label="Description (Optional)"
+                  placeholder="Add more context to your poll..."
+                  rows={3}
+                  className="resize-none"
+                  value={description}
+                  onChange={e => setDescription(e.target.value)}
+                />
 
-                <div className="space-y-2">
-                  <label htmlFor="category" className="text-sm font-medium">
-                    Category
-                  </label>
-                  <Select value={category} onValueChange={setCategory}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="worship">Worship</SelectItem>
-                      <SelectItem value="spiritual-growth">Spiritual Growth</SelectItem>
-                      <SelectItem value="content">Content</SelectItem>
-                      <SelectItem value="devotionals">Devotionals</SelectItem>
-                      <SelectItem value="sermons">Sermons</SelectItem>
-                      <SelectItem value="ministry">Ministry</SelectItem>
-                      <SelectItem value="prayer">Prayer</SelectItem>
-                      <SelectItem value="social-media">Social Media</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                <RegularSelect
+                  label="Category"
+                  value={category}
+                  onSelectChange={setCategory}
+                  placeholder="Select a category"
+                  options={POLL_CATEGORY_OPTIONS}
+                />
 
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Poll Options * (Minimum 2)</label>
                   {options.map((option, index) => (
                     <div key={index} className="flex gap-2">
-                      <Input
+                      <RegularInput
                         placeholder={`Option ${index + 1}`}
                         value={option}
                         onChange={e => updateOption(index, e.target.value)}
                         required={index < 2}
+                        label=""
                       />
                       {options.length > 2 && (
                         <Button

@@ -1,11 +1,15 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { DailyDevotionalsSection } from './DailyDevotionalsSection';
 import { BibleStudySeriesSection } from './BibleStudySeriesSection';
 import { PrayerPointsSection } from './PrayerPointsSection';
 import { ChristianLivingTipsSection } from './ChristianLivingTipsSection';
 import { MarriageAndFamilySection } from './MarriageAndFamilySection';
 import { CommunityCTA } from '../../shared';
+import { SectionContainer } from '@/components/general/SectionContainer';
+import { DataLoadError } from '@/components/general/DataLoadError';
+import { BookOpen } from 'lucide-react';
 
 export interface DailyDevotional {
   _id: string;
@@ -61,6 +65,7 @@ interface DevotionalsPageClientProps {
   prayerPoints: PrayerPoint[];
   livingTips: LivingTip[];
   marriageFamily: MarriageFamily[];
+  initialErrorMessage?: string | null;
 }
 
 export const DevotionalsPageClient = ({
@@ -69,7 +74,29 @@ export const DevotionalsPageClient = ({
   prayerPoints,
   livingTips,
   marriageFamily,
+  initialErrorMessage = null,
 }: DevotionalsPageClientProps) => {
+  const router = useRouter();
+  const hasAnyContent =
+    dailyDevotionals.length > 0 ||
+    bibleStudySeries.length > 0 ||
+    prayerPoints.length > 0 ||
+    livingTips.length > 0 ||
+    marriageFamily.length > 0;
+
+  if (initialErrorMessage && !hasAnyContent) {
+    return (
+      <SectionContainer>
+        <DataLoadError
+          title="Unable to load devotionals"
+          message={initialErrorMessage}
+          onRetry={() => router.refresh()}
+          icon={<BookOpen className="w-8 h-8 text-destructive" />}
+        />
+      </SectionContainer>
+    );
+  }
+
   return (
     <>
       <DailyDevotionalsSection devotionals={dailyDevotionals} />

@@ -8,13 +8,19 @@ import { Badge } from '@/components/ui/badge';
 import { useState } from 'react';
 import { toast } from '@/components/atoms/Toast';
 import { SectionComp } from '@/components/general/SectionComp';
+import { ListPagination } from '@/components/general/ListPagination';
 import type { PrayerRequest } from './PrayerRequestsPageClient';
+import type { Pagination } from '@/lib/types/community';
 
 interface ActivePrayerRequestsSectionProps {
   requests: PrayerRequest[];
+  pagination?: Pagination | null;
 }
 
-export const ActivePrayerRequestsSection = ({ requests }: ActivePrayerRequestsSectionProps) => {
+export const ActivePrayerRequestsSection = ({
+  requests,
+  pagination = null,
+}: ActivePrayerRequestsSectionProps) => {
   const [prayerCounts, setPrayerCounts] = useState<Record<string, number>>(
     requests.reduce(
       (acc, req) => {
@@ -27,6 +33,9 @@ export const ActivePrayerRequestsSection = ({ requests }: ActivePrayerRequestsSe
   const [displayedItems, setDisplayedItems] = useState(6);
   const [isLoading, setIsLoading] = useState(false);
 
+  const useServerPagination = pagination != null && pagination.totalPages > 1;
+  const itemsToShow = useServerPagination ? requests : requests.slice(0, displayedItems);
+
   const loadMoreItems = async () => {
     setIsLoading(true);
     await new Promise(resolve => setTimeout(resolve, 800));
@@ -34,8 +43,7 @@ export const ActivePrayerRequestsSection = ({ requests }: ActivePrayerRequestsSe
     setIsLoading(false);
   };
 
-  const hasMore = displayedItems < requests.length;
-  const itemsToShow = requests.slice(0, displayedItems);
+  const hasMore = !useServerPagination && displayedItems < requests.length;
 
   const handlePray = (e: React.MouseEvent, requestId: string) => {
     e.preventDefault();
@@ -143,7 +151,19 @@ export const ActivePrayerRequestsSection = ({ requests }: ActivePrayerRequestsSe
         ))}
       </div>
 
-      {/* Load More */}
+      {/* Server pagination */}
+      {useServerPagination && pagination && (
+        <div className="mt-10">
+          <ListPagination
+            page={pagination.page}
+            totalPages={pagination.totalPages}
+            total={pagination.total}
+            limit={pagination.limit}
+          />
+        </div>
+      )}
+
+      {/* Load more (when not using server pagination) */}
       {hasMore && itemsToShow.length > 0 && (
         <div className="flex justify-center mt-10">
           <motion.button

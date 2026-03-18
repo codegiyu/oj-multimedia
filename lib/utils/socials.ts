@@ -7,7 +7,7 @@ import {
   Whatsapp,
   Youtube,
 } from '@/components/icons';
-import { SocialPlatform } from '@/app/_server/lib/types/constants';
+import { SocialPlatform } from '@/lib/types/site-settings';
 import { IconComp } from '@/lib/types/general';
 
 /**

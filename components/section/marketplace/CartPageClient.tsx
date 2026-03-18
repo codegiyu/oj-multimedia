@@ -1,5 +1,7 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 'use client';
 
+import { useEffect, useState } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { SectionContainer } from '@/components/general/SectionContainer';
 import { Card } from '@/components/ui/card';
@@ -8,10 +10,67 @@ import { useCartStore } from '@/lib/store/cartStore';
 import { formatPrice } from '@/lib/utils/marketplace';
 import { ShoppingCart, Minus, Plus, Trash2 } from 'lucide-react';
 import Link from 'next/link';
+import { useAuthStore } from '@/lib/store/useAuthStore';
+import { callApi } from '@/lib/services/callApi';
+import type { ICartRes } from '@/lib/constants/endpoints';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 export function CartPageClient() {
   const { items, actions } = useCartStore();
   const total = actions.getTotal();
+  const { user } = useAuthStore(state => state);
+  const [loading, setLoading] = useState(false);
+
+  const vendors = items
+    .filter(item => item.vendorWhatsapp)
+    .reduce<
+      Array<{
+        vendorName: string;
+        vendorWhatsapp: string;
+        images: string[];
+      }>
+    >((acc, item) => {
+      const key = item.vendorWhatsapp as string;
+      const existing = acc.find(v => v.vendorWhatsapp === key);
+      const image = item.image;
+      if (existing) {
+        if (image && !existing.images.includes(image)) {
+          existing.images.push(image);
+        }
+        return acc;
+      }
+      return [
+        ...acc,
+        {
+          vendorName: item.vendorName || 'Vendor',
+          vendorWhatsapp: key,
+          images: image ? [image] : [],
+        },
+      ];
+    }, []);
+
+  useEffect(() => {
+    if (!user) return;
+    let mounted = true;
+    setLoading(true);
+    (async () => {
+      const { data } = await callApi('USER_CART_GET', {});
+      if (!mounted) return;
+      const cart = data as ICartRes | undefined;
+      if (cart?.items) {
+        actions.syncFromBackend(cart);
+      }
+      setLoading(false);
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, [user, actions]);
 
   if (items.length === 0) {
     return (
@@ -23,7 +82,7 @@ export function CartPageClient() {
             </div>
             <h1 className="text-2xl font-bold text-foreground mb-2">Your cart is empty</h1>
             <p className="text-muted-foreground mb-8">
-              Add items from the marketplace to get started.
+              {loading ? 'Loading your cart...' : 'Add items from the marketplace to get started.'}
             </p>
             <Button asChild variant="default" className="bg-primary hover:bg-primary/90">
               <Link href="/marketplace">Browse Marketplace</Link>
@@ -58,7 +117,30 @@ export function CartPageClient() {
                     className="font-semibold text-foreground hover:text-primary line-clamp-2">
                     {item.name}
                   </Link>
+                  {item.vendorName && (
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      from{' '}
+                      {item.vendorSlug ? (
+                        <Link
+                          href={`/marketplace/vendors/${item.vendorSlug}`}
+                          className="hover:text-primary underline-offset-2 hover:underline">
+                          {item.vendorName}
+                        </Link>
+                      ) : (
+                        item.vendorName
+                      )}
+                    </p>
+                  )}
                   <p className="text-primary font-bold mt-1">{formatPrice(item.price)}</p>
+                  {item.vendorWhatsapp && (
+                    <a
+                      href={`https://wa.me/${item.vendorWhatsapp.replace(/\D/g, '')}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-1 inline-flex items-center gap-1 text-xs text-primary hover:underline">
+                      Contact vendor on WhatsApp
+                    </a>
+                  )}
                 </div>
                 <div className="flex items-center gap-2">
                   <Button
@@ -89,7 +171,47 @@ export function CartPageClient() {
           </div>
 
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <p className="text-xl font-bold text-foreground">Total: {formatPrice(total)}</p>
+            <div className="flex flex-col gap-2">
+              <p className="text-xl font-bold text-foreground">Total: {formatPrice(total)}</p>
+              {vendors.length > 0 && (
+                <div className="flex items-center gap-2">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" size="sm">
+                        Chat with vendor
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start" side="top">
+                      {vendors.map(vendor => (
+                        <DropdownMenuItem
+                          key={vendor.vendorWhatsapp}
+                          className="flex items-center gap-2"
+                          onClick={() => {
+                            const digits = vendor.vendorWhatsapp.replace(/\D/g, '');
+                            const url = `https://wa.me/${digits}`;
+                            window.open(url, '_blank');
+                          }}>
+                          <div className="flex -space-x-2">
+                            {vendor.images.slice(0, 3).map(src => (
+                              <span
+                                key={src}
+                                className="inline-block h-6 w-6 rounded-full overflow-hidden border border-border bg-muted">
+                                <img
+                                  src={src}
+                                  alt={vendor.vendorName}
+                                  className="h-full w-full object-cover"
+                                />
+                              </span>
+                            ))}
+                          </div>
+                          <span className="truncate">{vendor.vendorName}</span>
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              )}
+            </div>
             <div className="flex gap-4">
               <Button variant="outline" asChild>
                 <Link href="/marketplace/products">Continue shopping</Link>

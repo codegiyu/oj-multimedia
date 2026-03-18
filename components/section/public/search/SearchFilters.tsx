@@ -1,7 +1,10 @@
 'use client';
 
+import { useRef, useCallback } from 'react';
 import { useQueryState, parseAsString } from 'nuqs';
 import { Music, Newspaper, Video, Users, Filter } from 'lucide-react';
+
+const FILTER_DEBOUNCE_MS = 500;
 
 const typeFilters = [
   { value: 'all', label: 'All', icon: Filter },
@@ -24,6 +27,18 @@ export const SearchFilters = ({
 }: SearchFiltersProps) => {
   const [query] = useQueryState('q', parseAsString.withDefault(''));
   const hasQuery = !!query;
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleFilterClick = useCallback(
+    (value: string) => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+      debounceRef.current = setTimeout(() => {
+        debounceRef.current = null;
+        onFilterChange(value);
+      }, FILTER_DEBOUNCE_MS);
+    },
+    [onFilterChange]
+  );
 
   return (
     <div className="flex items-center gap-2 mb-8 overflow-x-auto pb-2">
@@ -36,7 +51,8 @@ export const SearchFilters = ({
         return (
           <button
             key={filter.value}
-            onClick={() => onFilterChange(filter.value)}
+            type="button"
+            onClick={() => handleFilterClick(filter.value)}
             className={`flex items-center gap-2 px-4 py-2 rounded-full font-medium transition-all whitespace-nowrap ${
               activeFilter === filter.value
                 ? 'bg-primary text-primary-foreground'

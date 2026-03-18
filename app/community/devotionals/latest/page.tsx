@@ -4,8 +4,12 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { SubPageHero } from '@/components/general/SubPageHero';
 import { DevotionalsPageSkeleton } from '@/components/section/community/devotionals/DevotionalsPageSkeleton';
 import { DailyDevotionalsSection } from '@/components/section/community/devotionals/DailyDevotionalsSection';
+import { DevotionalsCategoryFilter } from '@/components/section/community/devotionals/DevotionalsCategoryFilter';
 import { filterByCategory } from '@/lib/utils/community/devotionals';
-import { DEVOTIONALS_ITEMS } from '@/lib/constants/community/devotionals';
+import { callServerApi } from '@/lib/services/serverApi';
+import type { ApiErrorResponse } from '@/lib/types/http';
+import type { IPublicDevotionalsListRes } from '@/lib/constants/endpoints';
+import { mapToDailyDevotional } from '@/lib/utils/communityApiMappers';
 import type { DailyDevotional } from '@/components/section/community/devotionals/DevotionalsPageClient';
 
 export const metadata: Metadata = {
@@ -15,31 +19,29 @@ export const metadata: Metadata = {
 
 export const dynamic = 'force-dynamic';
 
-async function generateLatestDevotionalsData() {
-  await new Promise(resolve => setTimeout(resolve, 1500));
-
-  const latestDevotionals: DailyDevotional[] = DEVOTIONALS_ITEMS.filter(
-    item => item.isDaily && item.isLatest && item.verse !== undefined && item.date !== undefined
-  )
-    .sort((a, b) => {
-      // Sort by date (most recent first)
-      const dateA = a.date || '';
-      const dateB = b.date || '';
-      return dateB.localeCompare(dateA);
-    })
-    .map(item => ({
-      _id: item._id,
-      title: item.title,
-      verse: item.verse!,
-      date: item.date!,
-      readingTime: item.readingTime || '5 min',
-      category: item.category,
-      excerpt: item.excerpt || '',
-      views: item.views || 0,
-    }));
-
+async function fetchLatestDevotionals(category: string): Promise<{
+  latestDevotionals: DailyDevotional[];
+  initialErrorMessage: string | null;
+}> {
+  const categoryParam =
+    category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';
+  const res = await callServerApi('PUBLIC_GET_DEVOTIONALS', {
+    query: `?limit=50&page=1&status=published&type=latest${categoryParam}` as `?${string}`,
+  });
+  if (res.error) {
+    return {
+      latestDevotionals: [],
+      initialErrorMessage: (res.error as ApiErrorResponse)?.message ?? 'Failed to load devotionals',
+    };
+  }
+  const data = res.data as IPublicDevotionalsListRes | undefined;
+  const rawList = (data?.devotionals ?? []) as unknown[];
+  const list = rawList.map(i =>
+    mapToDailyDevotional(i as Record<string, unknown>)
+  ) as DailyDevotional[];
   return {
-    latestDevotionals,
+    latestDevotionals: filterByCategory(list, category),
+    initialErrorMessage: null,
   };
 }
 
@@ -49,12 +51,8 @@ interface LatestDevotionalsPageProps {
 
 export default async function LatestDevotionalsPage({ searchParams }: LatestDevotionalsPageProps) {
   const params = await searchParams;
-  const category = params.category || 'all';
-  const data = await generateLatestDevotionalsData();
-
-  const filteredData = {
-    latestDevotionals: filterByCategory(data.latestDevotionals, category),
-  };
+  const category = params.category ?? 'all';
+  const { latestDevotionals, initialErrorMessage } = await fetchLatestDevotionals(category);
 
   return (
     <MainLayout>
@@ -70,7 +68,13 @@ export default async function LatestDevotionalsPage({ searchParams }: LatestDevo
       />
       <Suspense fallback={<DevotionalsPageSkeleton />}>
         <div className="container mx-auto px-4 pb-16">
-          <DailyDevotionalsSection devotionals={filteredData.latestDevotionals} />
+          <Suspense fallback={<div className="h-10 mb-6 animate-pulse bg-muted rounded" />}>
+            <DevotionalsCategoryFilter />
+          </Suspense>
+          <DailyDevotionalsSection
+            devotionals={latestDevotionals}
+            initialErrorMessage={initialErrorMessage}
+          />
         </div>
       </Suspense>
     </MainLayout>

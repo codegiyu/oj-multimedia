@@ -10,10 +10,14 @@ import { useForm } from '@/lib/hooks/use-form';
 import { z } from 'zod';
 import { Send, FileText } from 'lucide-react';
 import { toast } from 'sonner';
+import { callApi } from '@/lib/services/callApi';
 
 const contactSchema = z.object({
   name: z.string().min(1, 'Full name is required'),
-  email: z.email('Please enter a valid email address'),
+  phone: z.string().min(1, 'Phone number is required'),
+  email: z
+    .union([z.string().email('Please enter a valid email address'), z.literal('')])
+    .transform(val => (val === '' ? undefined : val)),
   subject: z.string().min(1, 'Please enter a subject'),
   message: z.string().min(10, 'Please provide more details (at least 10 characters)'),
 });
@@ -36,26 +40,30 @@ export const ContactFormSection = () => {
     formSchema: contactSchema,
     defaultFormValues: {
       name: '',
+      phone: '',
       email: '',
       subject: '',
       message: '',
     },
     onSubmit: async (values: ContactFormValues) => {
-      try {
-        console.log({ values });
-        // Simulate form submission - replace with actual API call
-        await new Promise(resolve => setTimeout(resolve, 1500));
+      const { data, error } = await callApi('PUBLIC_SUBMIT_CONTACT', {
+        payload: {
+          name: values.name,
+          phone: values.phone,
+          ...(values.email && { email: values.email }),
+          subject: values.subject,
+          message: values.message,
+        },
+      });
 
-        // TODO: Replace with actual API call
-        // const { data, error } = await callApi('SUBMIT_CONTACT_FORM', { payload: values });
-
-        toast.success("Message sent successfully! We'll get back to you soon.");
-        return true;
-      } catch (error) {
-        toast.error('Failed to send message. Please try again.');
-        console.error(error);
+      if (error) {
+        toast.error(error.message || 'Failed to send message. Please try again.');
         return false;
       }
+
+      const message = data?.message ?? "Message sent successfully! We'll get back to you soon.";
+      toast.success(message);
+      return true;
     },
   });
 
@@ -98,11 +106,21 @@ export const ContactFormSection = () => {
           />
 
           <RegularInput
-            label="Email Address"
+            label="Phone Number"
+            name="phone"
+            type="tel"
+            placeholder="+1 (555) 000-0000"
+            required
+            value={formValues.phone}
+            onChange={handleInputChange}
+            errors={errorsVisible ? formErrors.phone : []}
+          />
+
+          <RegularInput
+            label="Email Address (optional)"
             name="email"
             type="email"
             placeholder="john@example.com"
-            required
             value={formValues.email}
             onChange={handleInputChange}
             errors={errorsVisible ? formErrors.email : []}

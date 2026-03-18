@@ -7,10 +7,13 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useState, useEffect } from 'react';
 import { SectionComp } from '@/components/general/SectionComp';
+import { ListPagination } from '@/components/general/ListPagination';
 import type { Testimony } from './TestimoniesPageClient';
+import type { Pagination } from '@/lib/types/community';
 
 interface AllTestimoniesProps {
   testimonies: Testimony[];
+  pagination?: Pagination | null;
 }
 
 const categories = [
@@ -25,7 +28,7 @@ const categories = [
   'Blessing',
 ];
 
-export const AllTestimonies = ({ testimonies }: AllTestimoniesProps) => {
+export const AllTestimonies = ({ testimonies, pagination = null }: AllTestimoniesProps) => {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [displayedItems, setDisplayedItems] = useState(12);
   const [isLoading, setIsLoading] = useState(false);
@@ -35,9 +38,12 @@ export const AllTestimonies = ({ testimonies }: AllTestimoniesProps) => {
       ? testimonies
       : testimonies.filter(t => t.category === selectedCategory);
 
-  // Reset displayed items when category changes
+  const useServerPagination = pagination != null && pagination.totalPages > 1;
+  const itemsToShow = useServerPagination
+    ? filteredTestimonies
+    : filteredTestimonies.slice(0, displayedItems);
+
   useEffect(() => {
-    // Use setTimeout to avoid synchronous setState in effect
     const timer = setTimeout(() => {
       setDisplayedItems(12);
     }, 0);
@@ -51,8 +57,7 @@ export const AllTestimonies = ({ testimonies }: AllTestimoniesProps) => {
     setIsLoading(false);
   };
 
-  const hasMore = displayedItems < filteredTestimonies.length;
-  const itemsToShow = filteredTestimonies.slice(0, displayedItems);
+  const hasMore = !useServerPagination && displayedItems < filteredTestimonies.length;
 
   return (
     <SectionComp
@@ -136,7 +141,19 @@ export const AllTestimonies = ({ testimonies }: AllTestimoniesProps) => {
         </div>
       )}
 
-      {/* Load More */}
+      {/* Server pagination (prev/next page) */}
+      {useServerPagination && pagination && (
+        <div className="mt-10">
+          <ListPagination
+            page={pagination.page}
+            totalPages={pagination.totalPages}
+            total={pagination.total}
+            limit={pagination.limit}
+          />
+        </div>
+      )}
+
+      {/* Load more (when not using server pagination) */}
       {hasMore && itemsToShow.length > 0 && (
         <div className="flex justify-center mt-10">
           <motion.button

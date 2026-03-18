@@ -8,8 +8,13 @@ import { useSiteStore } from '@/lib/store/siteStore';
 import { useSiteSettingsStore } from '@/lib/store/useSiteSettingsStore';
 import { MapPin } from 'lucide-react';
 import { GhostBtn } from '@/components/atoms/GhostBtn';
+import type { ContactInfo } from '@/lib/types/site-settings';
 
-export const MapSection = () => {
+export interface MapSectionProps {
+  contactInfo?: ContactInfo | null;
+}
+
+export const MapSection = ({ contactInfo: initialContactInfo }: MapSectionProps = {}) => {
   const { siteLoading } = useSiteStore(state => state);
 
   const { settings, fetchSettings } = useSiteSettingsStore(state => ({
@@ -18,10 +23,10 @@ export const MapSection = () => {
   }));
 
   useEffect(() => {
-    fetchSettings('contactInfo');
+    if (initialContactInfo == null) fetchSettings('contactInfo');
   }, []);
 
-  const contactInfo = settings?.contactInfo;
+  const contactInfo = initialContactInfo ?? settings?.contactInfo;
   const address = contactInfo?.address?.join(', ') || 'Our Location';
   const locationUrl = contactInfo?.locationUrl || 'https://maps.google.com';
 

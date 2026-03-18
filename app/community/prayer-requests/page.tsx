@@ -4,11 +4,15 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { PrayerRequestsHero } from '@/components/section/community/prayer-requests/PrayerRequestsHero';
 import { PrayerRequestsPageClient } from '@/components/section/community/prayer-requests/PrayerRequestsPageClient';
 import { PrayerRequestsPageSkeleton } from '@/components/section/community/prayer-requests/PrayerRequestsPageSkeleton';
-import { PRAYER_REQUESTS_ITEMS } from '@/lib/constants/community/prayer-requests';
 import type {
   PrayerRequest,
   AnsweredPrayer,
 } from '@/components/section/community/prayer-requests/PrayerRequestsPageClient';
+import { callServerApi } from '@/lib/services/serverApi';
+import type { ApiErrorResponse } from '@/lib/types/http';
+import type { IPublicPrayerRequestsListRes } from '@/lib/constants/endpoints';
+import { mapToPrayerRequest, mapToAnsweredPrayer } from '@/lib/utils/communityApiMappers';
+import type { Pagination } from '@/lib/types/community';
 
 export const metadata: Metadata = {
   title: 'Prayer Requests - Share & Pray Together',
@@ -16,57 +20,60 @@ export const metadata: Metadata = {
     'Share your prayer requests, pray for others, and witness answered prayers. Join our community in lifting each other up in prayer.',
 };
 
-// Force dynamic rendering to ensure searchParams changes trigger re-renders
 export const dynamic = 'force-dynamic';
 
-// Generate prayer requests data from central constants
-async function generatePrayerRequestsData() {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 1500));
+const ACTIVE_LIMIT = 12;
 
-  // Filter and transform active requests
-  const activeRequests: PrayerRequest[] = PRAYER_REQUESTS_ITEMS.filter(item => item.isActive).map(
-    item => ({
-      _id: item._id,
-      title: item.title,
-      content: item.content,
-      author: item.author,
-      category: item.category,
-      prayers: item.prayers,
-      comments: item.comments,
-      timeAgo: item.timeAgo,
-      urgent: item.urgent,
-    })
-  );
-
-  // Filter and transform answered prayers
-  const answeredPrayers: AnsweredPrayer[] = PRAYER_REQUESTS_ITEMS.filter(
-    item => item.isAnswered
-  ).map(item => ({
-    _id: item._id,
-    title: item.title,
-    originalRequest: item.originalRequest || item.content,
-    testimony: item.testimony || item.content,
-    author: item.author,
-    answeredDate: item.answeredDate || item.timeAgo,
-    prayers: item.prayers,
-  }));
-
-  // Calculate category counts from active requests
+async function fetchPrayerRequestsData(page: number): Promise<{
+  activeRequests: PrayerRequest[];
+  answeredPrayers: AnsweredPrayer[];
+  categoryCounts: Record<string, number>;
+  activePagination: Pagination | null;
+  initialErrorMessage: string | null;
+}> {
+  const [activeRes, answeredRes] = await Promise.all([
+    callServerApi('PUBLIC_GET_PRAYER_REQUESTS', {
+      query: `?limit=${ACTIVE_LIMIT}&page=${page}&status=active` as `?${string}`,
+    }),
+    callServerApi('PUBLIC_GET_PRAYER_REQUESTS', {
+      query: '?limit=20&page=1&status=answered' as `?${string}`,
+    }),
+  ]);
+  const errorMessage = activeRes.error
+    ? ((activeRes.error as ApiErrorResponse)?.message ?? 'Failed to load prayer requests')
+    : null;
+  const activeData = activeRes.data as IPublicPrayerRequestsListRes | undefined;
+  const answeredData = answeredRes.data as IPublicPrayerRequestsListRes | undefined;
+  const activeRequests = (activeData?.prayerRequests ?? []).map(i =>
+    mapToPrayerRequest(i as unknown as Record<string, unknown>)
+  ) as PrayerRequest[];
+  const answeredPrayers = (answeredData?.prayerRequests ?? []).map(i =>
+    mapToAnsweredPrayer(i as unknown as Record<string, unknown>)
+  ) as AnsweredPrayer[];
   const categoryCounts: Record<string, number> = {};
-  activeRequests.forEach(request => {
-    categoryCounts[request.category] = (categoryCounts[request.category] || 0) + 1;
+  activeRequests.forEach(r => {
+    if (r.category) categoryCounts[r.category] = (categoryCounts[r.category] || 0) + 1;
   });
-
+  const activePagination = activeData?.pagination ?? null;
   return {
     activeRequests,
     answeredPrayers,
     categoryCounts,
+    activePagination,
+    initialErrorMessage: errorMessage,
   };
 }
 
-export default async function CommunityPrayerRequestsPage() {
-  const prayerRequestsData = await generatePrayerRequestsData();
+interface PrayerRequestsPageProps {
+  searchParams: Promise<{ page?: string }>;
+}
+
+export default async function CommunityPrayerRequestsPage({
+  searchParams,
+}: PrayerRequestsPageProps) {
+  const { page: pageParam } = await searchParams;
+  const page = Math.max(1, parseInt(String(pageParam ?? '1'), 10) || 1);
+  const prayerRequestsData = await fetchPrayerRequestsData(page);
 
   return (
     <MainLayout>

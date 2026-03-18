@@ -1,10 +1,15 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { ActivePrayerRequestsSection } from './ActivePrayerRequestsSection';
 import { SubmitPrayerRequestSection } from './SubmitPrayerRequestSection';
 import { AnsweredPrayersSection } from './AnsweredPrayersSection';
 import { PrayerCategoriesSection } from './PrayerCategoriesSection';
 import { CommunityCTA } from '../../shared';
+import { SectionContainer } from '@/components/general/SectionContainer';
+import { DataLoadError } from '@/components/general/DataLoadError';
+import { HandHeart } from 'lucide-react';
+import type { Pagination } from '@/lib/types/community';
 
 export interface PrayerRequest {
   _id: string;
@@ -47,13 +52,33 @@ interface PrayerRequestsPageClientProps {
   activeRequests: PrayerRequest[];
   answeredPrayers: AnsweredPrayer[];
   categoryCounts: Record<string, number>;
+  activePagination?: Pagination | null;
+  initialErrorMessage?: string | null;
 }
 
 export const PrayerRequestsPageClient = ({
   activeRequests,
   answeredPrayers,
   categoryCounts,
+  activePagination = null,
+  initialErrorMessage = null,
 }: PrayerRequestsPageClientProps) => {
+  const router = useRouter();
+  const hasAnyContent = activeRequests.length > 0 || answeredPrayers.length > 0;
+
+  if (initialErrorMessage && !hasAnyContent) {
+    return (
+      <SectionContainer>
+        <DataLoadError
+          title="Unable to load prayer requests"
+          message={initialErrorMessage}
+          onRetry={() => router.refresh()}
+          icon={<HandHeart className="w-8 h-8 text-destructive" />}
+        />
+      </SectionContainer>
+    );
+  }
+
   // Merge static category definitions with dynamic counts from server
   const categories: PrayerCategory[] = categoryDefinitions.map(def => ({
     name: def.name,
@@ -62,7 +87,7 @@ export const PrayerRequestsPageClient = ({
 
   return (
     <>
-      <ActivePrayerRequestsSection requests={activeRequests} />
+      <ActivePrayerRequestsSection requests={activeRequests} pagination={activePagination} />
       <SubmitPrayerRequestSection />
       <AnsweredPrayersSection prayers={answeredPrayers} />
       <PrayerCategoriesSection categories={categories} />

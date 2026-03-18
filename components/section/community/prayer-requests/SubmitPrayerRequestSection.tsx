@@ -1,24 +1,33 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { HandHeart, Send, CheckCircle } from 'lucide-react';
 import { useState } from 'react';
 import { RegularBtn } from '@/components/atoms/RegularBtn';
+import { callApi } from '@/lib/services/callApi';
+import { getErrorMessage } from '@/lib/utils/general';
 import { RegularInput } from '@/components/atoms/RegularInput';
+import { RegularSelect } from '@/components/atoms/RegularSelect';
 import { RegularTextarea } from '@/components/atoms/RegularTextarea';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Card, CardContent } from '@/components/ui/card';
+
+const PRAYER_CATEGORY_OPTIONS = [
+  { value: 'healing', text: 'Healing' },
+  { value: 'finance', text: 'Finance' },
+  { value: 'family', text: 'Family' },
+  { value: 'career', text: 'Career' },
+  { value: 'spiritual', text: 'Spiritual' },
+  { value: 'protection', text: 'Protection' },
+  { value: 'other', text: 'Other' },
+];
 import { toast } from '@/components/atoms/Toast';
 import { SectionComp } from '@/components/general/SectionComp';
 
 export const SubmitPrayerRequestSection = () => {
+  const router = useRouter();
   const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
   const [category, setCategory] = useState('');
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -36,13 +45,38 @@ export const SubmitPrayerRequestSection = () => {
       });
       return;
     }
+    if (name.length > 200 || title.length > 200 || content.length > 2000) {
+      toast({
+        title: 'Length limit',
+        description: 'Name and title max 200 characters; prayer details max 2000 characters.',
+        variant: 'error',
+      });
+      return;
+    }
 
     setIsSubmitting(true);
 
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    const res = await callApi('PUBLIC_SUBMIT_PRAYER_REQUEST', {
+      payload: {
+        title: title.trim(),
+        content: content.trim(),
+        name: name.trim() || undefined,
+        email: email.trim() || undefined,
+        category: category.trim() || undefined,
+        urgent,
+      },
+    });
 
     setIsSubmitting(false);
+
+    if (res.error) {
+      toast({
+        title: 'Submission failed',
+        description: getErrorMessage(res.error),
+        variant: 'error',
+      });
+      return;
+    }
 
     toast({
       title: 'Prayer Request Submitted!',
@@ -51,12 +85,13 @@ export const SubmitPrayerRequestSection = () => {
       variant: 'success',
     });
 
-    // Reset form
     setName('');
+    setEmail('');
     setCategory('');
     setTitle('');
     setContent('');
     setUrgent(false);
+    router.refresh();
   };
 
   return (
@@ -77,70 +112,56 @@ export const SubmitPrayerRequestSection = () => {
             <CardContent className="p-6">
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label htmlFor="name" className="text-sm font-medium">
-                      Your Name (Optional)
-                    </label>
-                    <RegularInput
-                      id="name"
-                      name="name"
-                      label=""
-                      placeholder="Enter your name"
-                      value={name}
-                      onChange={e => setName(e.target.value)}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label htmlFor="category" className="text-sm font-medium">
-                      Category
-                    </label>
-                    <Select value={category} onValueChange={setCategory}>
-                      <SelectTrigger id="category">
-                        <SelectValue placeholder="Select category" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="healing">Healing</SelectItem>
-                        <SelectItem value="finance">Finance</SelectItem>
-                        <SelectItem value="family">Family</SelectItem>
-                        <SelectItem value="career">Career</SelectItem>
-                        <SelectItem value="spiritual">Spiritual</SelectItem>
-                        <SelectItem value="protection">Protection</SelectItem>
-                        <SelectItem value="other">Other</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <label htmlFor="title" className="text-sm font-medium">
-                    Prayer Request Title
-                  </label>
                   <RegularInput
-                    id="title"
-                    name="title"
-                    label=""
-                    placeholder="Brief title for your request"
-                    value={title}
-                    onChange={e => setTitle(e.target.value)}
-                    required
+                    id="name"
+                    name="name"
+                    label="Your Name (Optional)"
+                    placeholder="Enter your name"
+                    value={name}
+                    onChange={e => setName(e.target.value)}
+                    maxLength={200}
+                  />
+                  <RegularInput
+                    id="email"
+                    name="email"
+                    type="email"
+                    label="Email (Optional)"
+                    placeholder="Enter your email"
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <label htmlFor="content" className="text-sm font-medium">
-                    Prayer Request Details
-                  </label>
-                  <RegularTextarea
-                    id="content"
-                    name="content"
-                    label=""
-                    placeholder="Share your prayer need here..."
-                    rows={6}
-                    value={content}
-                    onChange={e => setContent(e.target.value)}
-                    required
-                  />
-                </div>
+                <RegularSelect
+                  label="Category"
+                  value={category}
+                  onSelectChange={setCategory}
+                  placeholder="Select category"
+                  options={PRAYER_CATEGORY_OPTIONS}
+                />
+
+                <RegularInput
+                  id="title"
+                  name="title"
+                  label="Prayer Request Title"
+                  placeholder="Brief title for your request"
+                  value={title}
+                  onChange={e => setTitle(e.target.value)}
+                  required
+                  maxLength={200}
+                />
+
+                <RegularTextarea
+                  id="content"
+                  name="content"
+                  label="Prayer Request Details"
+                  placeholder="Share your prayer need here..."
+                  rows={6}
+                  value={content}
+                  onChange={e => setContent(e.target.value)}
+                  required
+                  maxLength={2000}
+                />
 
                 <div className="flex items-center gap-2">
                   <input

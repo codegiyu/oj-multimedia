@@ -32,7 +32,7 @@ export const AffiliateProducts = ({ products }: AffiliateProductsProps) => {
           const Icon = iconMap[product.category] || ShoppingBag;
           return (
             <motion.div
-              key={index}
+              key={product._id ?? index}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}

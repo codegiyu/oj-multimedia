@@ -23,7 +23,7 @@ export const ChristianWallpapers = ({ wallpapers }: ChristianWallpapersProps) =>
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {wallpapers.map((wallpaper, index) => (
           <motion.div
-            key={index}
+            key={wallpaper._id ?? index}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}

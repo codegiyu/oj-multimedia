@@ -1,22 +1,69 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { SectionContainer } from '@/components/general/SectionContainer';
 import { SectionHeading } from '@/components/general/SectionHeading';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ProductCard } from './ProductCard';
-import { getMockCategories, getMockVendors, getMockProducts } from '@/lib/utils/marketplace';
-import { ShoppingBag, Store, UserPlus, Package, ArrowRight, ShoppingCart } from 'lucide-react';
+import { DataLoadError } from '@/components/general/DataLoadError';
+import {
+  ShoppingBag,
+  Store,
+  UserPlus,
+  Package,
+  ArrowRight,
+  ShoppingCart,
+  Search,
+} from 'lucide-react';
 import Link from 'next/link';
 import { useCartStore } from '@/lib/store/cartStore';
+import type {
+  IMarketplaceCategory,
+  IMarketplaceProduct,
+  IMarketplaceVendor,
+} from '@/lib/constants/endpoints';
 
-export const MarketplacePageClient = () => {
-  const categories = getMockCategories();
-  const vendors = getMockVendors();
-  const featuredProducts = getMockProducts({ featured: true, limit: 8 });
+export interface MarketplacePageClientProps {
+  categories: IMarketplaceCategory[];
+  featuredProducts: IMarketplaceProduct[];
+  hotOrRecentProducts: IMarketplaceProduct[];
+  vendors: IMarketplaceVendor[];
+  error: string | null;
+}
+
+export const MarketplacePageClient = ({
+  categories = [],
+  featuredProducts = [],
+  hotOrRecentProducts = [],
+  vendors = [],
+  error = null,
+}: MarketplacePageClientProps) => {
+  const router = useRouter();
   const { actions } = useCartStore();
   const cartCount = actions.getCount();
+
+  const hasAnyData =
+    categories.length > 0 ||
+    featuredProducts.length > 0 ||
+    hotOrRecentProducts.length > 0 ||
+    vendors.length > 0;
+
+  if (error && !hasAnyData) {
+    return (
+      <MainLayout>
+        <SectionContainer className="py-16 md:py-24">
+          <DataLoadError
+            title="Unable to load marketplace"
+            message={error}
+            onRetry={() => router.refresh()}
+            icon={<ShoppingBag className="w-8 h-8 text-destructive" />}
+          />
+        </SectionContainer>
+      </MainLayout>
+    );
+  }
 
   return (
     <MainLayout>
@@ -44,6 +91,12 @@ export const MarketplacePageClient = () => {
               </Link>
             </Button>
             <Button asChild variant="outline" className="gap-2">
+              <Link href="/marketplace/search">
+                <Search className="w-4 h-4" />
+                Search
+              </Link>
+            </Button>
+            <Button asChild variant="outline" className="gap-2">
               <Link href="/marketplace/cart">
                 <ShoppingCart className="w-4 h-4" />
                 Cart {cartCount > 0 ? `(${cartCount})` : ''}
@@ -67,18 +120,24 @@ export const MarketplacePageClient = () => {
             text="Browse products by category"
             Icon={ShoppingBag}
           />
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {categories.map(cat => (
-              <Link key={cat.slug} href={`/marketplace/products?category=${cat.slug}`}>
-                <Card className="p-6 text-center hover:shadow-lg transition-shadow group cursor-pointer">
-                  <h3 className="font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
-                    {cat.name}
-                  </h3>
-                  <p className="text-sm text-muted-foreground">{cat.count} products</p>
-                </Card>
-              </Link>
-            ))}
-          </div>
+          {categories.length === 0 ? (
+            <p className="text-muted-foreground py-8 text-center">
+              No categories available yet. Check back later.
+            </p>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+              {categories.map(cat => (
+                <Link key={cat.slug} href={`/marketplace/products?category=${cat.slug}`}>
+                  <Card className="p-6 text-center hover:shadow-lg transition-shadow group cursor-pointer">
+                    <h3 className="font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
+                      {cat.name}
+                    </h3>
+                    <p className="text-sm text-muted-foreground">Browse</p>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
       </SectionContainer>
 
@@ -98,13 +157,49 @@ export const MarketplacePageClient = () => {
               </Link>
             </Button>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {featuredProducts.map(product => (
-              <ProductCard key={product._id} product={product} />
-            ))}
-          </div>
+          {featuredProducts.length === 0 ? (
+            <p className="text-muted-foreground py-8 text-center">
+              No featured products at the moment. Browse all products below.
+            </p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {featuredProducts.map(product => (
+                <ProductCard key={product._id} product={product} />
+              ))}
+            </div>
+          )}
         </div>
       </SectionContainer>
+
+      {/* Recent / Hot products */}
+      {(hotOrRecentProducts.length > 0 || featuredProducts.length === 0) && (
+        <SectionContainer className="py-16 md:py-20">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+              <SectionHeading
+                title="Recently Added"
+                text="Latest from our vendors"
+                Icon={Package}
+              />
+              <Button variant="ghost" className="gap-2 text-primary hover:text-primary/90" asChild>
+                <Link href="/marketplace/products?sort=recent">
+                  View all
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </Button>
+            </div>
+            {hotOrRecentProducts.length === 0 ? (
+              <p className="text-muted-foreground py-8 text-center">No recent products yet.</p>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {hotOrRecentProducts.map(product => (
+                  <ProductCard key={product._id} product={product} />
+                ))}
+              </div>
+            )}
+          </div>
+        </SectionContainer>
+      )}
 
       {/* Vendor strip */}
       <SectionContainer className="py-16 md:py-20">
@@ -122,38 +217,42 @@ export const MarketplacePageClient = () => {
               </Link>
             </Button>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {vendors.slice(0, 3).map(vendor => (
-              <Link key={vendor._id} href={`/marketplace/vendors/${vendor.slug}`}>
-                <Card className="group overflow-hidden hover:shadow-lg transition-shadow">
-                  <div className="p-6 text-center">
-                    <div className="w-20 h-20 rounded-full bg-primary/10 mx-auto mb-4 flex items-center justify-center overflow-hidden">
-                      {vendor.logo ? (
-                        <img
-                          src={vendor.logo}
-                          alt={vendor.storeName}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <Store className="w-10 h-10 text-primary" />
+          {vendors.length === 0 ? (
+            <p className="text-muted-foreground py-8 text-center">No vendor stores yet.</p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {vendors.slice(0, 3).map(vendor => (
+                <Link key={vendor._id} href={`/marketplace/vendors/${vendor.slug}`}>
+                  <Card className="group overflow-hidden hover:shadow-lg transition-shadow">
+                    <div className="p-6 text-center">
+                      <div className="w-20 h-20 rounded-full bg-primary/10 mx-auto mb-4 flex items-center justify-center overflow-hidden">
+                        {vendor.logo ? (
+                          <img
+                            src={vendor.logo}
+                            alt={vendor.storeName}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <Store className="w-10 h-10 text-primary" />
+                        )}
+                      </div>
+                      <h3 className="text-lg font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
+                        {vendor.storeName}
+                      </h3>
+                      {vendor.storeDescription && (
+                        <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
+                          {vendor.storeDescription}
+                        </p>
                       )}
-                    </div>
-                    <h3 className="text-lg font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
-                      {vendor.storeName}
-                    </h3>
-                    {vendor.storeDescription && (
-                      <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
-                        {vendor.storeDescription}
+                      <p className="text-sm text-muted-foreground">
+                        {vendor.productCount ?? 0} products
                       </p>
-                    )}
-                    <p className="text-sm text-muted-foreground">
-                      {vendor.productCount ?? 0} products
-                    </p>
-                  </div>
-                </Card>
-              </Link>
-            ))}
-          </div>
+                    </div>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
       </SectionContainer>
 

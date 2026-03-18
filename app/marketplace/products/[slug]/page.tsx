@@ -1,14 +1,25 @@
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
 import { ProductDetailClient } from '@/components/section/marketplace/ProductDetailClient';
-import { getMockProductBySlug } from '@/lib/utils/marketplace';
+import { ProductDetailSkeleton } from '@/components/section/marketplace/ProductDetailSkeleton';
+import { callServerApi } from '@/lib/services/serverApi';
+import type { IMarketplaceProductRes } from '@/lib/constants/endpoints';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
+async function fetchProductBySlug(slug: string): Promise<IMarketplaceProductRes | null> {
+  const res = await callServerApi('MARKETPLACE_GET_PRODUCT_BY_SLUG', {
+    query: `/${encodeURIComponent(slug)}` as `/${string}`,
+  });
+  if (res.error || !res.data) return null;
+  return res.data as IMarketplaceProductRes;
+}
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const product = getMockProductBySlug(slug);
+  const product = await fetchProductBySlug(slug);
   if (!product) {
     return { title: 'Product not found - Marketplace' };
   }
@@ -20,6 +31,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function ProductDetailPage({ params }: PageProps) {
   const { slug } = await params;
-  const product = getMockProductBySlug(slug);
-  return <ProductDetailClient product={product} />;
+  const product = await fetchProductBySlug(slug);
+
+  return (
+    <Suspense fallback={<ProductDetailSkeleton />}>
+      <ProductDetailClient product={product} />
+    </Suspense>
+  );
 }

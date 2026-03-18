@@ -1,4 +1,4 @@
-import { OfficeHours } from '@/app/_server/lib/types/constants';
+import { OfficeHours } from '@/lib/types/site-settings';
 
 /**
  * Transform contact info from site settings to footer contact cards format

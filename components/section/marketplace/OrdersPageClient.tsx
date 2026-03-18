@@ -1,16 +1,34 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { SectionContainer } from '@/components/general/SectionContainer';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { getMockOrders } from '@/lib/utils/marketplace';
 import { formatPrice } from '@/lib/utils/marketplace';
-import { Package } from 'lucide-react';
+import { MessageCircle, Package } from 'lucide-react';
 import Link from 'next/link';
+import { callApi } from '@/lib/services/callApi';
+import type { PopulatedMarketplaceOrder } from '@/lib/constants/endpoints';
+import { toast } from 'sonner';
 
 export function OrdersPageClient() {
-  const orders = getMockOrders();
+  const [orders, setOrders] = useState<PopulatedMarketplaceOrder[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      const { data } = await callApi('MARKETPLACE_GET_MY_ORDERS', {});
+      if (!mounted) return;
+      setOrders(data?.orders ?? []);
+      setLoading(false);
+    })();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   if (orders.length === 0) {
     return (
@@ -22,7 +40,9 @@ export function OrdersPageClient() {
             </div>
             <h1 className="text-2xl font-bold text-foreground mb-2">No orders yet</h1>
             <p className="text-muted-foreground mb-8">
-              Your order history will appear here after you place an order.
+              {loading
+                ? 'Loading your order history...'
+                : 'Your order history will appear here after you place an order.'}
             </p>
             <Button asChild variant="default" className="bg-primary hover:bg-primary/90">
               <Link href="/marketplace">Browse Marketplace</Link>
@@ -41,12 +61,12 @@ export function OrdersPageClient() {
 
           <div className="space-y-4">
             {orders.map(order => (
-              <Card key={order._id} className="p-6">
+              <Card key={order._id} className="p-6 space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <div>
                     <p className="font-mono text-sm text-muted-foreground">{order.orderNumber}</p>
                     <p className="font-semibold text-foreground mt-1">
-                      {order.vendorName ?? 'Vendor'}
+                      {order.vendor.storeName ?? 'Vendor'}
                     </p>
                     <p className="text-sm text-muted-foreground mt-1">
                       {new Date(order.createdAt).toLocaleDateString()} · {order.items.length} item
@@ -65,6 +85,46 @@ export function OrdersPageClient() {
                     </span>
                   </div>
                 </div>
+                {(order.whatsappLink || order.vendor.whatsapp) && (
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <p className="text-xs text-muted-foreground">
+                      Need to follow up? Chat with the vendor about this order.
+                    </p>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="gap-1"
+                      onClick={async () => {
+                        if (order.whatsappLink) {
+                          window.open(order.whatsappLink, '_blank');
+                          return;
+                        }
+
+                        const { data, error, message } = await callApi(
+                          'MARKETPLACE_ORDER_WHATSAPP_LINK',
+                          { query: `/${order._id}/whatsapp-link` as `/${string}` }
+                        );
+
+                        if (error || !data) {
+                          toast.error(
+                            message || 'Unable to generate WhatsApp link for this order.'
+                          );
+                          return;
+                        }
+
+                        if (data.whatsappLink) {
+                          window.open(data.whatsappLink, '_blank');
+                        } else {
+                          toast.error(
+                            'This vendor does not have a WhatsApp number configured for chat.'
+                          );
+                        }
+                      }}>
+                      <MessageCircle className="w-4 h-4" />
+                      Chat on WhatsApp
+                    </Button>
+                  </div>
+                )}
               </Card>
             ))}
           </div>

@@ -1,23 +1,31 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { HelpCircle, Send, CheckCircle } from 'lucide-react';
 import { useState } from 'react';
 import { RegularBtn } from '@/components/atoms/RegularBtn';
+import { callApi } from '@/lib/services/callApi';
+import { getErrorMessage } from '@/lib/utils/general';
 import { RegularInput } from '@/components/atoms/RegularInput';
+import { RegularSelect } from '@/components/atoms/RegularSelect';
 import { RegularTextarea } from '@/components/atoms/RegularTextarea';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Card, CardContent } from '@/components/ui/card';
+
+const QUESTION_CATEGORY_OPTIONS = [
+  { value: 'faith', text: 'Faith' },
+  { value: 'relationships', text: 'Relationships' },
+  { value: 'spiritual-growth', text: 'Spiritual Growth' },
+  { value: 'finance', text: 'Finance' },
+  { value: 'bible-study', text: 'Bible Study' },
+  { value: 'prayer', text: 'Prayer' },
+  { value: 'other', text: 'Other' },
+];
 import { toast } from '@/components/atoms/Toast';
 import { SectionComp } from '@/components/general/SectionComp';
 
 export const SubmitQuestionSection = () => {
+  const router = useRouter();
   const [name, setName] = useState('');
   const [category, setCategory] = useState('');
   const [question, setQuestion] = useState('');
@@ -34,13 +42,35 @@ export const SubmitQuestionSection = () => {
       });
       return;
     }
+    if (name.length > 200 || question.length > 2000) {
+      toast({
+        title: 'Length limit',
+        description: 'Name max 200 characters; question max 2000 characters.',
+        variant: 'error',
+      });
+      return;
+    }
 
     setIsSubmitting(true);
 
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    const res = await callApi('PUBLIC_SUBMIT_QUESTION', {
+      payload: {
+        question: question.trim(),
+        name: name.trim() || undefined,
+        category: category.trim() || undefined,
+      },
+    });
 
     setIsSubmitting(false);
+
+    if (res.error) {
+      toast({
+        title: 'Submission failed',
+        description: getErrorMessage(res.error),
+        variant: 'error',
+      });
+      return;
+    }
 
     toast({
       title: 'Question Submitted!',
@@ -49,10 +79,10 @@ export const SubmitQuestionSection = () => {
       variant: 'success',
     });
 
-    // Reset form
     setName('');
     setCategory('');
     setQuestion('');
+    router.refresh();
   };
 
   return (
@@ -73,55 +103,35 @@ export const SubmitQuestionSection = () => {
             <CardContent className="p-6">
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label htmlFor="name" className="text-sm font-medium">
-                      Your Name (Optional)
-                    </label>
-                    <RegularInput
-                      id="name"
-                      name="name"
-                      label=""
-                      placeholder="Enter your name"
-                      value={name}
-                      onChange={e => setName(e.target.value)}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label htmlFor="category" className="text-sm font-medium">
-                      Category
-                    </label>
-                    <Select value={category} onValueChange={setCategory}>
-                      <SelectTrigger id="category">
-                        <SelectValue placeholder="Select category" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="faith">Faith</SelectItem>
-                        <SelectItem value="relationships">Relationships</SelectItem>
-                        <SelectItem value="spiritual-growth">Spiritual Growth</SelectItem>
-                        <SelectItem value="finance">Finance</SelectItem>
-                        <SelectItem value="bible-study">Bible Study</SelectItem>
-                        <SelectItem value="prayer">Prayer</SelectItem>
-                        <SelectItem value="other">Other</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <label htmlFor="question" className="text-sm font-medium">
-                    Your Question
-                  </label>
-                  <RegularTextarea
-                    id="question"
-                    name="question"
-                    label=""
-                    placeholder="Ask your question here... Be as specific as possible to get the best answer."
-                    rows={6}
-                    value={question}
-                    onChange={e => setQuestion(e.target.value)}
-                    required
+                  <RegularInput
+                    id="name"
+                    name="name"
+                    label="Your Name (Optional)"
+                    placeholder="Enter your name"
+                    value={name}
+                    onChange={e => setName(e.target.value)}
+                    maxLength={200}
+                  />
+                  <RegularSelect
+                    label="Category"
+                    value={category}
+                    onSelectChange={setCategory}
+                    placeholder="Select category"
+                    options={QUESTION_CATEGORY_OPTIONS}
                   />
                 </div>
+
+                <RegularTextarea
+                  id="question"
+                  name="question"
+                  label="Your Question"
+                  placeholder="Ask your question here... Be as specific as possible to get the best answer."
+                  rows={6}
+                  value={question}
+                  onChange={e => setQuestion(e.target.value)}
+                  required
+                  maxLength={2000}
+                />
 
                 <RegularBtn
                   type="submit"

@@ -1,8 +1,13 @@
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { SubPageHero } from '@/components/general/SubPageHero';
-import { ArtistCard } from '@/components/cards/ArtistCard';
-import { getAllArtists } from '@/lib/utils/community/artists';
+import { ArtistsPageClient } from '@/components/section/community/artists/ArtistsPageClient';
+import { callServerApi } from '@/lib/services/serverApi';
+import type { ApiErrorResponse } from '@/lib/types/http';
+import type { IPublicArtistsListRes } from '@/lib/constants/endpoints';
+import { mapToCommunityArtist } from '@/lib/utils/communityApiMappers';
+import type { Pagination } from '@/lib/types/community';
 
 export const metadata: Metadata = {
   title: 'Artists - Community Creators',
@@ -12,8 +17,47 @@ export const metadata: Metadata = {
 
 export const dynamic = 'force-dynamic';
 
-export default async function CommunityArtistsPage() {
-  const artists = getAllArtists(false);
+const ARTISTS_LIMIT = 24;
+
+async function fetchArtistsData(page: number): Promise<{
+  artists: Array<{
+    _id: string;
+    name: string;
+    image: string;
+    genre: string;
+    followers: string;
+    verified: boolean;
+    songs?: number;
+  }>;
+  pagination: Pagination | null;
+  initialErrorMessage: string | null;
+}> {
+  const res = await callServerApi('PUBLIC_GET_ARTISTS', {
+    query: `?limit=${ARTISTS_LIMIT}&page=${page}` as `?${string}`,
+  });
+  if (res.error) {
+    return {
+      artists: [],
+      pagination: null,
+      initialErrorMessage: (res.error as ApiErrorResponse)?.message ?? 'Failed to load artists',
+    };
+  }
+  const data = res.data as IPublicArtistsListRes | undefined;
+  const artists = (data?.artists ?? []).map(i =>
+    mapToCommunityArtist(i as unknown as Record<string, unknown>)
+  );
+  const pagination = data?.pagination ?? null;
+  return { artists, pagination, initialErrorMessage: null };
+}
+
+interface ArtistsPageProps {
+  searchParams: Promise<{ page?: string }>;
+}
+
+export default async function CommunityArtistsPage({ searchParams }: ArtistsPageProps) {
+  const { page: pageParam } = await searchParams;
+  const page = Math.max(1, parseInt(String(pageParam ?? '1'), 10) || 1);
+  const { artists, pagination, initialErrorMessage } = await fetchArtistsData(page);
 
   return (
     <MainLayout>
@@ -27,23 +71,16 @@ export default async function CommunityArtistsPage() {
         backLabel="Back to Community"
         stats={[{ icon: 'Users', text: 'Creators' }, { text: 'Music & Videos' }]}
       />
-      <section className="py-12">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
-            {artists.map(artist => (
-              <ArtistCard
-                key={artist._id}
-                _id={artist._id}
-                name={artist.name}
-                image={artist.image}
-                genre={artist.genre}
-                followers={artist.followers}
-                verified={artist.verified}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
+      <Suspense
+        fallback={
+          <div className="container mx-auto px-4 py-12 animate-pulse grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6" />
+        }>
+        <ArtistsPageClient
+          artists={artists}
+          pagination={pagination}
+          initialErrorMessage={initialErrorMessage}
+        />
+      </Suspense>
     </MainLayout>
   );
 }
