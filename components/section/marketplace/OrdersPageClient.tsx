@@ -3,11 +3,13 @@
 import { useEffect, useState } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { SectionContainer } from '@/components/general/SectionContainer';
+import { SectionHeader } from '@/components/general/SectionHeader';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { formatPrice } from '@/lib/utils/marketplace';
 import { MessageCircle, Package } from 'lucide-react';
 import Link from 'next/link';
+import { EmptyState } from '@/components/section/news/EmptyState';
 import { callApi } from '@/lib/services/callApi';
 import type { PopulatedMarketplaceOrder } from '@/lib/constants/endpoints';
 import { toast } from 'sonner';
@@ -85,18 +87,14 @@ export function OrdersPageClient() {
     return (
       <MainLayout>
         <SectionContainer className="py-16 md:py-20">
-          <div className="max-w-xl mx-auto text-center">
-            <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto mb-6">
-              <Package className="w-8 h-8 text-muted-foreground" />
-            </div>
-            <h1 className="text-2xl font-bold text-foreground mb-2">No orders yet</h1>
-            <p className="text-muted-foreground mb-8">
-              Your order history will appear here after you place an order.
-            </p>
-            <Button asChild variant="default" className="bg-primary hover:bg-primary/90">
-              <Link href="/marketplace">Browse Marketplace</Link>
-            </Button>
-          </div>
+          <EmptyState
+            title="No orders yet"
+            description="Your order history will appear here after you place an order."
+            icon={<Package className="w-12 h-12 text-muted-foreground" />}
+            actionLabel="Browse Marketplace"
+            actionHref="/marketplace"
+            showDefaultActions={false}
+          />
         </SectionContainer>
       </MainLayout>
     );
@@ -106,7 +104,12 @@ export function OrdersPageClient() {
     <MainLayout>
       <SectionContainer className="py-16 md:py-20">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-3xl font-bold text-foreground mb-8">My Orders</h1>
+          <SectionHeader
+            icon={Package}
+            heading="My Orders"
+            subtext="View and manage your order history"
+            className="mb-8"
+          />
 
           <div className="space-y-4">
             {orders.map(order => (

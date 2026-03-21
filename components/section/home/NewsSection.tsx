@@ -3,6 +3,7 @@
 import { Newspaper } from 'lucide-react';
 import { NewsCard } from '@/components/cards/NewsCard';
 import { SectionComp } from '@/components/general/SectionComp';
+import { EmptyState } from '@/components/section/news/EmptyState';
 
 export interface NewsArticle {
   _id: string;
@@ -33,9 +34,14 @@ export const NewsSection = ({ articles: newsArticles }: NewsSectionProps) => {
           className: 'h-full',
           enableAnimation: true,
         }}>
-        <div className="py-8 text-sm text-muted-foreground">
-          No news stories are available right now. Please check back later.
-        </div>
+        <EmptyState
+          title="No news stories yet"
+          description="Check back later for the latest stories and updates."
+          icon={<Newspaper className="w-12 h-12 text-muted-foreground" />}
+          actionLabel="View all news"
+          actionHref="/news"
+          showDefaultActions={false}
+        />
       </SectionComp>
     );
   }

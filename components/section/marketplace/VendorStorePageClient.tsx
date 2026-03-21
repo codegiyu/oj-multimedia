@@ -5,8 +5,9 @@ import { SectionContainer } from '@/components/general/SectionContainer';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ProductCard } from './ProductCard';
-import { Store, ChevronRight, MessageCircle } from 'lucide-react';
+import { Store, ChevronRight, MessageCircle, Package } from 'lucide-react';
 import Link from 'next/link';
+import { EmptyState } from '@/components/section/news/EmptyState';
 import type { IMarketplaceVendor, IMarketplaceProduct } from '@/lib/constants/endpoints';
 
 export interface VendorStorePageClientProps {
@@ -88,9 +89,16 @@ export function VendorStorePageClient({ vendor, products = [] }: VendorStorePage
             </div>
           </Card>
 
-          <h2 className="text-xl font-semibold text-foreground mb-6">Products</h2>
+          <h2 className="section-header mb-6">Products</h2>
           {products.length === 0 ? (
-            <p className="text-muted-foreground">No products listed yet.</p>
+            <EmptyState
+              title="No products listed yet"
+              description="This store has no products available. Check back later."
+              icon={<Package className="w-12 h-12 text-muted-foreground" />}
+              actionLabel="Browse other vendors"
+              actionHref="/marketplace/vendors"
+              showDefaultActions={false}
+            />
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {products.map(product => (

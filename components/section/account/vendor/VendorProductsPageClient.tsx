@@ -15,6 +15,7 @@ import { getProductCategoryName, getProductSubCategoryName } from '@/lib/constan
 import type { ApiErrorResponse } from '@/lib/types/http';
 import { toast } from 'sonner';
 import { VendorCreateStoreState } from './VendorCreateStoreState';
+import { EmptyState } from '@/components/section/news/EmptyState';
 
 interface VendorProductsListProps {
   products: IVendorProductsRes['products'];
@@ -65,13 +66,14 @@ function VendorProductsList({
         </div>
 
         {products.length === 0 ? (
-          <Card className="p-12 text-center">
-            <Package className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-            <p className="text-muted-foreground mb-4">You have no products yet.</p>
-            <Button asChild variant="outline">
-              <Link href="/account/vendor/products/new">Add your first product</Link>
-            </Button>
-          </Card>
+          <EmptyState
+            title="No products yet"
+            description="Add your first product to start selling on the marketplace."
+            icon={<Package className="w-12 h-12 text-muted-foreground" />}
+            actionLabel="Add your first product"
+            actionHref="/account/vendor/products/new"
+            showDefaultActions={false}
+          />
         ) : (
           <>
             <div className="space-y-4">

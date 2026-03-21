@@ -11,6 +11,7 @@ import type { ArtistVideoListItem } from '@/lib/constants/endpoints';
 import type { ApiErrorResponse } from '@/lib/types/http';
 import { toast } from 'sonner';
 import { Video, Trash2 } from 'lucide-react';
+import { EmptyState } from '@/components/section/news/EmptyState';
 
 const STATUS_FILTERS: Array<{ value: '' | 'draft' | 'published' | 'archived'; label: string }> = [
   { value: '', label: 'All' },
@@ -181,14 +182,14 @@ export function ArtistPortalVideosPageClient({
         </div>
 
         {videos.length === 0 ? (
-          <Card className="p-8 text-center">
-            <p className="text-muted-foreground">
-              You do not have any videos yet. Use the upload button to add your first video.
-            </p>
-            <Button asChild variant="outline" className="mt-4">
-              <Link href="/account/artist-portal/upload">Upload new video</Link>
-            </Button>
-          </Card>
+          <EmptyState
+            title="No videos yet"
+            description="Add your first video to share your content with the community. Use the upload button to get started."
+            icon={<Video className="w-12 h-12 text-muted-foreground" />}
+            actionLabel="Upload new video"
+            actionHref="/account/artist-portal/upload"
+            showDefaultActions={false}
+          />
         ) : (
           <div className="space-y-3">
             {videos.map(item => (

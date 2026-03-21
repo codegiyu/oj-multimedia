@@ -4,6 +4,7 @@
 import { useEffect, useState } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { SectionContainer } from '@/components/general/SectionContainer';
+import { SectionHeader } from '@/components/general/SectionHeader';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useCartStore } from '@/lib/store/cartStore';
@@ -19,6 +20,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { EmptyState } from '@/components/section/news/EmptyState';
 
 export function CartPageClient() {
   const { items, actions } = useCartStore();
@@ -82,18 +84,16 @@ export function CartPageClient() {
     return (
       <MainLayout>
         <SectionContainer className="py-16 md:py-20">
-          <div className="max-w-xl mx-auto text-center">
-            <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto mb-6">
-              <ShoppingCart className="w-8 h-8 text-muted-foreground" />
-            </div>
-            <h1 className="text-2xl font-bold text-foreground mb-2">Your cart is empty</h1>
-            <p className="text-muted-foreground mb-8">
-              {loading ? 'Loading your cart...' : 'Add items from the marketplace to get started.'}
-            </p>
-            <Button asChild variant="default" className="bg-primary hover:bg-primary/90">
-              <Link href="/marketplace">Browse Marketplace</Link>
-            </Button>
-          </div>
+          <EmptyState
+            title="Your cart is empty"
+            description={
+              loading ? 'Loading your cart...' : 'Add items from the marketplace to get started.'
+            }
+            icon={<ShoppingCart className="w-12 h-12 text-muted-foreground" />}
+            actionLabel="Browse Marketplace"
+            actionHref="/marketplace"
+            showDefaultActions={false}
+          />
         </SectionContainer>
       </MainLayout>
     );
@@ -103,7 +103,12 @@ export function CartPageClient() {
     <MainLayout>
       <SectionContainer className="py-16 md:py-20">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-3xl font-bold text-foreground mb-8">Cart</h1>
+          <SectionHeader
+            icon={ShoppingCart}
+            heading="Cart"
+            subtext="Review your items before checkout"
+            className="mb-8"
+          />
           {syncError && (
             <div className="mb-6 rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
               {syncError}
@@ -112,7 +117,9 @@ export function CartPageClient() {
 
           <div className="space-y-4 mb-10">
             {items.map(item => (
-              <Card key={item.productId} className="p-4 flex flex-col sm:flex-row gap-4">
+              <Card
+                key={item.sku ? `${item.productId}-${item.sku}` : item.productId}
+                className="p-4 flex flex-col sm:flex-row gap-4">
                 <div className="w-full sm:w-24 h-24 bg-muted rounded-lg overflow-hidden shrink-0">
                   {item.image ? (
                     <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
@@ -158,7 +165,9 @@ export function CartPageClient() {
                     variant="outline"
                     size="icon"
                     className="h-8 w-8"
-                    onClick={() => actions.updateQuantity(item.productId, item.quantity - 1)}>
+                    onClick={() =>
+                      actions.updateQuantity(item.productId, item.quantity - 1, item.sku)
+                    }>
                     <Minus className="w-4 h-4" />
                   </Button>
                   <span className="w-8 text-center font-medium">{item.quantity}</span>
@@ -166,14 +175,16 @@ export function CartPageClient() {
                     variant="outline"
                     size="icon"
                     className="h-8 w-8"
-                    onClick={() => actions.updateQuantity(item.productId, item.quantity + 1)}>
+                    onClick={() =>
+                      actions.updateQuantity(item.productId, item.quantity + 1, item.sku)
+                    }>
                     <Plus className="w-4 h-4" />
                   </Button>
                   <Button
                     variant="ghost"
                     size="icon"
                     className="h-8 w-8 text-destructive hover:text-destructive"
-                    onClick={() => actions.removeItem(item.productId)}>
+                    onClick={() => actions.removeItem(item.productId, item.sku)}>
                     <Trash2 className="w-4 h-4" />
                   </Button>
                 </div>
@@ -225,7 +236,7 @@ export function CartPageClient() {
             </div>
             <div className="flex gap-4">
               <Button variant="outline" asChild>
-                <Link href="/marketplace/products">Continue shopping</Link>
+                <Link href="/marketplace">Continue shopping</Link>
               </Button>
               <Button asChild className="bg-primary hover:bg-primary/90">
                 <Link href="/marketplace/checkout">Proceed to checkout</Link>

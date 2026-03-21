@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { useAuthStore } from '@/lib/store/useAuthStore';
 import { LoginModal } from '@/components/auth/LoginModal';
+import { EmptyState } from '@/components/section/news/EmptyState';
 
 export interface CommunityPost {
   user: string;
@@ -79,9 +80,14 @@ export const CommunitySection = ({
             </h3>
             <div className="space-y-4">
               {communityPosts.length === 0 ? (
-                <p className="py-4 text-sm text-muted-foreground">
-                  No community highlights to show yet. Join the community to share your story.
-                </p>
+                <EmptyState
+                  title="No community highlights yet"
+                  description="Join the community to share your story and connect with others."
+                  icon={<Sparkles className="w-12 h-12 text-muted-foreground" />}
+                  actionLabel="Visit community"
+                  actionHref="/community"
+                  showDefaultActions={false}
+                />
               ) : (
                 communityPosts.map((post, index) => (
                   <Link key={index} href="/community">
@@ -134,9 +140,14 @@ export const CommunitySection = ({
               </h3>
               <p className="text-sm mb-4">What genre do you listen to the most?</p>
               {pollOptions.length === 0 ? (
-                <p className="py-2 text-xs text-muted-foreground">
-                  No active poll is available right now.
-                </p>
+                <EmptyState
+                  title="No active poll"
+                  description="Check back later for new polls, or visit the polls page to see past votes."
+                  icon={<BarChart3 className="w-12 h-12 text-muted-foreground" />}
+                  actionLabel="View all polls"
+                  actionHref="/community/polls-and-voting"
+                  showDefaultActions={false}
+                />
               ) : (
                 <>
                   <div className="space-y-2">

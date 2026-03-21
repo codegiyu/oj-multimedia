@@ -6,6 +6,7 @@ import { ShoppingBag, Store, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { SectionComp } from '@/components/general/SectionComp';
+import { EmptyState } from '@/components/section/news/EmptyState';
 
 export interface MarketplaceProduct {
   _id: string;
@@ -56,10 +57,14 @@ export const MarketplaceSection = ({ products }: MarketplaceSectionProps) => {
         enableAnimation: false,
       }}>
       {products.length === 0 ? (
-        <div className="py-8 text-sm text-muted-foreground">
-          No marketplace products are available right now. New items will appear here when vendors
-          list them.
-        </div>
+        <EmptyState
+          title="No marketplace products yet"
+          description="New items will appear here when vendors list them. Check back soon."
+          icon={<ShoppingBag className="w-12 h-12 text-muted-foreground" />}
+          actionLabel="Browse marketplace"
+          actionHref="/marketplace"
+          showDefaultActions={false}
+        />
       ) : (
         <div
           ref={scrollRef}

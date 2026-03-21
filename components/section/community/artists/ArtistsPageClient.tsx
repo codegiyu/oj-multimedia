@@ -55,6 +55,7 @@ export const ArtistsPageClient = ({
             icon={<Users className="w-12 h-12 text-muted-foreground" />}
             actionLabel="Back to Community"
             actionHref="/community"
+            showDefaultActions={false}
           />
         </div>
       </section>
