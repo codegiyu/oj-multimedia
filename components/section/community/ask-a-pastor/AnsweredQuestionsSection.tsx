@@ -3,7 +3,6 @@
 import { motion } from 'framer-motion';
 import { CheckCircle2, ThumbsUp, ArrowRight, BookOpen } from 'lucide-react';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useState } from 'react';
 import { SectionComp } from '@/components/general/SectionComp';
@@ -79,12 +78,10 @@ export const AnsweredQuestionsSection = ({ questions }: AnsweredQuestionsSection
                   <ThumbsUp className="w-3 h-3" />
                   {question.helpful} found this helpful
                 </div>
-                <Button size="sm" variant="ghost" className="gap-1" asChild>
-                  <Link href={`/community/ask-a-pastor/${question._id}`}>
-                    Read Full Answer
-                    <ArrowRight className="w-3 h-3" />
-                  </Link>
-                </Button>
+                <span className="inline-flex items-center gap-1 text-sm text-primary">
+                  Read Full Answer
+                  <ArrowRight className="w-3 h-3" />
+                </span>
               </div>
             </Link>
           </motion.div>

@@ -36,7 +36,7 @@ export const RecentUploadsPageClient = ({ recentUploads }: RecentUploadsPageClie
         iconColor="secondary"
         heading="Fresh Uploads"
         subtext="Just added by creators"
-        viewAllLink="/music/recent"
+        viewAllLink="/music"
         contentProps={{ enableAnimation: false }}>
         {itemsToShow.length === 0 ? (
           <EmptyState

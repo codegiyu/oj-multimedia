@@ -54,6 +54,7 @@ async function ArtistUploadPageServer({
         initialLoadError={meRes.message || 'Unable to load artist profile.'}
         initialMusicItem={null}
         initialVideoItem={null}
+        initialEditLoadError={null}
         editId={editId}
         editType={editType}
       />
@@ -62,6 +63,7 @@ async function ArtistUploadPageServer({
 
   let initialMusicItem: ArtistMusicListItem | null = null;
   let initialVideoItem: ArtistVideoListItem | null = null;
+  let initialEditLoadError: string | null = null;
 
   if (editId && editType === 'music') {
     const itemRes = await callServerApi('ARTIST_GET_MUSIC_ITEM', {
@@ -69,6 +71,8 @@ async function ArtistUploadPageServer({
     });
     if (!itemRes.error && itemRes.data?.music) {
       initialMusicItem = itemRes.data.music;
+    } else {
+      initialEditLoadError = itemRes.message || 'Unable to load this music item for editing.';
     }
   } else if (editId && editType === 'video') {
     const itemRes = await callServerApi('ARTIST_GET_VIDEO_ITEM', {
@@ -76,6 +80,8 @@ async function ArtistUploadPageServer({
     });
     if (!itemRes.error && itemRes.data?.video) {
       initialVideoItem = itemRes.data.video;
+    } else {
+      initialEditLoadError = itemRes.message || 'Unable to load this video item for editing.';
     }
   }
 
@@ -85,6 +91,7 @@ async function ArtistUploadPageServer({
       initialLoadError={null}
       initialMusicItem={initialMusicItem}
       initialVideoItem={initialVideoItem}
+      initialEditLoadError={initialEditLoadError}
       editId={editId}
       editType={editType}
     />

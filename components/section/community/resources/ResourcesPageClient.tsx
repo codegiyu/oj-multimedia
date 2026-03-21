@@ -6,6 +6,7 @@ import { FreeBeats } from './FreeBeats';
 import { ChristianWallpapers } from './ChristianWallpapers';
 import { AffiliateProducts } from './AffiliateProducts';
 import { FreeDownloads } from './FreeDownloads';
+import type { ResourceDownloadCategory } from '@/lib/types/promotion';
 import { SectionContainer } from '@/components/general/SectionContainer';
 import { DataLoadError } from '@/components/general/DataLoadError';
 import { FolderOpen } from 'lucide-react';
@@ -56,6 +57,7 @@ export interface ResourceData {
   beats: Beat[];
   wallpapers: Wallpaper[];
   affiliateProducts: AffiliateProduct[];
+  downloadCategories: ResourceDownloadCategory[];
   initialErrorMessage?: string | null;
 }
 
@@ -65,6 +67,7 @@ export const ResourcesPageClient = ({
   beats,
   wallpapers,
   affiliateProducts,
+  downloadCategories,
   initialErrorMessage = null,
 }: ResourceData) => {
   const router = useRouter();
@@ -86,7 +89,7 @@ export const ResourcesPageClient = ({
 
   return (
     <>
-      <FreeDownloads />
+      <FreeDownloads downloadCategories={downloadCategories} />
       <FreeEbooks ebooks={ebooks} />
       <FreeBeats beats={beats} />
       <ChristianWallpapers wallpapers={wallpapers} />

@@ -71,21 +71,27 @@ export const TrendingMusicSection = ({ music: trendingMusic }: TrendingMusicSect
         className: '',
         enableAnimation: false,
       }}>
-      <div
-        ref={scrollRef}
-        className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
-        {filteredMusic.map((track, index) => (
-          <motion.div
-            key={track._id || index}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: index * 0.05 }}
-            className="max-w-[160px] sm:max-w-[180px] md:max-w-[200px] lg:max-w-[220px] xl:max-w-[240px] 2xl:max-w-[260px] snap-start shrink-0">
-            <MusicCard {...track} />
-          </motion.div>
-        ))}
-      </div>
+      {filteredMusic.length === 0 ? (
+        <div className="py-8 text-sm text-muted-foreground">
+          No trending music found for this genre yet. Check back soon.
+        </div>
+      ) : (
+        <div
+          ref={scrollRef}
+          className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
+          {filteredMusic.map((track, index) => (
+            <motion.div
+              key={track._id || index}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.05 }}
+              className="max-w-[160px] sm:max-w-[180px] md:max-w-[200px] lg:max-w-[220px] xl:max-w-[240px] 2xl:max-w-[260px] snap-start shrink-0">
+              <MusicCard {...track} />
+            </motion.div>
+          ))}
+        </div>
+      )}
     </SectionComp>
   );
 };

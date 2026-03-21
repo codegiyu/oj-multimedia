@@ -15,8 +15,11 @@ export const callServerApi = async <T extends keyof AllEndpoints>(
 ): Promise<ResponseMessage<T>> => {
   const { path, method } = ENDPOINTS[endpoint];
 
-  const cookieStore = cookies();
-  const cookieHeader = cookieStore.toString();
+  const cookieStore = await cookies();
+  const cookieHeader = cookieStore
+    .getAll()
+    .map(({ name, value }) => `${name}=${value}`)
+    .join('; ');
 
   try {
     const response = await fetch(`${SERVER_BASE_URL}${path}${options.query || ''}`, {

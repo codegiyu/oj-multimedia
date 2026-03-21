@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { MessageCircle, Users, TrendingUp, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { SectionComp } from '@/components/general/SectionComp';
+import Link from 'next/link';
 
 export interface Discussion {
   _id: string;
@@ -75,9 +76,11 @@ export const ActiveDiscussions = ({ discussions }: ActiveDiscussionsProps) => {
       </div>
 
       <div className="mt-6 text-center">
-        <Button variant="accent" className="gap-2">
-          <MessageCircle className="w-4 h-4" />
-          Start a Discussion
+        <Button variant="accent" className="gap-2" asChild>
+          <Link href="/community">
+            <MessageCircle className="w-4 h-4" />
+            Start a Discussion
+          </Link>
         </Button>
       </div>
     </SectionComp>

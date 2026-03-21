@@ -15,13 +15,20 @@ import { toast } from 'sonner';
 export function OrdersPageClient() {
   const [orders, setOrders] = useState<PopulatedMarketplaceOrder[]>([]);
   const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
     let mounted = true;
     (async () => {
-      const { data } = await callApi('MARKETPLACE_GET_MY_ORDERS', {});
+      const { data, error, message } = await callApi('MARKETPLACE_GET_MY_ORDERS', {});
       if (!mounted) return;
-      setOrders(data?.orders ?? []);
+      if (error) {
+        setOrders([]);
+        setErrorMessage(message || 'Unable to load your orders right now.');
+      } else {
+        setOrders(data?.orders ?? []);
+        setErrorMessage(null);
+      }
       setLoading(false);
     })();
 
@@ -29,6 +36,50 @@ export function OrdersPageClient() {
       mounted = false;
     };
   }, []);
+
+  if (loading) {
+    return (
+      <MainLayout>
+        <SectionContainer className="py-16 md:py-20">
+          <div className="max-w-xl mx-auto text-center">
+            <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto mb-6">
+              <Package className="w-8 h-8 text-muted-foreground animate-pulse" />
+            </div>
+            <h1 className="text-2xl font-bold text-foreground mb-2">Loading your orders</h1>
+            <p className="text-muted-foreground">Please wait while we fetch your order history.</p>
+          </div>
+        </SectionContainer>
+      </MainLayout>
+    );
+  }
+
+  if (errorMessage) {
+    return (
+      <MainLayout>
+        <SectionContainer className="py-16 md:py-20">
+          <div className="max-w-xl mx-auto text-center">
+            <div className="w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center mx-auto mb-6">
+              <Package className="w-8 h-8 text-destructive" />
+            </div>
+            <h1 className="text-2xl font-bold text-foreground mb-2">Could not load orders</h1>
+            <p className="text-muted-foreground mb-8">{errorMessage}</p>
+            <div className="flex items-center justify-center gap-3">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  window.location.reload();
+                }}>
+                Retry
+              </Button>
+              <Button asChild variant="default" className="bg-primary hover:bg-primary/90">
+                <Link href="/marketplace">Browse Marketplace</Link>
+              </Button>
+            </div>
+          </div>
+        </SectionContainer>
+      </MainLayout>
+    );
+  }
 
   if (orders.length === 0) {
     return (
@@ -40,9 +91,7 @@ export function OrdersPageClient() {
             </div>
             <h1 className="text-2xl font-bold text-foreground mb-2">No orders yet</h1>
             <p className="text-muted-foreground mb-8">
-              {loading
-                ? 'Loading your order history...'
-                : 'Your order history will appear here after you place an order.'}
+              Your order history will appear here after you place an order.
             </p>
             <Button asChild variant="default" className="bg-primary hover:bg-primary/90">
               <Link href="/marketplace">Browse Marketplace</Link>

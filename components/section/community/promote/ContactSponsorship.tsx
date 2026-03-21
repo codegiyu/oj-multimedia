@@ -1,42 +1,27 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Handshake, Mail, Phone, MessageSquare, CheckCircle } from 'lucide-react';
+import { Handshake, Mail, Phone, CheckCircle } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { SectionComp } from '@/components/general/SectionComp';
+import { getContactIcon } from '@/lib/utils/promotionIconMap';
+import type { ContactMethod } from '@/lib/types/promotion';
 
-const contactMethods = [
-  {
-    method: 'Email',
-    value: 'ohemultimedia@gmail.com',
-    icon: Mail,
-    action: 'mailto:ohemultimedia@gmail.com',
-  },
-  {
-    method: 'Phone',
-    value: '+234 705 692 3436',
-    icon: Phone,
-    action: 'tel:+2347056923436',
-  },
-  {
-    method: 'WhatsApp',
-    value: '+234 913 667 0466',
-    icon: MessageSquare,
-    action: 'https://wa.me/2349136670466',
-  },
-];
+export interface ContactSponsorshipProps {
+  contactMethods: ContactMethod[];
+  partnershipBenefits: string[];
+  additionalContact?: string;
+}
 
-const partnershipBenefits = [
-  'Long-term sponsorship opportunities',
-  'Custom advertising solutions',
-  'Brand visibility across all platforms',
-  'Dedicated account manager',
-  'Performance tracking and reports',
-  'Flexible pricing and payment options',
-];
+export const ContactSponsorship = ({
+  contactMethods,
+  partnershipBenefits,
+  additionalContact,
+}: ContactSponsorshipProps) => {
+  const primaryEmail = contactMethods.find(m => m.action.startsWith('mailto:'));
+  const primaryPhone = contactMethods.find(m => m.action.startsWith('tel:'));
 
-export const ContactSponsorship = () => {
   return (
     <SectionComp
       id="contact"
@@ -55,11 +40,11 @@ export const ContactSponsorship = () => {
             <CardContent className="p-8">
               <h3 className="text-2xl font-bold text-foreground mb-6">Get In Touch</h3>
               <div className="space-y-4">
-                {contactMethods.map((method, index) => {
-                  const Icon = method.icon;
+                {contactMethods.map(method => {
+                  const Icon = getContactIcon(method.icon);
                   return (
                     <a
-                      key={index}
+                      key={method._id}
                       href={method.action}
                       className="flex items-center gap-4 p-4 rounded-lg border border-border hover:bg-muted/50 transition-colors group">
                       <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -73,10 +58,12 @@ export const ContactSponsorship = () => {
                   );
                 })}
               </div>
-              <div className="mt-6 pt-6 border-t border-border">
-                <p className="text-sm text-muted-foreground mb-2">Additional Contact:</p>
-                <p className="text-base font-semibold text-foreground">+234 707 324 4801</p>
-              </div>
+              {additionalContact && (
+                <div className="mt-6 pt-6 border-t border-border">
+                  <p className="text-sm text-muted-foreground mb-2">Additional Contact:</p>
+                  <p className="text-base font-semibold text-foreground">{additionalContact}</p>
+                </div>
+              )}
             </CardContent>
           </Card>
         </motion.div>
@@ -91,7 +78,7 @@ export const ContactSponsorship = () => {
               <h3 className="text-2xl font-bold text-foreground mb-6">Partnership Benefits</h3>
               <ul className="space-y-4">
                 {partnershipBenefits.map((benefit, index) => (
-                  <li key={index} className="flex items-start gap-3">
+                  <li key={`${benefit}-${index}`} className="flex items-start gap-3">
                     <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                     <span className="text-foreground">{benefit}</span>
                   </li>
@@ -131,21 +118,23 @@ export const ContactSponsorship = () => {
                 can help grow your audience.
               </p>
               <div className="flex flex-wrap gap-4 justify-center">
-                <Button variant="accent" size="lg" asChild>
-                  <a href="mailto:ohemultimedia@gmail.com">
-                    <Mail className="w-4 h-4 mr-2" />
-                    Send Email
-                  </a>
-                </Button>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  onClick={() => {
-                    window.open('tel:+2347056923436', '_self');
-                  }}>
-                  <Phone className="w-4 h-4 mr-2" />
-                  Call Now
-                </Button>
+                {primaryEmail && (
+                  <Button variant="accent" size="lg" asChild>
+                    <a href={primaryEmail.action}>
+                      <Mail className="w-4 h-4 mr-2" />
+                      Send Email
+                    </a>
+                  </Button>
+                )}
+                {primaryPhone && (
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    onClick={() => window.open(primaryPhone.action, '_self')}>
+                    <Phone className="w-4 h-4 mr-2" />
+                    Call Now
+                  </Button>
+                )}
               </div>
             </div>
           </CardContent>

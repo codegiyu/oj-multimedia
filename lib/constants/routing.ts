@@ -2,6 +2,7 @@ import {
   LayoutDashboard,
   Settings,
   Music,
+  Video,
   BookOpen,
   Newspaper,
   FileText,
@@ -13,6 +14,8 @@ import {
   TrendingUp,
   Mail,
   Inbox,
+  BarChart3,
+  FileCheck,
 } from 'lucide-react';
 import type { ISidebarLinkGroup } from '@/lib/types/general';
 
@@ -42,6 +45,11 @@ export const sidebarLinksData: ISidebarLinkGroup[] = [
         path: { prefix: '/admin', suffix: '/dashboard/music' },
       },
       {
+        LucideIcon: Video,
+        page: 'Videos',
+        path: { prefix: '/admin', suffix: '/dashboard/videos' },
+      },
+      {
         LucideIcon: BookOpen,
         page: 'Devotionals',
         path: { prefix: '/admin', suffix: '/dashboard/devotionals' },
@@ -65,6 +73,11 @@ export const sidebarLinksData: ISidebarLinkGroup[] = [
         LucideIcon: MessageSquare,
         page: 'Testimonies',
         path: { prefix: '/admin', suffix: '/dashboard/testimonies' },
+      },
+      {
+        LucideIcon: BarChart3,
+        page: 'Polls',
+        path: { prefix: '/admin', suffix: '/dashboard/polls' },
       },
       {
         LucideIcon: ShoppingCart,
@@ -95,6 +108,11 @@ export const sidebarLinksData: ISidebarLinkGroup[] = [
         LucideIcon: Inbox,
         page: 'Contact Submissions',
         path: { prefix: '/admin', suffix: '/dashboard/contact-submissions' },
+      },
+      {
+        LucideIcon: FileCheck,
+        page: 'Documents',
+        path: { prefix: '/admin', suffix: '/dashboard/documents' },
       },
       {
         LucideIcon: Settings,

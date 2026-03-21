@@ -56,6 +56,7 @@ export function CheckoutPageClient() {
           email: form.email.trim(),
           phone: form.phone.trim(),
           address: form.address.trim() || undefined,
+          notes: form.notes.trim() || undefined,
         },
         items: items.map(item => ({
           productId: item.productId,

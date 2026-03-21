@@ -81,21 +81,27 @@ export const TrendingVideosSection = ({ videos: trendingVideos }: TrendingVideos
         className: '',
         enableAnimation: false,
       }}>
-      <div
-        ref={scrollRef}
-        className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
-        {filteredVideos.map((video, index) => (
-          <motion.div
-            key={index}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: index * 0.05 }}
-            className="max-w-[240px] sm:max-w-[280px] lg:max-w-[300px] xl:max-w-[320px] 2xl:max-w-[340px] snap-start shrink-0">
-            <VideoCard {...video} />
-          </motion.div>
-        ))}
-      </div>
+      {filteredVideos.length === 0 ? (
+        <div className="py-8 text-sm text-muted-foreground">
+          No trending videos found for this category yet. Try a different filter.
+        </div>
+      ) : (
+        <div
+          ref={scrollRef}
+          className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
+          {filteredVideos.map((video, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.05 }}
+              className="max-w-[240px] sm:max-w-[280px] lg:max-w-[300px] xl:max-w-[320px] 2xl:max-w-[340px] snap-start shrink-0">
+              <VideoCard {...video} />
+            </motion.div>
+          ))}
+        </div>
+      )}
     </SectionComp>
   );
 };

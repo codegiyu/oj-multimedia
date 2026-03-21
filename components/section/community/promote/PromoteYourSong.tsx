@@ -5,29 +5,14 @@ import { Music, DollarSign, CheckCircle, ArrowRight, Star } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { SectionComp } from '@/components/general/SectionComp';
+import Link from 'next/link';
+import type { PromotionPricingOption } from '@/lib/types/promotion';
 
-const pricingOptions = [
-  {
-    title: 'Basic Listing',
-    price: '₦5,000',
-    description: 'Upload your song with basic listing on the platform',
-    features: ['Song listing', 'Basic search visibility', 'Artist profile link'],
-  },
-  {
-    title: 'Featured Song',
-    price: '₦8,000',
-    description: 'Get featured on the homepage banner',
-    features: ['Homepage banner placement', 'Priority listing', 'Enhanced visibility'],
-  },
-  {
-    title: 'Artist Spotlight',
-    price: '₦7,000',
-    description: 'Get featured in the artist spotlight section',
-    features: ['Artist spotlight feature', 'Profile enhancement', 'Social media promotion'],
-  },
-];
+export interface PromoteYourSongProps {
+  pricingOptions: PromotionPricingOption[];
+}
 
-export const PromoteYourSong = () => {
+export const PromoteYourSong = ({ pricingOptions }: PromoteYourSongProps) => {
   return (
     <SectionComp
       id="promote-song"
@@ -46,9 +31,9 @@ export const PromoteYourSong = () => {
             transition={{ delay: index * 0.1 }}>
             <Card
               className={`card-interactive relative ${
-                index === 1 ? 'border-primary border-2' : ''
+                option.isFeatured ? 'border-primary border-2' : ''
               }`}>
-              {index === 1 && (
+              {option.isFeatured && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
                   <span className="px-3 py-1 bg-primary text-primary-foreground text-xs font-semibold rounded-full">
                     Most Popular
@@ -59,11 +44,11 @@ export const PromoteYourSong = () => {
                 <div className="text-center mb-6">
                   <div
                     className={`w-14 h-14 mx-auto mb-4 rounded-xl flex items-center justify-center ${
-                      index === 1
+                      option.isFeatured
                         ? 'bg-primary/20'
                         : 'bg-gradient-to-br from-primary/20 to-primary/10'
                     }`}>
-                    <Star className={`w-7 h-7 ${index === 1 ? 'text-primary' : 'text-primary'}`} />
+                    <Star className="w-7 h-7 text-primary" />
                   </div>
                   <h3 className="text-xl font-bold mb-2 text-foreground">{option.title}</h3>
                   <div className="flex items-baseline justify-center gap-1 mb-2">
@@ -79,9 +64,15 @@ export const PromoteYourSong = () => {
                     </li>
                   ))}
                 </ul>
-                <Button className="w-full" variant={index === 1 ? 'default' : 'outline'} size="lg">
-                  Choose Plan
-                  <ArrowRight className="w-4 h-4 ml-2" />
+                <Button
+                  className="w-full"
+                  variant={option.isFeatured ? 'default' : 'outline'}
+                  size="lg"
+                  asChild>
+                  <Link href="/contact">
+                    Choose Plan
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </Link>
                 </Button>
               </CardContent>
             </Card>
@@ -107,12 +98,8 @@ export const PromoteYourSong = () => {
                   </p>
                 </div>
               </div>
-              <Button
-                variant="accent"
-                onClick={() => {
-                  document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
-                }}>
-                Contact Us
+              <Button variant="accent" asChild>
+                <Link href="/contact">Contact Us</Link>
               </Button>
             </div>
           </CardContent>

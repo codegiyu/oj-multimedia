@@ -1,12 +1,13 @@
 'use client';
 
+import { useEffect } from 'react';
 import { GhostBtn } from '../atoms/GhostBtn';
 import { Logo } from '../atoms/Logo';
 import { useSiteSettingsStore } from '@/lib/store/useSiteSettingsStore';
-// import { getSocialIcon, formatSocialLabel } from '@/lib/utils/socials';
+import { getSocialIcon, formatSocialLabel } from '@/lib/utils/socials';
+import type { SocialPlatform } from '@/lib/types/site-settings';
 import { Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { FaInstagram, FaTwitter, FaYoutube, FaFacebook } from 'react-icons/fa';
 
 const footerLinks = {
   platform: [
@@ -38,34 +39,25 @@ const footerLinks = {
   ],
 };
 
-const socialLinks = [
-  { icon: FaInstagram, href: 'https://www.instagram.com', label: 'Instagram' },
-  { icon: FaTwitter, href: 'https://www.x.com', label: 'Twitter' },
-  { icon: FaYoutube, href: 'https://www.youtube.com', label: 'YouTube' },
-  { icon: FaFacebook, href: 'https://www.facebook.com', label: 'Facebook' },
-];
-
 export const Footer = () => {
   const currentYear = new Date().getFullYear();
 
-  const { settings } = useSiteSettingsStore(state => ({
+  const { settings, fetchSettings } = useSiteSettingsStore(state => ({
     settings: state.settings,
-    isLoading: state.isLoading,
     fetchSettings: state.actions.fetchSettings,
   }));
 
-  // useEffect(() => {
-  //   // Fetch socials and app details
-  //   fetchSettings('socials');
-  //   fetchSettings('appDetails');
-  // }, []);
+  useEffect(() => {
+    fetchSettings('socials');
+    fetchSettings('appDetails');
+  }, [fetchSettings]);
 
-  // const socials =
-  //   settings?.socials?.map(social => ({
-  //     Icon: getSocialIcon(social.platform),
-  //     href: social.href,
-  //     label: formatSocialLabel(social.platform),
-  //   })) || [];
+  const socials =
+    settings?.socials?.map((social: { platform: SocialPlatform; href: string }) => ({
+      Icon: getSocialIcon(social.platform),
+      href: social.href,
+      label: formatSocialLabel(social.platform),
+    })) || [];
 
   const appDescription =
     settings?.appDetails?.description ||
@@ -114,14 +106,16 @@ export const Footer = () => {
             <Logo showText={true} hideTextOnMobile={false} className="mb-4" />
             <p className="text-sm text-muted-foreground mb-4">{appDescription}</p>
             <div className="flex gap-2">
-              {socialLinks.map(social => (
-                <SocialBtn
-                  key={social.label}
-                  Icon={social.icon}
-                  href={social.href}
-                  label={social.label}
-                />
-              ))}
+              {socials.map(
+                (social: { Icon: React.ElementType; href: string; label: string }, idx: number) => (
+                  <SocialBtn
+                    key={`${social.label}-${idx}`}
+                    Icon={social.Icon}
+                    href={social.href}
+                    label={social.label}
+                  />
+                )
+              )}
             </div>
           </div>
 

@@ -6,7 +6,7 @@ import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useAuthStore } from '@/lib/store/useAuthStore';
 import { unprotectedRoutes } from '@/lib/constants/routing';
 import { Loader2 } from 'lucide-react';
-import { base64UrlDecode } from '@/lib/services/storage';
+import { base64UrlDecode, base64UrlEncode } from '@/lib/services/storage';
 
 interface AdminAuthWrapperProps {
   children: React.ReactNode;
@@ -57,13 +57,23 @@ export const AdminAuthWrapper = ({ children }: AdminAuthWrapperProps) => {
 
     // If not authenticated and trying to access protected route
     if (!user && isProtectedRoute) {
-      router.replace(`/admin/auth/login?redirectTo=${encodeURIComponent(pathname)}`);
+      router.replace(
+        `/admin/auth/login?redirectTo=${encodeURIComponent(base64UrlEncode(pathname))}`
+      );
       return;
     }
 
     // If authenticated and on auth route, redirect to dashboard or redirectTo
     if (user && isAuthRoute && !pauseNavigatingAwayFromAuth) {
-      const destination = redirectTo ? base64UrlDecode(redirectTo) : '/admin/dashboard/home';
+      let destination = '/admin/dashboard/home';
+      if (redirectTo) {
+        try {
+          destination = base64UrlDecode(redirectTo);
+          if (!destination.startsWith('/')) destination = '/admin/dashboard/home';
+        } catch {
+          destination = '/admin/dashboard/home';
+        }
+      }
       router.replace(destination);
       return;
     }

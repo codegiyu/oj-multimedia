@@ -78,39 +78,45 @@ export const CommunitySection = ({
               Community Highlights
             </h3>
             <div className="space-y-4">
-              {communityPosts.map((post, index) => (
-                <Link key={index} href="/community">
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: index * 0.1 }}
-                    className="bg-card rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
-                    <div className="flex gap-3">
-                      <div className="w-10 h-10 rounded-full overflow-hidden shrink-0">
-                        <img
-                          src={post.avatar}
-                          alt={post.user}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-semibold text-sm">{post.user}</p>
-                        <p className="text-muted-foreground mt-1">{post.content}</p>
-                        <div className="flex items-center gap-4 mt-3 text-sm text-muted-foreground">
-                          <span className="flex items-center gap-1 hover:text-primary cursor-pointer transition-colors">
-                            ❤️ {post.likes}
-                          </span>
-                          <span className="flex items-center gap-1 hover:text-primary cursor-pointer transition-colors">
-                            <MessageSquare className="w-4 h-4" />
-                            {post.comments}
-                          </span>
+              {communityPosts.length === 0 ? (
+                <p className="py-4 text-sm text-muted-foreground">
+                  No community highlights to show yet. Join the community to share your story.
+                </p>
+              ) : (
+                communityPosts.map((post, index) => (
+                  <Link key={index} href="/community">
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: index * 0.1 }}
+                      className="bg-card rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                      <div className="flex gap-3">
+                        <div className="w-10 h-10 rounded-full overflow-hidden shrink-0">
+                          <img
+                            src={post.avatar}
+                            alt={post.user}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-semibold text-sm">{post.user}</p>
+                          <p className="text-muted-foreground mt-1">{post.content}</p>
+                          <div className="flex items-center gap-4 mt-3 text-sm text-muted-foreground">
+                            <span className="flex items-center gap-1 hover:text-primary cursor-pointer transition-colors">
+                              ❤️ {post.likes}
+                            </span>
+                            <span className="flex items-center gap-1 hover:text-primary cursor-pointer transition-colors">
+                              <MessageSquare className="w-4 h-4" />
+                              {post.comments}
+                            </span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </motion.div>
-                </Link>
-              ))}
+                    </motion.div>
+                  </Link>
+                ))
+              )}
             </div>
           </div>
 
@@ -127,32 +133,41 @@ export const CommunitySection = ({
                 Weekly Poll
               </h3>
               <p className="text-sm mb-4">What genre do you listen to the most?</p>
-              <div className="space-y-2">
-                {pollOptions.map(item => (
-                  <button
-                    key={item.option}
-                    className="w-full relative bg-muted rounded-lg p-3 text-left text-sm hover:bg-muted/80 transition-colors overflow-hidden">
-                    <div
-                      className="absolute inset-y-0 left-0 bg-primary/10 transition-all"
-                      style={{ width: `${item.votes}%` }}
-                    />
-                    <span className="relative flex items-center justify-between">
-                      {item.option}
-                      <span className="text-muted-foreground">{item.votes}%</span>
-                    </span>
-                  </button>
-                ))}
-              </div>
-              <div className="flex items-center justify-between mt-3">
-                <p className="text-xs text-muted-foreground">
-                  {pollTotalVotes.toLocaleString()} votes
+              {pollOptions.length === 0 ? (
+                <p className="py-2 text-xs text-muted-foreground">
+                  No active poll is available right now.
                 </p>
-                <Link
-                  href="/community/polls-and-voting"
-                  className="text-xs text-primary hover:text-primary/80 transition-colors">
-                  View All Polls →
-                </Link>
-              </div>
+              ) : (
+                <>
+                  <div className="space-y-2">
+                    {pollOptions.map(item => (
+                      <div
+                        key={item.option}
+                        className="w-full relative bg-muted rounded-lg p-3 text-left text-sm overflow-hidden"
+                        aria-label={`Poll result for ${item.option}`}>
+                        <div
+                          className="absolute inset-y-0 left-0 bg-primary/10 transition-all"
+                          style={{ width: `${item.votes}%` }}
+                        />
+                        <span className="relative flex items-center justify-between">
+                          {item.option}
+                          <span className="text-muted-foreground">{item.votes}%</span>
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex items-center justify-between mt-3">
+                    <p className="text-xs text-muted-foreground">
+                      {pollTotalVotes.toLocaleString()} votes
+                    </p>
+                    <Link
+                      href="/community/polls-and-voting"
+                      className="text-xs text-primary hover:text-primary/80 transition-colors">
+                      View All Polls →
+                    </Link>
+                  </div>
+                </>
+              )}
             </motion.div>
 
             {/* Quick Links */}
