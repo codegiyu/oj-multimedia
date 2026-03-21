@@ -41,7 +41,9 @@ async function AccountSettingsPageClientServer() {
       <AccountSettingsPageClient
         initialUser={null}
         initialLoadError={
-          responseCode === 401 ? null : res.message || "We couldn't load your profile."
+          responseCode === 401
+            ? 'Your session has expired. Please sign in again to update your settings.'
+            : res.message || "We couldn't load your profile."
         }
       />
     );

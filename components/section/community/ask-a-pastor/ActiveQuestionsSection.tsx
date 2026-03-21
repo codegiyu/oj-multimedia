@@ -3,7 +3,6 @@
 import { motion } from 'framer-motion';
 import { HelpCircle, Eye, MessageSquare, Clock, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useState } from 'react';
 import { SectionComp } from '@/components/general/SectionComp';
@@ -78,12 +77,10 @@ export const ActiveQuestionsSection = ({ questions }: ActiveQuestionsSectionProp
 
               <div className="flex items-center justify-between mt-4">
                 <span className="text-sm text-muted-foreground">— {question.author}</span>
-                <Button size="sm" variant="ghost" className="gap-1" asChild>
-                  <Link href={`/community/ask-a-pastor/${question._id}`}>
-                    <MessageSquare className="w-4 h-4" />
-                    View Answers
-                  </Link>
-                </Button>
+                <span className="inline-flex items-center gap-1 text-sm text-primary">
+                  <MessageSquare className="w-4 h-4" />
+                  View Answers
+                </span>
               </div>
             </Link>
           </motion.div>

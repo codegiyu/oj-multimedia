@@ -1,6 +1,7 @@
 import axios, { type AxiosRequestConfig, type AxiosResponse } from 'axios';
 import type { ApiErrorResponse, ApiSuccessResponse, ResponseMessage } from '../types/http';
 import { getDataFromRequest, getQueryParam } from '../utils/general';
+import { base64UrlEncode } from './storage';
 import { type AllEndpoints, ENDPOINTS } from '../constants/endpoints';
 import { getRouter } from '../utils/navigation';
 import { useInitAuthStore } from '../store/useAuthStore';
@@ -86,17 +87,16 @@ export const callApi = async <T extends keyof AllEndpoints>(
         }
 
         const redirectQueryValue = getQueryParam('redirectTo');
-        const loginRoute = '/admin/auth/login'; // Update this to match your auth route
-
-        switch (true) {
-          case Boolean(redirectQueryValue):
-            redirectPath = `${loginRoute}?redirectTo=${redirectQueryValue}`;
-            break;
-
-          default:
-            redirectPath = `${loginRoute}`;
-            break;
-        }
+        const loginRoute = '/admin/auth/login';
+        const currentPath =
+          typeof window !== 'undefined' && window.location?.pathname?.startsWith('/admin')
+            ? window.location.pathname
+            : '';
+        const redirectToValue =
+          redirectQueryValue || (currentPath ? base64UrlEncode(currentPath) : '');
+        redirectPath = redirectToValue
+          ? `${loginRoute}?redirectTo=${encodeURIComponent(redirectToValue)}`
+          : loginRoute;
       }
       if (error.response.status === 429) {
         // Rate limit exceeded - could be handled by a modal/store

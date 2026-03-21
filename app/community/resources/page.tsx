@@ -21,6 +21,8 @@ import {
   mapToWallpaper,
   mapToAffiliateProduct,
 } from '@/lib/utils/communityApiMappers';
+import { DOWNLOAD_CATEGORIES_FALLBACK } from '@/lib/constants/promotionFallbacks';
+import type { ResourceDownloadCategory } from '@/lib/types/promotion';
 
 export const metadata: Metadata = {
   title: 'Resources - Free Downloads & More',
@@ -42,12 +44,17 @@ async function fetchResourcesData(): Promise<
   ResourceData & { initialErrorMessage: string | null }
 > {
   const baseQuery = '?limit=50&page=1';
-  const requests = RESOURCE_TYPE_ORDER.map(type =>
-    callServerApi('PUBLIC_GET_RESOURCES', {
-      query: `${baseQuery}&type=${type}` as `?${string}`,
-    })
-  );
-  const results = await Promise.all(requests);
+  const [resourceRequests, downloadCategoriesRes] = await Promise.all([
+    Promise.all(
+      RESOURCE_TYPE_ORDER.map(type =>
+        callServerApi('PUBLIC_GET_RESOURCES', {
+          query: `${baseQuery}&type=${type}` as `?${string}`,
+        })
+      )
+    ),
+    callServerApi('PUBLIC_GET_RESOURCE_DOWNLOAD_CATEGORIES', {}),
+  ]);
+  const results = resourceRequests;
   let initialErrorMessage: string | null = null;
   const [ebookRes, templateRes, beatRes, wallpaperRes, affiliateRes] = results;
 
@@ -63,12 +70,19 @@ async function fetchResourcesData(): Promise<
     return list.map(i => mapper(i as Record<string, unknown>));
   }
 
+  const downloadCategories: ResourceDownloadCategory[] =
+    downloadCategoriesRes.type === 'success' &&
+    downloadCategoriesRes.data?.downloadCategories?.length
+      ? downloadCategoriesRes.data.downloadCategories
+      : DOWNLOAD_CATEGORIES_FALLBACK;
+
   return {
     ebooks: mapResourceList(ebookRes, mapToEbook) as Ebook[],
     templates: mapResourceList(templateRes, mapToTemplate) as Template[],
     beats: mapResourceList(beatRes, mapToBeat) as Beat[],
     wallpapers: mapResourceList(wallpaperRes, mapToWallpaper) as Wallpaper[],
     affiliateProducts: mapResourceList(affiliateRes, mapToAffiliateProduct) as AffiliateProduct[],
+    downloadCategories,
     initialErrorMessage,
   };
 }

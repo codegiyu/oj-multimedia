@@ -1,39 +1,19 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Star, TrendingUp, Home, Mail, CheckCircle, ArrowRight } from 'lucide-react';
+import { Star, CheckCircle, ArrowRight } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { SectionComp } from '@/components/general/SectionComp';
+import Link from 'next/link';
+import { getFeaturedIcon } from '@/lib/utils/promotionIconMap';
+import type { FeaturedOption } from '@/lib/types/promotion';
 
-const featuredOptions = [
-  {
-    title: 'Homepage Slider Banner',
-    duration: '1 Week',
-    price: '₦10,000',
-    icon: Home,
-    description: 'Get maximum visibility on our homepage slider',
-    features: ['Homepage banner placement', '7 days visibility', 'Click-through tracking'],
-  },
-  {
-    title: 'Trending Section',
-    duration: '1 Week',
-    price: '₦8,000',
-    icon: TrendingUp,
-    description: 'Featured in the trending section',
-    features: ['Trending badge', 'Priority placement', 'Enhanced discoverability'],
-  },
-  {
-    title: 'Social Media Promo',
-    duration: 'Flexible',
-    price: '₦5,000 - ₦10,000',
-    icon: Mail,
-    description: 'Promote across Facebook and Instagram',
-    features: ['Multi-platform promotion', 'Custom creatives', 'Performance reports'],
-  },
-];
+export interface GetFeaturedProps {
+  featuredOptions: FeaturedOption[];
+}
 
-export const GetFeatured = () => {
+export const GetFeatured = ({ featuredOptions }: GetFeaturedProps) => {
   return (
     <SectionComp
       id="get-featured"
@@ -44,10 +24,10 @@ export const GetFeatured = () => {
       contentProps={{ enableAnimation: false }}>
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
         {featuredOptions.map((option, index) => {
-          const Icon = option.icon;
+          const Icon = getFeaturedIcon(option.icon);
           return (
             <motion.div
-              key={index}
+              key={option._id}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -73,9 +53,11 @@ export const GetFeatured = () => {
                       </li>
                     ))}
                   </ul>
-                  <Button className="w-full" variant="outline" size="lg">
-                    Get Featured
-                    <ArrowRight className="w-4 h-4 ml-2" />
+                  <Button className="w-full" variant="outline" size="lg" asChild>
+                    <Link href="/contact">
+                      Get Featured
+                      <ArrowRight className="w-4 h-4 ml-2" />
+                    </Link>
                   </Button>
                 </CardContent>
               </Card>
@@ -102,12 +84,8 @@ export const GetFeatured = () => {
                   </p>
                 </div>
               </div>
-              <Button
-                variant="accent"
-                onClick={() => {
-                  document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
-                }}>
-                Contact for Packages
+              <Button variant="accent" asChild>
+                <Link href="/contact">Contact for Packages</Link>
               </Button>
             </div>
           </CardContent>

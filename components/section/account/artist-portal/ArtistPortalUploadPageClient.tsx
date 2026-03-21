@@ -49,6 +49,7 @@ export interface ArtistPortalUploadPageClientProps {
   initialLoadError: string | null;
   initialMusicItem: ArtistMusicListItem | null;
   initialVideoItem: ArtistVideoListItem | null;
+  initialEditLoadError: string | null;
   editId: string;
   editType: 'music' | 'video';
 }
@@ -58,6 +59,7 @@ export function ArtistPortalUploadPageClient({
   initialLoadError,
   initialMusicItem,
   initialVideoItem,
+  initialEditLoadError,
   editId,
   editType,
 }: ArtistPortalUploadPageClientProps) {
@@ -236,6 +238,33 @@ export function ArtistPortalUploadPageClient({
             <Button asChild variant="outline">
               <Link href="/account/artist-portal/settings">Go to settings</Link>
             </Button>
+          </Card>
+        </div>
+      </SectionContainer>
+    );
+  }
+
+  if (editId && initialEditLoadError) {
+    return (
+      <SectionContainer>
+        <div className="max-w-2xl mx-auto">
+          <Card className="p-8 text-center space-y-4">
+            <p className="text-muted-foreground">{initialEditLoadError}</p>
+            <div className="flex items-center justify-center gap-3">
+              <Button asChild variant="outline">
+                <Link
+                  href={
+                    editType === 'music'
+                      ? '/account/artist-portal/music'
+                      : '/account/artist-portal/videos'
+                  }>
+                  Back to library
+                </Link>
+              </Button>
+              <Button asChild>
+                <Link href="/account/artist-portal/upload">Upload new content</Link>
+              </Button>
+            </div>
           </Card>
         </div>
       </SectionContainer>

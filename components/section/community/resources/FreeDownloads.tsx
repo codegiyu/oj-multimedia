@@ -5,35 +5,14 @@ import { Download, ArrowDown, CheckCircle } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { SectionComp } from '@/components/general/SectionComp';
+import Link from 'next/link';
+import type { ResourceDownloadCategory } from '@/lib/types/promotion';
 
-const downloadCategories = [
-  {
-    title: 'Free E-books',
-    count: '12+',
-    description: 'Free Christian e-books and guides',
-    icon: '📚',
-  },
-  {
-    title: 'Sermon Templates',
-    count: '25+',
-    description: 'Professional templates and flyers',
-    icon: '📄',
-  },
-  {
-    title: 'Free Beats',
-    count: '50+',
-    description: 'Worship beats and instrumentals',
-    icon: '🎵',
-  },
-  {
-    title: 'Wallpapers',
-    count: '100+',
-    description: 'Beautiful Christian wallpapers',
-    icon: '🖼️',
-  },
-];
+export interface FreeDownloadsProps {
+  downloadCategories: ResourceDownloadCategory[];
+}
 
-export const FreeDownloads = () => {
+export const FreeDownloads = ({ downloadCategories }: FreeDownloadsProps) => {
   return (
     <SectionComp
       id="free-downloads"
@@ -45,7 +24,7 @@ export const FreeDownloads = () => {
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
         {downloadCategories.map((category, index) => (
           <motion.div
-            key={index}
+            key={category._id}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -56,9 +35,11 @@ export const FreeDownloads = () => {
                 <h3 className="font-bold text-foreground mb-2">{category.title}</h3>
                 <p className="text-2xl font-bold text-primary mb-2">{category.count}</p>
                 <p className="text-sm text-muted-foreground mb-4">{category.description}</p>
-                <Button className="w-full" variant="outline" size="sm">
-                  Browse
-                  <ArrowDown className="w-4 h-4 ml-2" />
+                <Button className="w-full" variant="outline" size="sm" asChild>
+                  <Link href={category.href}>
+                    Browse
+                    <ArrowDown className="w-4 h-4 ml-2" />
+                  </Link>
                 </Button>
               </CardContent>
             </Card>

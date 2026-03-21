@@ -5,6 +5,7 @@ import { BookOpen, Download, ArrowRight } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { SectionComp } from '@/components/general/SectionComp';
+import Link from 'next/link';
 import type { Ebook } from './ResourcesPageClient';
 
 interface FreeEbooksProps {
@@ -44,9 +45,11 @@ export const FreeEbooks = ({ ebooks }: FreeEbooksProps) => {
                       <span>{ebook.downloads} downloads</span>
                     </div>
                   </div>
-                  <Button className="w-full" variant="outline" size="sm">
-                    Download
-                    <ArrowRight className="w-4 h-4 ml-2" />
+                  <Button className="w-full" variant="outline" size="sm" asChild>
+                    <Link href="/contact">
+                      Download
+                      <ArrowRight className="w-4 h-4 ml-2" />
+                    </Link>
                   </Button>
                 </div>
               </CardContent>

@@ -27,6 +27,12 @@ interface FilterableDataPageProps {
   searchPlaceholder?: string;
   filters?: FilterConfig[];
   onApplyFilters?: (filters: Record<string, string>) => void;
+  /** Controlled search: value from parent (e.g. URL param) */
+  searchValue?: string;
+  /** When provided, parent controls search and receives updates (e.g. for API/URL) */
+  onSearchChange?: (value: string) => void;
+  /** When user presses Enter in search, optionally trigger apply */
+  onSearchApply?: () => void;
   children?: ReactNode;
 }
 
@@ -34,9 +40,27 @@ export function FilterableDataPage({
   searchPlaceholder = 'Search...',
   filters = [],
   onApplyFilters,
+  searchValue,
+  onSearchChange,
+  onSearchApply,
   children,
 }: FilterableDataPageProps) {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [internalSearch, setInternalSearch] = useState('');
+  const searchQuery = searchValue !== undefined ? searchValue : internalSearch;
+
+  const handleSearchChange = (value: string) => {
+    if (onSearchChange) {
+      onSearchChange(value);
+    } else {
+      setInternalSearch(value);
+    }
+  };
+
+  const handleSearchKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && onSearchApply) {
+      onSearchApply();
+    }
+  };
 
   const handleApplyFilters = () => {
     if (onApplyFilters && filters.length > 0) {
@@ -58,7 +82,8 @@ export function FilterableDataPage({
               placeholder={searchPlaceholder}
               className="pl-10 w-full"
               value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
+              onChange={e => handleSearchChange(e.target.value)}
+              onKeyDown={handleSearchKeyDown}
             />
           </div>
 

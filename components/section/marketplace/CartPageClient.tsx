@@ -25,6 +25,7 @@ export function CartPageClient() {
   const total = actions.getTotal();
   const { user } = useAuthStore(state => state);
   const [loading, setLoading] = useState(false);
+  const [syncError, setSyncError] = useState<string | null>(null);
 
   const vendors = items
     .filter(item => item.vendorWhatsapp)
@@ -59,11 +60,16 @@ export function CartPageClient() {
     let mounted = true;
     setLoading(true);
     (async () => {
-      const { data } = await callApi('USER_CART_GET', {});
+      const { data, error, message } = await callApi('USER_CART_GET', {});
       if (!mounted) return;
-      const cart = data as ICartRes | undefined;
-      if (cart?.items) {
-        actions.syncFromBackend(cart);
+      if (error) {
+        setSyncError(message || "Couldn't sync your latest cart. Showing saved local items.");
+      } else {
+        const cart = data as ICartRes | undefined;
+        if (cart?.items) {
+          actions.syncFromBackend(cart);
+        }
+        setSyncError(null);
       }
       setLoading(false);
     })();
@@ -98,6 +104,11 @@ export function CartPageClient() {
       <SectionContainer className="py-16 md:py-20">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-3xl font-bold text-foreground mb-8">Cart</h1>
+          {syncError && (
+            <div className="mb-6 rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
+              {syncError}
+            </div>
+          )}
 
           <div className="space-y-4 mb-10">
             {items.map(item => (

@@ -133,22 +133,39 @@ export function VendorEditProductPageClient({ productId }: { productId: string }
   useEffect(() => {
     let cancelled = false;
 
+    async function findProductById(targetProductId: string): Promise<IMarketplaceProduct | null> {
+      const pageSize = 100;
+      let page = 1;
+      let totalPages = 1;
+
+      while (page <= totalPages) {
+        const res = await callApi('VENDOR_GET_PRODUCTS', {
+          query: `?page=${page}&limit=${pageSize}`,
+        });
+        if (res.error || !res.data?.products) return null;
+        const found = (res.data.products as IMarketplaceProduct[]).find(
+          p => p._id === targetProductId
+        );
+        if (found) return found;
+        totalPages = res.data.pagination?.totalPages || 1;
+        page += 1;
+      }
+
+      return null;
+    }
+
     async function loadProduct() {
-      const [productsRes, categoriesRes, subcategoriesRes, vendorRes] = await Promise.all([
-        callApi('VENDOR_GET_PRODUCTS', { query: '?page=1&limit=100' }),
+      const [categoriesRes, subcategoriesRes, vendorRes, foundProduct] = await Promise.all([
         callApi('MARKETPLACE_GET_CATEGORIES', {}),
         callApi('MARKETPLACE_GET_SUBCATEGORIES', {}),
         callApi('VENDOR_GET_ME', {}),
+        findProductById(productId),
       ]);
 
       if (cancelled) return;
 
-      if (productsRes.data?.products) {
-        const found = (productsRes.data.products as IMarketplaceProduct[]).find(
-          (p: IMarketplaceProduct) => p._id === productId
-        );
-        if (found) setProduct(found);
-        else setNotFound(true);
+      if (foundProduct) {
+        setProduct(foundProduct);
       } else {
         setNotFound(true);
       }

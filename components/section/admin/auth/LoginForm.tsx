@@ -1,7 +1,10 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
+import { useEffect } from 'react';
 import Link from 'next/link';
 import { useAuthStore } from '@/lib/store/useAuthStore';
+import { useSiteSettingsStore } from '@/lib/store/useSiteSettingsStore';
 import { useForm } from '@/lib/hooks/use-form';
 import { RegularInput } from '@/components/atoms/RegularInput';
 import { PasswordInput } from '@/components/atoms/PasswordInput';
@@ -20,6 +23,17 @@ export const LoginForm = () => {
   const {
     actions: { login },
   } = useAuthStore(state => state);
+
+  const { settings, fetchSettings } = useSiteSettingsStore(state => ({
+    settings: state.settings,
+    fetchSettings: state.actions.fetchSettings,
+  }));
+
+  useEffect(() => {
+    fetchSettings('features');
+  }, []);
+
+  const loginEnabled = settings?.features?.loginEnabled ?? true;
 
   const {
     formValues,
@@ -48,6 +62,16 @@ export const LoginForm = () => {
       }
     },
   });
+
+  if (!loginEnabled) {
+    return (
+      <div className="py-8 text-center">
+        <p className="text-muted-foreground">
+          Sign-in is currently disabled. Please try again later.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-10">

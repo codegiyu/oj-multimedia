@@ -27,7 +27,7 @@ export const RecentUploads = ({ uploads: recentUploads }: RecentUploadsProps) =>
         iconColor="secondary"
         heading="Fresh Uploads"
         subtext="Just added by creators"
-        viewAllLink="/music/recent"
+        viewAllLink="/music"
         contentProps={{ enableAnimation: false }}>
         <EmptyState
           title="No recent uploads"
@@ -44,7 +44,7 @@ export const RecentUploads = ({ uploads: recentUploads }: RecentUploadsProps) =>
       iconColor="secondary"
       heading="Fresh Uploads"
       subtext="Just added by creators"
-      viewAllLink="/music/recent"
+      viewAllLink="/music"
       contentProps={{ enableAnimation: false }}>
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {recentUploads.map((song, index) => (

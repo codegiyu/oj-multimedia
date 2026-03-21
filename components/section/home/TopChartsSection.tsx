@@ -48,11 +48,17 @@ export const TopChartsSection = ({ chartData, risingArtists }: TopChartsSectionP
               viewAllLabel="See All"
               className="mb-6"
             />
-            <SectionContent className="space-y-1" enableAnimation={false}>
-              {chartData.slice(0, 5).map(item => (
-                <ChartCard key={item._id ?? item.rank} {...item} />
-              ))}
-            </SectionContent>
+            {chartData.length === 0 ? (
+              <div className="py-6 text-sm text-muted-foreground">
+                No chart data available yet. Check back later for top songs.
+              </div>
+            ) : (
+              <SectionContent className="space-y-1" enableAnimation={false}>
+                {chartData.slice(0, 5).map(item => (
+                  <ChartCard key={item._id ?? item.rank} {...item} />
+                ))}
+              </SectionContent>
+            )}
           </motion.div>
 
           {/* Rising Artists */}
@@ -71,19 +77,25 @@ export const TopChartsSection = ({ chartData, risingArtists }: TopChartsSectionP
               viewAllLabel="See All"
               className="mb-6"
             />
-            <SectionContent className="grid grid-cols-2 gap-4" enableAnimation={false}>
-              {risingArtists.map(artist => (
-                <ArtistCard
-                  key={artist._id}
-                  _id={artist._id}
-                  name={artist.name}
-                  image={artist.image}
-                  genre={artist.genre}
-                  followers={artist.followers}
-                  verified={artist.verified}
-                />
-              ))}
-            </SectionContent>
+            {risingArtists.length === 0 ? (
+              <div className="py-6 text-sm text-muted-foreground">
+                No rising artists to show yet. Discover new talent soon.
+              </div>
+            ) : (
+              <SectionContent className="grid grid-cols-2 gap-4" enableAnimation={false}>
+                {risingArtists.map(artist => (
+                  <ArtistCard
+                    key={artist._id}
+                    _id={artist._id}
+                    name={artist.name}
+                    image={artist.image}
+                    genre={artist.genre}
+                    followers={artist.followers}
+                    verified={artist.verified}
+                  />
+                ))}
+              </SectionContent>
+            )}
           </motion.div>
         </div>
       </div>

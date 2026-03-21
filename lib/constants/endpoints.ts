@@ -21,16 +21,25 @@ import type {
   QuestionsListData,
   QuestionDetailData,
   PastorsListData,
+  PastorListItem,
   PollsListData,
   PollDetailData,
   ArtistsListData,
   ArtistDetailData,
+  ArtistListItem,
   ResourcesListData,
+  ResourceDetail,
   PrayerRequestListItem,
   QuestionListItem,
   TestimonyListItem,
   PollListItem,
 } from '@/lib/types/community';
+import type {
+  FeaturedOptionsRes,
+  PromotionPricingOptionsRes,
+  ResourceDownloadCategoriesRes,
+  PromotionContactRes,
+} from '@/lib/types/promotion';
 
 export type HttpMethods = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
@@ -544,6 +553,255 @@ export interface AllEndpoints {
   ADMIN_EMAIL_LOG_DETAILS: EndpointDefinition<undefined, IEmailLogDetailsRes, `/${string}`>;
   ADMIN_EMAIL_LOGS_RESEND: EndpointDefinition<undefined, IEmailLogResendRes, `/${string}`>;
 
+  // Contact submissions (Admin)
+  ADMIN_CONTACT_SUBMISSIONS_LIST: EndpointDefinition<
+    undefined,
+    GetListRes<ContactSubmission, 'contactSubmissions'>,
+    `?${string}`
+  >;
+
+  // Admin content - Music
+  ADMIN_MUSIC_LIST: EndpointDefinition<
+    undefined,
+    GetListRes<ArtistMusicListItem, 'music'>,
+    `?${string}`
+  >;
+  ADMIN_MUSIC_ITEM: EndpointDefinition<undefined, IArtistMusicItemRes, `/${string}`>;
+  ADMIN_MUSIC_CREATE: EndpointDefinition<
+    IArtistCreateMusicPayload & { artistId: string },
+    IArtistMusicItemRes,
+    undefined
+  >;
+  ADMIN_MUSIC_UPDATE: EndpointDefinition<
+    IArtistUpdateMusicPayload,
+    IArtistMusicItemRes,
+    `/${string}`
+  >;
+  ADMIN_MUSIC_DELETE: EndpointDefinition<undefined, { success: boolean }, `/${string}`>;
+  ADMIN_MUSIC_APPROVE: EndpointDefinition<undefined, IArtistMusicItemRes, `/${string}`>;
+  ADMIN_MUSIC_REJECT: EndpointDefinition<{ reason: string }, IArtistMusicItemRes, `/${string}`>;
+
+  // Admin content - Videos
+  ADMIN_VIDEOS_LIST: EndpointDefinition<
+    undefined,
+    GetListRes<ArtistVideoListItem, 'videos'>,
+    `?${string}`
+  >;
+  ADMIN_VIDEO_ITEM: EndpointDefinition<undefined, IArtistVideoItemRes, `/${string}`>;
+  ADMIN_VIDEO_CREATE: EndpointDefinition<
+    IArtistCreateVideoPayload & { artistId: string },
+    IArtistVideoItemRes,
+    undefined
+  >;
+  ADMIN_VIDEO_UPDATE: EndpointDefinition<
+    IArtistUpdateVideoPayload,
+    IArtistVideoItemRes,
+    `/${string}`
+  >;
+  ADMIN_VIDEO_DELETE: EndpointDefinition<undefined, { success: boolean }, `/${string}`>;
+  ADMIN_VIDEO_APPROVE: EndpointDefinition<undefined, IArtistVideoItemRes, `/${string}`>;
+  ADMIN_VIDEO_REJECT: EndpointDefinition<{ reason: string }, IArtistVideoItemRes, `/${string}`>;
+
+  // Admin content - News
+  ADMIN_NEWS_LIST: EndpointDefinition<
+    undefined,
+    GetListRes<PublicNewsListItem, 'news'>,
+    `?${string}`
+  >;
+  ADMIN_NEWS_ITEM: EndpointDefinition<undefined, IPublicNewsItemRes, `/${string}`>;
+  ADMIN_NEWS_CREATE: EndpointDefinition<Record<string, unknown>, IPublicNewsItemRes, undefined>;
+  ADMIN_NEWS_UPDATE: EndpointDefinition<Record<string, unknown>, IPublicNewsItemRes, `/${string}`>;
+  ADMIN_NEWS_DELETE: EndpointDefinition<undefined, { success: boolean }, `/${string}`>;
+
+  // Admin content - Artists
+  ADMIN_ARTISTS_LIST: EndpointDefinition<
+    undefined,
+    GetListRes<ArtistListItem, 'artists'>,
+    `?${string}`
+  >;
+  ADMIN_ARTIST_ITEM: EndpointDefinition<undefined, ArtistDetailData, `/${string}`>;
+  ADMIN_ARTIST_CREATE: EndpointDefinition<Record<string, unknown>, ArtistDetailData, undefined>;
+  ADMIN_ARTIST_UPDATE: EndpointDefinition<Record<string, unknown>, ArtistDetailData, `/${string}`>;
+  ADMIN_ARTIST_DELETE: EndpointDefinition<undefined, { success: boolean }, `/${string}`>;
+
+  // Admin content - Pastors
+  ADMIN_PASTORS_LIST: EndpointDefinition<undefined, PastorsListData, `?${string}`>;
+  ADMIN_PASTOR_ITEM: EndpointDefinition<undefined, { pastor: PastorListItem }, `/${string}`>;
+  ADMIN_PASTOR_CREATE: EndpointDefinition<
+    Record<string, unknown>,
+    { pastor: PastorListItem },
+    undefined
+  >;
+  ADMIN_PASTOR_UPDATE: EndpointDefinition<
+    Record<string, unknown>,
+    { pastor: PastorListItem },
+    `/${string}`
+  >;
+  ADMIN_PASTOR_DELETE: EndpointDefinition<undefined, { success: boolean }, `/${string}`>;
+
+  // Admin content - Devotionals
+  ADMIN_DEVOTIONALS_LIST: EndpointDefinition<undefined, DevotionalsListData, `?${string}`>;
+  ADMIN_DEVOTIONAL_ITEM: EndpointDefinition<undefined, DevotionalDetailData, `/${string}`>;
+  ADMIN_DEVOTIONAL_CREATE: EndpointDefinition<
+    Record<string, unknown>,
+    DevotionalDetailData,
+    undefined
+  >;
+  ADMIN_DEVOTIONAL_UPDATE: EndpointDefinition<
+    Record<string, unknown>,
+    DevotionalDetailData,
+    `/${string}`
+  >;
+  ADMIN_DEVOTIONAL_DELETE: EndpointDefinition<undefined, { success: boolean }, `/${string}`>;
+  ADMIN_DEVOTIONAL_APPROVE: EndpointDefinition<undefined, DevotionalDetailData, `/${string}`>;
+  ADMIN_DEVOTIONAL_REJECT: EndpointDefinition<
+    { reason: string },
+    DevotionalDetailData,
+    `/${string}`
+  >;
+
+  // Admin content - Testimonies
+  ADMIN_TESTIMONIES_LIST: EndpointDefinition<undefined, TestimoniesListData, `?${string}`>;
+  ADMIN_TESTIMONY_ITEM: EndpointDefinition<undefined, TestimonyDetailData, `/${string}`>;
+  ADMIN_TESTIMONY_CREATE: EndpointDefinition<
+    Record<string, unknown>,
+    TestimonyDetailData,
+    undefined
+  >;
+  ADMIN_TESTIMONY_UPDATE: EndpointDefinition<
+    Record<string, unknown>,
+    TestimonyDetailData,
+    `/${string}`
+  >;
+  ADMIN_TESTIMONY_DELETE: EndpointDefinition<undefined, { success: boolean }, `/${string}`>;
+  ADMIN_TESTIMONY_APPROVE: EndpointDefinition<undefined, TestimonyDetailData, `/${string}`>;
+  ADMIN_TESTIMONY_REJECT: EndpointDefinition<{ reason: string }, TestimonyDetailData, `/${string}`>;
+
+  // Admin content - Prayer Requests
+  ADMIN_PRAYER_REQUESTS_LIST: EndpointDefinition<undefined, PrayerRequestsListData, `?${string}`>;
+  ADMIN_PRAYER_REQUEST_ITEM: EndpointDefinition<undefined, PrayerRequestDetailData, `/${string}`>;
+  ADMIN_PRAYER_REQUEST_CREATE: EndpointDefinition<
+    Record<string, unknown>,
+    PrayerRequestDetailData,
+    undefined
+  >;
+  ADMIN_PRAYER_REQUEST_UPDATE: EndpointDefinition<
+    Record<string, unknown>,
+    PrayerRequestDetailData,
+    `/${string}`
+  >;
+  ADMIN_PRAYER_REQUEST_DELETE: EndpointDefinition<undefined, { success: boolean }, `/${string}`>;
+  ADMIN_PRAYER_REQUEST_ANSWER: EndpointDefinition<
+    { answer: string },
+    PrayerRequestDetailData,
+    `/${string}`
+  >;
+
+  // Admin content - Ask a Pastor
+  ADMIN_ASK_PASTOR_LIST: EndpointDefinition<undefined, QuestionsListData, `?${string}`>;
+  ADMIN_ASK_PASTOR_ITEM: EndpointDefinition<undefined, QuestionDetailData, `/${string}`>;
+  ADMIN_ASK_PASTOR_UPDATE: EndpointDefinition<
+    Record<string, unknown>,
+    QuestionDetailData,
+    `/${string}`
+  >;
+  ADMIN_ASK_PASTOR_DELETE: EndpointDefinition<undefined, { success: boolean }, `/${string}`>;
+  ADMIN_ASK_PASTOR_ASSIGN_PASTOR: EndpointDefinition<
+    { pastorId: string },
+    QuestionDetailData,
+    `/${string}`
+  >;
+  ADMIN_ASK_PASTOR_REJECT: EndpointDefinition<{ reason: string }, QuestionDetailData, `/${string}`>;
+
+  // Admin content - Polls
+  ADMIN_POLLS_LIST: EndpointDefinition<undefined, PollsListData, `?${string}`>;
+  ADMIN_POLL_ITEM: EndpointDefinition<undefined, PollDetailData, `/${string}`>;
+  ADMIN_POLL_CREATE: EndpointDefinition<Record<string, unknown>, PollDetailData, undefined>;
+  ADMIN_POLL_UPDATE: EndpointDefinition<Record<string, unknown>, PollDetailData, `/${string}`>;
+  ADMIN_POLL_DELETE: EndpointDefinition<undefined, { success: boolean }, `/${string}`>;
+  ADMIN_POLL_OPEN: EndpointDefinition<undefined, PollDetailData, `/${string}`>;
+  ADMIN_POLL_CLOSE: EndpointDefinition<{ reason?: string }, PollDetailData, `/${string}`>;
+
+  // Admin content - Resources
+  ADMIN_RESOURCES_LIST: EndpointDefinition<undefined, ResourcesListData, `?${string}`>;
+  ADMIN_RESOURCE_ITEM: EndpointDefinition<undefined, { resource: ResourceDetail }, `/${string}`>;
+  ADMIN_RESOURCE_CREATE: EndpointDefinition<
+    Record<string, unknown>,
+    { resource: ResourceDetail },
+    undefined
+  >;
+  ADMIN_RESOURCE_UPDATE: EndpointDefinition<
+    Record<string, unknown>,
+    { resource: ResourceDetail },
+    `/${string}`
+  >;
+  ADMIN_RESOURCE_DELETE: EndpointDefinition<undefined, { success: boolean }, `/${string}`>;
+  ADMIN_RESOURCE_APPROVE: EndpointDefinition<undefined, { resource: ResourceDetail }, `/${string}`>;
+  ADMIN_RESOURCE_REJECT: EndpointDefinition<
+    { reason: string },
+    { resource: ResourceDetail },
+    `/${string}`
+  >;
+
+  // Admin content - Vendors, Products, Orders
+  ADMIN_VENDORS_LIST: EndpointDefinition<
+    undefined,
+    GetListRes<IMarketplaceVendor, 'vendors'>,
+    `?${string}`
+  >;
+  ADMIN_VENDOR_ITEM: EndpointDefinition<undefined, { vendor: IMarketplaceVendor }, `/${string}`>;
+  ADMIN_VENDOR_CREATE: EndpointDefinition<
+    Record<string, unknown>,
+    { vendor: IMarketplaceVendor },
+    undefined
+  >;
+  ADMIN_VENDOR_UPDATE: EndpointDefinition<
+    Record<string, unknown>,
+    { vendor: IMarketplaceVendor },
+    `/${string}`
+  >;
+  ADMIN_VENDOR_APPROVE: EndpointDefinition<undefined, { vendor: IMarketplaceVendor }, `/${string}`>;
+  ADMIN_VENDOR_REJECT: EndpointDefinition<
+    { reason: string },
+    { vendor: IMarketplaceVendor },
+    `/${string}`
+  >;
+
+  ADMIN_PRODUCTS_LIST: EndpointDefinition<undefined, IMarketplaceProductsListRes, `?${string}`>;
+  ADMIN_PRODUCT_ITEM: EndpointDefinition<undefined, { product: IMarketplaceProduct }, `/${string}`>;
+  ADMIN_PRODUCT_CREATE: EndpointDefinition<
+    Record<string, unknown>,
+    { product: IMarketplaceProduct },
+    undefined
+  >;
+  ADMIN_PRODUCT_UPDATE: EndpointDefinition<
+    Record<string, unknown>,
+    { product: IMarketplaceProduct },
+    `/${string}`
+  >;
+  ADMIN_PRODUCT_DELETE: EndpointDefinition<undefined, { success: boolean }, `/${string}`>;
+  ADMIN_PRODUCT_APPROVE: EndpointDefinition<
+    undefined,
+    { product: IMarketplaceProduct },
+    `/${string}`
+  >;
+  ADMIN_PRODUCT_REJECT: EndpointDefinition<
+    { reason: string },
+    { product: IMarketplaceProduct },
+    `/${string}`
+  >;
+
+  ADMIN_ORDERS_LIST: EndpointDefinition<
+    undefined,
+    GetListRes<PopulatedMarketplaceOrder, 'orders'>,
+    `?${string}`
+  >;
+  ADMIN_ORDER_ITEM: EndpointDefinition<
+    undefined,
+    { order: PopulatedMarketplaceOrder },
+    `/${string}`
+  >;
+
   // Marketplace (public)
   MARKETPLACE_GET_CATEGORIES: EndpointDefinition<
     undefined,
@@ -688,6 +946,20 @@ export interface AllEndpoints {
   PUBLIC_GET_ARTISTS: EndpointDefinition<undefined, IPublicArtistsListRes, `?${string}`>;
   PUBLIC_GET_ARTIST_ITEM: EndpointDefinition<undefined, IPublicArtistItemRes, `/${string}`>;
   PUBLIC_GET_RESOURCES: EndpointDefinition<undefined, IPublicResourcesRes, `?${string}`>;
+
+  // Promotion content (public)
+  PUBLIC_GET_FEATURED_OPTIONS: EndpointDefinition<undefined, FeaturedOptionsRes, undefined>;
+  PUBLIC_GET_PROMOTION_PRICING_OPTIONS: EndpointDefinition<
+    undefined,
+    PromotionPricingOptionsRes,
+    undefined
+  >;
+  PUBLIC_GET_RESOURCE_DOWNLOAD_CATEGORIES: EndpointDefinition<
+    undefined,
+    ResourceDownloadCategoriesRes,
+    undefined
+  >;
+  PUBLIC_GET_PROMOTION_CONTACT: EndpointDefinition<undefined, PromotionContactRes, undefined>;
 
   // Public community (write)
   PUBLIC_SUBMIT_PRAYER_REQUEST: EndpointDefinition<
@@ -845,6 +1117,106 @@ export const ENDPOINTS: Record<keyof AllEndpoints, EndpointDetails> = {
     path: '/admin/email-logs/resend', // /:emailLogId
     method: 'POST',
   },
+
+  ADMIN_CONTACT_SUBMISSIONS_LIST: { path: '/admin/contact-submissions', method: 'GET' },
+
+  ADMIN_MUSIC_LIST: { path: '/admin/music', method: 'GET' },
+  ADMIN_MUSIC_ITEM: { path: '/admin/music', method: 'GET' },
+  ADMIN_MUSIC_CREATE: { path: '/admin/music', method: 'POST' },
+  ADMIN_MUSIC_UPDATE: { path: '/admin/music', method: 'PATCH' },
+  ADMIN_MUSIC_DELETE: { path: '/admin/music', method: 'DELETE' },
+  ADMIN_MUSIC_APPROVE: { path: '/admin/music', method: 'POST' },
+  ADMIN_MUSIC_REJECT: { path: '/admin/music', method: 'POST' },
+
+  ADMIN_VIDEOS_LIST: { path: '/admin/videos', method: 'GET' },
+  ADMIN_VIDEO_ITEM: { path: '/admin/videos', method: 'GET' },
+  ADMIN_VIDEO_CREATE: { path: '/admin/videos', method: 'POST' },
+  ADMIN_VIDEO_UPDATE: { path: '/admin/videos', method: 'PATCH' },
+  ADMIN_VIDEO_DELETE: { path: '/admin/videos', method: 'DELETE' },
+  ADMIN_VIDEO_APPROVE: { path: '/admin/videos', method: 'POST' },
+  ADMIN_VIDEO_REJECT: { path: '/admin/videos', method: 'POST' },
+
+  ADMIN_NEWS_LIST: { path: '/admin/news', method: 'GET' },
+  ADMIN_NEWS_ITEM: { path: '/admin/news', method: 'GET' },
+  ADMIN_NEWS_CREATE: { path: '/admin/news', method: 'POST' },
+  ADMIN_NEWS_UPDATE: { path: '/admin/news', method: 'PATCH' },
+  ADMIN_NEWS_DELETE: { path: '/admin/news', method: 'DELETE' },
+
+  ADMIN_ARTISTS_LIST: { path: '/admin/artists', method: 'GET' },
+  ADMIN_ARTIST_ITEM: { path: '/admin/artists', method: 'GET' },
+  ADMIN_ARTIST_CREATE: { path: '/admin/artists', method: 'POST' },
+  ADMIN_ARTIST_UPDATE: { path: '/admin/artists', method: 'PATCH' },
+  ADMIN_ARTIST_DELETE: { path: '/admin/artists', method: 'DELETE' },
+
+  ADMIN_PASTORS_LIST: { path: '/admin/pastors', method: 'GET' },
+  ADMIN_PASTOR_ITEM: { path: '/admin/pastors', method: 'GET' },
+  ADMIN_PASTOR_CREATE: { path: '/admin/pastors', method: 'POST' },
+  ADMIN_PASTOR_UPDATE: { path: '/admin/pastors', method: 'PATCH' },
+  ADMIN_PASTOR_DELETE: { path: '/admin/pastors', method: 'DELETE' },
+
+  ADMIN_DEVOTIONALS_LIST: { path: '/admin/devotionals', method: 'GET' },
+  ADMIN_DEVOTIONAL_ITEM: { path: '/admin/devotionals', method: 'GET' },
+  ADMIN_DEVOTIONAL_CREATE: { path: '/admin/devotionals', method: 'POST' },
+  ADMIN_DEVOTIONAL_UPDATE: { path: '/admin/devotionals', method: 'PATCH' },
+  ADMIN_DEVOTIONAL_DELETE: { path: '/admin/devotionals', method: 'DELETE' },
+  ADMIN_DEVOTIONAL_APPROVE: { path: '/admin/devotionals', method: 'POST' },
+  ADMIN_DEVOTIONAL_REJECT: { path: '/admin/devotionals', method: 'POST' },
+
+  ADMIN_TESTIMONIES_LIST: { path: '/admin/testimonies', method: 'GET' },
+  ADMIN_TESTIMONY_ITEM: { path: '/admin/testimonies', method: 'GET' },
+  ADMIN_TESTIMONY_CREATE: { path: '/admin/testimonies', method: 'POST' },
+  ADMIN_TESTIMONY_UPDATE: { path: '/admin/testimonies', method: 'PATCH' },
+  ADMIN_TESTIMONY_DELETE: { path: '/admin/testimonies', method: 'DELETE' },
+  ADMIN_TESTIMONY_APPROVE: { path: '/admin/testimonies', method: 'POST' },
+  ADMIN_TESTIMONY_REJECT: { path: '/admin/testimonies', method: 'POST' },
+
+  ADMIN_PRAYER_REQUESTS_LIST: { path: '/admin/prayer-requests', method: 'GET' },
+  ADMIN_PRAYER_REQUEST_ITEM: { path: '/admin/prayer-requests', method: 'GET' },
+  ADMIN_PRAYER_REQUEST_CREATE: { path: '/admin/prayer-requests', method: 'POST' },
+  ADMIN_PRAYER_REQUEST_UPDATE: { path: '/admin/prayer-requests', method: 'PATCH' },
+  ADMIN_PRAYER_REQUEST_DELETE: { path: '/admin/prayer-requests', method: 'DELETE' },
+  ADMIN_PRAYER_REQUEST_ANSWER: { path: '/admin/prayer-requests', method: 'POST' },
+
+  ADMIN_ASK_PASTOR_LIST: { path: '/admin/ask-a-pastor/questions', method: 'GET' },
+  ADMIN_ASK_PASTOR_ITEM: { path: '/admin/ask-a-pastor/questions', method: 'GET' },
+  ADMIN_ASK_PASTOR_UPDATE: { path: '/admin/ask-a-pastor/questions', method: 'PATCH' },
+  ADMIN_ASK_PASTOR_DELETE: { path: '/admin/ask-a-pastor/questions', method: 'DELETE' },
+  ADMIN_ASK_PASTOR_ASSIGN_PASTOR: { path: '/admin/ask-a-pastor/questions', method: 'POST' },
+  ADMIN_ASK_PASTOR_REJECT: { path: '/admin/ask-a-pastor/questions', method: 'POST' },
+
+  ADMIN_POLLS_LIST: { path: '/admin/polls', method: 'GET' },
+  ADMIN_POLL_ITEM: { path: '/admin/polls', method: 'GET' },
+  ADMIN_POLL_CREATE: { path: '/admin/polls', method: 'POST' },
+  ADMIN_POLL_UPDATE: { path: '/admin/polls', method: 'PATCH' },
+  ADMIN_POLL_DELETE: { path: '/admin/polls', method: 'DELETE' },
+  ADMIN_POLL_OPEN: { path: '/admin/polls', method: 'POST' },
+  ADMIN_POLL_CLOSE: { path: '/admin/polls', method: 'POST' },
+
+  ADMIN_RESOURCES_LIST: { path: '/admin/resources', method: 'GET' },
+  ADMIN_RESOURCE_ITEM: { path: '/admin/resources', method: 'GET' },
+  ADMIN_RESOURCE_CREATE: { path: '/admin/resources', method: 'POST' },
+  ADMIN_RESOURCE_UPDATE: { path: '/admin/resources', method: 'PATCH' },
+  ADMIN_RESOURCE_DELETE: { path: '/admin/resources', method: 'DELETE' },
+  ADMIN_RESOURCE_APPROVE: { path: '/admin/resources', method: 'POST' },
+  ADMIN_RESOURCE_REJECT: { path: '/admin/resources', method: 'POST' },
+
+  ADMIN_VENDORS_LIST: { path: '/admin/vendors', method: 'GET' },
+  ADMIN_VENDOR_ITEM: { path: '/admin/vendors', method: 'GET' },
+  ADMIN_VENDOR_CREATE: { path: '/admin/vendors', method: 'POST' },
+  ADMIN_VENDOR_UPDATE: { path: '/admin/vendors', method: 'PATCH' },
+  ADMIN_VENDOR_APPROVE: { path: '/admin/vendors', method: 'POST' },
+  ADMIN_VENDOR_REJECT: { path: '/admin/vendors', method: 'POST' },
+
+  ADMIN_PRODUCTS_LIST: { path: '/admin/products', method: 'GET' },
+  ADMIN_PRODUCT_ITEM: { path: '/admin/products', method: 'GET' },
+  ADMIN_PRODUCT_CREATE: { path: '/admin/products', method: 'POST' },
+  ADMIN_PRODUCT_UPDATE: { path: '/admin/products', method: 'PATCH' },
+  ADMIN_PRODUCT_DELETE: { path: '/admin/products', method: 'DELETE' },
+  ADMIN_PRODUCT_APPROVE: { path: '/admin/products', method: 'POST' },
+  ADMIN_PRODUCT_REJECT: { path: '/admin/products', method: 'POST' },
+
+  ADMIN_ORDERS_LIST: { path: '/admin/orders', method: 'GET' },
+  ADMIN_ORDER_ITEM: { path: '/admin/orders', method: 'GET' },
 
   // Marketplace
   MARKETPLACE_GET_CATEGORIES: {
@@ -1011,6 +1383,28 @@ export const ENDPOINTS: Record<keyof AllEndpoints, EndpointDetails> = {
   PUBLIC_GET_ARTISTS: { path: '/public/artists', method: 'GET', isNotAuthenticated: true },
   PUBLIC_GET_ARTIST_ITEM: { path: '/public/artists', method: 'GET', isNotAuthenticated: true }, // /:idOrSlug
   PUBLIC_GET_RESOURCES: { path: '/public/resources', method: 'GET', isNotAuthenticated: true },
+
+  // Promotion content (public)
+  PUBLIC_GET_FEATURED_OPTIONS: {
+    path: '/public/featured-options',
+    method: 'GET',
+    isNotAuthenticated: true,
+  },
+  PUBLIC_GET_PROMOTION_PRICING_OPTIONS: {
+    path: '/public/promotion-pricing-options',
+    method: 'GET',
+    isNotAuthenticated: true,
+  },
+  PUBLIC_GET_RESOURCE_DOWNLOAD_CATEGORIES: {
+    path: '/public/resource-download-categories',
+    method: 'GET',
+    isNotAuthenticated: true,
+  },
+  PUBLIC_GET_PROMOTION_CONTACT: {
+    path: '/public/promotion-contact',
+    method: 'GET',
+    isNotAuthenticated: true,
+  },
 
   // Public community (write)
   PUBLIC_SUBMIT_PRAYER_REQUEST: {
@@ -1543,7 +1937,7 @@ export interface IMarketplaceBecomeVendorRes {
   message?: string;
 }
 export interface IMarketplacePlaceOrderPayload {
-  customer: { name: string; email: string; phone: string; address?: string };
+  customer: { name: string; email: string; phone: string; address?: string; notes?: string };
   items: Array<{
     productId: string;
     productName?: string;

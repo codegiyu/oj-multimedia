@@ -162,151 +162,165 @@ export function AccountSettingsPageClient({
           </div>
         )}
 
-        <Card className="p-6 md:p-8 space-y-6">
-          <form onSubmit={handleProfileSubmit} className="space-y-6">
-            <div className="space-y-2">
-              <h2 className="text-lg font-semibold text-foreground">Profile</h2>
-              <p className="text-sm text-muted-foreground">
-                These details are used across your account and orders.
-              </p>
+        {!initialUser ? (
+          <Card className="p-6 md:p-8 space-y-4 text-center">
+            <p className="text-muted-foreground">
+              We need your account details before you can edit settings.
+            </p>
+            <div className="flex items-center justify-center gap-3">
+              <Button variant="outline" onClick={() => router.refresh()}>
+                Retry
+              </Button>
+              <Button onClick={() => router.push('/auth/login')}>Go to login</Button>
             </div>
-            <div className="grid gap-4 md:grid-cols-2">
+          </Card>
+        ) : (
+          <Card className="p-6 md:p-8 space-y-6">
+            <form onSubmit={handleProfileSubmit} className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="firstName">First name</Label>
+                <h2 className="text-lg font-semibold text-foreground">Profile</h2>
+                <p className="text-sm text-muted-foreground">
+                  These details are used across your account and orders.
+                </p>
+              </div>
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="firstName">First name</Label>
+                  <RegularInput
+                    id="firstName"
+                    name="firstName"
+                    value={profileValues.firstName}
+                    onChange={handleProfileInputChange}
+                    required
+                    errors={profileErrorsVisible ? (profileErrors.firstName ?? []) : []}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="lastName">Last name</Label>
+                  <RegularInput
+                    id="lastName"
+                    name="lastName"
+                    value={profileValues.lastName}
+                    onChange={handleProfileInputChange}
+                    required
+                    errors={profileErrorsVisible ? (profileErrors.lastName ?? []) : []}
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
                 <RegularInput
-                  id="firstName"
-                  name="firstName"
-                  value={profileValues.firstName}
+                  id="email"
+                  type="email"
+                  name="email"
+                  value={profileValues.email}
                   onChange={handleProfileInputChange}
                   required
-                  errors={profileErrorsVisible ? (profileErrors.firstName ?? []) : []}
+                  errors={profileErrorsVisible ? (profileErrors.email ?? []) : []}
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="lastName">Last name</Label>
+                <Label htmlFor="phoneNumber">Phone number</Label>
                 <RegularInput
-                  id="lastName"
-                  name="lastName"
-                  value={profileValues.lastName}
+                  id="phoneNumber"
+                  type="tel"
+                  name="phoneNumber"
+                  value={profileValues.phoneNumber ?? ''}
                   onChange={handleProfileInputChange}
-                  required
-                  errors={profileErrorsVisible ? (profileErrors.lastName ?? []) : []}
-                />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <RegularInput
-                id="email"
-                type="email"
-                name="email"
-                value={profileValues.email}
-                onChange={handleProfileInputChange}
-                required
-                errors={profileErrorsVisible ? (profileErrors.email ?? []) : []}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="phoneNumber">Phone number</Label>
-              <RegularInput
-                id="phoneNumber"
-                type="tel"
-                name="phoneNumber"
-                value={profileValues.phoneNumber ?? ''}
-                onChange={handleProfileInputChange}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="avatar">Avatar URL (optional)</Label>
-              <RegularInput
-                id="avatar"
-                name="avatar"
-                value={profileValues.avatar ?? ''}
-                onChange={handleProfileInputChange}
-                errors={profileErrorsVisible ? (profileErrors.avatar ?? []) : []}
-              />
-            </div>
-            <RegularBtn
-              type="submit"
-              variant="default"
-              className="bg-primary hover:bg-primary/90"
-              disabled={savingProfile || !isProfileValid}
-              loading={savingProfile}
-              onDisabledClick={() => {
-                if (!isProfileValid) {
-                  _validateProfileForm();
-                } else if (savingProfile) {
-                  toast.info('Please wait, saving profile…');
-                }
-              }}>
-              {savingProfile ? 'Saving…' : 'Save profile'}
-            </RegularBtn>
-          </form>
-
-          <Separator />
-
-          <form onSubmit={handlePasswordSubmit} className="space-y-6">
-            <div className="space-y-2">
-              <h2 className="text-lg font-semibold text-foreground">Change password</h2>
-              <p className="text-sm text-muted-foreground">
-                Use a strong password that you do not reuse elsewhere.
-              </p>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="currentPassword">Current password</Label>
-              <RegularInput
-                id="currentPassword"
-                name="currentPassword"
-                type="password"
-                value={passwordValues.currentPassword}
-                onChange={handlePasswordInputChange}
-                required
-                errors={passwordErrorsVisible ? (passwordErrors.currentPassword ?? []) : []}
-              />
-            </div>
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="newPassword">New password</Label>
-                <RegularInput
-                  id="newPassword"
-                  name="newPassword"
-                  type="password"
-                  value={passwordValues.newPassword}
-                  onChange={handlePasswordInputChange}
-                  required
-                  errors={passwordErrorsVisible ? (passwordErrors.newPassword ?? []) : []}
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm new password</Label>
+                <Label htmlFor="avatar">Avatar URL (optional)</Label>
                 <RegularInput
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type="password"
-                  value={passwordValues.confirmPassword}
-                  onChange={handlePasswordInputChange}
-                  required
-                  errors={passwordErrorsVisible ? (passwordErrors.confirmPassword ?? []) : []}
+                  id="avatar"
+                  name="avatar"
+                  value={profileValues.avatar ?? ''}
+                  onChange={handleProfileInputChange}
+                  errors={profileErrorsVisible ? (profileErrors.avatar ?? []) : []}
                 />
               </div>
-            </div>
-            <RegularBtn
-              type="submit"
-              variant="outline"
-              className="min-w-[160px]"
-              disabled={savingPassword || !isPasswordValid}
-              loading={savingPassword}
-              onDisabledClick={() => {
-                if (!isPasswordValid) {
-                  _validatePasswordForm();
-                } else if (savingPassword) {
-                  toast.info('Please wait, changing password…');
-                }
-              }}>
-              {savingPassword ? 'Changing…' : 'Change password'}
-            </RegularBtn>
-          </form>
-        </Card>
+              <RegularBtn
+                type="submit"
+                variant="default"
+                className="bg-primary hover:bg-primary/90"
+                disabled={savingProfile || !isProfileValid}
+                loading={savingProfile}
+                onDisabledClick={() => {
+                  if (!isProfileValid) {
+                    _validateProfileForm();
+                  } else if (savingProfile) {
+                    toast.info('Please wait, saving profile…');
+                  }
+                }}>
+                {savingProfile ? 'Saving…' : 'Save profile'}
+              </RegularBtn>
+            </form>
+
+            <Separator />
+
+            <form onSubmit={handlePasswordSubmit} className="space-y-6">
+              <div className="space-y-2">
+                <h2 className="text-lg font-semibold text-foreground">Change password</h2>
+                <p className="text-sm text-muted-foreground">
+                  Use a strong password that you do not reuse elsewhere.
+                </p>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="currentPassword">Current password</Label>
+                <RegularInput
+                  id="currentPassword"
+                  name="currentPassword"
+                  type="password"
+                  value={passwordValues.currentPassword}
+                  onChange={handlePasswordInputChange}
+                  required
+                  errors={passwordErrorsVisible ? (passwordErrors.currentPassword ?? []) : []}
+                />
+              </div>
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="newPassword">New password</Label>
+                  <RegularInput
+                    id="newPassword"
+                    name="newPassword"
+                    type="password"
+                    value={passwordValues.newPassword}
+                    onChange={handlePasswordInputChange}
+                    required
+                    errors={passwordErrorsVisible ? (passwordErrors.newPassword ?? []) : []}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="confirmPassword">Confirm new password</Label>
+                  <RegularInput
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type="password"
+                    value={passwordValues.confirmPassword}
+                    onChange={handlePasswordInputChange}
+                    required
+                    errors={passwordErrorsVisible ? (passwordErrors.confirmPassword ?? []) : []}
+                  />
+                </div>
+              </div>
+              <RegularBtn
+                type="submit"
+                variant="outline"
+                className="min-w-[160px]"
+                disabled={savingPassword || !isPasswordValid}
+                loading={savingPassword}
+                onDisabledClick={() => {
+                  if (!isPasswordValid) {
+                    _validatePasswordForm();
+                  } else if (savingPassword) {
+                    toast.info('Please wait, changing password…');
+                  }
+                }}>
+                {savingPassword ? 'Changing…' : 'Change password'}
+              </RegularBtn>
+            </form>
+          </Card>
+        )}
       </div>
     </SectionContainer>
   );
