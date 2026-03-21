@@ -176,10 +176,11 @@ export interface IUserCartAddPayload {
 export interface IUserCartUpdatePayload {
   productId: string;
   quantity: number;
+  sku?: string;
 }
 
 export interface IUserCartBulkUpdatePayload {
-  updates: Array<{ productId: string; quantity: number }>;
+  updates: Array<{ productId: string; quantity: number; sku?: string }>;
 }
 
 // Artist dashboard types

@@ -24,12 +24,19 @@ export interface CartItem {
   vendorWhatsapp?: string;
 }
 
+function itemsMatch(
+  a: { productId: string; sku?: string },
+  b: { productId: string; sku?: string }
+): boolean {
+  return a.productId === b.productId && (a.sku ?? '') === (b.sku ?? '');
+}
+
 interface CartStore {
   items: CartItem[];
   actions: {
     addItem: (item: Omit<CartItem, 'quantity'> & { quantity?: number }) => void;
-    removeItem: (productId: string) => void;
-    updateQuantity: (productId: string, quantity: number) => void;
+    removeItem: (productId: string, sku?: string) => void;
+    updateQuantity: (productId: string, quantity: number, sku?: string) => void;
     clearCart: () => void;
     replaceItems: (items: CartItem[]) => void;
     syncFromBackend: (cart: ICartRes) => void;
@@ -40,6 +47,7 @@ interface CartStore {
 
 const mapBackendItemToCartItem = (item: BackendCartItem): CartItem => {
   const { product, productId, quantity, sku } = item;
+  const prod = product as { vendorWhatsapp?: string; whatsapp?: string };
   return {
     productId,
     quantity,
@@ -50,7 +58,7 @@ const mapBackendItemToCartItem = (item: BackendCartItem): CartItem => {
     price: product.price,
     vendorName: product.vendorName,
     vendorSlug: product.vendorSlug,
-    vendorWhatsapp: product.vendorWhatsapp,
+    vendorWhatsapp: prod.vendorWhatsapp ?? prod.whatsapp,
   };
 };
 
@@ -67,10 +75,10 @@ export const useInitCartStore = create<CartStore>()(
         addItem: item => {
           const qty = item.quantity ?? 1;
           set(state => {
-            const existing = state.items.find(i => i.productId === item.productId);
+            const existing = state.items.find(i => itemsMatch(i, item));
             const next = existing
               ? state.items.map(i =>
-                  i.productId === item.productId
+                  itemsMatch(i, item)
                     ? { ...i, quantity: i.quantity + qty, sku: item.sku ?? i.sku }
                     : i
                 )
@@ -87,24 +95,33 @@ export const useInitCartStore = create<CartStore>()(
             void callApi('USER_CART_ADD', { payload });
           }
         },
-        removeItem: productId => {
-          set(state => ({ items: state.items.filter(i => i.productId !== productId) }));
-
-          if (shouldSyncWithBackend()) {
-            void callApi('USER_CART_REMOVE', { query: `/${productId}` as `/${string}` });
-          }
-        },
-        updateQuantity: (productId, quantity) => {
-          if (quantity < 1) {
-            get().actions.removeItem(productId);
-            return;
-          }
+        removeItem: (productId, sku) => {
           set(state => ({
-            items: state.items.map(i => (i.productId === productId ? { ...i, quantity } : i)),
+            items: state.items.filter(i => !itemsMatch(i, { productId, sku })),
           }));
 
           if (shouldSyncWithBackend()) {
-            const payload: IUserCartUpdatePayload = { productId, quantity };
+            const suffix = sku ? `/${productId}?sku=${encodeURIComponent(sku)}` : `/${productId}`;
+            void callApi('USER_CART_REMOVE', { query: suffix as `/${string}` });
+          }
+        },
+        updateQuantity: (productId, quantity, sku) => {
+          if (quantity < 1) {
+            get().actions.removeItem(productId, sku);
+            return;
+          }
+          set(state => ({
+            items: state.items.map(i =>
+              itemsMatch(i, { productId, sku }) ? { ...i, quantity } : i
+            ),
+          }));
+
+          if (shouldSyncWithBackend()) {
+            const payload: IUserCartUpdatePayload = {
+              productId,
+              quantity,
+              ...(sku ? { sku } : {}),
+            };
             void callApi('USER_CART_UPDATE', { payload });
           }
         },

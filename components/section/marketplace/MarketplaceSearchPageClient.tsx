@@ -3,11 +3,13 @@
 import { useRouter } from 'next/navigation';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { SectionContainer } from '@/components/general/SectionContainer';
+import { SectionHeader } from '@/components/general/SectionHeader';
 import { ProductCard } from './ProductCard';
 import { DataLoadError } from '@/components/general/DataLoadError';
 import { ListPagination } from '@/components/general/ListPagination';
 import { Search } from 'lucide-react';
 import Link from 'next/link';
+import { EmptyState } from '@/components/section/news/EmptyState';
 import { useQueryState, parseAsString } from 'nuqs';
 import type {
   IMarketplaceCategory,
@@ -82,7 +84,7 @@ export function MarketplaceSearchPageClient({
     <MainLayout>
       <SectionContainer className="py-16 md:py-20">
         <div className="max-w-7xl mx-auto">
-          <nav className="mb-8 flex items-center gap-2 text-sm text-muted-foreground">
+          <nav className="mb-6 flex items-center gap-2 text-sm text-muted-foreground">
             <Link href="/marketplace" className="hover:text-primary">
               Marketplace
             </Link>
@@ -90,13 +92,12 @@ export function MarketplaceSearchPageClient({
             <span className="text-foreground">Search</span>
           </nav>
 
-          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2 flex items-center gap-2">
-            <Search className="w-8 h-8" />
-            Search Marketplace
-          </h1>
-          <p className="text-muted-foreground mb-8">
-            Find products by keyword, category, or vendor.
-          </p>
+          <SectionHeader
+            icon={Search}
+            heading="Search Marketplace"
+            subtext="Find products by keyword, category, or vendor"
+            className="mb-8"
+          />
 
           <div className="flex flex-col sm:flex-row gap-4 mb-8">
             <input
@@ -165,19 +166,20 @@ export function MarketplaceSearchPageClient({
           </div>
 
           {products.length === 0 ? (
-            <div className="py-12 text-center text-muted-foreground">
-              <Search className="w-12 h-12 mx-auto mb-4 opacity-50" />
-              <p>
-                {q || category || vendor
-                  ? 'No products match your filters. Try adjusting your search.'
-                  : 'Enter a search term or choose filters to find products.'}
-              </p>
-              <Link
-                href="/marketplace/products"
-                className="mt-4 inline-block text-primary hover:underline">
-                Browse all products
-              </Link>
-            </div>
+            <EmptyState
+              title={
+                q || category || vendor ? 'No products match your filters' : 'Start your search'
+              }
+              description={
+                q || category || vendor
+                  ? 'Try adjusting your search or filters to find products.'
+                  : 'Enter a search term or choose filters to find products.'
+              }
+              icon={<Search className="w-12 h-12 text-muted-foreground" />}
+              actionLabel="Browse all products"
+              actionHref="/marketplace/products"
+              showDefaultActions={false}
+            />
           ) : (
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

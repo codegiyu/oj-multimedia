@@ -2,7 +2,7 @@
 
 import { MainLayout } from '@/components/layout/MainLayout';
 import { SectionContainer } from '@/components/general/SectionContainer';
-import { SectionHeading } from '@/components/general/SectionHeading';
+import { SectionHeader } from '@/components/general/SectionHeader';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card } from '@/components/ui/card';
 import { ShoppingBag, Store, Package } from 'lucide-react';
@@ -27,10 +27,10 @@ export function MarketplacePageSkeleton() {
       {/* Categories */}
       <SectionContainer className="py-16 md:py-20">
         <div className="max-w-7xl mx-auto">
-          <SectionHeading
-            title="Shop by Category"
-            text="Browse products by category"
-            Icon={ShoppingBag}
+          <SectionHeader
+            icon={ShoppingBag}
+            heading="Shop by Category"
+            subtext="Browse products by category"
           />
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             {[1, 2, 3, 4, 5, 6].map(i => (
@@ -47,10 +47,10 @@ export function MarketplacePageSkeleton() {
       <SectionContainer className="py-16 md:py-20 bg-muted/30">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-            <SectionHeading
-              title="Featured Products"
-              text="Handpicked from our vendors"
-              Icon={Package}
+            <SectionHeader
+              icon={Package}
+              heading="Featured Products"
+              subtext="Handpicked from our vendors"
             />
             <Skeleton className="h-10 w-32" />
           </div>
@@ -77,10 +77,10 @@ export function MarketplacePageSkeleton() {
       <SectionContainer className="py-16 md:py-20">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-            <SectionHeading
-              title="Vendor Stores"
-              text="Shop directly from individual stores"
-              Icon={Store}
+            <SectionHeader
+              icon={Store}
+              heading="Vendor Stores"
+              subtext="Shop directly from individual stores"
             />
             <Skeleton className="h-10 w-28" />
           </div>
@@ -100,10 +100,10 @@ export function MarketplacePageSkeleton() {
       {/* Quick actions */}
       <SectionContainer className="py-16 md:py-20 bg-muted/30">
         <div className="max-w-7xl mx-auto">
-          <SectionHeading
-            title="Quick Actions"
-            text="Manage your marketplace experience"
-            Icon={ShoppingBag}
+          <SectionHeader
+            icon={ShoppingBag}
+            heading="Quick Actions"
+            subtext="Manage your marketplace experience"
           />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[1, 2, 3].map(i => (

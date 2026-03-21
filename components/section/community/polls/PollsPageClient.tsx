@@ -64,6 +64,7 @@ export const PollsPageClient = ({
             icon={<BarChart3 className="w-12 h-12 text-muted-foreground" />}
             actionLabel="Create a poll"
             actionHref="#create-poll"
+            showDefaultActions={false}
           />
         </SectionContainer>
         <div id="create-poll">

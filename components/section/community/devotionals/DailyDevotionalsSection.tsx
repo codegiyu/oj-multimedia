@@ -40,6 +40,7 @@ export const DailyDevotionalsSection = ({
           icon={<Calendar className="w-12 h-12 text-muted-foreground" />}
           actionLabel="Back to Devotionals"
           actionHref="/community/devotionals"
+          showDefaultActions={false}
         />
       </div>
     );

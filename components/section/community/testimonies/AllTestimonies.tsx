@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { useState, useEffect } from 'react';
 import { SectionComp } from '@/components/general/SectionComp';
 import { ListPagination } from '@/components/general/ListPagination';
+import { EmptyState } from '@/components/section/news/EmptyState';
 import type { Testimony } from './TestimoniesPageClient';
 import type { Pagination } from '@/lib/types/community';
 
@@ -136,9 +137,14 @@ export const AllTestimonies = ({ testimonies, pagination = null }: AllTestimonie
       </div>
 
       {itemsToShow.length === 0 && (
-        <div className="text-center py-12">
-          <p className="text-muted-foreground">No testimonies found in this category.</p>
-        </div>
+        <EmptyState
+          title="No testimonies in this category"
+          description="Try a different category or check back later for new testimonies."
+          icon={<Quote className="w-12 h-12 text-muted-foreground" />}
+          actionLabel="View all testimonies"
+          actionHref="/community/testimonies"
+          showDefaultActions={false}
+        />
       )}
 
       {/* Server pagination (prev/next page) */}

@@ -23,9 +23,6 @@ export interface ProductDetailClientProps {
 }
 
 export function ProductDetailClient({ product }: ProductDetailClientProps) {
-  const { items } = useCartStore();
-  const inCart = product != null && items.some(i => i.productId === product._id);
-
   if (!product) {
     return (
       <MainLayout>
@@ -41,16 +38,15 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
     );
   }
 
-  return <ProductDetailContent product={product as IMarketplaceProduct} inCart={inCart} />;
+  return <ProductDetailContent product={product as IMarketplaceProduct} />;
 }
 
 interface ProductDetailContentProps {
   product: IMarketplaceProduct;
-  inCart: boolean;
 }
 
-function ProductDetailContent({ product, inCart }: ProductDetailContentProps) {
-  const { actions } = useCartStore();
+function ProductDetailContent({ product }: ProductDetailContentProps) {
+  const { items, actions } = useCartStore();
   const categoryLabel = getProductCategoryName(product);
   const categorySlug = getProductCategorySlug(product);
   const images = (product.images as string[] | undefined) ?? product.images ?? [];
@@ -91,6 +87,9 @@ function ProductDetailContent({ product, inCart }: ProductDetailContentProps) {
   const effectivePrice = selectedVariant?.price ?? product.price;
   const isOutOfStock =
     variants.length > 0 ? !selectedVariant || !selectedVariant.inStock : product.inStock === false;
+  const inCart = items.some(
+    i => i.productId === product._id && (i.sku ?? '') === (selectedVariant?.sku ?? '')
+  );
 
   const handleOptionChange = (name: string, value: string) => {
     setSelectedOptions(prev => ({ ...prev, [name]: value }));
@@ -99,6 +98,9 @@ function ProductDetailContent({ product, inCart }: ProductDetailContentProps) {
   const handleAddToCart = () => {
     const sku = selectedVariant?.sku;
     const price = selectedVariant?.price ?? product.price;
+    const vendorWhatsapp =
+      (product as IMarketplaceProduct & { vendorWhatsapp?: string }).vendorWhatsapp ??
+      product.vendorPopulated?.whatsapp;
     actions.addItem({
       productId: product._id,
       slug: product.slug,
@@ -107,6 +109,9 @@ function ProductDetailContent({ product, inCart }: ProductDetailContentProps) {
       price,
       quantity: 1,
       sku,
+      vendorName: product.vendorName,
+      vendorSlug: product.vendorSlug,
+      vendorWhatsapp,
     });
   };
 

@@ -1,24 +1,29 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { SectionContainer } from '@/components/general/SectionContainer';
+import { SectionHeader } from '@/components/general/SectionHeader';
 import { Card } from '@/components/ui/card';
 import { RegularBtn } from '@/components/atoms/RegularBtn';
 import { RegularInput } from '@/components/atoms/RegularInput';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useCartStore } from '@/lib/store/cartStore';
+import { useAuthStore } from '@/lib/store/useAuthStore';
 import { formatPrice } from '@/lib/utils/marketplace';
 import { toast } from 'sonner';
 import { callApi } from '@/lib/services/callApi';
 import type { IMarketplacePlaceOrderRes } from '@/lib/constants/endpoints';
+import { EmptyState } from '@/components/section/news/EmptyState';
+import { CreditCard, ShoppingCart } from 'lucide-react';
 
 export function CheckoutPageClient() {
   const router = useRouter();
   const { items, actions } = useCartStore();
   const total = actions.getTotal();
+  const user = useAuthStore(state => state.user);
   const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({
     name: '',
@@ -28,19 +33,35 @@ export function CheckoutPageClient() {
     notes: '',
   });
 
+  useEffect(() => {
+    if (!user) return;
+    const u = user as {
+      firstName?: string;
+      lastName?: string;
+      email?: string;
+      phoneNumber?: string;
+    };
+    const name = [u.firstName, u.lastName].filter(Boolean).join(' ').trim();
+    setForm(f => ({
+      ...f,
+      ...(name ? { name } : {}),
+      ...(u.email ? { email: u.email } : {}),
+      ...(u.phoneNumber ? { phone: u.phoneNumber } : {}),
+    }));
+  }, [user]);
+
   if (items.length === 0) {
     return (
       <MainLayout>
         <SectionContainer className="py-16 md:py-20">
-          <div className="max-w-xl mx-auto text-center">
-            <h1 className="text-2xl font-bold text-foreground mb-4">Your cart is empty</h1>
-            <RegularBtn
-              variant="default"
-              className="bg-primary hover:bg-primary/90"
-              linkProps={{ href: '/marketplace' }}
-              text="Browse Marketplace"
-            />
-          </div>
+          <EmptyState
+            title="Your cart is empty"
+            description="Add items from the marketplace before checking out."
+            icon={<ShoppingCart className="w-12 h-12 text-muted-foreground" />}
+            actionLabel="Browse Marketplace"
+            actionHref="/marketplace"
+            showDefaultActions={false}
+          />
         </SectionContainer>
       </MainLayout>
     );
@@ -104,7 +125,7 @@ export function CheckoutPageClient() {
       } else {
         toast.success('Order placed successfully! We will contact you for payment.');
       }
-      router.push('/marketplace/orders');
+      router.push(user ? '/marketplace/orders' : '/marketplace/order-success');
     } catch {
       toast.error('Something went wrong. Please try again.');
     } finally {
@@ -116,7 +137,12 @@ export function CheckoutPageClient() {
     <MainLayout>
       <SectionContainer className="py-16 md:py-20">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-3xl font-bold text-foreground mb-8">Checkout</h1>
+          <SectionHeader
+            icon={CreditCard}
+            heading="Checkout"
+            subtext="Enter your details to complete your order"
+            className="mb-8"
+          />
 
           <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             <div>
@@ -191,7 +217,9 @@ export function CheckoutPageClient() {
                 <h2 className="text-xl font-semibold text-foreground mb-4">Order summary</h2>
                 <ul className="space-y-2 mb-6">
                   {items.map(item => (
-                    <li key={item.productId} className="flex justify-between text-sm">
+                    <li
+                      key={item.sku ? `${item.productId}-${item.sku}` : item.productId}
+                      className="flex justify-between text-sm">
                       <span className="text-foreground">
                         {item.name} × {item.quantity}
                       </span>

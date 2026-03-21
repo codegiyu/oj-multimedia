@@ -3,11 +3,13 @@
 import { useRouter } from 'next/navigation';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { SectionContainer } from '@/components/general/SectionContainer';
+import { SectionHeader } from '@/components/general/SectionHeader';
 import { Card } from '@/components/ui/card';
 import { DataLoadError } from '@/components/general/DataLoadError';
 import { ListPagination } from '@/components/general/ListPagination';
 import { Store } from 'lucide-react';
 import Link from 'next/link';
+import { EmptyState } from '@/components/section/news/EmptyState';
 import type { IMarketplaceVendor } from '@/lib/constants/endpoints';
 
 export interface MarketplaceVendorsPageClientProps {
@@ -42,7 +44,7 @@ export function MarketplaceVendorsPageClient({
     <MainLayout>
       <SectionContainer className="py-16 md:py-20">
         <div className="max-w-7xl mx-auto">
-          <nav className="mb-8 flex items-center gap-2 text-sm text-muted-foreground">
+          <nav className="mb-6 flex items-center gap-2 text-sm text-muted-foreground">
             <Link href="/marketplace" className="hover:text-primary">
               Marketplace
             </Link>
@@ -50,15 +52,22 @@ export function MarketplaceVendorsPageClient({
             <span className="text-foreground">Vendors</span>
           </nav>
 
-          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">Vendor Stores</h1>
-          <p className="text-muted-foreground mb-10">
-            Shop directly from individual vendor stores. Each store is run by verified sellers.
-          </p>
+          <SectionHeader
+            icon={Store}
+            heading="Vendor Stores"
+            subtext="Shop directly from individual vendor stores. Each store is run by verified sellers."
+            className="mb-10"
+          />
 
           {vendors.length === 0 ? (
-            <p className="text-muted-foreground py-12 text-center">
-              No vendor stores yet. Check back later.
-            </p>
+            <EmptyState
+              title="No vendor stores yet"
+              description="Check back later for verified vendor stores to shop from."
+              icon={<Store className="w-12 h-12 text-muted-foreground" />}
+              actionLabel="Browse products"
+              actionHref="/marketplace/products"
+              showDefaultActions={false}
+            />
           ) : (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

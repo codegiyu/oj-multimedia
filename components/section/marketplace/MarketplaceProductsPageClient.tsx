@@ -4,11 +4,13 @@
 import { useRouter } from 'next/navigation';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { SectionContainer } from '@/components/general/SectionContainer';
+import { SectionHeader } from '@/components/general/SectionHeader';
 import { ProductCard } from './ProductCard';
 import { DataLoadError } from '@/components/general/DataLoadError';
 import { ListPagination } from '@/components/general/ListPagination';
 import { Package, ShoppingBag } from 'lucide-react';
 import Link from 'next/link';
+import { EmptyState } from '@/components/section/news/EmptyState';
 import { useQueryState, parseAsString, parseAsInteger } from 'nuqs';
 import type {
   IMarketplaceCategory,
@@ -70,7 +72,7 @@ export function MarketplaceProductsPageClient({
     <MainLayout>
       <SectionContainer className="py-16 md:py-20">
         <div className="max-w-7xl mx-auto">
-          <nav className="mb-8 flex items-center gap-2 text-sm text-muted-foreground">
+          <nav className="mb-6 flex items-center gap-2 text-sm text-muted-foreground">
             <Link href="/marketplace" className="hover:text-primary">
               Marketplace
             </Link>
@@ -115,30 +117,42 @@ export function MarketplaceProductsPageClient({
             </aside>
 
             <div className="flex-1">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-                <h1 className="text-2xl md:text-3xl font-bold text-foreground">
-                  {categoryLabel ?? activeCategorySlug ?? 'All Products'}
-                </h1>
-                <div className="flex items-center gap-2">
-                  <label htmlFor="sort" className="text-sm text-muted-foreground whitespace-nowrap">
-                    Sort:
-                  </label>
-                  <select
-                    id="sort"
-                    value={sort}
-                    onChange={e => handleSortChange(e.target.value)}
-                    className="rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-                    {SORT_OPTIONS.map(opt => (
-                      <option key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
+              <SectionHeader
+                icon={Package}
+                heading={categoryLabel ?? activeCategorySlug ?? 'All Products'}
+                subtext="Browse products from our vendors"
+                extraButtons={
+                  <div className="flex items-center gap-2">
+                    <label
+                      htmlFor="sort"
+                      className="text-sm text-muted-foreground whitespace-nowrap">
+                      Sort:
+                    </label>
+                    <select
+                      id="sort"
+                      value={sort}
+                      onChange={e => handleSortChange(e.target.value)}
+                      className="rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                      {SORT_OPTIONS.map(opt => (
+                        <option key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                }
+                className="mb-6"
+              />
 
               {products.length === 0 ? (
-                <p className="text-muted-foreground py-12">No products in this category yet.</p>
+                <EmptyState
+                  title="No products in this category"
+                  description="Try a different category or check back later for new items."
+                  icon={<Package className="w-12 h-12 text-muted-foreground" />}
+                  actionLabel="View all products"
+                  actionHref="/marketplace/products"
+                  showDefaultActions={false}
+                />
               ) : (
                 <>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

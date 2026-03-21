@@ -12,6 +12,8 @@ interface EmptyStateProps {
   actionLabel?: string;
   actionHref?: string;
   onAction?: () => void;
+  /** When false, hides the default "View all categories" link. Use for admin/table contexts. */
+  showDefaultActions?: boolean;
 }
 
 export const EmptyState = ({
@@ -21,6 +23,7 @@ export const EmptyState = ({
   actionLabel,
   actionHref,
   onAction,
+  showDefaultActions = true,
 }: EmptyStateProps) => {
   const defaultIcon = icon || <FileQuestion className="w-12 h-12 text-muted-foreground" />;
 
@@ -49,21 +52,23 @@ export const EmptyState = ({
               {actionLabel}
             </Button>
           ) : null}
-          <Button asChild variant="ghost">
-            <Link href="?category=all" className="gap-2">
-              <Search className="w-4 h-4" />
-              View all categories
-            </Link>
-          </Button>
+          {showDefaultActions && (
+            <Button asChild variant="ghost">
+              <Link href="?category=all" className="gap-2">
+                <Search className="w-4 h-4" />
+                View all categories
+              </Link>
+            </Button>
+          )}
         </div>
-      ) : (
+      ) : showDefaultActions ? (
         <Button asChild variant="ghost">
           <Link href="?category=all" className="gap-2">
             <Search className="w-4 h-4" />
             View all categories
           </Link>
         </Button>
-      )}
+      ) : null}
     </motion.div>
   );
 };

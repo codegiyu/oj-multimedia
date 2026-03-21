@@ -19,8 +19,9 @@ import { useClipboard } from '@/lib/hooks/use-clipboard';
 import { useIsMobile } from '@/lib/hooks/use-mobile';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 import { GhostBtn } from '../atoms/GhostBtn';
-import { CheckCheck, Copy, RefreshCw } from 'lucide-react';
+import { CheckCheck, Copy, Inbox, RefreshCw } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { EmptyState } from '@/components/section/news/EmptyState';
 
 export interface DataTableColumnMeta {
   width?: number | string;
@@ -188,9 +189,16 @@ export function DataTable<TData>({
                 </Card>
               ))
             ) : data.length === 0 ? (
-              <div className="py-10 text-center text-muted-foreground">
-                {emptyMessage || `No ${emptyStateWord} found.`}
-              </div>
+              emptyMessage ? (
+                <div className="py-10">{emptyMessage}</div>
+              ) : (
+                <EmptyState
+                  title={`No ${emptyStateWord} found`}
+                  description="Get started by adding your first item."
+                  icon={<Inbox className="w-12 h-12 text-muted-foreground" />}
+                  showDefaultActions={false}
+                />
+              )
             ) : (
               data.map((row, rowIndex) => (
                 <DataTableCard
@@ -251,10 +259,19 @@ export function DataTable<TData>({
                   ))
                 ) : data.length === 0 ? (
                   <TableRow>
-                    <TableCell
-                      colSpan={columns.length}
-                      className="py-10 text-center text-muted-foreground">
-                      {emptyMessage || `No ${emptyStateWord} found.`}
+                    <TableCell colSpan={columns.length} className="p-0">
+                      {emptyMessage ? (
+                        <div className="py-10 text-center text-muted-foreground">
+                          {emptyMessage}
+                        </div>
+                      ) : (
+                        <EmptyState
+                          title={`No ${emptyStateWord} found`}
+                          description="Get started by adding your first item."
+                          icon={<Inbox className="w-12 h-12 text-muted-foreground" />}
+                          showDefaultActions={false}
+                        />
+                      )}
                     </TableCell>
                   </TableRow>
                 ) : (

@@ -3,21 +3,14 @@
 import { useRouter } from 'next/navigation';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { SectionContainer } from '@/components/general/SectionContainer';
-import { SectionHeading } from '@/components/general/SectionHeading';
+import { SectionHeader } from '@/components/general/SectionHeader';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ProductCard } from './ProductCard';
 import { DataLoadError } from '@/components/general/DataLoadError';
-import {
-  ShoppingBag,
-  Store,
-  UserPlus,
-  Package,
-  ArrowRight,
-  ShoppingCart,
-  Search,
-} from 'lucide-react';
+import { ShoppingBag, Store, UserPlus, Package, ShoppingCart, Search } from 'lucide-react';
 import Link from 'next/link';
+import { EmptyState } from '@/components/section/news/EmptyState';
 import { useCartStore } from '@/lib/store/cartStore';
 import type {
   IMarketplaceCategory,
@@ -115,15 +108,18 @@ export const MarketplacePageClient = ({
       {/* Categories */}
       <SectionContainer className="py-16 md:py-20">
         <div className="max-w-7xl mx-auto">
-          <SectionHeading
-            title="Shop by Category"
-            text="Browse products by category"
-            Icon={ShoppingBag}
+          <SectionHeader
+            icon={ShoppingBag}
+            heading="Shop by Category"
+            subtext="Browse products by category"
           />
           {categories.length === 0 ? (
-            <p className="text-muted-foreground py-8 text-center">
-              No categories available yet. Check back later.
-            </p>
+            <EmptyState
+              title="No categories yet"
+              description="Check back later for product categories."
+              icon={<ShoppingBag className="w-12 h-12 text-muted-foreground" />}
+              showDefaultActions={false}
+            />
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
               {categories.map(cat => (
@@ -144,23 +140,23 @@ export const MarketplacePageClient = ({
       {/* Featured Products */}
       <SectionContainer className="py-16 md:py-20 bg-muted/30">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-            <SectionHeading
-              title="Featured Products"
-              text="Handpicked from our vendors"
-              Icon={Package}
-            />
-            <Button variant="ghost" className="gap-2 text-primary hover:text-primary/90" asChild>
-              <Link href="/marketplace/products">
-                View all products
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-            </Button>
-          </div>
+          <SectionHeader
+            icon={Package}
+            heading="Featured Products"
+            subtext="Handpicked from our vendors"
+            viewAllLink="/marketplace/products"
+            viewAllLabel="View all products"
+            className="mb-8"
+          />
           {featuredProducts.length === 0 ? (
-            <p className="text-muted-foreground py-8 text-center">
-              No featured products at the moment. Browse all products below.
-            </p>
+            <EmptyState
+              title="No featured products yet"
+              description="Browse all products below for great finds."
+              icon={<Package className="w-12 h-12 text-muted-foreground" />}
+              actionLabel="View all products"
+              actionHref="/marketplace/products"
+              showDefaultActions={false}
+            />
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {featuredProducts.map(product => (
@@ -175,21 +171,23 @@ export const MarketplacePageClient = ({
       {(hotOrRecentProducts.length > 0 || featuredProducts.length === 0) && (
         <SectionContainer className="py-16 md:py-20">
           <div className="max-w-7xl mx-auto">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-              <SectionHeading
-                title="Recently Added"
-                text="Latest from our vendors"
-                Icon={Package}
-              />
-              <Button variant="ghost" className="gap-2 text-primary hover:text-primary/90" asChild>
-                <Link href="/marketplace/products?sort=recent">
-                  View all
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
-              </Button>
-            </div>
+            <SectionHeader
+              icon={Package}
+              heading="Recently Added"
+              subtext="Latest from our vendors"
+              viewAllLink="/marketplace/products?sort=recent"
+              viewAllLabel="View all"
+              className="mb-8"
+            />
             {hotOrRecentProducts.length === 0 ? (
-              <p className="text-muted-foreground py-8 text-center">No recent products yet.</p>
+              <EmptyState
+                title="No recent products yet"
+                description="Check back soon for new items from our vendors."
+                icon={<Package className="w-12 h-12 text-muted-foreground" />}
+                actionLabel="View all products"
+                actionHref="/marketplace/products"
+                showDefaultActions={false}
+              />
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {hotOrRecentProducts.map(product => (
@@ -204,21 +202,23 @@ export const MarketplacePageClient = ({
       {/* Vendor strip */}
       <SectionContainer className="py-16 md:py-20">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-            <SectionHeading
-              title="Vendor Stores"
-              text="Shop directly from individual stores"
-              Icon={Store}
-            />
-            <Button variant="ghost" className="gap-2 text-primary hover:text-primary/90" asChild>
-              <Link href="/marketplace/vendors">
-                View all stores
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-            </Button>
-          </div>
+          <SectionHeader
+            icon={Store}
+            heading="Vendor Stores"
+            subtext="Shop directly from individual stores"
+            viewAllLink="/marketplace/vendors"
+            viewAllLabel="View all stores"
+            className="mb-8"
+          />
           {vendors.length === 0 ? (
-            <p className="text-muted-foreground py-8 text-center">No vendor stores yet.</p>
+            <EmptyState
+              title="No vendor stores yet"
+              description="Check back later for vendor stores to shop from."
+              icon={<Store className="w-12 h-12 text-muted-foreground" />}
+              actionLabel="Browse products"
+              actionHref="/marketplace/products"
+              showDefaultActions={false}
+            />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {vendors.slice(0, 3).map(vendor => (
@@ -259,10 +259,10 @@ export const MarketplacePageClient = ({
       {/* Quick actions */}
       <SectionContainer className="py-16 md:py-20 bg-muted/30">
         <div className="max-w-7xl mx-auto">
-          <SectionHeading
-            title="Quick Actions"
-            text="Manage your marketplace experience"
-            Icon={ShoppingBag}
+          <SectionHeader
+            icon={ShoppingBag}
+            heading="Quick Actions"
+            subtext="Manage your marketplace experience"
           />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <Card className="p-6 text-center hover:shadow-lg transition-shadow">
