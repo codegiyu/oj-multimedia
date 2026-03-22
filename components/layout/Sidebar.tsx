@@ -18,8 +18,8 @@ import { NavLink } from '../atoms/NavLink';
 import { ISidebarLink } from '@/lib/types/general';
 import { usePathname } from 'next/navigation';
 import { bottomBarLinks, sidebarLinksData } from '@/lib/constants/routing';
-import { Logo } from '../icons';
 import { GhostBtn } from '../atoms/GhostBtn';
+import Link from 'next/link';
 
 export function AppSidebar() {
   const { state } = useSidebar();
@@ -31,9 +31,11 @@ export function AppSidebar() {
         className={`border-b-0 border-sidebar-border py-4 ${isCollapsed ? 'px-2.5' : 'px-4'}`}>
         <div
           className={isCollapsed ? 'flex flex-col items-center gap-2' : 'flex items-center gap-3'}>
-          <i className="text-primary text-4xl">
-            <Logo />
-          </i>
+          <Link
+            href="/admin/dashboard"
+            className="flex items-center shrink-0 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-lg">
+            <img src="/images/logo-badge.png" alt="OJ Multimedia" className={'h-9 w-auto'} />
+          </Link>
           {!isCollapsed && (
             <div className="flex-1">
               <h1 className="text-lg font-semibold">Admin Dashboard</h1>

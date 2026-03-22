@@ -1,7 +1,7 @@
 'use client';
 
 import { ReactNode } from 'react';
-import { LogoFull } from '../icons';
+import Image from 'next/image';
 
 interface AuthLayoutProps {
   children: ReactNode;
@@ -14,9 +14,14 @@ export default function AuthLayout({ children, subtitle = 'Admin Dashboard' }: A
       {/* Logo */}
       <div className="w-fit flex flex-col items-center mx-auto">
         <div className="mb-6 flex items-center justify-center">
-          <i className="h-8 text-foreground">
-            <LogoFull />
-          </i>
+          <Image
+            src="/images/logo-badge.png"
+            alt="OJ Multimedia"
+            width={256}
+            height={64}
+            className="h-16 w-auto"
+            priority
+          />
         </div>
         <h2 className="text-center text-2xl font-semibold tracking-tight text-foreground">
           {subtitle}

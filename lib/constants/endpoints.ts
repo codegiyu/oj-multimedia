@@ -1563,7 +1563,6 @@ export interface ISiteSettingsUpdatePayload {
       | 'appDetails'
       | 'seo'
       | 'legal'
-      | 'email'
       | 'features'
       | 'analytics'
       | 'localization'

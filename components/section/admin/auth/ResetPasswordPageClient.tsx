@@ -139,11 +139,11 @@ export function ResetPasswordPageClient() {
 
       {!isMissingParams && (
         <Card>
-          <CardHeader className="space-y-0 border-b border-foreground/20 pb-2">
+          <CardHeader className="space-y-0 border-b border-foreground/20 pt-6 pb-6">
             <CardTitle className="text-2xl">Reset Your Password</CardTitle>
             <CardDescription>Enter your new password to complete the reset process</CardDescription>
           </CardHeader>
-          <CardContent className="py-2">
+          <CardContent className="pt-2 pb-6">
             <form onSubmit={formHandleSubmit} className="space-y-10">
               <div className="grid gap-6">
                 <PasswordInput

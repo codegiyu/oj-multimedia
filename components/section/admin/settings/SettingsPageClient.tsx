@@ -12,18 +12,18 @@ import {
   Share2,
   Search,
   Palette,
-  Mail,
   Scale,
   ToggleLeft,
   Globe,
   BarChart3,
+  AlertCircle,
+  RefreshCw,
 } from 'lucide-react';
 import { AppDetailsTab } from './tabs/AppDetailsTab';
 import { ContactInfoTab } from './tabs/ContactInfoTab';
 import { SocialsTab } from './tabs/SocialsTab';
 import { SEOTab } from './tabs/SEOTab';
 import { BrandingTab } from './tabs/BrandingTab';
-import { EmailTab } from './tabs/EmailTab';
 import { LegalTab } from './tabs/LegalTab';
 import { FeaturesTab } from './tabs/FeaturesTab';
 import { LocalizationTab } from './tabs/LocalizationTab';
@@ -36,7 +36,6 @@ const SETTINGS_TABS = [
   'socials',
   'seo',
   'branding',
-  'email',
   'legal',
   'features',
   'localization',
@@ -82,12 +81,6 @@ const tabConfig: {
     description: 'Colors and visual identity',
   },
   {
-    id: 'email',
-    label: 'Email',
-    icon: Mail,
-    description: 'Email configuration',
-  },
-  {
     id: 'legal',
     label: 'Legal',
     icon: Scale,
@@ -114,7 +107,12 @@ const tabConfig: {
 ];
 
 export const SettingsPageClient = () => {
-  const { settings, isLoading, actions } = useSiteSettingsStore(state => state);
+  const { settings, isLoading, fetchError, actions } = useSiteSettingsStore(state => ({
+    settings: state.settings,
+    isLoading: state.isLoading,
+    fetchError: state.fetchError,
+    actions: state.actions,
+  }));
   const { fetchAllSettings } = actions;
 
   const [activeTab, setActiveTab] = useQueryState(
@@ -127,6 +125,28 @@ export const SettingsPageClient = () => {
   }, []);
 
   const renderTabContent = () => {
+    if (fetchError && !settings) {
+      return (
+        <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-6">
+          <div className="flex flex-col items-center gap-4 text-center">
+            <div className="rounded-full bg-destructive/10 p-3">
+              <AlertCircle className="h-6 w-6 text-destructive" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-destructive">Failed to load settings</h3>
+              <p className="mt-1 text-sm text-muted-foreground">{fetchError}</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => fetchAllSettings({ force: true })}
+              className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">
+              <RefreshCw className="h-4 w-4" />
+              Retry
+            </button>
+          </div>
+        </div>
+      );
+    }
     if (isLoading || !settings) {
       return <TabContentSkeleton />;
     }
@@ -142,8 +162,6 @@ export const SettingsPageClient = () => {
         return <SEOTab settings={settings} />;
       case 'branding':
         return <BrandingTab settings={settings} />;
-      case 'email':
-        return <EmailTab settings={settings} />;
       case 'legal':
         return <LegalTab settings={settings} />;
       case 'features':

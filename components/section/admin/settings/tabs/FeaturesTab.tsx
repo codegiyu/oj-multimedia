@@ -90,6 +90,7 @@ export const FeaturesTab = ({ settings }: FeaturesTabProps) => {
     noFocusOnFirstField: true,
     onSubmit: async (values: FeaturesFormValues) => {
       try {
+        console.log('features settings slice values', values);
         const { data, error } = await callApi('ADMIN_UPDATE_SITE_SETTINGS', {
           payload: {
             settingsPayload: [{ name: 'features', value: values }],

@@ -12,7 +12,6 @@ export type SiteSettingsSlice =
   | 'appDetails'
   | 'seo'
   | 'legal'
-  | 'email'
   | 'features'
   | 'analytics'
   | 'localization'
@@ -26,6 +25,7 @@ export interface SiteSettingsStore {
   loadedSlices: Set<SiteSettingsSlice>;
   isLoading: boolean;
   lastFetched: Date | null;
+  fetchError: string | null;
 
   // Actions
   actions: {
@@ -45,6 +45,7 @@ const initialData: InitialSiteSettingsStore = {
   loadedSlices: new Set(),
   isLoading: false,
   lastFetched: null,
+  fetchError: null,
 };
 
 // Cache duration in minutes - longer for settings since they change less frequently
@@ -60,38 +61,56 @@ export const useInitSiteSettingsStore = create<SiteSettingsStore>()((set, get) =
   actions: {
     fetchSettings: async (slice = 'all', options = {}) => {
       const { force = false } = options;
-      const { lastFetched, isLoading, loadedSlices } = get();
+      const { lastFetched, isLoading, loadedSlices, settings } = get();
 
       // Return early if cache is valid and slice is already loaded
       if (!force && isCacheValid(lastFetched) && loadedSlices.has(slice)) {
+        console.log('cache is valid and slice is already loaded', slice);
         return;
       }
 
       // Prevent duplicate requests
-      if (isLoading) return;
+      if (isLoading) {
+        console.log('is loading, returning');
+        return;
+      }
 
-      set({ isLoading: true });
+      set({ isLoading: true, fetchError: null });
 
       try {
         const { data, error } = await callApi('GET_SITE_SETTINGS', {
           query: `/${slice}`,
         });
 
+        console.log('data', data);
+        console.log('error', error);
+
         if (error || !data) {
-          console.error('Failed to fetch site settings:', error?.message);
+          const errorMessage = error?.message || 'Failed to fetch site settings';
+          console.error('Failed to fetch site settings:', errorMessage);
+          set({ fetchError: errorMessage });
           return;
         }
+
+        console.log('settings', settings);
+        console.log({
+          newSettings: { ...settings, ...(slice === 'all' ? data : { [slice]: data }) },
+        });
 
         set(state => ({
           settings: {
             ...state.settings,
-            ...data,
+            ...(slice === 'all' ? data : { [slice]: data }),
           },
           loadedSlices: new Set([...state.loadedSlices, slice]),
           lastFetched: new Date(),
+          fetchError: null,
         }));
       } catch (error) {
-        console.error('Failed to fetch site settings:', error);
+        const errorMessage =
+          error instanceof Error ? error.message : 'Failed to fetch site settings';
+        console.error('Failed to fetch site settings:', errorMessage);
+        set({ fetchError: errorMessage });
       } finally {
         set({ isLoading: false });
       }
@@ -123,6 +142,7 @@ export const useInitSiteSettingsStore = create<SiteSettingsStore>()((set, get) =
       set({
         ...initialData,
         loadedSlices: new Set(),
+        fetchError: null,
       });
     },
 

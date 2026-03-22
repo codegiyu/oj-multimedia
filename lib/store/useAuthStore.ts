@@ -59,20 +59,28 @@ export const useInitAuthStore = create<AuthStore>()((set, get) => ({
     },
     initSession: async () => {
       set({ initLoading: true });
-      const { setUser } = get().actions;
+      const { setUser, clearSession } = get().actions;
 
       try {
         const { data, error } = await callApi('AUTH_SESSION', {});
 
         if (error || !data) {
-          setUser(null);
+          clearSession();
           return;
         }
 
-        setUser(data.user?._id ? data.user : null);
+        // Backend uses optional auth: may return 200 with user: null instead of 401
+        // Treat user: null as unauthenticated (same as 401) - clear session so
+        // AdminAuthWrapper redirects to admin login
+        if (!data.user || !data.user._id) {
+          clearSession();
+          return;
+        }
+
+        setUser(data.user);
       } catch (error) {
         console.error('Failed to initialize session:', error);
-        setUser(null, {});
+        clearSession();
       } finally {
         set({ initLoading: false });
       }

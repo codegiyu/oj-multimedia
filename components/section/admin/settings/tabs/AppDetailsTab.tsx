@@ -108,6 +108,7 @@ export const AppDetailsTab = ({ settings }: AppDetailsTabProps) => {
 
   // Update form when settings change
   useEffect(() => {
+    console.log('settings', settings);
     if (settings.appDetails) {
       setFormValues({
         appName: settings.appDetails.appName || '',
@@ -115,7 +116,7 @@ export const AppDetailsTab = ({ settings }: AppDetailsTabProps) => {
         logo: settings.appDetails.logo ?? '',
       });
     }
-  }, [settings.appDetails?.appName, settings.appDetails?.description, settings.appDetails?.logo]);
+  }, [settings]);
 
   return (
     <div className="rounded-xl border bg-card shadow-sm">
@@ -143,6 +144,7 @@ export const AppDetailsTab = ({ settings }: AppDetailsTabProps) => {
           progress={logoUpload.progress}
           errors={errorsVisible ? formErrors.logo : []}
           aspectRatio="1/1"
+          wrapClassName="w-[400px]"
           placeholder="Upload your app logo"
         />
 
