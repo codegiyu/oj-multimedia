@@ -13,7 +13,7 @@ export const SEO_DETAILS = {
   alternates: {
     canonical: liveUrl,
   },
-  image: `https://pub-c807427a809441a09d33cb2015370549.r2.dev/favicon.png`,
+  image: `https://static.ojmultimedia.com/favicon.png`,
   icons: `/favicon.png`,
   robots: {
     index: true,

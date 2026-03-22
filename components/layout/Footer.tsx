@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
 import { useEffect } from 'react';
@@ -42,25 +43,26 @@ const footerLinks = {
 export const Footer = () => {
   const currentYear = new Date().getFullYear();
 
-  const { settings, fetchSettings } = useSiteSettingsStore(state => ({
-    settings: state.settings,
+  const { socials, appDetails, fetchSettings } = useSiteSettingsStore(state => ({
+    socials: state.settings?.socials,
+    appDetails: state.settings?.appDetails,
     fetchSettings: state.actions.fetchSettings,
   }));
 
   useEffect(() => {
     fetchSettings('socials');
     fetchSettings('appDetails');
-  }, [fetchSettings]);
+  }, []);
 
-  const socials =
-    settings?.socials?.map((social: { platform: SocialPlatform; href: string }) => ({
+  const appSocials =
+    socials?.map((social: { platform: SocialPlatform; href: string }) => ({
       Icon: getSocialIcon(social.platform),
       href: social.href,
       label: formatSocialLabel(social.platform),
     })) || [];
 
   const appDescription =
-    settings?.appDetails?.description ||
+    appDetails?.description ||
     'Your platform for fresh music, creative videos, and inspiring stories.';
 
   return (
@@ -106,7 +108,7 @@ export const Footer = () => {
             <Logo showText={true} hideTextOnMobile={false} className="mb-4" />
             <p className="text-sm text-muted-foreground mb-4">{appDescription}</p>
             <div className="flex gap-2">
-              {socials.map(
+              {appSocials.map(
                 (social: { Icon: React.ElementType; href: string; label: string }, idx: number) => (
                   <SocialBtn
                     key={`${social.label}-${idx}`}
