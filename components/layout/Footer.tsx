@@ -2,6 +2,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import Link from 'next/link';
 import { GhostBtn } from '../atoms/GhostBtn';
 import { Logo } from '../atoms/Logo';
 import { useSiteSettingsStore } from '@/lib/store/useSiteSettingsStore';
@@ -185,7 +186,17 @@ export const Footer = () => {
       <div className="border-t border-border">
         <div className="container mx-auto px-4 py-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
-            <p>© {currentYear} OJ Multimedia. All rights reserved.</p>
+            <div className="flex flex-wrap items-center justify-center md:justify-start gap-x-4 gap-y-1">
+              <p>© {currentYear} OJ Multimedia. All rights reserved.</p>
+              <span className="hidden md:inline text-muted-foreground/50">|</span>
+              <Link href="/privacy-policy" className="hover:text-primary transition-colors">
+                Privacy Policy
+              </Link>
+              <span className="hidden md:inline text-muted-foreground/50">|</span>
+              <Link href="/terms-and-conditions" className="hover:text-primary transition-colors">
+                Terms of Service
+              </Link>
+            </div>
             <p>
               Built by{' '}
               <a

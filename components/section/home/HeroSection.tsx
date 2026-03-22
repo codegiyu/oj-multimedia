@@ -107,7 +107,7 @@ export const HeroSection = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.5 }}
-            className="flex flex-wrap gap-8 mt-12 pt-8 border-t border-border/50">
+            className="flex flex-wrap gap-8 mt-12 pt-8 border-t border-border/50 invisible">
             <div>
               <p className="text-3xl font-display font-bold">50K+</p>
               <p className="text-sm text-muted-foreground">Active Creators</p>

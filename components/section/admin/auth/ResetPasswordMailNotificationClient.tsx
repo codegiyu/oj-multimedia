@@ -51,7 +51,7 @@ export function ResetPasswordMailNotificationClient() {
 
   return (
     <Card>
-      <CardHeader className="space-y-0 border-b border-foreground/20 pb-2">
+      <CardHeader className="space-y-0 border-b border-foreground/20 pt-6 pb-6">
         <CardTitle className="text-2xl flex items-center gap-2">
           <CheckCircle2 className="h-6 w-6 text-green-500" />
           Check Your Email
@@ -60,7 +60,7 @@ export function ResetPasswordMailNotificationClient() {
           We&apos;ve sent a password reset link to {email || 'your email address'}
         </CardDescription>
       </CardHeader>
-      <CardContent className="py-2">
+      <CardContent className="pt-2 pb-6">
         <div className="space-y-6">
           <div className="flex flex-col items-center justify-center py-8">
             <div className="rounded-full bg-primary/10 p-4 mb-4">

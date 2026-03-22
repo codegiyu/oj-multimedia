@@ -14,11 +14,11 @@ export default function AdminLoginPage() {
   return (
     <AuthLayout subtitle="Sign in to your account">
       <Card>
-        <CardHeader className="space-y-0 border-b border-foreground/20 pb-2">
+        <CardHeader className="space-y-0 border-b border-foreground/20 pt-6 pb-6">
           <CardTitle className="text-2xl">Sign in to your account</CardTitle>
           <CardDescription>Enter your credentials to access the admin dashboard</CardDescription>
         </CardHeader>
-        <CardContent className="py-2">
+        <CardContent className="pt-2 pb-6">
           <Suspense fallback={<LoginFormSkeleton />}>
             <LoginForm />
           </Suspense>

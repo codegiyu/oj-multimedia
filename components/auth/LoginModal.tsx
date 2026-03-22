@@ -8,6 +8,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 import { useGoogleLogin } from '@/lib/hooks/use-google-login';
 import { LogIn, Loader2 } from 'lucide-react';
 
@@ -42,11 +43,14 @@ export function LoginModal({
               fetchPriority="high"
             />
             {/* Subtle overlay for readability */}
-            <div className="absolute inset-0 bg-gradient-to-r from-primary/40 via-transparent to-transparent" />
-            <div className="relative z-10 flex flex-col items-end justify-center p-6 h-full text-white">
+            <div className="absolute inset-0 bg-gradient-to-r from-dark/20 via-dark/20 to-dark/20" />
+            <div className="relative z-10 flex flex-col items-start justify-between p-6 h-full text-white">
               <div className="">
-                <h2 className="text-2xl font-bold mb-4 font-display drop-shadow-sm">{title}</h2>
-                <p className="text-white/95 text-lg max-w-sm drop-shadow-sm">{description}</p>
+                <img src="/images/logo-badge.png" alt="OJ Multimedia" className="h-16" />
+              </div>
+              <div className="">
+                <h2 className="text-xl font-bold mb-4 drop-shadow-sm">{title}</h2>
+                <p className="text-white/95 text-base max-w-sm drop-shadow-sm">{description}</p>
               </div>
             </div>
           </div>
@@ -59,9 +63,9 @@ export function LoginModal({
                 <LogIn className="w-8 h-8 text-primary-foreground" />
               </div>
               <div className="grid gap-2">
-                <DialogTitle className="text-2xl font-bold font-display">{title}</DialogTitle>
+                <DialogTitle className="text-2xl font-bold font-display">Sign In</DialogTitle>
                 <DialogDescription className="text-base text-muted-foreground">
-                  {description}
+                  Sign in to access your accounts, uploads and more
                 </DialogDescription>
               </div>
             </DialogHeader>
@@ -69,9 +73,9 @@ export function LoginModal({
             {/* Desktop header - only shown on desktop */}
             <DialogHeader className="h-fit hidden md:grid gap-4 text-center mb-6">
               <div className="grid gap-2">
-                <DialogTitle className="text-2xl font-bold font-display">{title}</DialogTitle>
+                <DialogTitle className="text-2xl font-bold font-display">Sign In</DialogTitle>
                 <DialogDescription className="text-base text-muted-foreground">
-                  {description}
+                  Sign in to access your accounts, uploads and more
                 </DialogDescription>
               </div>
             </DialogHeader>
@@ -80,7 +84,7 @@ export function LoginModal({
               <Button
                 onClick={handleGoogleLogin}
                 disabled={loginLoading || !isGoogleScriptLoaded}
-                className="w-full h-12 text-base font-medium border-border hover:bg-muted transition-colors"
+                className="w-full h-12 text-base font-medium border-primary hover:bg-primary transition-colors"
                 variant="outline">
                 {loginLoading ? (
                   <>
@@ -130,7 +134,18 @@ export function LoginModal({
               </div>
 
               <p className="text-xs text-center text-muted-foreground">
-                By continuing, you agree to our Terms of Service and Privacy Policy
+                By continuing, you agree to our{' '}
+                <Link
+                  href="/terms-and-conditions"
+                  className="underline hover:text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded">
+                  Terms of Service
+                </Link>{' '}
+                and{' '}
+                <Link
+                  href="/privacy-policy"
+                  className="underline hover:text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded">
+                  Privacy Policy
+                </Link>
               </p>
             </div>
           </div>

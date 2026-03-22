@@ -3,7 +3,6 @@ export { ContactInfoTab } from './ContactInfoTab';
 export { SocialsTab } from './SocialsTab';
 export { SEOTab } from './SEOTab';
 export { BrandingTab } from './BrandingTab';
-export { EmailTab } from './EmailTab';
 export { LegalTab } from './LegalTab';
 export { FeaturesTab } from './FeaturesTab';
 export { LocalizationTab } from './LocalizationTab';
