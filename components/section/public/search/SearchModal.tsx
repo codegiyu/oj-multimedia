@@ -18,119 +18,18 @@ import {
   HelpCircle,
   BarChart3,
   FolderOpen,
+  Loader2,
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useRouter } from 'next/navigation';
-import { MUSIC_ITEMS, type MusicItem } from '@/lib/constants/music';
-import { populateArtist } from '@/lib/utils/community/artists';
-import { NEWS_ITEMS, type NewsItem } from '@/lib/constants/news';
-import { DEVOTIONALS_ITEMS } from '@/lib/constants/community/devotionals';
-import { TESTIMONIES_ITEMS } from '@/lib/constants/community/testimonies';
-import { PRAYER_REQUESTS_ITEMS } from '@/lib/constants/community/prayer-requests';
-import { QUESTIONS_ITEMS } from '@/lib/constants/community/questions';
-import { POLLS_ITEMS } from '@/lib/constants/community/polls';
-import { RESOURCES_ITEMS } from '@/lib/constants/community/resources';
+import type { ISearchResultItem } from '@/lib/constants/endpoints';
+import { callApi } from '@/lib/services/callApi';
+import { getSearchResultDetailHref } from '@/lib/utils/searchResultRoutes';
 
 interface SearchModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
-
-interface SearchItem {
-  _id: string;
-  title: string;
-  type: string;
-  artist?: string;
-  category?: string;
-  creator?: string;
-  author?: string;
-}
-
-// Transform music items to search items
-const transformMusicItems = (items: MusicItem[]): SearchItem[] => {
-  return items.map(item => ({
-    _id: item._id,
-    title: item.title,
-    type: 'music',
-    artist: populateArtist(item.artist)?.name ?? 'Unknown',
-    category: item.category,
-  }));
-};
-
-// Transform news items to search items
-const transformNewsItems = (items: NewsItem[]): SearchItem[] => {
-  return items.map(item => ({
-    _id: item._id,
-    title: item.title,
-    type: 'news',
-    category: item.category,
-    creator: item.author,
-  }));
-};
-
-// Transform devotional items to search items
-const transformDevotionalItems = (items: typeof DEVOTIONALS_ITEMS): SearchItem[] => {
-  return items.map(item => ({
-    _id: item._id,
-    title: item.title,
-    type: 'devotional',
-    category: item.category,
-    creator: item.author,
-  }));
-};
-
-// Transform testimony items to search items
-const transformTestimonyItems = (items: typeof TESTIMONIES_ITEMS): SearchItem[] => {
-  return items.map(item => ({
-    _id: item._id,
-    title: item.title || item.content.substring(0, 50),
-    type: 'testimony',
-    category: item.category,
-    author: item.author,
-  }));
-};
-
-// Transform prayer request items to search items
-const transformPrayerRequestItems = (items: typeof PRAYER_REQUESTS_ITEMS): SearchItem[] => {
-  return items.map(item => ({
-    _id: item._id,
-    title: item.title,
-    type: 'prayer-request',
-    category: item.category,
-    author: item.author,
-  }));
-};
-
-// Transform question items to search items
-const transformQuestionItems = (items: typeof QUESTIONS_ITEMS): SearchItem[] => {
-  return items.map(item => ({
-    _id: item._id,
-    title: item.question,
-    type: 'question',
-    category: item.category,
-    author: item.author,
-  }));
-};
-
-// Transform poll items to search items
-const transformPollItems = (items: typeof POLLS_ITEMS): SearchItem[] => {
-  return items.map(item => ({
-    _id: item._id,
-    title: item.question,
-    type: 'poll',
-    category: item.category,
-  }));
-};
-
-// Transform resource items to search items
-const transformResourceItems = (items: typeof RESOURCES_ITEMS): SearchItem[] => {
-  return items.map(item => ({
-    _id: item._id,
-    title: item.title,
-    type: 'resource',
-    category: item.category || item.genre || item.templateType || item.productCategory,
-  }));
-};
 
 const typeIcons: Record<string, typeof Music> = {
   music: Music,
@@ -143,6 +42,7 @@ const typeIcons: Record<string, typeof Music> = {
   question: HelpCircle,
   poll: BarChart3,
   resource: FolderOpen,
+  artist: Users,
 };
 
 const typeColors: Record<string, string> = {
@@ -156,86 +56,56 @@ const typeColors: Record<string, string> = {
   question: 'text-orange-500',
   poll: 'text-green-500',
   resource: 'text-yellow-500',
+  artist: 'text-violet-500',
 };
 
-function getDetailHref(item: SearchItem): string | null {
-  switch (item.type) {
-    case 'music':
-      return `/music/${item._id}`;
-    case 'news':
-      return `/news/story/${item._id}`;
-    case 'video':
-      return `/videos/${item._id}`;
-    case 'devotional':
-      return `/community/devotionals/${item._id}`;
-    case 'testimony':
-      return `/community/testimonies/${item._id}`;
-    case 'prayer-request':
-      return `/community/prayer-requests/${item._id}`;
-    case 'question':
-      return `/community/ask-a-pastor/${item._id}`;
-    case 'poll':
-      return `/community/polls-and-voting/${item._id}`;
-    case 'resource':
-      return `/community/resources`;
-    default:
-      return null;
-  }
+function getDetailHref(item: ISearchResultItem): string | null {
+  return getSearchResultDetailHref(item.type, item._id);
+}
+
+function resultSubtitle(item: ISearchResultItem): string {
+  return item.subtitle?.trim() || item.meta?.trim() || '';
 }
 
 export const SearchModal = ({ isOpen, onClose }: SearchModalProps) => {
   const [query, setQuery] = useState('');
-  const [results, setResults] = useState<SearchItem[]>([]);
+  const [results, setResults] = useState<ISearchResultItem[]>([]);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const requestIdRef = useRef(0);
 
-  const handleSearch = (searchQuery: string) => {
-    if (!searchQuery.trim()) {
-      setResults([]);
-      return;
-    }
-
-    const lowerQuery = searchQuery.toLowerCase();
-
-    // Transform and combine all searchable content
-    const allContent: SearchItem[] = [
-      ...transformMusicItems(MUSIC_ITEMS),
-      ...transformNewsItems(NEWS_ITEMS),
-      ...transformDevotionalItems(DEVOTIONALS_ITEMS),
-      ...transformTestimonyItems(TESTIMONIES_ITEMS),
-      ...transformPrayerRequestItems(PRAYER_REQUESTS_ITEMS),
-      ...transformQuestionItems(QUESTIONS_ITEMS),
-      ...transformPollItems(POLLS_ITEMS),
-      ...transformResourceItems(RESOURCES_ITEMS),
-    ];
-
-    const filtered = allContent.filter(
-      item =>
-        item.title.toLowerCase().includes(lowerQuery) ||
-        (item.artist && item.artist.toLowerCase().includes(lowerQuery)) ||
-        (item.category && item.category.toLowerCase().includes(lowerQuery)) ||
-        (item.creator && item.creator.toLowerCase().includes(lowerQuery)) ||
-        (item.author && item.author.toLowerCase().includes(lowerQuery))
-    );
-
-    setResults(filtered.slice(0, 8));
-  };
-
-  const handleViewAll = () => {
-    if (query.trim()) {
-      router.push(`/search?q=${encodeURIComponent(query)}`);
-      onClose();
-    }
-  };
-
-  // Debounced search with 500ms delay
   useEffect(() => {
     if (debounceTimerRef.current) {
       clearTimeout(debounceTimerRef.current);
     }
 
+    const q = query.trim();
+    if (!q) {
+      setResults([]);
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
     debounceTimerRef.current = setTimeout(() => {
-      handleSearch(query);
+      const myId = ++requestIdRef.current;
+      const params = new URLSearchParams();
+      params.set('q', q);
+      params.set('limit', '8');
+
+      void (async () => {
+        const res = await callApi('PUBLIC_SEARCH', {
+          query: `?${params.toString()}` as `?${string}`,
+        });
+        if (myId !== requestIdRef.current) return;
+        setLoading(false);
+        if (res.type !== 'success' || !res.data?.results) {
+          setResults([]);
+          return;
+        }
+        setResults(res.data.results);
+      })();
     }, 500);
 
     return () => {
@@ -244,6 +114,21 @@ export const SearchModal = ({ isOpen, onClose }: SearchModalProps) => {
       }
     };
   }, [query]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setQuery('');
+      setResults([]);
+      setLoading(false);
+    }
+  }, [isOpen]);
+
+  const handleViewAll = () => {
+    if (query.trim()) {
+      router.push(`/search?q=${encodeURIComponent(query.trim())}`);
+      onClose();
+    }
+  };
 
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
@@ -259,11 +144,12 @@ export const SearchModal = ({ isOpen, onClose }: SearchModalProps) => {
     };
   }, [isOpen]);
 
+  const showEmpty = query.trim() && !loading && results.length === 0;
+
   return (
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -272,7 +158,6 @@ export const SearchModal = ({ isOpen, onClose }: SearchModalProps) => {
             onClick={onClose}
           />
 
-          {/* Modal */}
           <motion.div
             initial={{ opacity: 0, y: -20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -280,7 +165,6 @@ export const SearchModal = ({ isOpen, onClose }: SearchModalProps) => {
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
             className="fixed top-20 left-1/2 -translate-x-1/2 w-full max-w-2xl z-50 px-4">
             <div className="bg-card rounded-2xl shadow-2xl border border-border overflow-hidden">
-              {/* Search Input */}
               <div className="flex items-center gap-3 p-4 border-b border-border">
                 <Search className="w-5 h-5 text-muted-foreground" />
                 <Input
@@ -298,13 +182,16 @@ export const SearchModal = ({ isOpen, onClose }: SearchModalProps) => {
                 </button>
               </div>
 
-              {/* Results */}
               <div className="max-h-96 overflow-y-auto">
-                {results.length > 0 ? (
+                {loading && query.trim() ? (
+                  <div className="p-10 flex justify-center text-muted-foreground">
+                    <Loader2 className="w-8 h-8 animate-spin" aria-label="Searching" />
+                  </div>
+                ) : results.length > 0 ? (
                   <div className="p-2">
                     {results.map((result, index) => {
-                      const Icon = typeIcons[result.type];
-                      const colorClass = typeColors[result.type];
+                      const Icon = typeIcons[result.type] ?? Music;
+                      const colorClass = typeColors[result.type] ?? 'text-muted-foreground';
                       const href = getDetailHref(result);
 
                       const row = (
@@ -319,11 +206,7 @@ export const SearchModal = ({ isOpen, onClose }: SearchModalProps) => {
                           <div className="flex-1 min-w-0">
                             <p className="font-medium text-foreground truncate">{result.title}</p>
                             <p className="text-sm text-muted-foreground truncate">
-                              {result.artist ||
-                                // result.pastor ||
-                                result.author ||
-                                result.category ||
-                                result.creator}
+                              {resultSubtitle(result)}
                             </p>
                           </div>
                           <span className="text-xs text-muted-foreground capitalize px-2 py-1 bg-muted rounded-full">
@@ -345,7 +228,7 @@ export const SearchModal = ({ isOpen, onClose }: SearchModalProps) => {
                       );
                     })}
                   </div>
-                ) : query.trim() ? (
+                ) : showEmpty ? (
                   <div className="p-8 text-center text-muted-foreground">
                     <p>No results found for "{query}"</p>
                   </div>
@@ -375,8 +258,7 @@ export const SearchModal = ({ isOpen, onClose }: SearchModalProps) => {
                 )}
               </div>
 
-              {/* View All Results */}
-              {query.trim() && results.length > 0 && (
+              {query.trim() && results.length > 0 && !loading && (
                 <div className="p-3 border-t border-border">
                   <button
                     onClick={handleViewAll}

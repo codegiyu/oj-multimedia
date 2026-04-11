@@ -1,99 +1,46 @@
 import { Suspense } from 'react';
-import { MainLayout } from '@/components/layout/MainLayout';
 import { ArtistPortalUploadPageClient } from '@/components/section/account/artist-portal/ArtistPortalUploadPageClient';
+import { Skeleton } from '@/components/ui/skeleton';
 import type { Metadata } from 'next';
 import { callServerApi } from '@/lib/services/serverApi';
 import type { ApiErrorResponse } from '@/lib/types/http';
-import type { ArtistMusicListItem, ArtistVideoListItem } from '@/lib/constants/endpoints';
 
 export const metadata: Metadata = {
-  title: 'Artist Portal - Upload',
-  description: 'Upload new music and video content.',
+  title: 'Artist Portal - Submit content',
+  description: 'Contact the team on WhatsApp to submit music and videos for publishing.',
 };
 
 function ArtistUploadSkeleton() {
   return (
     <div className="max-w-2xl mx-auto py-8 space-y-4">
-      <div className="h-8 w-48 rounded-md bg-muted" />
-      <div className="h-4 w-64 rounded-md bg-muted" />
-      <div className="h-64 rounded-lg bg-muted" />
+      <Skeleton className="h-8 w-48 rounded-md" />
+      <Skeleton className="h-4 w-64 rounded-md" />
+      <Skeleton className="h-64 w-full rounded-lg" />
     </div>
   );
 }
 
-type SearchParams = { id?: string; type?: string };
-
-export default function ArtistPortalUploadPage({ searchParams }: { searchParams?: SearchParams }) {
-  const editId = searchParams?.id ?? '';
-  const editType = (searchParams?.type === 'video' ? 'video' : 'music') as 'music' | 'video';
-
+export default function ArtistPortalUploadPage() {
   return (
-    <MainLayout hideHeader hideFooter>
-      <Suspense fallback={<ArtistUploadSkeleton />}>
-        <ArtistUploadPageServer editId={editId} editType={editType} />
-      </Suspense>
-    </MainLayout>
+    <Suspense fallback={<ArtistUploadSkeleton />}>
+      <ArtistUploadPageServer />
+    </Suspense>
   );
 }
 
-async function ArtistUploadPageServer({
-  editId,
-  editType,
-}: {
-  editId: string;
-  editType: 'music' | 'video';
-}) {
+async function ArtistUploadPageServer() {
   const meRes = await callServerApi('ARTIST_GET_ME', {});
 
-  if (meRes.error || !meRes.data) {
+  if (meRes.type === 'error' || !meRes.data) {
     const responseCode = (meRes.error as ApiErrorResponse | undefined)?.responseCode;
     const hasArtistProfile = responseCode !== 403 && responseCode !== 404;
     return (
       <ArtistPortalUploadPageClient
         initialHasArtistProfile={hasArtistProfile}
-        initialLoadError={meRes.message || 'Unable to load artist profile.'}
-        initialMusicItem={null}
-        initialVideoItem={null}
-        initialEditLoadError={null}
-        editId={editId}
-        editType={editType}
+        initialLoadError={meRes.error?.message ?? 'Unable to load artist profile.'}
       />
     );
   }
 
-  let initialMusicItem: ArtistMusicListItem | null = null;
-  let initialVideoItem: ArtistVideoListItem | null = null;
-  let initialEditLoadError: string | null = null;
-
-  if (editId && editType === 'music') {
-    const itemRes = await callServerApi('ARTIST_GET_MUSIC_ITEM', {
-      query: `/${editId}`,
-    });
-    if (!itemRes.error && itemRes.data?.music) {
-      initialMusicItem = itemRes.data.music;
-    } else {
-      initialEditLoadError = itemRes.message || 'Unable to load this music item for editing.';
-    }
-  } else if (editId && editType === 'video') {
-    const itemRes = await callServerApi('ARTIST_GET_VIDEO_ITEM', {
-      query: `/${editId}`,
-    });
-    if (!itemRes.error && itemRes.data?.video) {
-      initialVideoItem = itemRes.data.video;
-    } else {
-      initialEditLoadError = itemRes.message || 'Unable to load this video item for editing.';
-    }
-  }
-
-  return (
-    <ArtistPortalUploadPageClient
-      initialHasArtistProfile={true}
-      initialLoadError={null}
-      initialMusicItem={initialMusicItem}
-      initialVideoItem={initialVideoItem}
-      initialEditLoadError={initialEditLoadError}
-      editId={editId}
-      editType={editType}
-    />
-  );
+  return <ArtistPortalUploadPageClient initialHasArtistProfile={true} initialLoadError={null} />;
 }

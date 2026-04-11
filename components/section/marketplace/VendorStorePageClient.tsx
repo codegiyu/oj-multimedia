@@ -1,6 +1,5 @@
 'use client';
 
-import { MainLayout } from '@/components/layout/MainLayout';
 import { SectionContainer } from '@/components/general/SectionContainer';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -18,7 +17,7 @@ export interface VendorStorePageClientProps {
 export function VendorStorePageClient({ vendor, products = [] }: VendorStorePageClientProps) {
   if (!vendor) {
     return (
-      <MainLayout>
+      <>
         <SectionContainer className="py-16 md:py-20">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-2xl font-bold text-foreground mb-4">Vendor not found</h1>
@@ -27,12 +26,12 @@ export function VendorStorePageClient({ vendor, products = [] }: VendorStorePage
             </Link>
           </div>
         </SectionContainer>
-      </MainLayout>
+      </>
     );
   }
 
   return (
-    <MainLayout>
+    <>
       <SectionContainer className="py-16 md:py-20">
         <div className="max-w-7xl mx-auto">
           <nav className="mb-8 flex items-center gap-2 text-sm text-muted-foreground">
@@ -108,6 +107,6 @@ export function VendorStorePageClient({ vendor, products = [] }: VendorStorePage
           )}
         </div>
       </SectionContainer>
-    </MainLayout>
+    </>
   );
 }

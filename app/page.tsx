@@ -23,7 +23,11 @@ import type {
   IPublicPollsListRes,
   IPublicTestimoniesListRes,
   IMarketplaceProductsListRes,
+  IPublicHomeAdvertsRes,
+  IPublicDevotionalsListRes,
+  IHomeAdvertItem,
 } from '@/lib/constants/endpoints';
+import type { HomeDevotionalCard } from '@/components/section/home';
 
 export const metadata = {
   title: 'Home - Discover Music, Charts & Latest Content',
@@ -72,6 +76,14 @@ const videoCategoryToSlug = (category: string | undefined): string | null => {
 };
 
 interface HomePageData {
+  advertsAfterHero: IHomeAdvertItem[];
+  advertsBeforeCta: IHomeAdvertItem[];
+  latestMusic: TrendingMusicItem[];
+  latestSermons: TrendingMusicItem[];
+  latestMovies: TrendingVideoItem[];
+  latestDevotionals: HomeDevotionalCard[];
+  featuredNews: NewsArticle[];
+  trendingNews: NewsArticle[];
   trendingMusic: TrendingMusicItem[];
   trendingVideos: TrendingVideoItem[];
   chartData: ChartItem[];
@@ -82,6 +94,58 @@ interface HomePageData {
   pollOptions: PollOption[];
   pollTotalVotes: number;
   initialErrorMessage: string | null;
+}
+
+function mapPublicMusicToHomeTrending(
+  item: IPublicMusicListRes['music'][number]
+): TrendingMusicItem {
+  return {
+    _id: item._id,
+    title: item.title,
+    artist: {
+      _id: typeof item.artist === 'string' ? item.artist : (item.artist?._id ?? ''),
+      name: typeof item.artist === 'string' ? 'Unknown' : (item.artist?.name ?? 'Unknown'),
+    },
+    cover: (item as { coverImage?: string }).coverImage ?? '',
+    plays: formatNumber((item as { views?: number }).views),
+    genre:
+      (item as { genre?: string }).genre ?? (item as { category?: string }).category ?? 'Other',
+    isNew: Boolean(
+      item.createdAt &&
+        Date.now() - new Date(item.createdAt as string).getTime() < 7 * 24 * 60 * 60 * 1000
+    ),
+  };
+}
+
+function mapPublicVideoToHomeTrending(
+  item: IPublicVideosListRes['videos'][number]
+): TrendingVideoItem {
+  return {
+    _id: item._id,
+    title: item.title,
+    creator:
+      typeof (item as { artist?: unknown }).artist === 'string'
+        ? 'Unknown'
+        : ((item as { artist?: { name?: string } }).artist?.name ?? 'Unknown'),
+    thumbnail: (item as { thumbnail?: string }).thumbnail ?? '',
+    views: formatNumber((item as { views?: number }).views),
+    duration: (item as { duration?: string }).duration ?? '--:--',
+    category: (item as { category?: string }).category ?? 'Video',
+  };
+}
+
+function mapArticleToNewsCard(article: IPublicNewsListRes['articles'][number]): NewsArticle {
+  return {
+    _id: article._id,
+    title: article.title,
+    excerpt: article.excerpt ?? '',
+    category: (article as { category?: string }).category ?? 'General',
+    time: article.readTime
+      ? `${article.readTime} min read`
+      : ((article as { createdAt?: string }).createdAt ?? ''),
+    image: article.coverImage ?? '',
+    featured: (article as { isFeatured?: boolean }).isFeatured ?? false,
+  };
 }
 
 async function fetchHomeSections(filters: {
@@ -131,6 +195,45 @@ async function fetchHomeSections(filters: {
     marketplaceQuery.set('category', filters.marketplaceCategory);
   }
 
+  const latestMusicQuery = new URLSearchParams({
+    limit: '12',
+    page: '1',
+    status: 'published',
+    type: 'latest',
+    excludeCategory: 'sermon',
+  });
+  const latestSermonsQuery = new URLSearchParams({
+    limit: '12',
+    page: '1',
+    status: 'published',
+    type: 'latest',
+    category: 'sermon',
+  });
+  const latestMoviesQuery = new URLSearchParams({
+    limit: '12',
+    page: '1',
+    status: 'published',
+    type: 'latest',
+    category: 'movie',
+  });
+  const featuredNewsQuery = new URLSearchParams({
+    limit: '6',
+    page: '1',
+    status: 'published',
+    type: 'featured',
+  });
+  const trendingNewsQuery = new URLSearchParams({
+    limit: '6',
+    page: '1',
+    status: 'published',
+    type: 'trending',
+  });
+  const devotionalsQuery = new URLSearchParams({
+    limit: '8',
+    page: '1',
+    type: 'latest',
+  });
+
   const [
     musicRes,
     videosRes,
@@ -140,6 +243,13 @@ async function fetchHomeSections(filters: {
     marketplaceRes,
     pollsRes,
     testimoniesRes,
+    homeAdvertsRes,
+    latestMusicRes,
+    latestSermonsRes,
+    latestMoviesRes,
+    featuredNewsRes,
+    trendingNewsRes,
+    devotionalsRes,
   ] = await Promise.all([
     callServerApi('PUBLIC_GET_MUSIC', {
       query: `?${baseMusicQuery.toString()}`,
@@ -164,6 +274,25 @@ async function fetchHomeSections(filters: {
     }),
     callServerApi('PUBLIC_GET_TESTIMONIES', {
       query: '?type=featured&page=1&limit=3&status=published',
+    }),
+    callServerApi('PUBLIC_GET_HOME_ADVERTS', {}),
+    callServerApi('PUBLIC_GET_MUSIC', {
+      query: `?${latestMusicQuery.toString()}`,
+    }),
+    callServerApi('PUBLIC_GET_MUSIC', {
+      query: `?${latestSermonsQuery.toString()}`,
+    }),
+    callServerApi('PUBLIC_GET_VIDEOS', {
+      query: `?${latestMoviesQuery.toString()}`,
+    }),
+    callServerApi('PUBLIC_GET_NEWS', {
+      query: `?${featuredNewsQuery.toString()}`,
+    }),
+    callServerApi('PUBLIC_GET_NEWS', {
+      query: `?${trendingNewsQuery.toString()}`,
+    }),
+    callServerApi('PUBLIC_GET_DEVOTIONALS', {
+      query: `?${devotionalsQuery.toString()}`,
     }),
   ]);
 
@@ -222,34 +351,58 @@ async function fetchHomeSections(filters: {
     ? (testimoniesRes.data as IPublicTestimoniesListRes | undefined)
     : undefined) ?? { testimonies: [] as IPublicTestimoniesListRes['testimonies'] };
 
-  const trendingMusic: TrendingMusicItem[] = musicData.music.map(item => ({
-    _id: item._id,
-    title: item.title,
-    artist: {
-      _id: typeof item.artist === 'string' ? item.artist : (item.artist?._id ?? ''),
-      name: typeof item.artist === 'string' ? 'Unknown' : (item.artist?.name ?? 'Unknown'),
-    },
-    cover: (item as any).coverImage ?? (item as any).cover ?? '',
-    plays: formatNumber((item as any).views as number | undefined),
-    genre: (item as any).genre ?? (item as any).category ?? 'Other',
-    isNew: Boolean(
-      item.createdAt &&
-        Date.now() - new Date(item.createdAt as string).getTime() < 7 * 24 * 60 * 60 * 1000
-    ),
+  const homeAdvertsData = (homeAdvertsRes.type === 'success'
+    ? (homeAdvertsRes.data as IPublicHomeAdvertsRes | undefined)
+    : undefined) ?? { adverts: [] as IHomeAdvertItem[] };
+
+  const latestMusicData = (latestMusicRes.type === 'success'
+    ? (latestMusicRes.data as IPublicMusicListRes | undefined)
+    : undefined) ?? { music: [] as IPublicMusicListRes['music'] };
+
+  const latestSermonsData = (latestSermonsRes.type === 'success'
+    ? (latestSermonsRes.data as IPublicMusicListRes | undefined)
+    : undefined) ?? { music: [] as IPublicMusicListRes['music'] };
+
+  const latestMoviesData = (latestMoviesRes.type === 'success'
+    ? (latestMoviesRes.data as IPublicVideosListRes | undefined)
+    : undefined) ?? { videos: [] as IPublicVideosListRes['videos'] };
+
+  const featuredNewsData = (featuredNewsRes.type === 'success'
+    ? (featuredNewsRes.data as IPublicNewsListRes | undefined)
+    : undefined) ?? { articles: [] as IPublicNewsListRes['articles'] };
+
+  const trendingNewsData = (trendingNewsRes.type === 'success'
+    ? (trendingNewsRes.data as IPublicNewsListRes | undefined)
+    : undefined) ?? { articles: [] as IPublicNewsListRes['articles'] };
+
+  const devotionalsData = (devotionalsRes.type === 'success'
+    ? (devotionalsRes.data as IPublicDevotionalsListRes | undefined)
+    : undefined) ?? { devotionals: [] as IPublicDevotionalsListRes['devotionals'] };
+
+  const advertsAfterHero = homeAdvertsData.adverts.filter(a => a.slot === 'after_hero');
+  const advertsBeforeCta = homeAdvertsData.adverts.filter(a => a.slot === 'before_cta');
+
+  const latestMusic: TrendingMusicItem[] = latestMusicData.music.map(mapPublicMusicToHomeTrending);
+  const latestSermons: TrendingMusicItem[] = latestSermonsData.music.map(
+    mapPublicMusicToHomeTrending
+  );
+  const latestMovies: TrendingVideoItem[] = latestMoviesData.videos.map(
+    mapPublicVideoToHomeTrending
+  );
+  const featuredNews: NewsArticle[] = featuredNewsData.articles.map(mapArticleToNewsCard);
+  const trendingNewsRail: NewsArticle[] = trendingNewsData.articles.map(mapArticleToNewsCard);
+
+  const latestDevotionals: HomeDevotionalCard[] = devotionalsData.devotionals.map(d => ({
+    _id: d._id,
+    title: d.title,
+    slug: d.slug,
+    excerpt: d.excerpt,
+    coverImage: (d as { coverImage?: string }).coverImage,
   }));
 
-  const trendingVideos: TrendingVideoItem[] = videosData.videos.map(item => ({
-    _id: item._id,
-    title: item.title,
-    creator:
-      typeof (item as any).artist === 'string'
-        ? 'Unknown'
-        : ((item as any).artist?.name ?? 'Unknown'),
-    thumbnail: (item as any).thumbnail ?? '',
-    views: formatNumber((item as any).views as number | undefined),
-    duration: (item as any).duration ?? '--:--',
-    category: (item as any).category ?? 'Video',
-  }));
+  const trendingMusic: TrendingMusicItem[] = musicData.music.map(mapPublicMusicToHomeTrending);
+
+  const trendingVideos: TrendingVideoItem[] = videosData.videos.map(mapPublicVideoToHomeTrending);
 
   const chartData: ChartItem[] = chartsData.music.map((item, index) => ({
     _id: item._id,
@@ -274,15 +427,7 @@ async function fetchHomeSections(filters: {
     verified: artist.verified ?? false,
   }));
 
-  const newsArticles: NewsArticle[] = newsData.articles.map(article => ({
-    _id: article._id,
-    title: article.title,
-    excerpt: article.excerpt ?? '',
-    category: (article as any).category ?? 'General',
-    time: article.readTime ? `${article.readTime} min read` : ((article as any).createdAt ?? ''),
-    image: article.coverImage ?? '',
-    featured: (article as any).isFeatured ?? false,
-  }));
+  const newsArticles: NewsArticle[] = newsData.articles.map(mapArticleToNewsCard);
 
   const marketplaceProducts: MarketplaceProduct[] = marketplaceData.products.map(product => ({
     _id: product._id,
@@ -313,6 +458,14 @@ async function fetchHomeSections(filters: {
   }));
 
   return {
+    advertsAfterHero,
+    advertsBeforeCta,
+    latestMusic,
+    latestSermons,
+    latestMovies,
+    latestDevotionals,
+    featuredNews,
+    trendingNews: trendingNewsRail,
     trendingMusic,
     trendingVideos,
     chartData,

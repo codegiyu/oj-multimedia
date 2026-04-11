@@ -1,13 +1,12 @@
 'use client';
 
-import { MainLayout } from '@/components/layout/MainLayout';
 import { SectionContainer } from '@/components/general/SectionContainer';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card } from '@/components/ui/card';
 
 export function VendorStorePageSkeleton() {
   return (
-    <MainLayout>
+    <>
       <SectionContainer className="py-16 md:py-20">
         <div className="max-w-7xl mx-auto">
           <Skeleton className="h-5 w-64 mb-8" />
@@ -34,6 +33,6 @@ export function VendorStorePageSkeleton() {
           </div>
         </div>
       </SectionContainer>
-    </MainLayout>
+    </>
   );
 }

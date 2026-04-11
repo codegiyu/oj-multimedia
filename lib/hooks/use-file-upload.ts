@@ -5,6 +5,19 @@ import { callApi } from '../services/callApi';
 import { uploadFileWithProgress } from '../utils/general';
 import type { EntityType, UploadIntent } from '@/lib/types/server-models';
 import { toast } from 'sonner';
+import { useInitAuthStore } from '../store/useAuthStore';
+
+const VENDOR_PRODUCT_IMAGE_MAX_BYTES = 3 * 1024 * 1024;
+
+function resolvePresignedEndpoint(): 'GENERATE_PRESIGNED_URL' | 'ADMIN_GENERATE_PRESIGNED_URL' {
+  const u = useInitAuthStore.getState().user;
+  if (u && typeof u === 'object' && 'kyc' in u) return 'GENERATE_PRESIGNED_URL';
+  return 'ADMIN_GENERATE_PRESIGNED_URL';
+}
+
+function isVendorOrProductImage(entityType: EntityType, intent: UploadIntent): boolean {
+  return (entityType === 'vendor' || entityType === 'product') && intent === 'image';
+}
 
 interface UseFileUploadOptions {
   entityType: EntityType;
@@ -109,13 +122,23 @@ export const useFileUpload = ({
       return null;
     }
 
+    if (
+      isVendorOrProductImage(entityType, targetIntent) &&
+      fileToUpload.size > VENDOR_PRODUCT_IMAGE_MAX_BYTES
+    ) {
+      toast.error('Image must be 3MB or smaller');
+      return null;
+    }
+
     setLoading(true);
     setProgress(0);
 
     const fileExtension = getFileExtension(fileToUpload.name);
     const contentType = fileToUpload.type || 'application/octet-stream';
 
-    const { data, error } = await callApi('ADMIN_GENERATE_PRESIGNED_URL', {
+    const presignedKey = resolvePresignedEndpoint();
+
+    const { data, error } = await callApi(presignedKey, {
       payload: {
         entityType,
         entityId: targetEntityId,

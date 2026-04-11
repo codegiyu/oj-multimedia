@@ -1,7 +1,6 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { MainLayout } from '@/components/layout/MainLayout';
 import { SectionContainer } from '@/components/general/SectionContainer';
 import { SectionHeader } from '@/components/general/SectionHeader';
 import { Card } from '@/components/ui/card';
@@ -27,7 +26,7 @@ export function MarketplaceVendorsPageClient({
 
   if (error && vendors.length === 0) {
     return (
-      <MainLayout>
+      <>
         <SectionContainer className="py-16 md:py-20">
           <DataLoadError
             title="Unable to load vendors"
@@ -36,12 +35,12 @@ export function MarketplaceVendorsPageClient({
             icon={<Store className="w-8 h-8 text-destructive" />}
           />
         </SectionContainer>
-      </MainLayout>
+      </>
     );
   }
 
   return (
-    <MainLayout>
+    <>
       <SectionContainer className="py-16 md:py-20">
         <div className="max-w-7xl mx-auto">
           <nav className="mb-6 flex items-center gap-2 text-sm text-muted-foreground">
@@ -119,6 +118,6 @@ export function MarketplaceVendorsPageClient({
           )}
         </div>
       </SectionContainer>
-    </MainLayout>
+    </>
   );
 }

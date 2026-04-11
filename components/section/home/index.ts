@@ -6,3 +6,7 @@ export { TopChartsSection, type ChartItem, type RisingArtist } from './TopCharts
 export { NewsSection, type NewsArticle } from './NewsSection';
 export { MarketplaceSection, type MarketplaceProduct } from './MarketplaceSection';
 export { CommunitySection, type CommunityPost, type PollOption } from './CommunitySection';
+export { HomeAdvertStrip } from './HomeAdvertStrip';
+export { SimpleMusicRail } from './SimpleMusicRail';
+export { SimpleVideoRail } from './SimpleVideoRail';
+export { DevotionalsRail, type HomeDevotionalCard } from './DevotionalsRail';

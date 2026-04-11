@@ -88,10 +88,13 @@ export function mapPublicMusicToDetailItem(item: PublicMusicListItem): MusicItem
   const createdAt = item.createdAt;
   const releaseDate =
     typeof createdAt === 'string' ? createdAt : ((createdAt as Date)?.toISOString?.() ?? '');
+  const dl = (item as { downloadUrl?: string }).downloadUrl;
   return {
     _id: String(item._id),
+    slug: item.slug,
     title: item.title,
     description: item.description,
+    lyrics: (item as { lyrics?: string }).lyrics,
     artist: toArtistSummary(item),
     cover: item.coverImage ?? '',
     plays: String(item.views ?? 0),
@@ -99,6 +102,7 @@ export function mapPublicMusicToDetailItem(item: PublicMusicListItem): MusicItem
     coverImage: item.coverImage,
     audioUrl: item.audioUrl,
     videoUrl: item.videoUrl,
+    downloadUrl: dl,
     duration: (item as { duration?: string }).duration,
     releaseDate,
   } as MusicItemWithArtist;
@@ -181,8 +185,14 @@ export function mapPublicVideoToDetailItem(item: PublicVideoListItem): VideoItem
   const createdAt = item.createdAt;
   const uploadedAt =
     typeof createdAt === 'string' ? createdAt : ((createdAt as Date)?.toISOString?.() ?? '');
+  const raw = item as PublicVideoListItem & {
+    videoFileUrl?: string;
+    embedUrl?: string;
+    youtubeEmbedUrl?: string;
+  };
   return {
     _id: String(item._id),
+    slug: item.slug,
     title: item.title,
     description: item.description,
     creator: toCreatorSummary(item),
@@ -190,6 +200,9 @@ export function mapPublicVideoToDetailItem(item: PublicVideoListItem): VideoItem
     views: String(item.views ?? 0),
     category: (item.category as VideoItemWithCreator['category']) ?? 'creative',
     videoUrl: item.videoUrl,
+    videoFileUrl: raw.videoFileUrl,
+    embedUrl: raw.embedUrl,
+    youtubeEmbedUrl: raw.youtubeEmbedUrl,
     duration: item.duration,
     uploadedAt,
   } as VideoItemWithCreator;
@@ -277,6 +290,13 @@ export function mapPublicNewsToVideoNewsItem(item: PublicNewsListItem): VideoNew
 }
 
 export function mapPublicNewsToDetailItem(item: PublicNewsListItem): NewsDetailItem {
+  const raw = item as PublicNewsListItem & {
+    audioUrl?: string;
+    videoFileUrl?: string;
+    embedUrl?: string;
+    downloadUrl?: string;
+    youtubeEmbedUrl?: string;
+  };
   return {
     _id: String(item._id),
     title: item.title,
@@ -288,6 +308,11 @@ export function mapPublicNewsToDetailItem(item: PublicNewsListItem): NewsDetailI
     comments: item.comments,
     author: item.author,
     date: newsDate(item),
+    audioUrl: raw.audioUrl,
+    videoFileUrl: raw.videoFileUrl,
+    embedUrl: raw.embedUrl,
+    downloadUrl: raw.downloadUrl,
+    youtubeEmbedUrl: raw.youtubeEmbedUrl,
     fullStory: (item as { content?: string }).content
       ? { introduction: (item as { content?: string }).content }
       : undefined,

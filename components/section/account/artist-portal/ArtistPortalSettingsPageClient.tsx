@@ -2,13 +2,12 @@
 
 import { useState } from 'react';
 import { z } from 'zod';
-import { SectionContainer } from '@/components/general/SectionContainer';
+import { DashboardPageHeader } from '@/components/layout/user-dashboard';
 import { Card } from '@/components/ui/card';
 import { RegularBtn } from '@/components/atoms/RegularBtn';
 import { RegularInput } from '@/components/atoms/RegularInput';
 import { RegularTextarea } from '@/components/atoms/RegularTextarea';
 import { Label } from '@/components/ui/label';
-import { Settings } from 'lucide-react';
 import { toast } from 'sonner';
 import { useForm } from '@/lib/hooks/use-form';
 import { callApi } from '@/lib/services/callApi';
@@ -21,14 +20,14 @@ import { useRouter } from 'next/navigation';
 const artistSettingsSchema = z.object({
   name: z.string().min(1, 'Artist name is required'),
   bio: z.string().optional(),
-  image: z.string().url('Please enter a valid image URL').optional().or(z.literal('')),
-  coverImage: z.string().url('Please enter a valid image URL').optional().or(z.literal('')),
+  image: z.url('Please enter a valid image URL').optional().or(z.literal('')),
+  coverImage: z.url('Please enter a valid image URL').optional().or(z.literal('')),
   genre: z.string().optional(),
-  facebook: z.string().url('Please enter a valid URL').optional().or(z.literal('')),
-  instagram: z.string().url('Please enter a valid URL').optional().or(z.literal('')),
-  twitter: z.string().url('Please enter a valid URL').optional().or(z.literal('')),
-  youtube: z.string().url('Please enter a valid URL').optional().or(z.literal('')),
-  website: z.string().url('Please enter a valid URL').optional().or(z.literal('')),
+  facebook: z.url('Please enter a valid URL').optional().or(z.literal('')),
+  instagram: z.url('Please enter a valid URL').optional().or(z.literal('')),
+  twitter: z.url('Please enter a valid URL').optional().or(z.literal('')),
+  youtube: z.url('Please enter a valid URL').optional().or(z.literal('')),
+  website: z.url('Please enter a valid URL').optional().or(z.literal('')),
 });
 
 type ArtistSettingsValues = z.infer<typeof artistSettingsSchema>;
@@ -112,204 +111,197 @@ export function ArtistPortalSettingsPageClient({
 
   if (!initialHasArtistProfile) {
     return (
-      <SectionContainer>
-        <div className="max-w-2xl mx-auto">
-          <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-4 flex items-center gap-2">
-            <Settings className="w-8 h-8 text-primary" />
-            Artist Settings
-          </h1>
-          <Card className="p-8 text-center">
-            <p className="text-muted-foreground mb-4">
-              Complete your artist profile to manage your music and videos. Contact support if you
-              need an artist account.
-            </p>
-            <Button variant="outline" onClick={() => router.refresh()}>
-              Retry
-            </Button>
-          </Card>
-        </div>
-      </SectionContainer>
+      <div className="mx-auto max-w-2xl space-y-6">
+        <DashboardPageHeader title="My account" description="Artist profile and public presence" />
+        <Card className="border-border/80 p-8 text-center shadow-sm">
+          <p className="text-muted-foreground mb-4">
+            Complete your artist profile to manage your music and videos. Contact support if you
+            need an artist account.
+          </p>
+          <Button variant="outline" className="rounded-full" onClick={() => router.refresh()}>
+            Retry
+          </Button>
+        </Card>
+      </div>
     );
   }
 
   return (
-    <SectionContainer>
-      <div className="max-w-2xl mx-auto">
-        <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-4 flex items-center gap-2">
-          <Settings className="w-8 h-8 text-primary" />
-          Artist Settings
-        </h1>
+    <div className="mx-auto max-w-3xl space-y-6">
+      <DashboardPageHeader
+        title="My account"
+        description="Update your artist profile, imagery, and social links."
+      />
 
-        {initialLoadError && !dismissedLoadError && (
-          <div className="mb-4 rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive flex items-center justify-between gap-4">
-            <span>{initialLoadError} You can retry or edit and save.</span>
-            <div className="flex gap-2 shrink-0">
-              <Button
-                variant="outline"
-                size="sm"
-                className="border-destructive text-destructive hover:bg-destructive/10"
-                onClick={() => router.refresh()}>
-                Retry
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-destructive hover:bg-destructive/10"
-                onClick={() => setDismissedLoadError(true)}>
-                Dismiss
-              </Button>
-            </div>
+      {initialLoadError && !dismissedLoadError && (
+        <div className="mb-4 rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive flex items-center justify-between gap-4">
+          <span>{initialLoadError} You can retry or edit and save.</span>
+          <div className="flex gap-2 shrink-0">
+            <Button
+              variant="outline"
+              size="sm"
+              className="border-destructive text-destructive hover:bg-destructive/10"
+              onClick={() => router.refresh()}>
+              Retry
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-destructive hover:bg-destructive/10"
+              onClick={() => setDismissedLoadError(true)}>
+              Dismiss
+            </Button>
           </div>
-        )}
+        </div>
+      )}
 
-        <Card className="p-6 md:p-8">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="name">Artist name</Label>
-              <RegularInput
-                id="name"
-                name="name"
-                value={formValues.name}
-                onChange={handleInputChange}
-                required
-                errors={errorsVisible ? (formErrors.name ?? []) : []}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="bio">Bio</Label>
-              <RegularTextarea
-                id="bio"
-                name="bio"
-                rows={4}
-                value={formValues.bio ?? ''}
-                onChange={handleInputChange}
-                errors={errorsVisible ? (formErrors.bio ?? []) : []}
-              />
-            </div>
-
-            <ImageUploadField
-              label="Profile image"
-              helperText="Upload a square image for your artist profile."
-              entityType="artist"
-              entityId=""
-              intent="avatar"
-              value={formValues.image ?? ''}
-              onChange={url =>
-                setFormValues(prev => ({
-                  ...prev,
-                  image: url,
-                }))
-              }
+      <Card className="p-6 md:p-8">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-2">
+            <Label htmlFor="name">Artist name</Label>
+            <RegularInput
+              id="name"
+              name="name"
+              value={formValues.name}
+              onChange={handleInputChange}
+              required
+              errors={errorsVisible ? (formErrors.name ?? []) : []}
             />
+          </div>
 
-            <ImageUploadField
-              label="Cover image"
-              helperText="Upload a wide image for your artist banner."
-              entityType="artist"
-              entityId=""
-              intent="banner-image"
-              value={formValues.coverImage ?? ''}
-              onChange={url =>
-                setFormValues(prev => ({
-                  ...prev,
-                  coverImage: url,
-                }))
-              }
+          <div className="space-y-2">
+            <Label htmlFor="bio">Bio</Label>
+            <RegularTextarea
+              id="bio"
+              name="bio"
+              rows={4}
+              value={formValues.bio ?? ''}
+              onChange={handleInputChange}
+              errors={errorsVisible ? (formErrors.bio ?? []) : []}
             />
+          </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="genre">Genre</Label>
-              <RegularInput
-                id="genre"
-                name="genre"
-                value={formValues.genre ?? ''}
-                onChange={handleInputChange}
-              />
-            </div>
+          <ImageUploadField
+            label="Profile image"
+            helperText="Upload a square image for your artist profile."
+            entityType="artist"
+            entityId=""
+            intent="avatar"
+            value={formValues.image ?? ''}
+            onChange={url =>
+              setFormValues(prev => ({
+                ...prev,
+                image: url,
+              }))
+            }
+          />
 
-            <div className="space-y-4 pt-2 border-t border-border">
-              <h3 className="text-sm font-medium text-foreground">Social links (optional)</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="facebook">Facebook</Label>
-                  <RegularInput
-                    id="facebook"
-                    name="facebook"
-                    type="url"
-                    placeholder="https://..."
-                    value={formValues.facebook ?? ''}
-                    onChange={handleInputChange}
-                    errors={errorsVisible ? (formErrors.facebook ?? []) : []}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="instagram">Instagram</Label>
-                  <RegularInput
-                    id="instagram"
-                    name="instagram"
-                    type="url"
-                    placeholder="https://..."
-                    value={formValues.instagram ?? ''}
-                    onChange={handleInputChange}
-                    errors={errorsVisible ? (formErrors.instagram ?? []) : []}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="twitter">Twitter</Label>
-                  <RegularInput
-                    id="twitter"
-                    name="twitter"
-                    type="url"
-                    placeholder="https://..."
-                    value={formValues.twitter ?? ''}
-                    onChange={handleInputChange}
-                    errors={errorsVisible ? (formErrors.twitter ?? []) : []}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="youtube">YouTube</Label>
-                  <RegularInput
-                    id="youtube"
-                    name="youtube"
-                    type="url"
-                    placeholder="https://..."
-                    value={formValues.youtube ?? ''}
-                    onChange={handleInputChange}
-                    errors={errorsVisible ? (formErrors.youtube ?? []) : []}
-                  />
-                </div>
-                <div className="space-y-2 sm:col-span-2">
-                  <Label htmlFor="website">Website</Label>
-                  <RegularInput
-                    id="website"
-                    name="website"
-                    type="url"
-                    placeholder="https://..."
-                    value={formValues.website ?? ''}
-                    onChange={handleInputChange}
-                    errors={errorsVisible ? (formErrors.website ?? []) : []}
-                  />
-                </div>
+          <ImageUploadField
+            label="Cover image"
+            helperText="Upload a wide image for your artist banner."
+            entityType="artist"
+            entityId=""
+            intent="banner-image"
+            value={formValues.coverImage ?? ''}
+            onChange={url =>
+              setFormValues(prev => ({
+                ...prev,
+                coverImage: url,
+              }))
+            }
+          />
+
+          <div className="space-y-2">
+            <Label htmlFor="genre">Genre</Label>
+            <RegularInput
+              id="genre"
+              name="genre"
+              value={formValues.genre ?? ''}
+              onChange={handleInputChange}
+            />
+          </div>
+
+          <div className="space-y-4 pt-2 border-t border-border">
+            <h3 className="text-sm font-medium text-foreground">Social links (optional)</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="facebook">Facebook</Label>
+                <RegularInput
+                  id="facebook"
+                  name="facebook"
+                  type="url"
+                  placeholder="https://..."
+                  value={formValues.facebook ?? ''}
+                  onChange={handleInputChange}
+                  errors={errorsVisible ? (formErrors.facebook ?? []) : []}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="instagram">Instagram</Label>
+                <RegularInput
+                  id="instagram"
+                  name="instagram"
+                  type="url"
+                  placeholder="https://..."
+                  value={formValues.instagram ?? ''}
+                  onChange={handleInputChange}
+                  errors={errorsVisible ? (formErrors.instagram ?? []) : []}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="twitter">Twitter</Label>
+                <RegularInput
+                  id="twitter"
+                  name="twitter"
+                  type="url"
+                  placeholder="https://..."
+                  value={formValues.twitter ?? ''}
+                  onChange={handleInputChange}
+                  errors={errorsVisible ? (formErrors.twitter ?? []) : []}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="youtube">YouTube</Label>
+                <RegularInput
+                  id="youtube"
+                  name="youtube"
+                  type="url"
+                  placeholder="https://..."
+                  value={formValues.youtube ?? ''}
+                  onChange={handleInputChange}
+                  errors={errorsVisible ? (formErrors.youtube ?? []) : []}
+                />
+              </div>
+              <div className="space-y-2 sm:col-span-2">
+                <Label htmlFor="website">Website</Label>
+                <RegularInput
+                  id="website"
+                  name="website"
+                  type="url"
+                  placeholder="https://..."
+                  value={formValues.website ?? ''}
+                  onChange={handleInputChange}
+                  errors={errorsVisible ? (formErrors.website ?? []) : []}
+                />
               </div>
             </div>
+          </div>
 
-            <RegularBtn
-              type="submit"
-              variant="default"
-              className="bg-primary hover:bg-primary/90"
-              disabled={loading}
-              loading={loading}
-              onDisabledClick={() => {
-                if (loading) {
-                  toast.info('Please wait, saving settings…');
-                }
-              }}>
-              {loading ? 'Saving…' : 'Save settings'}
-            </RegularBtn>
-          </form>
-        </Card>
-      </div>
-    </SectionContainer>
+          <RegularBtn
+            type="submit"
+            variant="default"
+            className="bg-primary hover:bg-primary/90"
+            disabled={loading}
+            loading={loading}
+            onDisabledClick={() => {
+              if (loading) {
+                toast.info('Please wait, saving settings…');
+              }
+            }}>
+            {loading ? 'Saving…' : 'Save settings'}
+          </RegularBtn>
+        </form>
+      </Card>
+    </div>
   );
 }

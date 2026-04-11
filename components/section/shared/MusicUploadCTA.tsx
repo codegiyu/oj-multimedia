@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
 const benefits = [
-  { icon: Upload, title: 'Easy Upload', description: 'Drag & drop your tracks' },
+  { icon: Upload, title: 'Simple process', description: 'Message our team with your files' },
   { icon: BarChart3, title: 'Analytics', description: 'Track your performance' },
   { icon: Users, title: 'Reach', description: 'Connect with listeners' },
   { icon: DollarSign, title: 'Monetize', description: 'Earn from your music' },
@@ -53,8 +53,8 @@ export const MusicUploadCTA = () => {
                 viewport={{ once: true }}
                 transition={{ delay: 0.3 }}
                 className="text-muted-foreground mb-6 max-w-md">
-                Upload your tracks, reach new listeners, and grow your audience. Join thousands of
-                artists sharing their creativity.
+                Our admins publish approved content. Contact us to submit tracks, artwork, and
+                details—we will guide you through the process.
               </motion.p>
 
               <motion.div
@@ -64,15 +64,15 @@ export const MusicUploadCTA = () => {
                 transition={{ delay: 0.4 }}
                 className="flex flex-wrap gap-3">
                 <Button variant="hero" size="lg" className="gap-2" asChild>
-                  <Link href="/community/promote-your-content">
+                  <Link href="/contact">
                     <Upload className="w-5 h-5" />
-                    Upload Your Song
+                    Contact to submit
                   </Link>
                 </Button>
                 <Button variant="hero-outline" size="lg" className="gap-2" asChild>
-                  <Link href="/community/promote-your-content">
+                  <Link href="/contact">
                     <Mic className="w-5 h-5" />
-                    Submit Beats
+                    Submit beats
                   </Link>
                 </Button>
               </motion.div>
@@ -106,7 +106,7 @@ export const MusicUploadCTA = () => {
             viewport={{ once: true }}
             transition={{ delay: 0.6 }}
             className="relative z-10 text-center text-sm text-muted-foreground mt-8">
-            Free to upload • Instant publishing • Keep your rights • Analytics included
+            Admin-reviewed publishing • You keep your rights • Promotional options available
           </motion.p>
         </motion.div>
       </div>

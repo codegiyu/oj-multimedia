@@ -14,7 +14,7 @@ import type { FeaturedOption, PromotionPricingOption, ContactMethod } from '@/li
 export const metadata: Metadata = {
   title: 'Promote Your Content - Reach Your Audience',
   description:
-    'Promote your songs, upload sermons, get featured, and explore sponsorship opportunities. Grow your reach with our platform.',
+    'Promote your songs and ministry, get featured, and explore sponsorship opportunities. Content publishing is curated by our team—contact us to submit material for review.',
 };
 
 export const dynamic = 'force-dynamic';

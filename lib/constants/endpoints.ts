@@ -188,12 +188,83 @@ export interface IArtistMeRes {
   artist: ClientArtistProfile;
 }
 
+export interface IContentMetricsBreakdown {
+  views: number;
+  plays: number;
+  downloads: number;
+}
+
 export interface IArtistDashboardStatsRes {
   tracksCount: number;
   videosCount: number;
   totalPlays: number;
   totalViews?: number;
+  totalDownloads?: number;
+  music?: IContentMetricsBreakdown;
+  video?: IContentMetricsBreakdown;
+  devotionals?: { views: number; plays: number; downloads?: number };
+  tracksAddedThisMonth?: number;
+  playsDeltaPercent?: number | null;
 }
+
+export interface IAdminUserSearchItem {
+  _id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  artistId?: string;
+}
+
+export interface IAdminUsersSearchRes {
+  users: IAdminUserSearchItem[];
+}
+
+export type PublicContentEntityType = 'music' | 'video' | 'devotional' | 'news-article';
+
+export interface IPublicContentAnalyticsEventPayload {
+  entityType: PublicContentEntityType;
+  entityIdOrSlug: string;
+  event: 'view' | 'play' | 'download';
+  clientSessionId?: string;
+}
+
+export interface IAdminArtistDashboardStatsRes {
+  tracksCount: number;
+  videosCount: number;
+  devotionalsCount?: number;
+  totalViews: number;
+  totalPlays: number;
+  totalDownloads: number;
+  music: IContentMetricsBreakdown;
+  video: IContentMetricsBreakdown;
+  devotionals?: { views: number; plays: number; downloads?: number };
+  topMusic?: Array<{ _id: string; title: string; plays?: number; views?: number }>;
+  topVideos?: Array<{ _id: string; title: string; plays?: number; views?: number }>;
+}
+
+export type IAdminCreateMusicPayload = IArtistCreateMusicPayload & {
+  artistId?: string;
+  ownerUserId?: string;
+};
+
+export type IAdminUpdateMusicPayload = IArtistUpdateMusicPayload & {
+  ownerUserId?: string;
+};
+
+export type IAdminCreateVideoPayload = IArtistCreateVideoPayload & {
+  artistId?: string;
+  ownerUserId?: string;
+};
+
+export type IAdminUpdateVideoPayload = IArtistUpdateVideoPayload & {
+  ownerUserId?: string;
+};
+
+/** Present on admin content list/detail when API supports owner locking. */
+export type ContentOwnerApiFields = {
+  ownerLocked?: boolean;
+  ownerUserId?: string;
+};
 
 export interface IArtistUpdateMePayload {
   name?: string;
@@ -210,9 +281,10 @@ export interface IArtistUpdateMePayload {
   };
 }
 
-export type ArtistMusicListItem = Omit<ClientMusic, 'artist'> & {
-  artist?: string | PopulatedArtistSummary;
-};
+export type ArtistMusicListItem = Omit<ClientMusic, 'artist'> &
+  ContentOwnerApiFields & {
+    artist?: string | PopulatedArtistSummary;
+  };
 
 export type IArtistMusicListRes = GetListRes<ArtistMusicListItem, 'music'>;
 
@@ -224,9 +296,11 @@ export interface IArtistCreateMusicPayload {
   title: string;
   description?: string;
   lyrics?: string;
+  excerpt?: string;
   coverImage?: string;
   audioUrl?: string;
   videoUrl?: string;
+  downloadUrl?: string;
   category?: string;
   isMonetizable?: boolean;
 }
@@ -235,9 +309,10 @@ export interface IArtistUpdateMusicPayload extends Partial<IArtistCreateMusicPay
   status?: 'draft' | 'published' | 'archived';
 }
 
-export type ArtistVideoListItem = Omit<ClientVideo, 'artist'> & {
-  artist?: string | PopulatedArtistSummary;
-};
+export type ArtistVideoListItem = Omit<ClientVideo, 'artist'> &
+  ContentOwnerApiFields & {
+    artist?: string | PopulatedArtistSummary;
+  };
 
 export type IArtistVideosListRes = GetListRes<ArtistVideoListItem, 'videos'>;
 
@@ -250,6 +325,8 @@ export interface IArtistCreateVideoPayload {
   description?: string;
   thumbnail?: string;
   videoUrl?: string;
+  videoFileUrl?: string;
+  embedUrl?: string;
   category?: string;
   isMonetizable?: boolean;
 }
@@ -279,6 +356,44 @@ export type IPublicNewsListRes = GetListRes<PublicNewsListItem, 'articles'>;
 export interface IPublicNewsItemRes {
   article: PublicNewsListItem;
 }
+
+/** Admin news endpoints return `{ news }` (public detail uses `{ article }`). */
+export interface IAdminNewsItemRes {
+  news: PublicNewsListItem;
+}
+
+export interface IContentCategoryItem {
+  _id: string;
+  name: string;
+  slug: string;
+  scope: 'music' | 'video' | 'news' | 'devotional';
+  displayOrder?: number;
+  isActive?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface IHomeAdvertItem {
+  _id: string;
+  slot: 'after_hero' | 'before_cta';
+  imageUrl: string;
+  linkUrl?: string;
+  displayOrder?: number;
+  isActive?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export type IContentCategoriesListRes = GetListRes<IContentCategoryItem, 'categories'>;
+export type IHomeAdvertsListRes = GetListRes<IHomeAdvertItem, 'adverts'>;
+export interface IContentCategoryMutationRes {
+  category: IContentCategoryItem;
+}
+export interface IHomeAdvertMutationRes {
+  advert: IHomeAdvertItem;
+}
+export type IPublicContentCategoriesRes = { categories: IContentCategoryItem[] };
+export type IPublicHomeAdvertsRes = { adverts: IHomeAdvertItem[] };
 
 // Community (public) – list and detail types (from COMMUNITY-API-FRONTEND.md)
 export type ICommunityCategoryCountsRes = CommunityHubData;
@@ -561,6 +676,8 @@ export interface AllEndpoints {
     `?${string}`
   >;
 
+  ADMIN_USERS_SEARCH: EndpointDefinition<undefined, IAdminUsersSearchRes, `?${string}`>;
+
   // Admin content - Music
   ADMIN_MUSIC_LIST: EndpointDefinition<
     undefined,
@@ -568,13 +685,9 @@ export interface AllEndpoints {
     `?${string}`
   >;
   ADMIN_MUSIC_ITEM: EndpointDefinition<undefined, IArtistMusicItemRes, `/${string}`>;
-  ADMIN_MUSIC_CREATE: EndpointDefinition<
-    IArtistCreateMusicPayload & { artistId: string },
-    IArtistMusicItemRes,
-    undefined
-  >;
+  ADMIN_MUSIC_CREATE: EndpointDefinition<IAdminCreateMusicPayload, IArtistMusicItemRes, undefined>;
   ADMIN_MUSIC_UPDATE: EndpointDefinition<
-    IArtistUpdateMusicPayload,
+    IAdminUpdateMusicPayload,
     IArtistMusicItemRes,
     `/${string}`
   >;
@@ -589,13 +702,9 @@ export interface AllEndpoints {
     `?${string}`
   >;
   ADMIN_VIDEO_ITEM: EndpointDefinition<undefined, IArtistVideoItemRes, `/${string}`>;
-  ADMIN_VIDEO_CREATE: EndpointDefinition<
-    IArtistCreateVideoPayload & { artistId: string },
-    IArtistVideoItemRes,
-    undefined
-  >;
+  ADMIN_VIDEO_CREATE: EndpointDefinition<IAdminCreateVideoPayload, IArtistVideoItemRes, undefined>;
   ADMIN_VIDEO_UPDATE: EndpointDefinition<
-    IArtistUpdateVideoPayload,
+    IAdminUpdateVideoPayload,
     IArtistVideoItemRes,
     `/${string}`
   >;
@@ -609,9 +718,9 @@ export interface AllEndpoints {
     GetListRes<PublicNewsListItem, 'news'>,
     `?${string}`
   >;
-  ADMIN_NEWS_ITEM: EndpointDefinition<undefined, IPublicNewsItemRes, `/${string}`>;
-  ADMIN_NEWS_CREATE: EndpointDefinition<Record<string, unknown>, IPublicNewsItemRes, undefined>;
-  ADMIN_NEWS_UPDATE: EndpointDefinition<Record<string, unknown>, IPublicNewsItemRes, `/${string}`>;
+  ADMIN_NEWS_ITEM: EndpointDefinition<undefined, IAdminNewsItemRes, `/${string}`>;
+  ADMIN_NEWS_CREATE: EndpointDefinition<Record<string, unknown>, IAdminNewsItemRes, undefined>;
+  ADMIN_NEWS_UPDATE: EndpointDefinition<Record<string, unknown>, IAdminNewsItemRes, `/${string}`>;
   ADMIN_NEWS_DELETE: EndpointDefinition<undefined, { success: boolean }, `/${string}`>;
 
   // Admin content - Artists
@@ -624,6 +733,11 @@ export interface AllEndpoints {
   ADMIN_ARTIST_CREATE: EndpointDefinition<Record<string, unknown>, ArtistDetailData, undefined>;
   ADMIN_ARTIST_UPDATE: EndpointDefinition<Record<string, unknown>, ArtistDetailData, `/${string}`>;
   ADMIN_ARTIST_DELETE: EndpointDefinition<undefined, { success: boolean }, `/${string}`>;
+  ADMIN_ARTIST_DASHBOARD_STATS: EndpointDefinition<
+    undefined,
+    IAdminArtistDashboardStatsRes,
+    `/${string}`
+  >;
 
   // Admin content - Pastors
   ADMIN_PASTORS_LIST: EndpointDefinition<undefined, PastorsListData, `?${string}`>;
@@ -792,6 +906,40 @@ export interface AllEndpoints {
     `/${string}`
   >;
 
+  ADMIN_CONTENT_CATEGORIES_LIST: EndpointDefinition<
+    undefined,
+    IContentCategoriesListRes,
+    `?${string}`
+  >;
+  ADMIN_CONTENT_CATEGORIES_CREATE: EndpointDefinition<
+    Record<string, unknown>,
+    IContentCategoryMutationRes,
+    undefined
+  >;
+  ADMIN_CONTENT_CATEGORIES_UPDATE: EndpointDefinition<
+    Record<string, unknown>,
+    IContentCategoryMutationRes,
+    `/${string}`
+  >;
+  ADMIN_CONTENT_CATEGORIES_DELETE: EndpointDefinition<
+    undefined,
+    { success: boolean },
+    `/${string}`
+  >;
+
+  ADMIN_HOME_ADVERTS_LIST: EndpointDefinition<undefined, IHomeAdvertsListRes, `?${string}`>;
+  ADMIN_HOME_ADVERTS_CREATE: EndpointDefinition<
+    Record<string, unknown>,
+    IHomeAdvertMutationRes,
+    undefined
+  >;
+  ADMIN_HOME_ADVERTS_UPDATE: EndpointDefinition<
+    Record<string, unknown>,
+    IHomeAdvertMutationRes,
+    `/${string}`
+  >;
+  ADMIN_HOME_ADVERTS_DELETE: EndpointDefinition<undefined, { success: boolean }, `/${string}`>;
+
   ADMIN_ORDERS_LIST: EndpointDefinition<
     undefined,
     GetListRes<PopulatedMarketplaceOrder, 'orders'>,
@@ -910,6 +1058,12 @@ export interface AllEndpoints {
   PUBLIC_GET_VIDEO_ITEM: EndpointDefinition<undefined, IPublicVideoItemRes, `/${string}`>;
   PUBLIC_GET_NEWS: EndpointDefinition<undefined, IPublicNewsListRes, `?${string}`>;
   PUBLIC_GET_NEWS_ITEM: EndpointDefinition<undefined, IPublicNewsItemRes, `/${string}`>;
+  PUBLIC_GET_CONTENT_CATEGORIES: EndpointDefinition<
+    undefined,
+    IPublicContentCategoriesRes,
+    `?${string}` | undefined
+  >;
+  PUBLIC_GET_HOME_ADVERTS: EndpointDefinition<undefined, IPublicHomeAdvertsRes, undefined>;
 
   // Public community (read)
   PUBLIC_GET_COMMUNITY: EndpointDefinition<undefined, ICommunityCategoryCountsRes, undefined>;
@@ -980,6 +1134,11 @@ export interface AllEndpoints {
   // Contact & Search (public)
   PUBLIC_SUBMIT_CONTACT: EndpointDefinition<ISubmitContactPayload, ISubmitContactRes, undefined>;
   PUBLIC_SEARCH: EndpointDefinition<undefined, IPublicSearchRes, `?${string}`>;
+  PUBLIC_CONTENT_ANALYTICS_EVENT: EndpointDefinition<
+    IPublicContentAnalyticsEventPayload,
+    { ok?: boolean },
+    undefined
+  >;
 }
 
 export const ENDPOINTS: Record<keyof AllEndpoints, EndpointDetails> = {
@@ -1121,6 +1280,8 @@ export const ENDPOINTS: Record<keyof AllEndpoints, EndpointDetails> = {
 
   ADMIN_CONTACT_SUBMISSIONS_LIST: { path: '/admin/contact-submissions', method: 'GET' },
 
+  ADMIN_USERS_SEARCH: { path: '/admin/users', method: 'GET' },
+
   ADMIN_MUSIC_LIST: { path: '/admin/music', method: 'GET' },
   ADMIN_MUSIC_ITEM: { path: '/admin/music', method: 'GET' },
   ADMIN_MUSIC_CREATE: { path: '/admin/music', method: 'POST' },
@@ -1148,6 +1309,7 @@ export const ENDPOINTS: Record<keyof AllEndpoints, EndpointDetails> = {
   ADMIN_ARTIST_CREATE: { path: '/admin/artists', method: 'POST' },
   ADMIN_ARTIST_UPDATE: { path: '/admin/artists', method: 'PATCH' },
   ADMIN_ARTIST_DELETE: { path: '/admin/artists', method: 'DELETE' },
+  ADMIN_ARTIST_DASHBOARD_STATS: { path: '/admin/artists', method: 'GET' },
 
   ADMIN_PASTORS_LIST: { path: '/admin/pastors', method: 'GET' },
   ADMIN_PASTOR_ITEM: { path: '/admin/pastors', method: 'GET' },
@@ -1215,6 +1377,16 @@ export const ENDPOINTS: Record<keyof AllEndpoints, EndpointDetails> = {
   ADMIN_PRODUCT_DELETE: { path: '/admin/products', method: 'DELETE' },
   ADMIN_PRODUCT_APPROVE: { path: '/admin/products', method: 'POST' },
   ADMIN_PRODUCT_REJECT: { path: '/admin/products', method: 'POST' },
+
+  ADMIN_CONTENT_CATEGORIES_LIST: { path: '/admin/content-categories', method: 'GET' },
+  ADMIN_CONTENT_CATEGORIES_CREATE: { path: '/admin/content-categories', method: 'POST' },
+  ADMIN_CONTENT_CATEGORIES_UPDATE: { path: '/admin/content-categories', method: 'PATCH' },
+  ADMIN_CONTENT_CATEGORIES_DELETE: { path: '/admin/content-categories', method: 'DELETE' },
+
+  ADMIN_HOME_ADVERTS_LIST: { path: '/admin/home-adverts', method: 'GET' },
+  ADMIN_HOME_ADVERTS_CREATE: { path: '/admin/home-adverts', method: 'POST' },
+  ADMIN_HOME_ADVERTS_UPDATE: { path: '/admin/home-adverts', method: 'PATCH' },
+  ADMIN_HOME_ADVERTS_DELETE: { path: '/admin/home-adverts', method: 'DELETE' },
 
   ADMIN_ORDERS_LIST: { path: '/admin/orders', method: 'GET' },
   ADMIN_ORDER_ITEM: { path: '/admin/orders', method: 'GET' },
@@ -1339,6 +1511,16 @@ export const ENDPOINTS: Record<keyof AllEndpoints, EndpointDetails> = {
   PUBLIC_GET_VIDEO_ITEM: { path: '/public/videos', method: 'GET', isNotAuthenticated: true }, // /:idOrSlug
   PUBLIC_GET_NEWS: { path: '/public/news', method: 'GET', isNotAuthenticated: true },
   PUBLIC_GET_NEWS_ITEM: { path: '/public/news', method: 'GET', isNotAuthenticated: true }, // /:idOrSlug
+  PUBLIC_GET_CONTENT_CATEGORIES: {
+    path: '/public/content-categories',
+    method: 'GET',
+    isNotAuthenticated: true,
+  },
+  PUBLIC_GET_HOME_ADVERTS: {
+    path: '/public/home-adverts',
+    method: 'GET',
+    isNotAuthenticated: true,
+  },
 
   // Public community (read)
   PUBLIC_GET_COMMUNITY: { path: '/public/community', method: 'GET', isNotAuthenticated: true },
@@ -1429,6 +1611,11 @@ export const ENDPOINTS: Record<keyof AllEndpoints, EndpointDetails> = {
   // Contact & Search (public)
   PUBLIC_SUBMIT_CONTACT: { path: '/public/contact', method: 'POST', isNotAuthenticated: true },
   PUBLIC_SEARCH: { path: '/public/search', method: 'GET', isNotAuthenticated: true },
+  PUBLIC_CONTENT_ANALYTICS_EVENT: {
+    path: '/public/analytics/content-event',
+    method: 'POST',
+    isNotAuthenticated: true,
+  },
 };
 
 // Pagination Query Type
@@ -2019,4 +2206,22 @@ export interface IVendorDashboardStatsRes {
   productsCount: number;
   pendingOrdersCount: number;
   totalPaidRevenue: number;
+}
+
+/** Public GET /public/music/:idOrSlug/download — increments download count and redirects to file URL. */
+export function getPublicMusicDownloadUrl(idOrSlug: string): string {
+  const base = (process.env.NEXT_PUBLIC_BASE_URL || 'https://api.ojmultimedia.com').replace(
+    /\/$/,
+    ''
+  );
+  return `${base}/public/music/${encodeURIComponent(idOrSlug)}/download`;
+}
+
+/** Public GET /public/videos/:idOrSlug/download — same pattern as music when API supports it. */
+export function getPublicVideoDownloadUrl(idOrSlug: string): string {
+  const base = (process.env.NEXT_PUBLIC_BASE_URL || 'https://api.ojmultimedia.com').replace(
+    /\/$/,
+    ''
+  );
+  return `${base}/public/videos/${encodeURIComponent(idOrSlug)}/download`;
 }

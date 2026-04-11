@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
-import { MainLayout } from '@/components/layout/MainLayout';
 import { VendorPageClient } from '@/components/section/account/vendor/VendorPageClient';
+import { Skeleton } from '@/components/ui/skeleton';
 import type { Metadata } from 'next';
 import { callServerApi } from '@/lib/services/serverApi';
 import type { IVendorDashboardStatsRes, IVendorMeRes } from '@/lib/constants/endpoints';
@@ -13,16 +13,16 @@ export const metadata: Metadata = {
 function VendorDashboardSkeleton() {
   return (
     <div className="max-w-5xl mx-auto py-8 space-y-4">
-      <div className="h-7 w-40 rounded-md bg-muted" />
+      <Skeleton className="h-7 w-40 rounded-md" />
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="h-24 rounded-lg bg-muted" />
-        <div className="h-24 rounded-lg bg-muted" />
-        <div className="h-24 rounded-lg bg-muted" />
+        <Skeleton className="h-24 w-full rounded-lg" />
+        <Skeleton className="h-24 w-full rounded-lg" />
+        <Skeleton className="h-24 w-full rounded-lg" />
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-        <div className="h-40 rounded-lg bg-muted" />
-        <div className="h-40 rounded-lg bg-muted" />
-        <div className="h-40 rounded-lg bg-muted" />
+        <Skeleton className="h-40 w-full rounded-lg" />
+        <Skeleton className="h-40 w-full rounded-lg" />
+        <Skeleton className="h-40 w-full rounded-lg" />
       </div>
     </div>
   );
@@ -30,11 +30,9 @@ function VendorDashboardSkeleton() {
 
 export default function VendorPage() {
   return (
-    <MainLayout hideHeader hideFooter>
-      <Suspense fallback={<VendorDashboardSkeleton />}>
-        <VendorPageClientServer />
-      </Suspense>
-    </MainLayout>
+    <Suspense fallback={<VendorDashboardSkeleton />}>
+      <VendorPageClientServer />
+    </Suspense>
   );
 }
 

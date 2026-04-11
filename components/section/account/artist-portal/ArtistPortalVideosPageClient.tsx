@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useQueryState, parseAsInteger, parseAsString } from 'nuqs';
-import { SectionContainer } from '@/components/general/SectionContainer';
+import { DashboardPageHeader } from '@/components/layout/user-dashboard';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -10,7 +10,7 @@ import { callApi } from '@/lib/services/callApi';
 import type { ArtistVideoListItem } from '@/lib/constants/endpoints';
 import type { ApiErrorResponse } from '@/lib/types/http';
 import { toast } from 'sonner';
-import { Video, Trash2 } from 'lucide-react';
+import { Video, Trash2, Loader2, MessageCircle } from 'lucide-react';
 import { EmptyState } from '@/components/section/news/EmptyState';
 
 const STATUS_FILTERS: Array<{ value: '' | 'draft' | 'published' | 'archived'; label: string }> = [
@@ -25,20 +25,6 @@ export interface ArtistPortalVideosPageClientProps {
   initialTotalPages: number;
   initialHasArtistProfile: boolean;
   initialErrorMessage: string | null;
-}
-
-function ArtistVideosLoadingState() {
-  return (
-    <SectionContainer>
-      <div className="max-w-3xl mx-auto text-center space-y-4">
-        <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto">
-          <Video className="w-8 h-8 text-muted-foreground animate-pulse" />
-        </div>
-        <h1 className="text-2xl md:text-3xl font-bold text-foreground">Loading videos</h1>
-        <p className="text-sm text-muted-foreground">Please wait while we fetch your videos.</p>
-      </div>
-    </SectionContainer>
-  );
 }
 
 export function ArtistPortalVideosPageClient({
@@ -122,139 +108,137 @@ export function ArtistPortalVideosPageClient({
     };
   }, [page, pageSize, status, reloadIndex]);
 
-  if (loading) {
-    return <ArtistVideosLoadingState />;
-  }
-
   if (hasArtistProfile === false) {
     return (
-      <SectionContainer>
-        <Card className="p-8 text-center">
+      <div className="space-y-6">
+        <DashboardPageHeader title="My videos" description="Manage your video content" />
+        <Card className="border-border/80 p-8 text-center shadow-sm">
           <p className="text-muted-foreground">
             Complete your artist profile to manage your videos.
           </p>
-          <Button asChild className="mt-4" variant="outline">
+          <Button asChild className="mt-4 rounded-full" variant="outline">
             <Link href="/account/artist-portal/settings">Go to settings</Link>
           </Button>
         </Card>
-      </SectionContainer>
+      </div>
     );
   }
 
   return (
-    <SectionContainer>
-      <div className="max-w-5xl mx-auto space-y-6">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-foreground">
-              Artist Portal – Videos
-            </h1>
-            <p className="text-sm text-muted-foreground">Manage your video content.</p>
-          </div>
-          <Button asChild className="bg-primary hover:bg-primary/90">
-            <Link href="/account/artist-portal/upload">Upload new video</Link>
+    <div className="relative space-y-6">
+      {loading ? (
+        <div className="absolute inset-0 z-10 flex items-start justify-center bg-background/60 pt-24">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" aria-hidden />
+        </div>
+      ) : null}
+
+      <DashboardPageHeader
+        title="My videos"
+        description="Videos go live after admins publish—submit files via the submit page">
+        <Button asChild className="rounded-full bg-primary hover:bg-primary/90 gap-2">
+          <Link href="/account/artist-portal/upload">
+            <MessageCircle className="h-4 w-4" />
+            Submit new video
+          </Link>
+        </Button>
+      </DashboardPageHeader>
+
+      {errorMessage && (
+        <div className="rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive flex items-center justify-between gap-4">
+          <span>{errorMessage}</span>
+          <Button
+            variant="outline"
+            size="sm"
+            className="border-destructive text-destructive hover:bg-destructive/10"
+            onClick={() => setReloadIndex(prev => prev + 1)}>
+            Retry
           </Button>
         </div>
+      )}
 
-        {errorMessage && (
-          <div className="rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive flex items-center justify-between gap-4">
-            <span>{errorMessage}</span>
-            <Button
-              variant="outline"
-              size="sm"
-              className="border-destructive text-destructive hover:bg-destructive/10"
-              onClick={() => setReloadIndex(prev => prev + 1)}>
-              Retry
-            </Button>
-          </div>
-        )}
+      <div className="flex flex-wrap gap-2">
+        {STATUS_FILTERS.map(f => (
+          <Button
+            key={f.label}
+            variant={status === f.value ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setStatus(f.value)}>
+            {f.label}
+          </Button>
+        ))}
+      </div>
 
-        <div className="flex flex-wrap gap-2">
-          {STATUS_FILTERS.map(f => (
-            <Button
-              key={f.label}
-              variant={status === f.value ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setStatus(f.value)}>
-              {f.label}
-            </Button>
+      {videos.length === 0 ? (
+        <EmptyState
+          title="No videos yet"
+          description="Send your video files to our team on the submit page (WhatsApp or contact). Admins publish after review."
+          icon={<Video className="w-12 h-12 text-muted-foreground" />}
+          actionLabel="Submit a video"
+          actionHref="/account/artist-portal/upload"
+          showDefaultActions={false}
+        />
+      ) : (
+        <div className="space-y-3">
+          {videos.map(item => (
+            <Card
+              key={item._id}
+              className="p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div>
+                <p className="font-semibold text-foreground">{item.title}</p>
+                <p className="text-xs text-muted-foreground">
+                  {item.createdAt ? new Date(item.createdAt).toLocaleDateString() : ''} · Views{' '}
+                  {item.views ?? 0}
+                </p>
+              </div>
+              <div className="flex items-center gap-3">
+                <span
+                  className={`text-xs font-medium px-2 py-1 rounded-full ${
+                    item.status === 'published'
+                      ? 'bg-primary/10 text-primary'
+                      : item.status === 'draft'
+                        ? 'bg-muted text-muted-foreground'
+                        : 'bg-destructive/10 text-destructive'
+                  }`}>
+                  {item.status}
+                </span>
+                <Button asChild size="sm" variant="outline">
+                  <Link href="/account/artist-portal/upload">Request updates</Link>
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="border-destructive text-destructive hover:bg-destructive/10"
+                  disabled={deletingId === item._id}
+                  onClick={() => handleDelete(item)}>
+                  {deletingId === item._id ? 'Deleting…' : <Trash2 className="w-4 h-4" />}
+                </Button>
+              </div>
+            </Card>
           ))}
         </div>
+      )}
 
-        {videos.length === 0 ? (
-          <EmptyState
-            title="No videos yet"
-            description="Add your first video to share your content with the community. Use the upload button to get started."
-            icon={<Video className="w-12 h-12 text-muted-foreground" />}
-            actionLabel="Upload new video"
-            actionHref="/account/artist-portal/upload"
-            showDefaultActions={false}
-          />
-        ) : (
-          <div className="space-y-3">
-            {videos.map(item => (
-              <Card
-                key={item._id}
-                className="p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div>
-                  <p className="font-semibold text-foreground">{item.title}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {item.createdAt ? new Date(item.createdAt).toLocaleDateString() : ''} · Views{' '}
-                    {item.views ?? 0}
-                  </p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span
-                    className={`text-xs font-medium px-2 py-1 rounded-full ${
-                      item.status === 'published'
-                        ? 'bg-primary/10 text-primary'
-                        : item.status === 'draft'
-                          ? 'bg-muted text-muted-foreground'
-                          : 'bg-destructive/10 text-destructive'
-                    }`}>
-                    {item.status}
-                  </span>
-                  <Button asChild size="sm" variant="outline">
-                    <Link href={`/account/artist-portal/upload?id=${item._id}&type=video`}>
-                      Edit
-                    </Link>
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="border-destructive text-destructive hover:bg-destructive/10"
-                    disabled={deletingId === item._id}
-                    onClick={() => handleDelete(item)}>
-                    {deletingId === item._id ? 'Deleting…' : <Trash2 className="w-4 h-4" />}
-                  </Button>
-                </div>
-              </Card>
-            ))}
-          </div>
-        )}
-
-        {totalPages > 1 && (
-          <div className="flex items-center justify-center gap-2 pt-4">
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={page <= 1}
-              onClick={() => setPage(Math.max(1, page - 1))}>
-              Previous
-            </Button>
-            <span className="text-sm text-muted-foreground">
-              Page {page} of {totalPages}
-            </span>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={page >= totalPages}
-              onClick={() => setPage(Math.min(totalPages, page + 1))}>
-              Next
-            </Button>
-          </div>
-        )}
-      </div>
-    </SectionContainer>
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2 pt-4">
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={page <= 1}
+            onClick={() => setPage(Math.max(1, page - 1))}>
+            Previous
+          </Button>
+          <span className="text-sm text-muted-foreground">
+            Page {page} of {totalPages}
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={page >= totalPages}
+            onClick={() => setPage(Math.min(totalPages, page + 1))}>
+            Next
+          </Button>
+        </div>
+      )}
+    </div>
   );
 }

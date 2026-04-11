@@ -3,6 +3,7 @@ import { Suspense } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { SubPageHero } from '@/components/general/SubPageHero';
 import { ArtistsPageClient } from '@/components/section/community/artists/ArtistsPageClient';
+import { Skeleton } from '@/components/ui/skeleton';
 import { callServerApi } from '@/lib/services/serverApi';
 import { mapToCommunityArtist } from '@/lib/utils/communityApiMappers';
 import type { Pagination } from '@/lib/types/community';
@@ -70,7 +71,11 @@ export default async function CommunityArtistsPage({ searchParams }: ArtistsPage
       />
       <Suspense
         fallback={
-          <div className="container mx-auto px-4 py-12 animate-pulse grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6" />
+          <div className="container mx-auto grid grid-cols-2 gap-6 px-4 py-12 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+            {Array.from({ length: 12 }).map((_, i) => (
+              <Skeleton key={i} className="aspect-square w-full rounded-xl" />
+            ))}
+          </div>
         }>
         <ArtistsPageClient
           artists={artists}

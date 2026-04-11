@@ -16,6 +16,8 @@ import {
   Inbox,
   BarChart3,
   FileCheck,
+  Tags,
+  ImageIcon,
 } from 'lucide-react';
 import type { ISidebarLinkGroup } from '@/lib/types/general';
 
@@ -58,6 +60,16 @@ export const sidebarLinksData: ISidebarLinkGroup[] = [
         LucideIcon: Newspaper,
         page: 'News',
         path: { prefix: '/admin', suffix: '/dashboard/news' },
+      },
+      {
+        LucideIcon: Tags,
+        page: 'Content categories',
+        path: { prefix: '/admin', suffix: '/dashboard/content-categories' },
+      },
+      {
+        LucideIcon: ImageIcon,
+        page: 'Home adverts',
+        path: { prefix: '/admin', suffix: '/dashboard/home-adverts' },
       },
       {
         LucideIcon: FileText,

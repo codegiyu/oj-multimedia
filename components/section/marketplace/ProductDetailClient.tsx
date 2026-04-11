@@ -1,7 +1,6 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { MainLayout } from '@/components/layout/MainLayout';
 import { SectionContainer } from '@/components/general/SectionContainer';
 import { Button } from '@/components/ui/button';
 import { Package, MessageCircle, ShoppingCart, Store, ChevronRight } from 'lucide-react';
@@ -25,7 +24,7 @@ export interface ProductDetailClientProps {
 export function ProductDetailClient({ product }: ProductDetailClientProps) {
   if (!product) {
     return (
-      <MainLayout>
+      <>
         <SectionContainer className="py-16 md:py-20">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-2xl font-bold text-foreground mb-4">Product not found</h1>
@@ -34,7 +33,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
             </Button>
           </div>
         </SectionContainer>
-      </MainLayout>
+      </>
     );
   }
 
@@ -116,7 +115,7 @@ function ProductDetailContent({ product }: ProductDetailContentProps) {
   };
 
   return (
-    <MainLayout>
+    <>
       <SectionContainer className="py-16 md:py-20">
         <div className="max-w-7xl mx-auto">
           <nav className="mb-8 flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
@@ -292,6 +291,6 @@ function ProductDetailContent({ product }: ProductDetailContentProps) {
           </div>
         </div>
       </SectionContainer>
-    </MainLayout>
+    </>
   );
 }

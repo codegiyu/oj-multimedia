@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import type { Metadata } from 'next';
-import { MainLayout } from '@/components/layout/MainLayout';
+import { Skeleton } from '@/components/ui/skeleton';
 import { VendorNewProductPageClient } from '@/components/section/account/vendor/VendorNewProductPageClient';
 import { VendorCreateStoreState } from '@/components/section/account/vendor/VendorCreateStoreState';
 import { callServerApi } from '@/lib/services/serverApi';
@@ -14,19 +14,17 @@ export const metadata: Metadata = {
 function NewProductSkeleton() {
   return (
     <div className="max-w-2xl mx-auto py-8 space-y-4">
-      <div className="h-8 w-48 rounded-md bg-muted" />
-      <div className="h-64 rounded-lg bg-muted" />
+      <Skeleton className="h-8 w-48 rounded-md" />
+      <Skeleton className="h-64 w-full rounded-lg" />
     </div>
   );
 }
 
 export default function NewVendorProductPage() {
   return (
-    <MainLayout hideHeader hideFooter>
-      <Suspense fallback={<NewProductSkeleton />}>
-        <NewVendorProductPageServer />
-      </Suspense>
-    </MainLayout>
+    <Suspense fallback={<NewProductSkeleton />}>
+      <NewVendorProductPageServer />
+    </Suspense>
   );
 }
 

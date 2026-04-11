@@ -22,7 +22,7 @@ import {
 export const metadata: Metadata = {
   title: 'Videos - Trending & Creative Content',
   description:
-    'Discover trending videos, watch creative content, explore music videos, short clips, talks, and inspirational videos from talented creators. Upload and share your own videos.',
+    'Discover trending videos, watch creative content, explore music videos, short clips, talks, and inspirational videos from talented creators. Publishing is curated—contact us to submit videos for review.',
 };
 
 export const dynamic = 'force-dynamic';

@@ -3,22 +3,14 @@
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Play, Clock, Video, Eye } from 'lucide-react';
+import type { SearchResultType } from '@/lib/constants/endpoints';
+import { getSearchResultDetailHref } from '@/lib/utils/searchResultRoutes';
 
 export interface SearchResultItem {
   _id: string;
   title: string;
   subtitle: string;
-  type:
-    | 'music'
-    | 'news'
-    | 'video'
-    | 'devotional'
-    | 'testimony'
-    | 'prayer-request'
-    | 'question'
-    | 'poll'
-    | 'resource'
-    | 'artist';
+  type: SearchResultType;
   image?: string | { src: string };
   meta: string;
 }
@@ -28,35 +20,11 @@ const typeColors: Record<string, string> = {
   news: 'bg-accent/10 text-accent',
   video: 'bg-secondary/10 text-secondary',
   community: 'bg-muted text-muted-foreground',
+  artist: 'bg-violet-500/10 text-violet-700 dark:text-violet-400',
 };
 
 function getDetailHref(item: SearchResultItem): string | null {
-  // Extract ID from prefix (m, n, v, d, t, pr, q, p, r, a) — match longer prefix first
-  const idPart = item._id.replace(/^(pr|m|n|v|d|t|q|p|r|a)/, '');
-  switch (item.type) {
-    case 'music':
-      return `/music/${idPart}`;
-    case 'news':
-      return `/news/story/${idPart}`;
-    case 'video':
-      return `/videos/${idPart}`;
-    case 'devotional':
-      return `/community/devotionals/${idPart}`;
-    case 'testimony':
-      return `/community/testimonies/${idPart}`;
-    case 'prayer-request':
-      return `/community/prayer-requests/${idPart}`;
-    case 'question':
-      return `/community/ask-a-pastor/${idPart}`;
-    case 'poll':
-      return `/community/polls-and-voting/${idPart}`;
-    case 'resource':
-      return `/community/resources`;
-    case 'artist':
-      return `/community/artists/${idPart}`;
-    default:
-      return null;
-  }
+  return getSearchResultDetailHref(item.type, item._id);
 }
 
 interface SearchResultsProps {

@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Clock, Eye, Calendar, Share2, Bookmark, Music } from 'lucide-react';
 import Link from 'next/link';
@@ -9,6 +10,7 @@ import type { MusicItemWithArtist } from '@/lib/utils/music';
 import { AudioPlayer } from './AudioPlayer';
 import { DownloadButton } from './DownloadButton';
 import { MusicCard } from '@/components/cards/MusicCard';
+import { sendContentAnalyticsEvent } from '@/lib/services/contentAnalytics';
 
 interface MusicDetailPageClientProps {
   musicItem: MusicItemWithArtist;
@@ -18,6 +20,16 @@ interface MusicDetailPageClientProps {
 export const MusicDetailPageClient = ({ musicItem, relatedSongs }: MusicDetailPageClientProps) => {
   const artistName =
     typeof musicItem.artist === 'string' ? musicItem.artist : musicItem.artist.name;
+
+  const entityId = musicItem.slug || musicItem._id;
+
+  useEffect(() => {
+    sendContentAnalyticsEvent('music', entityId, 'view');
+  }, [entityId]);
+
+  const onAudioFirstPlay = useCallback(() => {
+    sendContentAnalyticsEvent('music', entityId, 'play');
+  }, [entityId]);
 
   const handleShare = () => {
     if (navigator.share) {
@@ -129,12 +141,12 @@ export const MusicDetailPageClient = ({ musicItem, relatedSongs }: MusicDetailPa
                 artist={
                   typeof musicItem.artist === 'string' ? musicItem.artist : musicItem.artist.name
                 }
+                onFirstPlay={onAudioFirstPlay}
               />
             </motion.div>
           )}
 
-          {/* Download Button */}
-          {musicItem.downloadUrl && (
+          {(musicItem.audioUrl || musicItem.downloadUrl) && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}

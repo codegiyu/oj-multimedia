@@ -6,6 +6,8 @@
  */
 export interface VideoItem {
   _id: string;
+  /** URL slug from API (for analytics / tracked download paths). */
+  slug?: string;
   title: string;
   /** Artist profile _id (e.g. 'ap-1'). Getters populate to { _id, name }. */
   creator: string;
@@ -18,7 +20,8 @@ export interface VideoItem {
     | 'inspirational'
     | 'live'
     | 'podcasts'
-    | 'sermon';
+    | 'sermon'
+    | 'movie';
   // Trending Video fields
   views?: string;
   duration?: string;
@@ -49,6 +52,12 @@ export interface VideoItem {
   isFeaturedCreator?: boolean;
   // Detail page fields
   videoUrl?: string; // For streaming
+  /** Hosted video file (preferred over legacy videoUrl for non-YouTube). */
+  videoFileUrl?: string;
+  /** YouTube / Vimeo page or watch URL. */
+  embedUrl?: string;
+  /** Normalized iframe src (from API). */
+  youtubeEmbedUrl?: string;
   downloadUrl?: string; // For downloads
   description?: string; // Video description
   isMonetizable?: boolean; // Whether download requires payment

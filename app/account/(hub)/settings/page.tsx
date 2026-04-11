@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
-import { MainLayout } from '@/components/layout/MainLayout';
 import { AccountSettingsPageClient } from '@/components/section/account/AccountSettingsPageClient';
+import { Skeleton } from '@/components/ui/skeleton';
 import type { Metadata } from 'next';
 import { callServerApi } from '@/lib/services/serverApi';
 
@@ -12,11 +12,11 @@ export const metadata: Metadata = {
 function AccountSettingsPageSkeleton() {
   return (
     <div className="max-w-2xl mx-auto py-8 space-y-4">
-      <div className="h-7 w-48 rounded-md bg-muted" />
-      <div className="h-4 w-32 rounded-md bg-muted" />
+      <Skeleton className="h-7 w-48 rounded-md" />
+      <Skeleton className="h-4 w-32 rounded-md" />
       <div className="space-y-3 mt-4">
-        <div className="h-20 w-full rounded-lg bg-muted" />
-        <div className="h-20 w-full rounded-lg bg-muted" />
+        <Skeleton className="h-20 w-full rounded-lg" />
+        <Skeleton className="h-20 w-full rounded-lg" />
       </div>
     </div>
   );
@@ -24,11 +24,9 @@ function AccountSettingsPageSkeleton() {
 
 export default function AccountSettingsPage() {
   return (
-    <MainLayout hideHeader hideFooter>
-      <Suspense fallback={<AccountSettingsPageSkeleton />}>
-        <AccountSettingsPageClientServer />
-      </Suspense>
-    </MainLayout>
+    <Suspense fallback={<AccountSettingsPageSkeleton />}>
+      <AccountSettingsPageClientServer />
+    </Suspense>
   );
 }
 

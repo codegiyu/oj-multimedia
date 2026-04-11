@@ -2,11 +2,11 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useQueryState, parseAsInteger } from 'nuqs';
-import { SectionContainer } from '@/components/general/SectionContainer';
+import { DashboardPageHeader } from '@/components/layout/user-dashboard';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { formatPrice } from '@/lib/utils/marketplace';
-import { Package, Plus, Pencil, Archive } from 'lucide-react';
+import { Package, Plus, Pencil, Archive, MoreVertical, Loader2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { callApi } from '@/lib/services/callApi';
@@ -16,6 +16,13 @@ import type { ApiErrorResponse } from '@/lib/types/http';
 import { toast } from 'sonner';
 import { VendorCreateStoreState } from './VendorCreateStoreState';
 import { EmptyState } from '@/components/section/news/EmptyState';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { cn } from '@/lib/utils';
 
 interface VendorProductsListProps {
   products: IVendorProductsRes['products'];
@@ -25,22 +32,7 @@ interface VendorProductsListProps {
   onNextPage: () => void;
   onArchive: (productId: string) => void;
   archivingProductId: string | null;
-}
-
-function VendorProductsLoadingState() {
-  return (
-    <SectionContainer>
-      <div className="max-w-3xl mx-auto text-center space-y-4">
-        <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto">
-          <Package className="w-8 h-8 text-muted-foreground animate-pulse" />
-        </div>
-        <h1 className="text-2xl md:text-3xl font-bold text-foreground">Loading products</h1>
-        <p className="text-sm text-muted-foreground">
-          Please wait while we fetch your store products.
-        </p>
-      </div>
-    </SectionContainer>
-  );
+  loading: boolean;
 }
 
 function VendorProductsList({
@@ -51,118 +43,137 @@ function VendorProductsList({
   onNextPage,
   onArchive,
   archivingProductId,
+  loading,
 }: VendorProductsListProps) {
   return (
-    <SectionContainer>
-      <div className="max-w-5xl mx-auto">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-          <h1 className="text-2xl md:text-3xl font-bold text-foreground">Vendor Products</h1>
-          <Button className="gap-2 bg-primary hover:bg-primary/90" asChild>
-            <Link href="/account/vendor/products/new">
-              <Plus className="w-4 h-4" />
-              Add product
-            </Link>
-          </Button>
+    <div className="relative space-y-8">
+      {loading ? (
+        <div className="absolute inset-0 z-10 flex items-start justify-center bg-background/60 pt-24">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" aria-hidden />
         </div>
+      ) : null}
 
-        {products.length === 0 ? (
-          <EmptyState
-            title="No products yet"
-            description="Add your first product to start selling on the marketplace."
-            icon={<Package className="w-12 h-12 text-muted-foreground" />}
-            actionLabel="Add your first product"
-            actionHref="/account/vendor/products/new"
-            showDefaultActions={false}
-          />
-        ) : (
-          <>
-            <div className="space-y-4">
-              {products.map(product => (
+      <DashboardPageHeader title="My products" description="Manage your product listings">
+        <Button className="gap-2 rounded-full bg-primary hover:bg-primary/90" asChild>
+          <Link href="/account/vendor/products/new">
+            <Plus className="h-4 w-4" />
+            Add product
+          </Link>
+        </Button>
+      </DashboardPageHeader>
+
+      {products.length === 0 ? (
+        <EmptyState
+          title="No products yet"
+          description="Add your first product to start selling on the marketplace."
+          icon={<Package className="h-12 w-12 text-muted-foreground" />}
+          actionLabel="Add your first product"
+          actionHref="/account/vendor/products/new"
+          showDefaultActions={false}
+        />
+      ) : (
+        <>
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
+            {products.map(product => {
+              const priceDisplay = product.variants?.length
+                ? `From ${formatPrice(Math.min(...product.variants.map(v => v.price)))}`
+                : formatPrice(product.price);
+              const isActive = product.status === 'published' && product.inStock;
+              return (
                 <Card
                   key={product._id}
-                  className="p-4 flex flex-col sm:flex-row sm:items-center gap-4">
-                  <div className="w-20 h-20 rounded-lg bg-muted overflow-hidden shrink-0">
+                  className="gap-0 overflow-hidden border-border/80 py-0 shadow-sm transition-shadow hover:shadow-md">
+                  <div className="relative aspect-square bg-muted">
                     {product.images?.[0] ? (
-                      <img
-                        src={product.images[0]}
-                        alt={product.name}
-                        className="w-full h-full object-cover"
-                      />
+                      <img src={product.images[0]} alt="" className="h-full w-full object-cover" />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <Package className="w-8 h-8 text-muted-foreground" />
+                      <div className="flex h-full items-center justify-center">
+                        <Package className="h-12 w-12 text-muted-foreground" />
                       </div>
                     )}
+                    <Badge
+                      className={cn(
+                        'absolute left-3 top-3 rounded-full border-0 text-xs font-medium',
+                        isActive
+                          ? 'bg-primary text-primary-foreground'
+                          : 'bg-muted-foreground/80 text-background'
+                      )}>
+                      {isActive ? 'Active' : 'Out of stock'}
+                    </Badge>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          type="button"
+                          size="icon"
+                          variant="secondary"
+                          className="absolute right-3 top-3 h-9 w-9 rounded-full bg-background/80 shadow-sm backdrop-blur"
+                          aria-label="Product actions">
+                          <MoreVertical className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem asChild>
+                          <Link href={`/account/vendor/products/${product._id}/edit`}>
+                            <Pencil className="mr-2 h-4 w-4" />
+                            Edit
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          disabled={archivingProductId === product._id}
+                          onClick={() => onArchive(product._id)}>
+                          <Archive className="mr-2 h-4 w-4" />
+                          {archivingProductId === product._id ? 'Archiving…' : 'Archive'}
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-foreground">{product.name}</p>
-                    <p className="text-sm text-muted-foreground">
+                  <div className="space-y-2 p-4">
+                    <h3 className="line-clamp-2 font-semibold text-foreground">{product.name}</h3>
+                    <p className="text-xs text-muted-foreground">
                       {getProductCategoryName(product)}
-                      {getProductSubCategoryName(product) !== 'Other' &&
-                        ` · ${getProductSubCategoryName(product)}`}{' '}
-                      · {product.status}
+                      {getProductSubCategoryName(product) !== 'Other'
+                        ? ` · ${getProductSubCategoryName(product)}`
+                        : ''}
                     </p>
-                    <p className="text-primary font-bold mt-1">
-                      {product.variants?.length
-                        ? `From ${formatPrice(Math.min(...product.variants.map(v => v.price)))}`
-                        : formatPrice(product.price)}
-                    </p>
-                    <div className="flex flex-wrap items-center gap-2 mt-1">
-                      <Badge
-                        variant={product.inStock ? 'default' : 'secondary'}
-                        className="text-xs">
-                        {product.inStock ? 'In stock' : 'Out of stock'}
-                      </Badge>
-                      {product.variants?.length != null && product.variants.length > 0 && (
-                        <span className="text-xs text-muted-foreground">
-                          {product.variants.length} variant
-                          {product.variants.length === 1 ? '' : 's'}
-                        </span>
-                      )}
+                    <div className="flex items-end justify-between gap-2 pt-1">
+                      <span className="text-lg font-bold text-primary">{priceDisplay}</span>
+                      <div className="text-right text-[11px] leading-tight text-muted-foreground">
+                        <div>Stock: {product.inStock ? 'Yes' : 'No'}</div>
+                        <div>{product.status}</div>
+                      </div>
                     </div>
                   </div>
-                  <div className="flex gap-2">
-                    <Button variant="outline" size="sm" className="gap-1" asChild>
-                      <Link href={`/account/vendor/products/${product._id}/edit`}>
-                        <Pencil className="w-4 h-4" />
-                        Edit
-                      </Link>
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="gap-1 text-muted-foreground"
-                      disabled={archivingProductId === product._id}
-                      onClick={() => onArchive(product._id)}>
-                      <Archive className="w-4 h-4" />
-                      {archivingProductId === product._id ? 'Archiving…' : 'Archive'}
-                    </Button>
-                  </div>
                 </Card>
-              ))}
-            </div>
+              );
+            })}
+          </div>
 
-            <div className="flex items-center justify-between mt-6">
-              <p className="text-sm text-muted-foreground">
-                Page {page} of {totalPages}
-              </p>
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm" disabled={page <= 1} onClick={onPreviousPage}>
-                  Previous
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={page >= totalPages}
-                  onClick={onNextPage}>
-                  Next
-                </Button>
-              </div>
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-muted-foreground">
+              Page {page} of {totalPages}
+            </p>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="rounded-full"
+                disabled={page <= 1}
+                onClick={onPreviousPage}>
+                Previous
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="rounded-full"
+                disabled={page >= totalPages}
+                onClick={onNextPage}>
+                Next
+              </Button>
             </div>
-          </>
-        )}
-      </div>
-    </SectionContainer>
+          </div>
+        </>
+      )}
+    </div>
   );
 }
 
@@ -179,8 +190,6 @@ export function VendorProductsPageClient({
   initialHasVendorProfile,
   initialErrorMessage,
 }: VendorProductsPageClientProps) {
-  // NOTE: initial data is provided by the server page wrapper.
-  // This component still refetches client-side when page/status changes.
   const [products, setProducts] = useState<IVendorProductsRes['products']>(initialProducts);
   const [loading, setLoading] = useState(false);
   const [hasVendorProfile, setHasVendorProfile] = useState<boolean | null>(initialHasVendorProfile);
@@ -228,7 +237,6 @@ export function VendorProductsPageClient({
 
         const responseCode = (error as ApiErrorResponse | undefined)?.responseCode;
 
-        // Treat authorization-style errors as "no vendor profile"
         if (responseCode === 403 || responseCode === 404) {
           setHasVendorProfile(false);
           setErrorMessage(null);
@@ -253,10 +261,6 @@ export function VendorProductsPageClient({
     };
   }, [page, pageSize, reloadIndex]);
 
-  if (loading) {
-    return <VendorProductsLoadingState />;
-  }
-
   if (hasVendorProfile === false) {
     return (
       <VendorCreateStoreState description="You need a vendor store before you can add products. Become a vendor to start selling on the marketplace." />
@@ -264,20 +268,18 @@ export function VendorProductsPageClient({
   }
 
   return (
-    <>
+    <div className="space-y-4">
       {errorMessage && (
-        <SectionContainer>
-          <div className="max-w-3xl mx-auto mb-4 rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive flex items-center justify-between gap-4">
-            <span>{errorMessage}</span>
-            <Button
-              variant="outline"
-              size="sm"
-              className="border-destructive text-destructive hover:bg-destructive/10"
-              onClick={() => setReloadIndex(prev => prev + 1)}>
-              Retry
-            </Button>
-          </div>
-        </SectionContainer>
+        <div className="rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive flex items-center justify-between gap-4">
+          <span>{errorMessage}</span>
+          <Button
+            variant="outline"
+            size="sm"
+            className="border-destructive text-destructive hover:bg-destructive/10"
+            onClick={() => setReloadIndex(prev => prev + 1)}>
+            Retry
+          </Button>
+        </div>
       )}
       <VendorProductsList
         products={products}
@@ -287,7 +289,8 @@ export function VendorProductsPageClient({
         onNextPage={() => setPage(Math.min(totalPages, page + 1))}
         onArchive={handleArchive}
         archivingProductId={archivingProductId}
+        loading={loading}
       />
-    </>
+    </div>
   );
 }

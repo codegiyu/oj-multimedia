@@ -47,6 +47,12 @@ export interface DevotionalListItem {
   category?: string;
   author?: string;
   views?: number;
+  plays?: number;
+  /** Linked artist profile id or populated `{ _id, name }` from API. */
+  artist?: string | { _id: string; name: string; slug?: string };
+  ownerLocked?: boolean;
+  ownerUserId?: string;
+  status?: string;
   createdAt?: string;
   type?: string;
   verse?: string;
@@ -59,6 +65,8 @@ export interface DevotionalListItem {
 export interface DevotionalDetail extends DevotionalListItem {
   content?: string;
   updatedAt?: string;
+  coverImage?: string;
+  ownerUserId?: string;
 }
 
 export interface DevotionalsListData {

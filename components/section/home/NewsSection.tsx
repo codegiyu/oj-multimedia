@@ -17,18 +17,28 @@ export interface NewsArticle {
 
 interface NewsSectionProps {
   articles: NewsArticle[];
+  heading?: string;
+  subtext?: string;
+  viewAllLink?: string;
+  sectionId?: string;
 }
 
-export const NewsSection = ({ articles: newsArticles }: NewsSectionProps) => {
+export const NewsSection = ({
+  articles: newsArticles,
+  heading = 'Latest Stories',
+  subtext = 'Stay updated with trending news',
+  viewAllLink = '/news',
+  sectionId = 'news',
+}: NewsSectionProps) => {
   if (!newsArticles || newsArticles.length === 0) {
     return (
       <SectionComp
-        id="news"
+        id={sectionId}
         icon={Newspaper}
         iconColor="primary"
-        heading="Latest Stories"
-        subtext="Stay updated with trending news"
-        viewAllLink="/news"
+        heading={heading}
+        subtext={subtext}
+        viewAllLink={viewAllLink}
         background="bg-muted/30"
         contentProps={{
           className: 'h-full',
@@ -48,12 +58,12 @@ export const NewsSection = ({ articles: newsArticles }: NewsSectionProps) => {
 
   return (
     <SectionComp
-      id="news"
+      id={sectionId}
       icon={Newspaper}
       iconColor="primary"
-      heading="Latest Stories"
-      subtext="Stay updated with trending news"
-      viewAllLink="/news"
+      heading={heading}
+      subtext={subtext}
+      viewAllLink={viewAllLink}
       background="bg-muted/30"
       contentProps={{
         className: 'h-full',

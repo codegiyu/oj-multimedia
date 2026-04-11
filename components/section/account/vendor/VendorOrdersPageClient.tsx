@@ -2,21 +2,20 @@
 
 /**
  * Vendor orders list: filter by status, pagination.
- * Not yet implemented: order detail view, status update actions (e.g. Mark as shipped, Confirm).
- * These would require backend support (e.g. VENDOR_GET_ORDER, VENDOR_UPDATE_ORDER).
  */
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useQueryState, parseAsInteger, parseAsString } from 'nuqs';
-import { SectionContainer } from '@/components/general/SectionContainer';
+import { DashboardPageHeader, DashboardStatCard } from '@/components/layout/user-dashboard';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ShoppingBag } from 'lucide-react';
+import { ShoppingBag, Loader2, Mail } from 'lucide-react';
 import { callApi } from '@/lib/services/callApi';
 import type { IVendorOrdersRes } from '@/lib/constants/endpoints';
 import { formatPrice } from '@/lib/utils/marketplace';
 import type { ApiErrorResponse } from '@/lib/types/http';
 import { VendorCreateStoreState } from './VendorCreateStoreState';
+import { cn } from '@/lib/utils';
 
 const STATUS_OPTIONS = [
   { value: '', label: 'All' },
@@ -28,6 +27,13 @@ const STATUS_OPTIONS = [
   { value: 'cancelled', label: 'Cancelled' },
 ];
 
+function statusBadgeClass(status: string) {
+  if (status === 'delivered') return 'bg-primary text-primary-foreground';
+  if (status === 'shipped') return 'bg-blue-500/15 text-blue-700 dark:text-blue-400';
+  if (status === 'cancelled') return 'bg-destructive/15 text-destructive';
+  return 'bg-muted text-muted-foreground';
+}
+
 interface VendorOrdersListProps {
   orders: IVendorOrdersRes['orders'];
   statusFilter: string;
@@ -36,22 +42,7 @@ interface VendorOrdersListProps {
   totalPages: number;
   onPreviousPage: () => void;
   onNextPage: () => void;
-}
-
-function VendorOrdersLoadingState() {
-  return (
-    <SectionContainer>
-      <div className="max-w-3xl mx-auto text-center space-y-4">
-        <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto">
-          <ShoppingBag className="w-8 h-8 text-muted-foreground animate-pulse" />
-        </div>
-        <h1 className="text-2xl md:text-3xl font-bold text-foreground">Loading vendor orders</h1>
-        <p className="text-sm text-muted-foreground">
-          Please wait while we fetch your recent orders.
-        </p>
-      </div>
-    </SectionContainer>
-  );
+  loading: boolean;
 }
 
 function VendorOrdersList({
@@ -62,102 +53,185 @@ function VendorOrdersList({
   totalPages,
   onPreviousPage,
   onNextPage,
+  loading,
 }: VendorOrdersListProps) {
+  const pageStats = useMemo(() => {
+    const pending = orders.filter(o =>
+      ['pending', 'processing', 'confirmed'].includes(o.status)
+    ).length;
+    const shipped = orders.filter(o => o.status === 'shipped').length;
+    const completed = orders.filter(o => o.status === 'delivered').length;
+    return { pending, shipped, completed, total: orders.length };
+  }, [orders]);
+
   return (
-    <SectionContainer>
-      <div className="max-w-5xl mx-auto">
-        <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-6">Vendor Orders</h1>
-
-        <div className="flex flex-wrap gap-2 mb-6">
-          {STATUS_OPTIONS.map(opt => (
-            <Button
-              key={opt.value || 'all'}
-              variant={statusFilter === opt.value ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => {
-                onStatusFilterChange(opt.value || null);
-              }}
-              className={statusFilter === opt.value ? 'bg-primary hover:bg-primary/90' : ''}>
-              {opt.label}
-            </Button>
-          ))}
+    <div className="relative space-y-8">
+      {loading ? (
+        <div className="absolute inset-0 z-10 flex items-start justify-center bg-background/60 pt-24">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" aria-hidden />
         </div>
+      ) : null}
 
-        {orders.length === 0 ? (
-          <Card className="p-12 text-center">
-            <ShoppingBag className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-            <p className="text-muted-foreground">
-              No orders match your filter. Try selecting a different status.
-            </p>
-          </Card>
-        ) : (
-          <>
-            <div className="space-y-4">
-              {orders.map(order => (
-                <Card key={order._id} className="p-6">
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                    <div>
-                      <p className="font-mono text-sm text-muted-foreground">{order.orderNumber}</p>
-                      <p className="font-semibold text-foreground mt-1">{order.customer.name}</p>
-                      <p className="text-sm text-muted-foreground">{order.customer.email}</p>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        {new Date(order.createdAt).toLocaleDateString()} · {order.items.length} item
-                        {order.items.length !== 1 ? 's' : ''}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <span className="font-bold text-primary">
-                        {formatPrice(order.totalAmount)}
-                      </span>
-                      <span
-                        className={`text-sm font-medium px-3 py-1 rounded-full ${
-                          order.status === 'delivered'
-                            ? 'bg-primary/10 text-primary'
-                            : order.status === 'cancelled'
-                              ? 'bg-destructive/10 text-destructive'
-                              : 'bg-muted text-muted-foreground'
-                        }`}>
-                        {order.status}
-                      </span>
-                      <span className="text-sm text-muted-foreground">{order.paymentStatus}</span>
-                    </div>
-                  </div>
-                  <div className="mt-4 pt-4 border-t">
-                    <p className="text-sm font-medium text-foreground mb-2">Items</p>
-                    <ul className="text-sm text-muted-foreground space-y-1">
-                      {order.items.map((item, idx) => (
-                        <li key={idx}>
-                          {item.productName ?? 'Product'} × {item.quantity} —{' '}
-                          {formatPrice(item.price * item.quantity)}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </Card>
-              ))}
-            </div>
+      <DashboardPageHeader title="Orders" description="View and manage customer orders" />
 
-            <div className="flex items-center justify-between mt-6">
-              <p className="text-sm text-muted-foreground">
-                Page {page} of {totalPages}
-              </p>
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm" disabled={page <= 1} onClick={onPreviousPage}>
-                  Previous
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={page >= totalPages}
-                  onClick={onNextPage}>
-                  Next
-                </Button>
-              </div>
-            </div>
-          </>
-        )}
+      <div>
+        <p className="mb-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+          On this page
+        </p>
+        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+          <DashboardStatCard label="Total orders" value={pageStats.total} />
+          <DashboardStatCard
+            label="Pending"
+            value={pageStats.pending}
+            valueClassName="text-amber-600 dark:text-amber-400"
+          />
+          <DashboardStatCard
+            label="Shipped"
+            value={pageStats.shipped}
+            valueClassName="text-blue-600 dark:text-blue-400"
+          />
+          <DashboardStatCard
+            label="Completed"
+            value={pageStats.completed}
+            valueClassName="text-primary"
+          />
+        </div>
       </div>
-    </SectionContainer>
+
+      <div className="flex flex-wrap gap-2">
+        {STATUS_OPTIONS.map(opt => (
+          <Button
+            key={opt.value || 'all'}
+            variant={statusFilter === opt.value ? 'default' : 'outline'}
+            size="sm"
+            className={cn(
+              'rounded-full',
+              statusFilter === opt.value && 'bg-primary hover:bg-primary/90'
+            )}
+            onClick={() => {
+              onStatusFilterChange(opt.value || null);
+            }}>
+            {opt.label}
+          </Button>
+        ))}
+      </div>
+
+      {orders.length === 0 ? (
+        <Card className="border-border/80 py-16 text-center shadow-sm">
+          <ShoppingBag className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+          <p className="text-muted-foreground">
+            No orders match your filter. Try selecting a different status.
+          </p>
+        </Card>
+      ) : (
+        <>
+          <Card className="overflow-hidden border-border/80 p-0 shadow-sm">
+            <div className="border-b border-border/60 px-5 py-4">
+              <h2 className="text-base font-semibold text-foreground">Recent orders</h2>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[720px] text-left text-sm">
+                <thead>
+                  <tr className="border-b border-border/60 bg-muted/30 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                    <th className="px-4 py-3">Order</th>
+                    <th className="px-4 py-3">Customer</th>
+                    <th className="px-4 py-3">Product</th>
+                    <th className="px-4 py-3">Qty</th>
+                    <th className="px-4 py-3">Amount</th>
+                    <th className="px-4 py-3">Status</th>
+                    <th className="px-4 py-3">Date</th>
+                    <th className="px-4 py-3 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border/60">
+                  {orders.map(order => {
+                    const first = order.items[0];
+                    const productLabel =
+                      first?.productName ??
+                      (typeof first?.product === 'object' && first?.product
+                        ? first.product.name
+                        : null) ??
+                      'Product';
+                    const extra = order.items.length > 1 ? ` +${order.items.length - 1}` : '';
+                    const qty = order.items.reduce((acc, i) => acc + i.quantity, 0);
+                    return (
+                      <tr key={order._id} className="bg-card">
+                        <td className="px-4 py-3 font-mono text-xs text-muted-foreground">
+                          {order.orderNumber}
+                        </td>
+                        <td className="px-4 py-3">
+                          <p className="font-medium text-foreground">{order.customer.name}</p>
+                          <p className="text-xs text-muted-foreground">{order.customer.email}</p>
+                        </td>
+                        <td className="max-w-[200px] px-4 py-3">
+                          <p className="line-clamp-2 font-medium text-foreground">{productLabel}</p>
+                          {extra ? (
+                            <p className="text-xs text-muted-foreground">{extra} more</p>
+                          ) : null}
+                        </td>
+                        <td className="px-4 py-3 tabular-nums">{qty}</td>
+                        <td className="px-4 py-3 font-semibold text-primary tabular-nums">
+                          {formatPrice(order.totalAmount)}
+                        </td>
+                        <td className="px-4 py-3">
+                          <span
+                            className={cn(
+                              'inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium capitalize',
+                              statusBadgeClass(order.status)
+                            )}>
+                            {order.status}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-muted-foreground tabular-nums">
+                          {new Date(order.createdAt).toLocaleDateString()}
+                        </td>
+                        <td className="px-4 py-3 text-right">
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-muted-foreground"
+                            aria-label="Email customer"
+                            onClick={() => {
+                              window.location.href = `mailto:${encodeURIComponent(order.customer.email)}`;
+                            }}>
+                            <Mail className="h-4 w-4" />
+                          </Button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </Card>
+
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-muted-foreground">
+              Page {page} of {totalPages}
+            </p>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="rounded-full"
+                disabled={page <= 1}
+                onClick={onPreviousPage}>
+                Previous
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="rounded-full"
+                disabled={page >= totalPages}
+                onClick={onNextPage}>
+                Next
+              </Button>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
   );
 }
 
@@ -239,10 +313,6 @@ export function VendorOrdersPageClient({
     };
   }, [statusFilter, page, pageSize, reloadIndex]);
 
-  if (loading) {
-    return <VendorOrdersLoadingState />;
-  }
-
   if (hasVendorProfile === false) {
     return (
       <VendorCreateStoreState description="You need a vendor store before you can receive orders. Become a vendor to start selling on the marketplace." />
@@ -250,20 +320,18 @@ export function VendorOrdersPageClient({
   }
 
   return (
-    <>
+    <div className="space-y-4">
       {errorMessage && (
-        <SectionContainer>
-          <div className="max-w-3xl mx-auto mb-4 rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive flex items-center justify-between gap-4">
-            <span>{errorMessage}</span>
-            <Button
-              variant="outline"
-              size="sm"
-              className="border-destructive text-destructive hover:bg-destructive/10"
-              onClick={() => setReloadIndex(prev => prev + 1)}>
-              Retry
-            </Button>
-          </div>
-        </SectionContainer>
+        <div className="rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive flex items-center justify-between gap-4">
+          <span>{errorMessage}</span>
+          <Button
+            variant="outline"
+            size="sm"
+            className="border-destructive text-destructive hover:bg-destructive/10"
+            onClick={() => setReloadIndex(prev => prev + 1)}>
+            Retry
+          </Button>
+        </div>
       )}
       <VendorOrdersList
         orders={orders}
@@ -276,7 +344,8 @@ export function VendorOrdersPageClient({
         totalPages={totalPages}
         onPreviousPage={() => setPage(Math.max(1, page - 1))}
         onNextPage={() => setPage(Math.min(totalPages, page + 1))}
+        loading={loading}
       />
-    </>
+    </div>
   );
 }

@@ -26,6 +26,14 @@ const defaultForm = {
   title: '',
   content: '',
   excerpt: '',
+  author: '',
+  category: '',
+  coverImage: '',
+  audioUrl: '',
+  videoFileUrl: '',
+  embedUrl: '',
+  downloadUrl: '',
+  isFeatured: false,
   status: 'draft' as 'draft' | 'published' | 'archived',
 };
 
@@ -49,6 +57,14 @@ export function CreateNewsModal({ open, onOpenChange, onSuccess }: CreateNewsMod
           title: form.title.trim(),
           content: form.content?.trim() ?? '',
           excerpt: form.excerpt?.trim() ?? '',
+          author: form.author?.trim() || undefined,
+          category: form.category?.trim() || undefined,
+          coverImage: form.coverImage?.trim() || undefined,
+          audioUrl: form.audioUrl?.trim() || undefined,
+          videoFileUrl: form.videoFileUrl?.trim() || undefined,
+          embedUrl: form.embedUrl?.trim() || undefined,
+          downloadUrl: form.downloadUrl?.trim() || undefined,
+          isFeatured: form.isFeatured,
           status: form.status,
         },
       });
@@ -70,7 +86,7 @@ export function CreateNewsModal({ open, onOpenChange, onSuccess }: CreateNewsMod
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-w-md" showCloseButton={!loading}>
+      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto" showCloseButton={!loading}>
         <DialogHeader>
           <DialogTitle>Create News Article</DialogTitle>
           <DialogDescription>Add a new news article</DialogDescription>
@@ -89,6 +105,30 @@ export function CreateNewsModal({ open, onOpenChange, onSuccess }: CreateNewsMod
             onSelectChange={v => setForm(f => ({ ...f, status: v as typeof form.status }))}
             options={statusOptions}
           />
+          <RegularInput
+            label="Author"
+            value={form.author}
+            onChange={e => setForm(f => ({ ...f, author: e.target.value }))}
+          />
+          <RegularInput
+            label="Category"
+            value={form.category}
+            onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
+          />
+          <RegularInput
+            label="Cover image URL"
+            value={form.coverImage}
+            onChange={e => setForm(f => ({ ...f, coverImage: e.target.value }))}
+          />
+          <RegularSelect
+            label="Featured"
+            value={form.isFeatured ? 'yes' : 'no'}
+            onSelectChange={v => setForm(f => ({ ...f, isFeatured: v === 'yes' }))}
+            options={[
+              { text: 'No', value: 'no' },
+              { text: 'Yes', value: 'yes' },
+            ]}
+          />
           <RegularTextarea
             label="Excerpt"
             value={form.excerpt}
@@ -102,6 +142,26 @@ export function CreateNewsModal({ open, onOpenChange, onSuccess }: CreateNewsMod
             onChange={e => setForm(f => ({ ...f, content: e.target.value }))}
             placeholder="Enter content"
             rows={4}
+          />
+          <RegularInput
+            label="Audio URL"
+            value={form.audioUrl}
+            onChange={e => setForm(f => ({ ...f, audioUrl: e.target.value }))}
+          />
+          <RegularInput
+            label="Video file URL"
+            value={form.videoFileUrl}
+            onChange={e => setForm(f => ({ ...f, videoFileUrl: e.target.value }))}
+          />
+          <RegularInput
+            label="Embed URL"
+            value={form.embedUrl}
+            onChange={e => setForm(f => ({ ...f, embedUrl: e.target.value }))}
+          />
+          <RegularInput
+            label="Download URL"
+            value={form.downloadUrl}
+            onChange={e => setForm(f => ({ ...f, downloadUrl: e.target.value }))}
           />
           <DialogFooter>
             <RegularBtn

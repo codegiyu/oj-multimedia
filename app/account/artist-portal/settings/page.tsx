@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
-import { MainLayout } from '@/components/layout/MainLayout';
 import { ArtistPortalSettingsPageClient } from '@/components/section/account/artist-portal/ArtistPortalSettingsPageClient';
+import { Skeleton } from '@/components/ui/skeleton';
 import type { Metadata } from 'next';
 import { callServerApi } from '@/lib/services/serverApi';
 import type { ApiErrorResponse } from '@/lib/types/http';
@@ -13,11 +13,11 @@ export const metadata: Metadata = {
 function ArtistSettingsPageSkeleton() {
   return (
     <div className="max-w-2xl mx-auto py-8 space-y-4">
-      <div className="h-7 w-48 rounded-md bg-muted" />
-      <div className="h-4 w-32 rounded-md bg-muted" />
+      <Skeleton className="h-7 w-48 rounded-md" />
+      <Skeleton className="h-4 w-32 rounded-md" />
       <div className="space-y-3 mt-4">
-        <div className="h-20 w-full rounded-lg bg-muted" />
-        <div className="h-20 w-full rounded-lg bg-muted" />
+        <Skeleton className="h-20 w-full rounded-lg" />
+        <Skeleton className="h-20 w-full rounded-lg" />
       </div>
     </div>
   );
@@ -25,11 +25,9 @@ function ArtistSettingsPageSkeleton() {
 
 export default function ArtistPortalSettingsPage() {
   return (
-    <MainLayout hideHeader hideFooter>
-      <Suspense fallback={<ArtistSettingsPageSkeleton />}>
-        <ArtistSettingsPageClientServer />
-      </Suspense>
-    </MainLayout>
+    <Suspense fallback={<ArtistSettingsPageSkeleton />}>
+      <ArtistSettingsPageClientServer />
+    </Suspense>
   );
 }
 

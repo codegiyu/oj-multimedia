@@ -8,6 +8,10 @@ import {
   TopChartsSection,
   TrendingMusicSection,
   TrendingVideosSection,
+  HomeAdvertStrip,
+  SimpleMusicRail,
+  SimpleVideoRail,
+  DevotionalsRail,
   type TrendingMusicItem,
   type TrendingVideoItem,
   type ChartItem,
@@ -16,22 +20,33 @@ import {
   type MarketplaceProduct,
   type CommunityPost,
   type PollOption,
+  type HomeDevotionalCard,
 } from '.';
 import { UploadCTA } from '../shared';
+import { Skeleton } from '@/components/ui/skeleton';
+import type { IHomeAdvertItem } from '@/lib/constants/endpoints';
 
 const TrendingMusicRailSkeleton = () => (
   <div className="container mx-auto px-4 py-8">
-    <div className="h-40 rounded-2xl bg-muted animate-pulse" />
+    <Skeleton className="h-40 w-full rounded-2xl" />
   </div>
 );
 
 const TrendingVideosRailSkeleton = () => (
   <div className="container mx-auto px-4 py-8">
-    <div className="h-48 rounded-2xl bg-muted animate-pulse" />
+    <Skeleton className="h-48 w-full rounded-2xl" />
   </div>
 );
 
 interface HomePageClientProps {
+  advertsAfterHero: IHomeAdvertItem[];
+  advertsBeforeCta: IHomeAdvertItem[];
+  latestMusic: TrendingMusicItem[];
+  latestSermons: TrendingMusicItem[];
+  latestMovies: TrendingVideoItem[];
+  latestDevotionals: HomeDevotionalCard[];
+  featuredNews: NewsArticle[];
+  trendingNews: NewsArticle[];
   trendingMusic: TrendingMusicItem[];
   trendingVideos: TrendingVideoItem[];
   chartData: ChartItem[];
@@ -45,6 +60,14 @@ interface HomePageClientProps {
 }
 
 export const HomePageClient = ({
+  advertsAfterHero,
+  advertsBeforeCta,
+  latestMusic,
+  latestSermons,
+  latestMovies,
+  latestDevotionals,
+  featuredNews,
+  trendingNews,
   trendingMusic,
   trendingVideos,
   chartData,
@@ -66,13 +89,57 @@ export const HomePageClient = ({
         </div>
       ) : null}
 
+      <HomeAdvertStrip adverts={advertsAfterHero} />
+      <Suspense fallback={<TrendingMusicRailSkeleton />}>
+        <SimpleMusicRail
+          heading="Latest music"
+          subtext="New releases (excluding sermons)"
+          viewAllLink="/music"
+          music={latestMusic}
+        />
+      </Suspense>
+      <Suspense fallback={<TrendingMusicRailSkeleton />}>
+        <SimpleMusicRail
+          heading="Latest sermons"
+          subtext="Teaching and messages"
+          viewAllLink="/music"
+          music={latestSermons}
+        />
+      </Suspense>
       <Suspense fallback={<TrendingMusicRailSkeleton />}>
         <TrendingMusicSection music={trendingMusic} />
       </Suspense>
       <Suspense fallback={<TrendingVideosRailSkeleton />}>
         <TrendingVideosSection videos={trendingVideos} />
       </Suspense>
+      <Suspense fallback={<TrendingVideosRailSkeleton />}>
+        <SimpleVideoRail
+          heading="Latest movies"
+          subtext="Films and long-form video"
+          viewAllLink="/videos"
+          videos={latestMovies}
+        />
+      </Suspense>
+      <DevotionalsRail items={latestDevotionals} />
       <TopChartsSection chartData={chartData} risingArtists={risingArtists} />
+      {featuredNews.length > 0 && (
+        <NewsSection
+          articles={featuredNews}
+          heading="Featured news"
+          subtext="Editorial picks"
+          viewAllLink="/news/featured"
+          sectionId="news-featured"
+        />
+      )}
+      {trendingNews.length > 0 && (
+        <NewsSection
+          articles={trendingNews}
+          heading="Trending news"
+          subtext="What readers engage with most"
+          viewAllLink="/news/trending"
+          sectionId="news-trending"
+        />
+      )}
       <NewsSection articles={newsArticles} />
       <MarketplaceSection products={marketplaceProducts} />
       <CommunitySection
@@ -80,6 +147,7 @@ export const HomePageClient = ({
         pollOptions={pollOptions}
         pollTotalVotes={pollTotalVotes}
       />
+      <HomeAdvertStrip adverts={advertsBeforeCta} />
       <UploadCTA />
     </>
   );

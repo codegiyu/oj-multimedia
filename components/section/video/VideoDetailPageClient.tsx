@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import {
   ArrowLeft,
@@ -18,6 +19,7 @@ import type { VideoItemWithCreator } from '@/lib/utils/videos';
 import { VideoPlayer } from './VideoPlayer';
 import { VideoDownloadButton } from './VideoDownloadButton';
 import { VideoCard } from '@/components/cards/VideoCard';
+import { sendContentAnalyticsEvent } from '@/lib/services/contentAnalytics';
 
 interface VideoDetailPageClientProps {
   videoItem: VideoItemWithCreator;
@@ -27,6 +29,17 @@ interface VideoDetailPageClientProps {
 export const VideoDetailPageClient = ({ videoItem, relatedVideos }: VideoDetailPageClientProps) => {
   const creatorName =
     typeof videoItem.creator === 'string' ? videoItem.creator : videoItem.creator.name;
+
+  const entityId = videoItem.slug || videoItem._id;
+
+  useEffect(() => {
+    sendContentAnalyticsEvent('video', entityId, 'view');
+  }, [entityId]);
+
+  const onVideoFirstPlay = useCallback(() => {
+    sendContentAnalyticsEvent('video', entityId, 'play');
+  }, [entityId]);
+
   const handleShare = () => {
     if (navigator.share) {
       navigator.share({
@@ -52,7 +65,9 @@ export const VideoDetailPageClient = ({ videoItem, relatedVideos }: VideoDetailP
               ? 'Inspirational'
               : videoItem.category === 'live'
                 ? 'Live Performances'
-                : 'Podcasts / Video Talks';
+                : videoItem.category === 'movie'
+                  ? 'Movies'
+                  : 'Podcasts / Video Talks';
 
   return (
     <article className="min-h-screen">
@@ -152,8 +167,38 @@ export const VideoDetailPageClient = ({ videoItem, relatedVideos }: VideoDetailP
       {/* Main Content */}
       <section className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
-          {/* Video Player */}
-          {videoItem.videoUrl && (
+          {/* Hosted file vs YouTube/embed */}
+          {videoItem.videoFileUrl && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="mb-8">
+              <VideoPlayer
+                videoUrl={videoItem.videoFileUrl}
+                poster={videoItem.thumbnail}
+                title={videoItem.title}
+                description={videoItem.description}
+                onFirstPlay={onVideoFirstPlay}
+              />
+            </motion.div>
+          )}
+          {!videoItem.videoFileUrl && videoItem.youtubeEmbedUrl && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="mb-8 rounded-2xl overflow-hidden border border-border/50 shadow-lg bg-black aspect-video">
+              <iframe
+                src={videoItem.youtubeEmbedUrl}
+                title={videoItem.title}
+                className="w-full h-full"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </motion.div>
+          )}
+          {!videoItem.videoFileUrl && !videoItem.youtubeEmbedUrl && videoItem.videoUrl && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -164,6 +209,7 @@ export const VideoDetailPageClient = ({ videoItem, relatedVideos }: VideoDetailP
                 poster={videoItem.thumbnail}
                 title={videoItem.title}
                 description={videoItem.description}
+                onFirstPlay={onVideoFirstPlay}
               />
             </motion.div>
           )}

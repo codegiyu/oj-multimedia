@@ -1,7 +1,6 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { MainLayout } from '@/components/layout/MainLayout';
 import { SectionContainer } from '@/components/general/SectionContainer';
 import { SectionHeader } from '@/components/general/SectionHeader';
 import { Card } from '@/components/ui/card';
@@ -45,7 +44,7 @@ export const MarketplacePageClient = ({
 
   if (error && !hasAnyData) {
     return (
-      <MainLayout>
+      <>
         <SectionContainer className="py-16 md:py-24">
           <DataLoadError
             title="Unable to load marketplace"
@@ -54,12 +53,12 @@ export const MarketplacePageClient = ({
             icon={<ShoppingBag className="w-8 h-8 text-destructive" />}
           />
         </SectionContainer>
-      </MainLayout>
+      </>
     );
   }
 
   return (
-    <MainLayout>
+    <>
       {/* Hero */}
       <SectionContainer className="py-16 md:py-24 bg-gradient-to-br from-primary/5 to-primary/10">
         <div className="max-w-4xl mx-auto text-center">
@@ -302,6 +301,6 @@ export const MarketplacePageClient = ({
           </div>
         </div>
       </SectionContainer>
-    </MainLayout>
+    </>
   );
 };

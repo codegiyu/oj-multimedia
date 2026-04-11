@@ -4,13 +4,13 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { z } from 'zod';
-import { SectionContainer } from '@/components/general/SectionContainer';
+import { DashboardFormCard, DashboardPageHeader } from '@/components/layout/user-dashboard';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { RegularBtn } from '@/components/atoms/RegularBtn';
 import { RegularInput } from '@/components/atoms/RegularInput';
 import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
+import { User, Lock } from 'lucide-react';
 import { toast } from 'sonner';
 import { useForm } from '@/lib/hooks/use-form';
 import { useAuthStore } from '@/lib/store/useAuthStore';
@@ -20,7 +20,7 @@ import type { PopulatedUser } from '@/lib/constants/endpoints';
 const profileSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),
   lastName: z.string().min(1, 'Last name is required'),
-  email: z.string().email('Please enter a valid email'),
+  email: z.email('Please enter a valid email'),
   phoneNumber: z.string().optional(),
   avatar: z.string().url('Please enter a valid URL').optional().or(z.literal('')),
 });
@@ -140,49 +140,44 @@ export function AccountSettingsPageClient({
   });
 
   return (
-    <SectionContainer>
-      <div className="max-w-2xl mx-auto space-y-8">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">Account Settings</h1>
-          <p className="text-sm text-muted-foreground">
-            Update your profile information and change your password.
-          </p>
-        </div>
+    <div className="mx-auto max-w-3xl space-y-8">
+      <DashboardPageHeader
+        title="Account settings"
+        description="Manage your profile and preferences"
+      />
 
-        {initialLoadError && (
-          <div className="rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive flex items-center justify-between gap-4">
-            <span>{initialLoadError}</span>
-            <Button
-              variant="outline"
-              size="sm"
-              className="border-destructive text-destructive hover:bg-destructive/10"
-              onClick={() => router.refresh()}>
+      {initialLoadError && (
+        <div className="rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive flex items-center justify-between gap-4">
+          <span>{initialLoadError}</span>
+          <Button
+            variant="outline"
+            size="sm"
+            className="border-destructive text-destructive hover:bg-destructive/10"
+            onClick={() => router.refresh()}>
+            Retry
+          </Button>
+        </div>
+      )}
+
+      {!initialUser ? (
+        <Card className="p-6 md:p-8 space-y-4 text-center">
+          <p className="text-muted-foreground">
+            We need your account details before you can edit settings.
+          </p>
+          <div className="flex items-center justify-center gap-3">
+            <Button variant="outline" onClick={() => router.refresh()}>
               Retry
             </Button>
+            <Button onClick={() => router.push('/auth/login')}>Go to login</Button>
           </div>
-        )}
-
-        {!initialUser ? (
-          <Card className="p-6 md:p-8 space-y-4 text-center">
-            <p className="text-muted-foreground">
-              We need your account details before you can edit settings.
-            </p>
-            <div className="flex items-center justify-center gap-3">
-              <Button variant="outline" onClick={() => router.refresh()}>
-                Retry
-              </Button>
-              <Button onClick={() => router.push('/auth/login')}>Go to login</Button>
-            </div>
-          </Card>
-        ) : (
-          <Card className="p-6 md:p-8 space-y-6">
+        </Card>
+      ) : (
+        <div className="space-y-6">
+          <DashboardFormCard
+            title="Personal information"
+            description="These details are used across your account and orders."
+            icon={User}>
             <form onSubmit={handleProfileSubmit} className="space-y-6">
-              <div className="space-y-2">
-                <h2 className="text-lg font-semibold text-foreground">Profile</h2>
-                <p className="text-sm text-muted-foreground">
-                  These details are used across your account and orders.
-                </p>
-              </div>
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="firstName">First name</Label>
@@ -255,16 +250,13 @@ export function AccountSettingsPageClient({
                 {savingProfile ? 'Saving…' : 'Save profile'}
               </RegularBtn>
             </form>
+          </DashboardFormCard>
 
-            <Separator />
-
+          <DashboardFormCard
+            title="Security"
+            description="Use a strong password that you do not reuse elsewhere."
+            icon={Lock}>
             <form onSubmit={handlePasswordSubmit} className="space-y-6">
-              <div className="space-y-2">
-                <h2 className="text-lg font-semibold text-foreground">Change password</h2>
-                <p className="text-sm text-muted-foreground">
-                  Use a strong password that you do not reuse elsewhere.
-                </p>
-              </div>
               <div className="space-y-2">
                 <Label htmlFor="currentPassword">Current password</Label>
                 <RegularInput
@@ -319,9 +311,9 @@ export function AccountSettingsPageClient({
                 {savingPassword ? 'Changing…' : 'Change password'}
               </RegularBtn>
             </form>
-          </Card>
-        )}
-      </div>
-    </SectionContainer>
+          </DashboardFormCard>
+        </div>
+      )}
+    </div>
   );
 }

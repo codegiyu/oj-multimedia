@@ -134,6 +134,36 @@ export const NewsDetailPageClient = ({ newsItem, relatedStories }: NewsDetailPag
             </motion.div>
           )}
 
+          {newsItem.audioUrl && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.05 }}
+              className="mb-8">
+              <audio
+                controls
+                src={newsItem.audioUrl}
+                className="w-full rounded-lg"
+                preload="metadata">
+                Your browser does not support audio.
+              </audio>
+            </motion.div>
+          )}
+
+          {newsItem.downloadUrl && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.08 }}
+              className="mb-8">
+              <Button asChild variant="outline" size="lg">
+                <a href={newsItem.downloadUrl} target="_blank" rel="noopener noreferrer">
+                  Download resource
+                </a>
+              </Button>
+            </motion.div>
+          )}
+
           {/* Full Story Content */}
           {newsItem.fullStory && (
             <motion.div
@@ -173,8 +203,40 @@ export const NewsDetailPageClient = ({ newsItem, relatedStories }: NewsDetailPag
             </motion.div>
           )}
 
-          {/* Video Player */}
-          {newsItem.videoUrl && (
+          {newsItem.youtubeEmbedUrl && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="mt-12 rounded-2xl overflow-hidden bg-black aspect-video border border-border/50">
+              <iframe
+                src={newsItem.youtubeEmbedUrl}
+                title={newsItem.title}
+                className="w-full h-full"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </motion.div>
+          )}
+          {!newsItem.youtubeEmbedUrl && newsItem.videoFileUrl && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="mt-12 rounded-2xl overflow-hidden bg-muted">
+              <div className="aspect-video">
+                <video
+                  src={newsItem.videoFileUrl}
+                  controls
+                  className="w-full h-full object-contain"
+                  poster={newsItem.image}
+                  preload="metadata">
+                  Your browser does not support the video tag.
+                </video>
+              </div>
+            </motion.div>
+          )}
+          {!newsItem.youtubeEmbedUrl && !newsItem.videoFileUrl && newsItem.videoUrl && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}

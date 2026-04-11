@@ -2,6 +2,7 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { toast } from 'sonner';
 import { callApi } from '../services/callApi';
 import type {
   ICartItem as BackendCartItem,
@@ -74,6 +75,8 @@ export const useInitCartStore = create<CartStore>()(
       actions: {
         addItem: item => {
           const qty = item.quantity ?? 1;
+          const previousItems = get().items;
+
           set(state => {
             const existing = state.items.find(i => itemsMatch(i, item));
             const next = existing
@@ -86,50 +89,87 @@ export const useInitCartStore = create<CartStore>()(
             return { items: next };
           });
 
-          if (shouldSyncWithBackend()) {
-            const payload: IUserCartAddPayload = {
-              productId: item.productId,
-              quantity: qty,
-              ...(item.sku ? { sku: item.sku } : {}),
-            };
-            void callApi('USER_CART_ADD', { payload });
-          }
+          if (!shouldSyncWithBackend()) return;
+
+          const payload: IUserCartAddPayload = {
+            productId: item.productId,
+            quantity: qty,
+            ...(item.sku ? { sku: item.sku } : {}),
+          };
+
+          void (async () => {
+            const res = await callApi('USER_CART_ADD', { payload });
+            if (res.type !== 'success' || !res.data) {
+              set({ items: previousItems });
+              toast.error(res.message || 'Could not update your cart. Please try again.');
+              return;
+            }
+            get().actions.syncFromBackend(res.data);
+          })();
         },
         removeItem: (productId, sku) => {
+          const previousItems = get().items;
+
           set(state => ({
             items: state.items.filter(i => !itemsMatch(i, { productId, sku })),
           }));
 
-          if (shouldSyncWithBackend()) {
-            const suffix = sku ? `/${productId}?sku=${encodeURIComponent(sku)}` : `/${productId}`;
-            void callApi('USER_CART_REMOVE', { query: suffix as `/${string}` });
-          }
+          if (!shouldSyncWithBackend()) return;
+
+          const suffix = sku ? `/${productId}?sku=${encodeURIComponent(sku)}` : `/${productId}`;
+
+          void (async () => {
+            const res = await callApi('USER_CART_REMOVE', { query: suffix as `/${string}` });
+            if (res.type !== 'success') {
+              set({ items: previousItems });
+              toast.error(res.message || 'Could not remove item from cart.');
+            }
+          })();
         },
         updateQuantity: (productId, quantity, sku) => {
           if (quantity < 1) {
             get().actions.removeItem(productId, sku);
             return;
           }
+          const previousItems = get().items;
+
           set(state => ({
             items: state.items.map(i =>
               itemsMatch(i, { productId, sku }) ? { ...i, quantity } : i
             ),
           }));
 
-          if (shouldSyncWithBackend()) {
-            const payload: IUserCartUpdatePayload = {
-              productId,
-              quantity,
-              ...(sku ? { sku } : {}),
-            };
-            void callApi('USER_CART_UPDATE', { payload });
-          }
+          if (!shouldSyncWithBackend()) return;
+
+          const payload: IUserCartUpdatePayload = {
+            productId,
+            quantity,
+            ...(sku ? { sku } : {}),
+          };
+
+          void (async () => {
+            const res = await callApi('USER_CART_UPDATE', { payload });
+            if (res.type !== 'success' || !res.data) {
+              set({ items: previousItems });
+              toast.error(res.message || 'Could not update cart quantity.');
+              return;
+            }
+            get().actions.syncFromBackend(res.data);
+          })();
         },
         clearCart: () => {
+          const previousItems = get().items;
           set({ items: [] });
-          if (shouldSyncWithBackend()) {
-            void callApi('USER_CART_CLEAR', {});
-          }
+
+          if (!shouldSyncWithBackend()) return;
+
+          void (async () => {
+            const res = await callApi('USER_CART_CLEAR', {});
+            if (res.type !== 'success') {
+              set({ items: previousItems });
+              toast.error(res.message || 'Could not clear your cart.');
+            }
+          })();
         },
         replaceItems: items => set({ items }),
         syncFromBackend: cart => {

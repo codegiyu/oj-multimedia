@@ -1,13 +1,14 @@
 'use client';
 
-import { SectionContainer } from '@/components/general/SectionContainer';
+import Link from 'next/link';
+import { DashboardPageHeader, DashboardStatCard } from '@/components/layout/user-dashboard';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Package, ShoppingBag, CreditCard, Settings, ArrowRight } from 'lucide-react';
-import Link from 'next/link';
+import { Package, ShoppingBag, CreditCard, Settings, ArrowRight, TrendingUp } from 'lucide-react';
 import type { IVendorDashboardStatsRes, IVendorMeRes } from '@/lib/constants/endpoints';
 import { formatPrice } from '@/lib/utils/marketplace';
 import { VendorCreateStoreState } from './VendorCreateStoreState';
+import { VendorDashboardCharts } from './VendorDashboardCharts';
 
 export interface VendorPageClientProps {
   vendor: IVendorMeRes | null;
@@ -28,99 +29,95 @@ export function VendorPageClient({
     );
   }
 
+  const productsCount = stats?.productsCount ?? 0;
+  const pendingOrdersCount = stats?.pendingOrdersCount ?? 0;
+  const revenue = stats?.totalPaidRevenue ?? 0;
+
   return (
-    <SectionContainer>
-      <div className="max-w-5xl mx-auto">
-        <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">Vendor Dashboard</h1>
-        {errorMessage && (
-          <div className="mb-4 rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
-            {errorMessage}
-          </div>
-        )}
-        {vendor?.storeName && (
-          <p className="text-sm text-muted-foreground mb-6">
-            Managing store <span className="font-semibold text-foreground">{vendor.storeName}</span>
-          </p>
-        )}
+    <div className="max-w-6xl space-y-8">
+      <DashboardPageHeader
+        title="Overview"
+        description="Sales and orders at a glance for your store."
+      />
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
-          <Card className="p-6">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                <Package className="w-6 h-6 text-primary" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-foreground">{stats?.productsCount ?? 0}</p>
-                <p className="text-sm text-muted-foreground">Products</p>
-              </div>
-            </div>
-          </Card>
-          <Card className="p-6">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                <ShoppingBag className="w-6 h-6 text-primary" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-foreground">
-                  {stats?.pendingOrdersCount ?? 0}
-                </p>
-                <p className="text-sm text-muted-foreground">Pending orders</p>
-              </div>
-            </div>
-          </Card>
-          <Card className="p-6">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                <CreditCard className="w-6 h-6 text-primary" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-primary">
-                  {formatPrice(stats?.totalPaidRevenue ?? 0)}
-                </p>
-                <p className="text-sm text-muted-foreground">Revenue (paid)</p>
-              </div>
-            </div>
-          </Card>
+      {errorMessage && (
+        <div className="rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
+          {errorMessage}
         </div>
+      )}
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="p-6 hover:shadow-lg transition-shadow">
-            <Package className="w-10 h-10 text-primary mb-4" />
-            <h2 className="font-semibold text-foreground mb-2">Manage products</h2>
-            <p className="text-sm text-muted-foreground mb-4">
-              Add, edit, or archive your products.
-            </p>
-            <Button variant="default" className="gap-2 bg-primary hover:bg-primary/90" asChild>
-              <Link href="/account/vendor/products">
-                View products
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-            </Button>
-          </Card>
-          <Card className="p-6 hover:shadow-lg transition-shadow">
-            <ShoppingBag className="w-10 h-10 text-primary mb-4" />
-            <h2 className="font-semibold text-foreground mb-2">Orders</h2>
-            <p className="text-sm text-muted-foreground mb-4">View and manage customer orders.</p>
-            <Button variant="outline" className="gap-2" asChild>
-              <Link href="/account/vendor/orders">
-                View orders
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-            </Button>
-          </Card>
-          <Card className="p-6 hover:shadow-lg transition-shadow">
-            <Settings className="w-10 h-10 text-primary mb-4" />
-            <h2 className="font-semibold text-foreground mb-2">Settings</h2>
-            <p className="text-sm text-muted-foreground mb-4">Store profile and payment details.</p>
-            <Button variant="outline" className="gap-2" asChild>
-              <Link href="/account/vendor/settings">
-                Open settings
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-            </Button>
-          </Card>
-        </div>
+      {vendor?.storeName && (
+        <p className="-mt-4 text-sm text-muted-foreground">
+          Managing <span className="font-semibold text-foreground">{vendor.storeName}</span>
+        </p>
+      )}
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <DashboardStatCard
+          label="Total sales"
+          value={formatPrice(revenue)}
+          hint="+12% this month"
+          icon={CreditCard}
+          corner={<TrendingUp className="h-4 w-4 text-emerald-600" aria-hidden />}
+        />
+        <DashboardStatCard
+          label="Products"
+          value={productsCount}
+          hint="In your catalogue"
+          icon={Package}
+        />
+        <DashboardStatCard
+          label="Pending orders"
+          value={pendingOrdersCount}
+          valueClassName="text-amber-600 dark:text-amber-400"
+          hint="Needs attention"
+          icon={ShoppingBag}
+        />
+        <DashboardStatCard
+          label="Store health"
+          value="Active"
+          hint="Keep listings updated"
+          icon={Settings}
+        />
       </div>
-    </SectionContainer>
+
+      <VendorDashboardCharts revenueHint={revenue > 0 ? formatPrice(revenue) : undefined} />
+
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <Card className="border-border/80 p-6 shadow-sm transition-shadow hover:shadow-md">
+          <Package className="mb-3 h-9 w-9 text-primary" />
+          <h3 className="font-semibold text-foreground">Products</h3>
+          <p className="mt-1 text-sm text-muted-foreground">Add, edit, or archive listings.</p>
+          <Button asChild className="mt-4 rounded-full bg-primary hover:bg-primary/90">
+            <Link href="/account/vendor/products" className="gap-2">
+              Manage products
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </Button>
+        </Card>
+        <Card className="border-border/80 p-6 shadow-sm transition-shadow hover:shadow-md">
+          <ShoppingBag className="mb-3 h-9 w-9 text-primary" />
+          <h3 className="font-semibold text-foreground">Orders</h3>
+          <p className="mt-1 text-sm text-muted-foreground">Review customer orders.</p>
+          <Button asChild variant="outline" className="mt-4 rounded-full gap-2">
+            <Link href="/account/vendor/orders">
+              View orders
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </Button>
+        </Card>
+        <Card className="border-border/80 p-6 shadow-sm transition-shadow hover:shadow-md">
+          <Settings className="mb-3 h-9 w-9 text-primary" />
+          <h3 className="font-semibold text-foreground">Settings</h3>
+          <p className="mt-1 text-sm text-muted-foreground">Store profile and payouts.</p>
+          <Button asChild variant="outline" className="mt-4 rounded-full gap-2">
+            <Link href="/account/vendor/settings">
+              Open settings
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </Button>
+        </Card>
+      </div>
+    </div>
   );
 }

@@ -2,15 +2,15 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useQueryState, parseAsInteger, parseAsString } from 'nuqs';
-import { SectionContainer } from '@/components/general/SectionContainer';
+import { DashboardPageHeader } from '@/components/layout/user-dashboard';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { callApi } from '@/lib/services/callApi';
 import type { ArtistMusicListItem } from '@/lib/constants/endpoints';
 import type { ApiErrorResponse } from '@/lib/types/http';
-import { toast } from 'sonner';
-import { Music2, Trash2 } from 'lucide-react';
+import { Trash2, Loader2, MessageCircle } from 'lucide-react';
+import { toast } from '@/components/atoms/Toast';
 
 const STATUS_FILTERS: Array<{ value: '' | 'draft' | 'published' | 'archived'; label: string }> = [
   { value: '', label: 'All' },
@@ -24,20 +24,6 @@ export interface ArtistPortalMusicPageClientProps {
   initialTotalPages: number;
   initialHasArtistProfile: boolean;
   initialErrorMessage: string | null;
-}
-
-function ArtistMusicLoadingState() {
-  return (
-    <SectionContainer>
-      <div className="max-w-3xl mx-auto text-center space-y-4">
-        <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto">
-          <Music2 className="w-8 h-8 text-muted-foreground animate-pulse" />
-        </div>
-        <h1 className="text-2xl md:text-3xl font-bold text-foreground">Loading music</h1>
-        <p className="text-sm text-muted-foreground">Please wait while we fetch your tracks.</p>
-      </div>
-    </SectionContainer>
-  );
 }
 
 export function ArtistPortalMusicPageClient({
@@ -64,10 +50,10 @@ export function ArtistPortalMusicPageClient({
     const { error, message } = await callApi('ARTIST_DELETE_MUSIC', { query: `/${item._id}` });
     setDeletingId(null);
     if (error) {
-      toast.error(message || 'Failed to delete track.');
+      toast({ title: message || 'Failed to delete track.', variant: 'error' });
       return;
     }
-    toast.success('Track deleted.');
+    toast({ title: 'Track deleted.', variant: 'success' });
     setReloadIndex(prev => prev + 1);
   };
 
@@ -121,22 +107,19 @@ export function ArtistPortalMusicPageClient({
     };
   }, [page, pageSize, status, reloadIndex]);
 
-  if (loading) {
-    return <ArtistMusicLoadingState />;
-  }
-
   if (hasArtistProfile === false) {
     return (
-      <SectionContainer>
-        <Card className="p-8 text-center">
+      <div className="space-y-6">
+        <DashboardPageHeader title="My music" description="Manage your music catalogue" />
+        <Card className="border-border/80 p-8 text-center shadow-sm">
           <p className="text-muted-foreground">
             Complete your artist profile to manage your music.
           </p>
-          <Button asChild className="mt-4" variant="outline">
+          <Button asChild className="mt-4 rounded-full" variant="outline">
             <Link href="/account/artist-portal/settings">Go to settings</Link>
           </Button>
         </Card>
-      </SectionContainer>
+      </div>
     );
   }
 
@@ -148,120 +131,125 @@ export function ArtistPortalMusicPageClient({
         : 0;
 
   return (
-    <SectionContainer>
-      <div className="max-w-5xl mx-auto space-y-6">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-foreground">
-              Artist Portal – Music
-            </h1>
-            <p className="text-sm text-muted-foreground">Manage your music catalogue.</p>
-          </div>
-          <Button asChild className="bg-primary hover:bg-primary/90">
-            <Link href="/account/artist-portal/upload">Upload new track</Link>
+    <div className="relative space-y-6">
+      {loading ? (
+        <div className="absolute inset-0 z-10 flex items-start justify-center bg-background/60 pt-24">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" aria-hidden />
+        </div>
+      ) : null}
+
+      <DashboardPageHeader
+        title="My music"
+        description="Tracks published by our team after you submit via WhatsApp or contact">
+        <Button asChild className="rounded-full bg-primary hover:bg-primary/90 gap-2">
+          <Link href="/account/artist-portal/upload">
+            <MessageCircle className="h-4 w-4" />
+            Submit new track
+          </Link>
+        </Button>
+      </DashboardPageHeader>
+
+      {errorMessage && (
+        <div className="rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive flex items-center justify-between gap-4">
+          <span>{errorMessage}</span>
+          <Button
+            variant="outline"
+            size="sm"
+            className="border-destructive text-destructive hover:bg-destructive/10"
+            onClick={() => setReloadIndex(prev => prev + 1)}>
+            Retry
           </Button>
         </div>
+      )}
 
-        {errorMessage && (
-          <div className="rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive flex items-center justify-between gap-4">
-            <span>{errorMessage}</span>
-            <Button
-              variant="outline"
-              size="sm"
-              className="border-destructive text-destructive hover:bg-destructive/10"
-              onClick={() => setReloadIndex(prev => prev + 1)}>
-              Retry
-            </Button>
-          </div>
-        )}
+      <div className="flex flex-wrap gap-2">
+        {STATUS_FILTERS.map(f => (
+          <Button
+            key={f.label}
+            variant={status === f.value ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setStatus(f.value)}>
+            {f.label}
+          </Button>
+        ))}
+      </div>
 
-        <div className="flex flex-wrap gap-2">
-          {STATUS_FILTERS.map(f => (
-            <Button
-              key={f.label}
-              variant={status === f.value ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setStatus(f.value)}>
-              {f.label}
-            </Button>
+      {music.length === 0 ? (
+        <Card className="p-8 text-center">
+          <p className="text-muted-foreground">
+            You do not have any tracks yet. Message our team on the submit page to send files for
+            admin publishing.
+          </p>
+          <Button asChild variant="outline" className="mt-4 gap-2">
+            <Link href="/account/artist-portal/upload">
+              <MessageCircle className="h-4 w-4" />
+              Submit a track
+            </Link>
+          </Button>
+        </Card>
+      ) : (
+        <div className="space-y-3">
+          {music.map(item => (
+            <Card
+              key={item._id}
+              className="p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div>
+                <p className="font-semibold text-foreground">{item.title}</p>
+                <p className="text-xs text-muted-foreground">
+                  {item.createdAt ? new Date(item.createdAt).toLocaleDateString() : ''} · Plays{' '}
+                  {playsLabel(item)} · Downloads{' '}
+                  {'downloads' in item && typeof item.downloads === 'number' ? item.downloads : 0}
+                </p>
+              </div>
+              <div className="flex items-center gap-3">
+                <span
+                  className={`text-xs font-medium px-2 py-1 rounded-full ${
+                    item.status === 'published'
+                      ? 'bg-primary/10 text-primary'
+                      : item.status === 'draft'
+                        ? 'bg-muted text-muted-foreground'
+                        : 'bg-destructive/10 text-destructive'
+                  }`}>
+                  {item.status}
+                </span>
+                <Button asChild size="sm" variant="outline">
+                  <Link href="/account/artist-portal/upload">Request updates</Link>
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="border-destructive text-destructive hover:bg-destructive/10"
+                  disabled={deletingId === item._id}
+                  onClick={() => handleDelete(item)}>
+                  {deletingId === item._id ? 'Deleting…' : <Trash2 className="w-4 h-4" />}
+                </Button>
+              </div>
+            </Card>
           ))}
         </div>
+      )}
 
-        {music.length === 0 ? (
-          <Card className="p-8 text-center">
-            <p className="text-muted-foreground">
-              You do not have any tracks yet. Use the upload button to add your first track.
-            </p>
-            <Button asChild variant="outline" className="mt-4">
-              <Link href="/account/artist-portal/upload">Upload new track</Link>
-            </Button>
-          </Card>
-        ) : (
-          <div className="space-y-3">
-            {music.map(item => (
-              <Card
-                key={item._id}
-                className="p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div>
-                  <p className="font-semibold text-foreground">{item.title}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {item.createdAt ? new Date(item.createdAt).toLocaleDateString() : ''} · Plays{' '}
-                    {playsLabel(item)} · Downloads{' '}
-                    {'downloads' in item && typeof item.downloads === 'number' ? item.downloads : 0}
-                  </p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span
-                    className={`text-xs font-medium px-2 py-1 rounded-full ${
-                      item.status === 'published'
-                        ? 'bg-primary/10 text-primary'
-                        : item.status === 'draft'
-                          ? 'bg-muted text-muted-foreground'
-                          : 'bg-destructive/10 text-destructive'
-                    }`}>
-                    {item.status}
-                  </span>
-                  <Button asChild size="sm" variant="outline">
-                    <Link href={`/account/artist-portal/upload?id=${item._id}&type=music`}>
-                      Edit
-                    </Link>
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="border-destructive text-destructive hover:bg-destructive/10"
-                    disabled={deletingId === item._id}
-                    onClick={() => handleDelete(item)}>
-                    {deletingId === item._id ? 'Deleting…' : <Trash2 className="w-4 h-4" />}
-                  </Button>
-                </div>
-              </Card>
-            ))}
-          </div>
-        )}
-
-        {totalPages > 1 && (
-          <div className="flex items-center justify-center gap-2 pt-4">
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={page <= 1}
-              onClick={() => setPage(Math.max(1, page - 1))}>
-              Previous
-            </Button>
-            <span className="text-sm text-muted-foreground">
-              Page {page} of {totalPages}
-            </span>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={page >= totalPages}
-              onClick={() => setPage(Math.min(totalPages, page + 1))}>
-              Next
-            </Button>
-          </div>
-        )}
-      </div>
-    </SectionContainer>
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2 pt-4">
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={page <= 1}
+            onClick={() => setPage(Math.max(1, page - 1))}>
+            Previous
+          </Button>
+          <span className="text-sm text-muted-foreground">
+            Page {page} of {totalPages}
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={page >= totalPages}
+            onClick={() => setPage(Math.min(totalPages, page + 1))}>
+            Next
+          </Button>
+        </div>
+      )}
+    </div>
   );
 }

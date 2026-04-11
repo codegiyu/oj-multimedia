@@ -26,6 +26,7 @@ import {
   MediaFullscreenButton,
   MediaPlaybackRateButton,
 } from 'media-chrome/react';
+import { useEffect, useRef } from 'react';
 
 interface VideoPlayerProps {
   videoUrl: string;
@@ -36,6 +37,8 @@ interface VideoPlayerProps {
   muted?: boolean;
   loop?: boolean;
   className?: string;
+  /** Fires once when playback actually starts. */
+  onFirstPlay?: () => void;
 }
 
 export const VideoPlayer = ({
@@ -47,9 +50,31 @@ export const VideoPlayer = ({
   muted = false,
   loop = false,
   className = '',
+  onFirstPlay,
 }: VideoPlayerProps) => {
+  const rootRef = useRef<HTMLDivElement>(null);
+  const playedRef = useRef(false);
+
+  useEffect(() => {
+    playedRef.current = false;
+  }, [videoUrl]);
+
+  useEffect(() => {
+    if (!onFirstPlay || !rootRef.current) return;
+    const el = rootRef.current.querySelector('video');
+    if (!el) return;
+    const onPlay = () => {
+      if (playedRef.current) return;
+      playedRef.current = true;
+      onFirstPlay();
+    };
+    el.addEventListener('play', onPlay);
+    return () => el.removeEventListener('play', onPlay);
+  }, [videoUrl, onFirstPlay]);
+
   return (
     <div
+      ref={rootRef}
       className={`bg-card rounded-2xl overflow-hidden shadow-lg border border-border/50 ${className}`}>
       {/* Title and Description */}
       {(title || description) && (
