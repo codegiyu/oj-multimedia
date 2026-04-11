@@ -23,7 +23,7 @@ export interface FilterConfig {
   loading?: boolean;
 }
 
-interface FilterableDataPageProps {
+export interface FilterableDataPageProps {
   searchPlaceholder?: string;
   filters?: FilterConfig[];
   onApplyFilters?: (filters: Record<string, string>) => void;

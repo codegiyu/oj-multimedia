@@ -1,6 +1,8 @@
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { PageHeader } from '@/components/general/PageHeader';
 import { PrayerRequestsPageClient } from '@/components/section/admin/prayer-requests/PrayerRequestsPageClient';
+import { serverFetchAdminPrayerRequestsList } from '@/lib/services/adminDashboardServerData';
+import { parseAdminStandardListParams } from '@/lib/utils/adminDashboardSearchParams';
 import { Metadata } from 'next';
 import { Suspense } from 'react';
 import { Loader2 } from 'lucide-react';
@@ -21,7 +23,11 @@ function PrayerRequestsPageFallback() {
   );
 }
 
-export default function PrayerRequestsPage() {
+interface PrayerRequestsPageProps {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}
+
+export default function PrayerRequestsPage({ searchParams }: PrayerRequestsPageProps) {
   return (
     <DashboardLayout>
       <section className="h-full overflow-hidden">
@@ -31,10 +37,27 @@ export default function PrayerRequestsPage() {
             description="Manage prayer requests, answer submissions"
           />
           <Suspense fallback={<PrayerRequestsPageFallback />}>
-            <PrayerRequestsPageClient />
+            <AdminPrayerRequestsPageServer searchParams={searchParams} />
           </Suspense>
         </section>
       </section>
     </DashboardLayout>
+  );
+}
+
+async function AdminPrayerRequestsPageServer({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const raw = await searchParams;
+  const listParams = parseAdminStandardListParams(raw);
+  const { items, totalPages, listError } = await serverFetchAdminPrayerRequestsList(listParams);
+  return (
+    <PrayerRequestsPageClient
+      prayerRequests={items}
+      totalPages={totalPages}
+      listError={listError}
+    />
   );
 }

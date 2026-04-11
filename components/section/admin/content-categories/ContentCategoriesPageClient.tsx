@@ -1,10 +1,9 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useQueryState, parseAsInteger, parseAsString } from 'nuqs';
-import { FilterableDataPage } from '@/components/general/FilterableDataPage';
-import { DEFAULT_PAGE_SIZE } from '@/components/general/DataTable';
+import { AdminDashboardListLayout } from '@/components/section/admin/AdminDashboardListLayout';
 import { callApi } from '@/lib/services/callApi';
 import type { IContentCategoryItem } from '@/lib/constants/endpoints';
 import { RegularBtn } from '@/components/atoms/RegularBtn';
@@ -22,8 +21,6 @@ import type { SelectOption } from '@/lib/types/general';
 import { Badge } from '@/components/ui/badge';
 import { ApprovalModal } from '@/components/section/admin/shared';
 
-const SEARCH_DEBOUNCE_MS = 300;
-
 const scopeOptions: SelectOption[] = [
   { text: 'All scopes', value: 'all' },
   { text: 'Music', value: 'music' },
@@ -34,17 +31,26 @@ const scopeOptions: SelectOption[] = [
 
 const scopeFormOptions: SelectOption[] = scopeOptions.filter(o => o.value !== 'all');
 
-export function ContentCategoriesPageClient() {
+export interface ContentCategoriesPageClientProps {
+  pageTitle: string;
+  pageDescription: string;
+  categories: IContentCategoryItem[];
+  totalPages: number;
+  listError: string | null;
+}
+
+export function ContentCategoriesPageClient({
+  pageTitle,
+  pageDescription,
+  categories,
+  totalPages,
+  listError,
+}: ContentCategoriesPageClientProps) {
+  const router = useRouter();
   const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1));
-  const [pageSize] = useQueryState('pagesize', parseAsInteger.withDefault(DEFAULT_PAGE_SIZE));
+  // const [pageSize] = useQueryState('pagesize', parseAsInteger.withDefault(DEFAULT_PAGE_SIZE));
   const [searchQuery, setSearchQuery] = useQueryState('search', parseAsString.withDefault(''));
   const [scopeFilter, setScopeFilter] = useQueryState('scope', parseAsString.withDefault('all'));
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const [refreshKey, setRefreshKey] = useState(0);
-  const [categories, setCategories] = useState<IContentCategoryItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [totalPages, setTotalPages] = useState(1);
 
   const [createOpen, setCreateOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<IContentCategoryItem | null>(null);
@@ -56,41 +62,7 @@ export function ContentCategoriesPageClient() {
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
-  const fetchList = async () => {
-    setLoading(true);
-    try {
-      const params = new URLSearchParams();
-      params.append('page', String(page));
-      params.append('limit', String(pageSize));
-      params.append('sort', 'displayOrder');
-      if (searchQuery.trim()) params.append('search', searchQuery.trim());
-      if (scopeFilter && scopeFilter !== 'all') params.append('scope', scopeFilter);
-      const res = await callApi('ADMIN_CONTENT_CATEGORIES_LIST', {
-        query: `?${params.toString()}` as `?${string}`,
-      });
-      if (res.type !== 'success') {
-        setCategories([]);
-        setTotalPages(1);
-        return;
-      }
-      setCategories(res.data.categories ?? []);
-      setTotalPages(res.data.pagination?.totalPages ?? 1);
-    } catch {
-      setCategories([]);
-      setTotalPages(1);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    debounceRef.current = setTimeout(() => fetchList(), SEARCH_DEBOUNCE_MS);
-    return () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-    };
-  }, [refreshKey, page, pageSize, searchQuery, scopeFilter]);
-
-  const handleRefresh = () => setRefreshKey(k => k + 1);
+  const handleRefresh = () => router.refresh();
 
   const openCreate = () => {
     setFormName('');
@@ -164,32 +136,99 @@ export function ContentCategoriesPageClient() {
   };
 
   return (
-    <section className="h-full grid grid-rows-[auto_1fr] gap-4 sm:gap-6 overflow-hidden">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div className="flex-1 min-w-0">
-          <FilterableDataPage
-            searchPlaceholder="Search categories..."
-            searchValue={searchQuery}
-            onSearchChange={setSearchQuery}
-            onSearchApply={() => setPage(1)}
-            filters={[
-              {
-                label: 'Scope',
-                value: scopeFilter,
-                options: scopeOptions,
-                onChange: v => {
-                  setScopeFilter(v);
-                  setPage(1);
-                },
-              },
-            ]}
-            onApplyFilters={() => setPage(1)}
-          />
-        </div>
-        <RegularBtn LeftIcon={Plus} text="New category" onClick={openCreate} />
-      </div>
+    <AdminDashboardListLayout
+      title={pageTitle}
+      description={pageDescription}
+      pageHeaderActions={<RegularBtn LeftIcon={Plus} text="New category" onClick={openCreate} />}
+      listError={listError}
+      filterableDataPageProps={{
+        searchPlaceholder: 'Search categories...',
+        searchValue: searchQuery,
+        onSearchChange: setSearchQuery,
+        onSearchApply: () => setPage(1),
+        filters: [
+          {
+            label: 'Scope',
+            value: scopeFilter,
+            options: scopeOptions,
+            onChange: v => {
+              setScopeFilter(v);
+              setPage(1);
+            },
+          },
+        ],
+        onApplyFilters: () => setPage(1),
+      }}
+      mainClassName="rounded-lg border border-border overflow-hidden flex flex-col min-h-0"
+      extraContent={
+        <>
+          <Dialog
+            open={createOpen}
+            onOpenChange={v => !v && (setCreateOpen(false), setEditTarget(null))}>
+            <DialogContent className="max-w-md">
+              <DialogHeader>
+                <DialogTitle>{editTarget ? 'Edit category' : 'New content category'}</DialogTitle>
+              </DialogHeader>
+              <div className="grid gap-4 py-2">
+                <RegularInput
+                  label="Name"
+                  value={formName}
+                  onChange={e => setFormName(e.target.value)}
+                  required
+                />
+                <RegularSelect
+                  label="Scope"
+                  value={formScope}
+                  onSelectChange={setFormScope}
+                  options={scopeFormOptions}
+                />
+                <RegularInput
+                  label="Display order"
+                  value={formOrder}
+                  onChange={e => setFormOrder(e.target.value)}
+                />
+                <RegularSelect
+                  label="Active"
+                  value={formActive}
+                  onSelectChange={setFormActive}
+                  options={[
+                    { text: 'Yes', value: 'yes' },
+                    { text: 'No', value: 'no' },
+                  ]}
+                />
+              </div>
+              <DialogFooter>
+                <RegularBtn
+                  type="button"
+                  variant="ghost"
+                  text="Cancel"
+                  onClick={() => setCreateOpen(false)}
+                />
+                <RegularBtn
+                  type="button"
+                  text="Save"
+                  loading={saving}
+                  disabled={saving || !formName.trim()}
+                  onClick={() => void handleSave()}
+                />
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
 
-      <div className="rounded-lg border border-border overflow-hidden flex flex-col min-h-0">
+          {deleteTarget && (
+            <ApprovalModal
+              open={!!deleteTarget}
+              onOpenChange={v => !v && setDeleteTarget(null)}
+              title="Delete category"
+              description={`Delete "${deleteTarget.name}"?`}
+              confirmText="Delete"
+              onConfirm={() => void handleDelete()}
+              loading={deleting}
+            />
+          )}
+        </>
+      }>
+      <div className="flex flex-col min-h-0 flex-1">
         <div className="overflow-auto sleek-scrollbar flex-1">
           <table className="w-full text-sm">
             <thead className="bg-muted/50 sticky top-0">
@@ -203,13 +242,7 @@ export function ContentCategoriesPageClient() {
               </tr>
             </thead>
             <tbody>
-              {loading ? (
-                <tr>
-                  <td colSpan={6} className="p-8 text-center text-muted-foreground">
-                    Loading…
-                  </td>
-                </tr>
-              ) : categories.length === 0 ? (
+              {categories.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="p-8 text-center text-muted-foreground">
                     No categories yet.
@@ -269,71 +302,6 @@ export function ContentCategoriesPageClient() {
           </div>
         )}
       </div>
-
-      <Dialog
-        open={createOpen}
-        onOpenChange={v => !v && (setCreateOpen(false), setEditTarget(null))}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>{editTarget ? 'Edit category' : 'New content category'}</DialogTitle>
-          </DialogHeader>
-          <div className="grid gap-4 py-2">
-            <RegularInput
-              label="Name"
-              value={formName}
-              onChange={e => setFormName(e.target.value)}
-              required
-            />
-            <RegularSelect
-              label="Scope"
-              value={formScope}
-              onSelectChange={setFormScope}
-              options={scopeFormOptions}
-            />
-            <RegularInput
-              label="Display order"
-              value={formOrder}
-              onChange={e => setFormOrder(e.target.value)}
-            />
-            <RegularSelect
-              label="Active"
-              value={formActive}
-              onSelectChange={setFormActive}
-              options={[
-                { text: 'Yes', value: 'yes' },
-                { text: 'No', value: 'no' },
-              ]}
-            />
-          </div>
-          <DialogFooter>
-            <RegularBtn
-              type="button"
-              variant="ghost"
-              text="Cancel"
-              onClick={() => setCreateOpen(false)}
-            />
-            <RegularBtn
-              type="button"
-              text="Save"
-              loading={saving}
-              disabled={saving || !formName.trim()}
-              onClick={() => void handleSave()}
-            />
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {deleteTarget && (
-        <ApprovalModal
-          open={!!deleteTarget}
-          onOpenChange={v => !v && setDeleteTarget(null)}
-          title="Delete category"
-          description={`Delete "${deleteTarget.name}"?`}
-          confirmText="Delete"
-          onConfirm={() => void handleDelete()}
-          loading={deleting}
-        />
-      )}
-    </section>
+    </AdminDashboardListLayout>
   );
 }

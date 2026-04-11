@@ -1,16 +1,13 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useQueryState, parseAsInteger, parseAsString } from 'nuqs';
 import { FilterableDataPage } from '@/components/general/FilterableDataPage';
-import { DEFAULT_PAGE_SIZE } from '@/components/general/DataTable';
 import type { ClickedRowDetails } from '@/components/general/TableRowDetailsDrawer';
 import { DocumentsTableContent } from './DocumentsTableContent';
 import { DocumentsDetailsDrawer } from './DocumentsDetailsDrawer';
-import { callApi } from '@/lib/services/callApi';
-
-const SEARCH_DEBOUNCE_MS = 300;
+import { AlertCircle } from 'lucide-react';
 
 export interface AdminDocument {
   _id: string;
@@ -24,57 +21,28 @@ export interface AdminDocument {
   [key: string]: unknown;
 }
 
-export function DocumentsPageClient() {
-  const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1));
-  const [pageSize] = useQueryState('pagesize', parseAsInteger.withDefault(DEFAULT_PAGE_SIZE));
-  const [filterStatus, setFilterStatus] = useQueryState('status', parseAsString.withDefault('all'));
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+export interface DocumentsPageClientProps {
+  documents: AdminDocument[];
+  totalPages: number;
+  listError: string | null;
+}
 
-  const [refreshKey, setRefreshKey] = useState(0);
+export function DocumentsPageClient({
+  documents,
+  totalPages,
+  listError,
+}: DocumentsPageClientProps) {
+  const router = useRouter();
+  const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1));
+  // const [pageSize] = useQueryState('pagesize', parseAsInteger.withDefault(DEFAULT_PAGE_SIZE));
+  const [filterStatus, setFilterStatus] = useQueryState('status', parseAsString.withDefault('all'));
+
   const [clickedRowDetails, setClickedRowDetails] = useState<
     ClickedRowDetails<AdminDocument, string> | undefined
   >(undefined);
 
-  const [documents, setDocuments] = useState<AdminDocument[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [totalPages, setTotalPages] = useState(1);
+  const handleRefresh = () => router.refresh();
 
-  const fetchDocuments = async () => {
-    setLoading(true);
-    try {
-      const params = new URLSearchParams();
-      params.append('page', String(page));
-      params.append('limit', String(pageSize));
-      params.append('sort', '-createdAt');
-      if (filterStatus && filterStatus !== 'all') params.append('status', filterStatus);
-      const { data, error } = await callApi('ADMIN_DOCUMENTS_LIST', {
-        query: `?${params.toString()}` as `?${string}`,
-      });
-      if (error) {
-        setDocuments([]);
-        setTotalPages(1);
-        return;
-      }
-      const items = (data?.documents ?? []) as AdminDocument[];
-      const pagination = (data as { pagination?: { totalPages?: number } })?.pagination;
-      setDocuments(items);
-      setTotalPages(pagination?.totalPages ?? 1);
-    } catch {
-      setDocuments([]);
-      setTotalPages(1);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    debounceRef.current = setTimeout(() => fetchDocuments(), SEARCH_DEBOUNCE_MS);
-    return () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-    };
-  }, [refreshKey]);
-
-  const handleRefresh = () => setRefreshKey(k => k + 1);
   const handleRowClick = (row: AdminDocument, index: number) => {
     setClickedRowDetails({ data: row, index, tab: undefined });
   };
@@ -88,6 +56,12 @@ export function DocumentsPageClient() {
 
   return (
     <section className="h-full grid grid-rows-[auto_1fr] gap-4 sm:gap-6 overflow-hidden">
+      {listError && (
+        <div className="rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive flex items-start gap-2">
+          <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
+          <span>{listError}</span>
+        </div>
+      )}
       <section className="grid gap-4 sm:gap-6">
         <div className="flex-1 min-w-0">
           <FilterableDataPage
@@ -110,7 +84,7 @@ export function DocumentsPageClient() {
 
       <DocumentsTableContent
         documents={documents}
-        loading={loading}
+        loading={false}
         onRefresh={handleRefresh}
         onRowClick={handleRowClick}
         page={page}

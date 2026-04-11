@@ -10,7 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { User, Settings, HelpCircle, LogOut, Menu } from 'lucide-react';
+import { User, Settings, HelpCircle, LogOut, Menu, ExternalLink } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { RegularSelect } from '@/components/atoms/RegularSelect';
 import type { SelectOption } from '@/lib/types/general';
@@ -21,6 +21,7 @@ import Link from 'next/link';
 import { GhostBtn } from '../atoms/GhostBtn';
 import { getPersonDisplayName, getPersonInitials } from '@/lib/utils/general';
 import { Logo } from '../icons';
+import { getPublicSiteHref } from '@/lib/constants/texts';
 
 export const DashboardHeader = () => {
   return (
@@ -72,6 +73,8 @@ const ProfileMenu = () => {
   } = useAuthStore(state => state);
   const { theme, setTheme } = useTheme();
   const { push } = useRouter();
+  const publicSiteHref = getPublicSiteHref();
+  const publicSiteIsExternal = publicSiteHref.startsWith('http');
 
   const name = getPersonDisplayName(user?.firstName, user?.lastName, user?.email ?? '');
   const initials = getPersonInitials(user?.firstName, user?.lastName);
@@ -104,6 +107,15 @@ const ProfileMenu = () => {
         <DropdownMenuItem onClick={() => push('/admin/dashboard/settings')}>
           <Settings className="mr-2 h-4 w-4" />
           <span>Settings</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <a
+            href={publicSiteHref}
+            className="flex cursor-pointer items-center"
+            {...(publicSiteIsExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>
+            <ExternalLink className="mr-2 h-4 w-4" />
+            <span>View public site</span>
+          </a>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <div className="px-2 py-2">

@@ -34,8 +34,8 @@ export function PageHeader({
   };
 
   return (
-    <div className="flex flex-wrap flex-col gap-4 md:flex-row md:items-center md:justify-between">
-      <div className="flex flex-wrap items-center gap-3 md:gap-4 min-w-0 flex-1">
+    <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between w-full min-w-0">
+      <div className="flex flex-wrap items-center gap-3 md:gap-4 min-w-0 flex-1 md:min-w-[12rem]">
         {showBack && (
           <GhostBtn
             LucideIcon={ArrowLeft}
@@ -56,7 +56,7 @@ export function PageHeader({
         </div>
       </div>
       {children && (
-        <div className="flex items-center gap-2 flex-shrink-0 flex-wrap sm:flex-nowrap">
+        <div className="flex flex-col gap-2 w-full shrink-0 md:flex-row md:items-center md:justify-end md:w-auto md:flex-nowrap">
           {children}
         </div>
       )}

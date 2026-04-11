@@ -1,6 +1,7 @@
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import { PageHeader } from '@/components/general/PageHeader';
 import { TestimoniesPageClient } from '@/components/section/admin/testimonies/TestimoniesPageClient';
+import { serverFetchAdminTestimoniesList } from '@/lib/services/adminDashboardServerData';
+import { parseAdminStandardListParams } from '@/lib/utils/adminDashboardSearchParams';
 import { Metadata } from 'next';
 import { Suspense } from 'react';
 import { Loader2 } from 'lucide-react';
@@ -21,20 +22,39 @@ function TestimoniesPageFallback() {
   );
 }
 
-export default function TestimoniesPage() {
+interface TestimoniesPageProps {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}
+
+export default function TestimoniesPage({ searchParams }: TestimoniesPageProps) {
   return (
     <DashboardLayout>
       <section className="h-full overflow-hidden">
         <section className="h-full space-y-6 overflow-auto sleek-scrollbar">
-          <PageHeader
-            title="Testimonies"
-            description="Manage testimonies, approve or reject submissions"
-          />
           <Suspense fallback={<TestimoniesPageFallback />}>
-            <TestimoniesPageClient />
+            <AdminTestimoniesPageServer searchParams={searchParams} />
           </Suspense>
         </section>
       </section>
     </DashboardLayout>
+  );
+}
+
+async function AdminTestimoniesPageServer({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const raw = await searchParams;
+  const listParams = parseAdminStandardListParams(raw);
+  const { items, totalPages, listError } = await serverFetchAdminTestimoniesList(listParams);
+  return (
+    <TestimoniesPageClient
+      pageTitle="Testimonies"
+      pageDescription="Manage testimonies, approve or reject submissions"
+      testimonies={items}
+      totalPages={totalPages}
+      listError={listError}
+    />
   );
 }

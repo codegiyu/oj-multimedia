@@ -1,6 +1,7 @@
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import { PageHeader } from '@/components/general/PageHeader';
 import { PollsPageClient } from '@/components/section/admin/polls/PollsPageClient';
+import { serverFetchAdminPollsList } from '@/lib/services/adminDashboardServerData';
+import { parseAdminStandardListParams } from '@/lib/utils/adminDashboardSearchParams';
 import { Metadata } from 'next';
 import { Suspense } from 'react';
 import { Loader2 } from 'lucide-react';
@@ -21,17 +22,39 @@ function PollsPageFallback() {
   );
 }
 
-export default function PollsPage() {
+interface PollsPageProps {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}
+
+export default function PollsPage({ searchParams }: PollsPageProps) {
   return (
     <DashboardLayout>
       <section className="h-full overflow-hidden">
         <section className="h-full space-y-6 overflow-auto sleek-scrollbar">
-          <PageHeader title="Polls" description="Manage polls, open or close voting" />
           <Suspense fallback={<PollsPageFallback />}>
-            <PollsPageClient />
+            <AdminPollsPageServer searchParams={searchParams} />
           </Suspense>
         </section>
       </section>
     </DashboardLayout>
+  );
+}
+
+async function AdminPollsPageServer({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const raw = await searchParams;
+  const listParams = parseAdminStandardListParams(raw);
+  const { items, totalPages, listError } = await serverFetchAdminPollsList(listParams);
+  return (
+    <PollsPageClient
+      pageTitle="Polls"
+      pageDescription="Manage polls, open or close voting"
+      polls={items}
+      totalPages={totalPages}
+      listError={listError}
+    />
   );
 }

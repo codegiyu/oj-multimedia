@@ -1,5 +1,12 @@
 const liveUrl = process.env.NEXT_PUBLIC_LIVE_URL || 'https://www.ojmultimedia.com';
 
+/** Public marketing site URL for “leave admin” links; same-origin `/` when unset (e.g. local dev). */
+export function getPublicSiteHref(): string {
+  const raw = process.env.NEXT_PUBLIC_LIVE_URL?.trim();
+  if (!raw) return '/';
+  return raw.replace(/\/$/, '');
+}
+
 export const SEO_DETAILS = {
   title: {
     default: 'OHEJUIRA - Multimedia Platform & Content Hub',

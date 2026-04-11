@@ -1,10 +1,9 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useQueryState, parseAsInteger, parseAsString } from 'nuqs';
-import { FilterableDataPage } from '@/components/general/FilterableDataPage';
-import { DEFAULT_PAGE_SIZE } from '@/components/general/DataTable';
+import { AdminDashboardListLayout } from '@/components/section/admin/AdminDashboardListLayout';
 import type { ArtistMusicListItem } from '@/lib/constants/endpoints';
 import type { ClickedRowDetails } from '@/components/general/TableRowDetailsDrawer';
 import { MusicDetailsDrawer } from './MusicDetailsDrawer';
@@ -15,8 +14,6 @@ import { callApi } from '@/lib/services/callApi';
 import { RegularBtn } from '@/components/atoms/RegularBtn';
 import { Plus } from 'lucide-react';
 
-const SEARCH_DEBOUNCE_MS = 300;
-
 const statusOptions = [
   { text: 'All', value: 'all' },
   { text: 'Draft', value: 'draft' },
@@ -24,22 +21,31 @@ const statusOptions = [
   { text: 'Archived', value: 'archived' },
 ];
 
-export function MusicPageClient() {
+export interface MusicPageClientProps {
+  pageTitle: string;
+  pageDescription: string;
+  music: ArtistMusicListItem[];
+  totalPages: number;
+  listError: string | null;
+}
+
+export function MusicPageClient({
+  pageTitle,
+  pageDescription,
+  music,
+  totalPages,
+  listError,
+}: MusicPageClientProps) {
+  const router = useRouter();
   const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1));
-  const [pageSize] = useQueryState('pagesize', parseAsInteger.withDefault(DEFAULT_PAGE_SIZE));
+  // const [pageSize] = useQueryState('pagesize', parseAsInteger.withDefault(DEFAULT_PAGE_SIZE));
   const [searchQuery, setSearchQuery] = useQueryState('search', parseAsString.withDefault(''));
   const [filterStatus, setFilterStatus] = useQueryState('status', parseAsString.withDefault('all'));
   const [sortKey, setSortKey] = useQueryState('sort', parseAsString.withDefault('newest'));
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const [refreshKey, setRefreshKey] = useState(0);
   const [clickedRowDetails, setClickedRowDetails] = useState<
     ClickedRowDetails<ArtistMusicListItem, string> | undefined
   >(undefined);
-
-  const [music, setMusic] = useState<ArtistMusicListItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [totalPages, setTotalPages] = useState(1);
 
   const [createOpen, setCreateOpen] = useState(false);
   const [approveTarget, setApproveTarget] = useState<ArtistMusicListItem | null>(null);
@@ -47,45 +53,8 @@ export function MusicPageClient() {
   const [deleteTarget, setDeleteTarget] = useState<ArtistMusicListItem | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
 
-  const fetchMusic = async () => {
-    setLoading(true);
-    try {
-      const params = new URLSearchParams();
-      params.append('page', String(page));
-      params.append('limit', String(pageSize));
-      const sort =
-        sortKey === 'downloads' ? '-downloads' : sortKey === 'plays' ? '-plays' : '-createdAt';
-      params.append('sort', sort);
-      if (searchQuery.trim()) params.append('search', searchQuery.trim());
-      if (filterStatus && filterStatus !== 'all') params.append('status', filterStatus);
-      const { data, error } = await callApi('ADMIN_MUSIC_LIST', {
-        query: `?${params.toString()}` as `?${string}`,
-      });
-      if (error) {
-        setMusic([]);
-        setTotalPages(1);
-        return;
-      }
-      const items = (data as { music?: ArtistMusicListItem[] })?.music ?? [];
-      const pagination = (data as { pagination?: { totalPages?: number } })?.pagination;
-      setMusic(items);
-      setTotalPages(pagination?.totalPages ?? 1);
-    } catch {
-      setMusic([]);
-      setTotalPages(1);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const handleRefresh = () => router.refresh();
 
-  useEffect(() => {
-    debounceRef.current = setTimeout(() => fetchMusic(), SEARCH_DEBOUNCE_MS);
-    return () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-    };
-  }, [refreshKey, page, pageSize, searchQuery, filterStatus, sortKey]);
-
-  const handleRefresh = () => setRefreshKey(k => k + 1);
   const handleRowClick = (row: ArtistMusicListItem, index: number) => {
     setClickedRowDetails({ data: row, index, tab: undefined });
   };
@@ -148,49 +117,95 @@ export function MusicPageClient() {
   };
 
   return (
-    <section className="h-full grid grid-rows-[auto_1fr] gap-4 sm:gap-6 overflow-hidden">
-      <section className="grid gap-4 sm:gap-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="flex-1 min-w-0">
-            <FilterableDataPage
-              searchPlaceholder="Search music..."
-              searchValue={searchQuery}
-              onSearchChange={setSearchQuery}
-              onSearchApply={() => setPage(1)}
-              filters={[
-                {
-                  label: 'Status',
-                  value: filterStatus,
-                  options: statusOptions,
-                  onChange: v => {
-                    setFilterStatus(v);
-                    setPage(1);
-                  },
-                },
-                {
-                  label: 'Sort',
-                  value: sortKey,
-                  options: [
-                    { text: 'Newest', value: 'newest' },
-                    { text: 'Downloads', value: 'downloads' },
-                    { text: 'Plays', value: 'plays' },
-                  ],
-                  onChange: v => {
-                    setSortKey(v);
-                    setPage(1);
-                  },
-                },
-              ]}
-              onApplyFilters={() => setPage(1)}
-            />
-          </div>
-          <RegularBtn LeftIcon={Plus} text="Create Music" onClick={() => setCreateOpen(true)} />
-        </div>
-      </section>
+    <AdminDashboardListLayout
+      title={pageTitle}
+      description={pageDescription}
+      pageHeaderActions={
+        <RegularBtn LeftIcon={Plus} text="Create Music" onClick={() => setCreateOpen(true)} />
+      }
+      listError={listError}
+      filterableDataPageProps={{
+        searchPlaceholder: 'Search music...',
+        searchValue: searchQuery,
+        onSearchChange: setSearchQuery,
+        onSearchApply: () => setPage(1),
+        filters: [
+          {
+            label: 'Status',
+            value: filterStatus,
+            options: statusOptions,
+            onChange: v => {
+              setFilterStatus(v);
+              setPage(1);
+            },
+          },
+          {
+            label: 'Sort',
+            value: sortKey,
+            options: [
+              { text: 'Newest', value: 'newest' },
+              { text: 'Downloads', value: 'downloads' },
+              { text: 'Plays', value: 'plays' },
+            ],
+            onChange: v => {
+              setSortKey(v);
+              setPage(1);
+            },
+          },
+        ],
+        onApplyFilters: () => setPage(1),
+      }}
+      extraContent={
+        <>
+          <MusicDetailsDrawer
+            clickedRowDetails={clickedRowDetails}
+            setClickedRowDetails={setClickedRowDetails}
+            onSaved={handleRefresh}
+          />
 
+          <CreateMusicModal
+            open={createOpen}
+            onOpenChange={setCreateOpen}
+            onSuccess={handleRefresh}
+          />
+
+          <ApprovalModal
+            open={!!approveTarget}
+            onOpenChange={val => !val && setApproveTarget(null)}
+            title="Approve music"
+            description={approveTarget ? `Publish "${approveTarget.title}"?` : ''}
+            confirmText="Approve"
+            onConfirm={handleApprove}
+            loading={actionLoading}
+          />
+
+          <RejectModal
+            open={!!rejectTarget}
+            onOpenChange={val => !val && setRejectTarget(null)}
+            title="Reject music"
+            description={rejectTarget ? `Reject "${rejectTarget.title}"?` : ''}
+            onConfirm={handleReject}
+            loading={actionLoading}
+          />
+
+          {deleteTarget && (
+            <ApprovalModal
+              open={!!deleteTarget}
+              onOpenChange={val => !val && setDeleteTarget(null)}
+              title="Delete music"
+              description={
+                deleteTarget ? `Delete "${deleteTarget.title}"? This cannot be undone.` : ''
+              }
+              confirmText="Delete"
+              onConfirm={handleDelete}
+              loading={actionLoading}
+            />
+          )}
+        </>
+      }>
       <MusicTableContent
         music={music}
-        loading={loading}
+        loading={false}
         onRefresh={handleRefresh}
         onRowClick={handleRowClick}
         page={page}
@@ -201,45 +216,6 @@ export function MusicPageClient() {
         onEdit={handleEdit}
         onDelete={m => setDeleteTarget(m)}
       />
-
-      <MusicDetailsDrawer
-        clickedRowDetails={clickedRowDetails}
-        setClickedRowDetails={setClickedRowDetails}
-        onSaved={handleRefresh}
-      />
-
-      <CreateMusicModal open={createOpen} onOpenChange={setCreateOpen} onSuccess={handleRefresh} />
-
-      <ApprovalModal
-        open={!!approveTarget}
-        onOpenChange={val => !val && setApproveTarget(null)}
-        title="Approve music"
-        description={approveTarget ? `Publish "${approveTarget.title}"?` : ''}
-        confirmText="Approve"
-        onConfirm={handleApprove}
-        loading={actionLoading}
-      />
-
-      <RejectModal
-        open={!!rejectTarget}
-        onOpenChange={val => !val && setRejectTarget(null)}
-        title="Reject music"
-        description={rejectTarget ? `Reject "${rejectTarget.title}"?` : ''}
-        onConfirm={handleReject}
-        loading={actionLoading}
-      />
-
-      {deleteTarget && (
-        <ApprovalModal
-          open={!!deleteTarget}
-          onOpenChange={val => !val && setDeleteTarget(null)}
-          title="Delete music"
-          description={deleteTarget ? `Delete "${deleteTarget.title}"? This cannot be undone.` : ''}
-          confirmText="Delete"
-          onConfirm={handleDelete}
-          loading={actionLoading}
-        />
-      )}
-    </section>
+    </AdminDashboardListLayout>
   );
 }

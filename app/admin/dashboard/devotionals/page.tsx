@@ -1,6 +1,7 @@
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import { PageHeader } from '@/components/general/PageHeader';
 import { DevotionalsPageClient } from '@/components/section/admin/devotionals/DevotionalsPageClient';
+import { serverFetchAdminDevotionalsList } from '@/lib/services/adminDashboardServerData';
+import { parseAdminStandardListParams } from '@/lib/utils/adminDashboardSearchParams';
 import { Metadata } from 'next';
 import { Suspense } from 'react';
 import { Loader2 } from 'lucide-react';
@@ -21,20 +22,39 @@ function DevotionalsPageFallback() {
   );
 }
 
-export default function DevotionalsPage() {
+interface DevotionalsPageProps {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}
+
+export default function DevotionalsPage({ searchParams }: DevotionalsPageProps) {
   return (
     <DashboardLayout>
       <section className="h-full overflow-hidden">
         <section className="h-full space-y-6 overflow-auto sleek-scrollbar">
-          <PageHeader
-            title="Devotionals"
-            description="Manage devotionals, approve or reject submissions"
-          />
           <Suspense fallback={<DevotionalsPageFallback />}>
-            <DevotionalsPageClient />
+            <AdminDevotionalsPageServer searchParams={searchParams} />
           </Suspense>
         </section>
       </section>
     </DashboardLayout>
+  );
+}
+
+async function AdminDevotionalsPageServer({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const raw = await searchParams;
+  const listParams = parseAdminStandardListParams(raw);
+  const { items, totalPages, listError } = await serverFetchAdminDevotionalsList(listParams);
+  return (
+    <DevotionalsPageClient
+      pageTitle="Devotionals"
+      pageDescription="Manage devotionals, approve or reject submissions"
+      devotionals={items}
+      totalPages={totalPages}
+      listError={listError}
+    />
   );
 }

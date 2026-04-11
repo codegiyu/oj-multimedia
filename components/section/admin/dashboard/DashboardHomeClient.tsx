@@ -5,7 +5,11 @@ import { TrendingUp, Activity } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
 
-export const DashboardHomeClient = () => {
+export interface DashboardHomeClientProps {
+  serverFirstName?: string | null;
+}
+
+export const DashboardHomeClient = ({ serverFirstName = null }: DashboardHomeClientProps) => {
   const { user } = useAuthStore(state => state);
 
   const stats: Array<{
@@ -29,7 +33,7 @@ export const DashboardHomeClient = () => {
       {/* Welcome Section */}
       <div className="grid gap-2">
         <h1 className="text-3xl font-bold tracking-tight text-foreground">
-          {greeting()}, {user?.firstName || 'Admin'}!
+          {greeting()}, {user?.firstName || serverFirstName || 'Admin'}!
         </h1>
         <p className="text-muted-foreground">
           Here&apos;s an overview of your site&apos;s content and recent activity.

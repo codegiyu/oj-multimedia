@@ -1,6 +1,19 @@
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import { PageHeader } from '@/components/general/PageHeader';
 import { MarketplacePageClient } from '@/components/section/admin/marketplace/MarketplacePageClient';
+import type {
+  IMarketplaceProduct,
+  IMarketplaceVendor,
+  PopulatedMarketplaceOrder,
+} from '@/lib/constants/endpoints';
+import {
+  serverFetchAdminOrdersList,
+  serverFetchAdminProductsList,
+  serverFetchAdminVendorsList,
+} from '@/lib/services/adminDashboardServerData';
+import {
+  parseAdminStandardListParams,
+  parseTabParam,
+} from '@/lib/utils/adminDashboardSearchParams';
 import { Metadata } from 'next';
 import { Suspense } from 'react';
 import { Loader2 } from 'lucide-react';
@@ -9,6 +22,9 @@ export const metadata: Metadata = {
   title: 'Marketplace',
   description: 'Manage vendors, products, and orders',
 };
+
+const TAB_VENDORS = 'vendors';
+const TAB_PRODUCTS = 'products';
 
 function MarketplacePageFallback() {
   return (
@@ -21,17 +37,65 @@ function MarketplacePageFallback() {
   );
 }
 
-export default function MarketplacePage() {
+interface MarketplacePageProps {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}
+
+export default function MarketplacePage({ searchParams }: MarketplacePageProps) {
   return (
     <DashboardLayout>
       <section className="h-full overflow-hidden">
         <section className="h-full space-y-6 overflow-auto sleek-scrollbar">
-          <PageHeader title="Marketplace" description="Manage vendors, products, and orders" />
           <Suspense fallback={<MarketplacePageFallback />}>
-            <MarketplacePageClient />
+            <AdminMarketplacePageServer searchParams={searchParams} />
           </Suspense>
         </section>
       </section>
     </DashboardLayout>
+  );
+}
+
+async function AdminMarketplacePageServer({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const raw = await searchParams;
+  const tab = parseTabParam(raw, 'tab', TAB_VENDORS);
+  const listParams = parseAdminStandardListParams(raw);
+
+  let vendors: IMarketplaceVendor[] = [];
+  let products: IMarketplaceProduct[] = [];
+  let orders: PopulatedMarketplaceOrder[] = [];
+  let totalPages = 1;
+  let listError: string | null = null;
+
+  if (tab === TAB_VENDORS) {
+    const r = await serverFetchAdminVendorsList(listParams);
+    vendors = r.items;
+    totalPages = r.totalPages;
+    listError = r.listError;
+  } else if (tab === TAB_PRODUCTS) {
+    const r = await serverFetchAdminProductsList(listParams);
+    products = r.items;
+    totalPages = r.totalPages;
+    listError = r.listError;
+  } else {
+    const r = await serverFetchAdminOrdersList(listParams);
+    orders = r.items;
+    totalPages = r.totalPages;
+    listError = r.listError;
+  }
+
+  return (
+    <MarketplacePageClient
+      pageTitle="Marketplace"
+      pageDescription="Manage vendors, products, and orders"
+      vendors={vendors}
+      products={products}
+      orders={orders}
+      totalPages={totalPages}
+      listError={listError}
+    />
   );
 }

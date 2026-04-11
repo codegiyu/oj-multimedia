@@ -1,6 +1,7 @@
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import { PageHeader } from '@/components/general/PageHeader';
 import { ResourcesPageClient } from '@/components/section/admin/resources/ResourcesPageClient';
+import { serverFetchAdminResourcesList } from '@/lib/services/adminDashboardServerData';
+import { parseAdminStandardListParams } from '@/lib/utils/adminDashboardSearchParams';
 import { Metadata } from 'next';
 import { Suspense } from 'react';
 import { Loader2 } from 'lucide-react';
@@ -21,20 +22,39 @@ function ResourcesPageFallback() {
   );
 }
 
-export default function ResourcesPage() {
+interface ResourcesPageProps {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}
+
+export default function ResourcesPage({ searchParams }: ResourcesPageProps) {
   return (
     <DashboardLayout>
       <section className="h-full overflow-hidden">
         <section className="h-full space-y-6 overflow-auto sleek-scrollbar">
-          <PageHeader
-            title="Resources"
-            description="Manage resources, approve or reject submissions"
-          />
           <Suspense fallback={<ResourcesPageFallback />}>
-            <ResourcesPageClient />
+            <AdminResourcesPageServer searchParams={searchParams} />
           </Suspense>
         </section>
       </section>
     </DashboardLayout>
+  );
+}
+
+async function AdminResourcesPageServer({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const raw = await searchParams;
+  const listParams = parseAdminStandardListParams(raw);
+  const { items, totalPages, listError } = await serverFetchAdminResourcesList(listParams);
+  return (
+    <ResourcesPageClient
+      pageTitle="Resources"
+      pageDescription="Manage resources, approve or reject submissions"
+      resources={items}
+      totalPages={totalPages}
+      listError={listError}
+    />
   );
 }

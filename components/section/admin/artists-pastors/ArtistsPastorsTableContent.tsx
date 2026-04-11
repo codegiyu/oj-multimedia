@@ -7,6 +7,7 @@ import {
   DataTableCellWrapper,
   DataTableColumnHeader,
   type DataTableColumn,
+  type DataTableTab,
 } from '@/components/general/DataTable';
 import type { ArtistListItem } from '@/lib/types/community';
 import type { PastorListItem } from '@/lib/types/community';
@@ -17,8 +18,17 @@ function truncate(str: string, maxLen: number) {
   return str.slice(0, maxLen).trim() + '…';
 }
 
+const TAB_ARTISTS = 'artists';
+const TAB_PASTORS = 'pastors';
+
+const ARTISTS_PASTORS_TABLE_TABS: DataTableTab[] = [
+  { value: TAB_ARTISTS, label: 'Artists' },
+  { value: TAB_PASTORS, label: 'Pastors' },
+];
+
 interface ArtistsPastorsTableContentProps {
   activeTab: string;
+  onTabChange: (value: string) => void;
   artists: ArtistListItem[];
   pastors: PastorListItem[];
   loading: boolean;
@@ -34,6 +44,7 @@ interface ArtistsPastorsTableContentProps {
 export function ArtistsPastorsTableContent(props: ArtistsPastorsTableContentProps) {
   const {
     activeTab,
+    onTabChange,
     artists,
     pastors,
     loading,
@@ -130,6 +141,10 @@ export function ArtistsPastorsTableContent(props: ArtistsPastorsTableContentProp
 
   return (
     <DataTable<ArtistListItem | PastorListItem>
+      tabs={ARTISTS_PASTORS_TABLE_TABS}
+      activeTab={activeTab}
+      onTabChange={onTabChange}
+      tabsShowNavigation={false}
       data={data}
       columns={columns}
       loading={loading}

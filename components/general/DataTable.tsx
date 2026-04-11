@@ -49,6 +49,8 @@ export interface DataTableProps<TData> {
   tabs?: DataTableTab[];
   activeTab?: string;
   onTabChange?: (value: string) => void;
+  /** When false, hides prev/next arrows on `TabsList` (segmented control only). Default true. */
+  tabsShowNavigation?: boolean;
   data: TData[];
   columns: DataTableColumn<TData, unknown>[];
   emptyMessage?: ReactNode;
@@ -78,6 +80,7 @@ export function DataTable<TData>({
   tabs,
   activeTab,
   onTabChange,
+  tabsShowNavigation = true,
   data,
   columns,
   emptyMessage,
@@ -111,7 +114,7 @@ export function DataTable<TData>({
                   tabs={tabs}
                   activeTab={activeTab}
                   onTabChange={onTabChange}
-                  showNavigation={true}
+                  showNavigation={tabsShowNavigation}
                 />
               </Tabs>
               <div className="flex items-center gap-2">

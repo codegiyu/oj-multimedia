@@ -1,6 +1,7 @@
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import { PageHeader } from '@/components/general/PageHeader';
 import { ContentCategoriesPageClient } from '@/components/section/admin/content-categories/ContentCategoriesPageClient';
+import { serverFetchAdminContentCategoriesList } from '@/lib/services/adminDashboardServerData';
+import { parseAdminCategoriesListParams } from '@/lib/utils/adminDashboardSearchParams';
 import { Metadata } from 'next';
 import { Suspense } from 'react';
 import { Loader2 } from 'lucide-react';
@@ -21,20 +22,39 @@ function Fallback() {
   );
 }
 
-export default function ContentCategoriesPage() {
+interface ContentCategoriesPageProps {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}
+
+export default function ContentCategoriesPage({ searchParams }: ContentCategoriesPageProps) {
   return (
     <DashboardLayout>
       <section className="h-full overflow-hidden">
         <section className="h-full space-y-6 overflow-auto sleek-scrollbar">
-          <PageHeader
-            title="Content categories"
-            description="Taxonomy for editorial content (separate from marketplace product categories)"
-          />
           <Suspense fallback={<Fallback />}>
-            <ContentCategoriesPageClient />
+            <AdminContentCategoriesPageServer searchParams={searchParams} />
           </Suspense>
         </section>
       </section>
     </DashboardLayout>
+  );
+}
+
+async function AdminContentCategoriesPageServer({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const raw = await searchParams;
+  const params = parseAdminCategoriesListParams(raw);
+  const { items, totalPages, listError } = await serverFetchAdminContentCategoriesList(params);
+  return (
+    <ContentCategoriesPageClient
+      pageTitle="Content categories"
+      pageDescription="Taxonomy for editorial content (separate from marketplace product categories)"
+      categories={items}
+      totalPages={totalPages}
+      listError={listError}
+    />
   );
 }
