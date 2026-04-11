@@ -16,6 +16,7 @@ import { RegularSelect } from '@/components/atoms/RegularSelect';
 import type { SelectOption } from '@/lib/types/general';
 import { callApi } from '@/lib/services/callApi';
 import { DEVOTIONAL_TYPES } from '@/lib/types/community';
+import { AdminUserAccountPicker } from '@/components/section/admin/shared/AdminUserAccountPicker';
 
 interface CreateDevotionalModalProps {
   open: boolean;
@@ -29,6 +30,8 @@ const defaultForm = {
   content: '',
   category: '',
   author: '',
+  coverImage: '',
+  ownerUserId: '',
   type: 'daily' as (typeof DEVOTIONAL_TYPES)[number],
   status: 'draft' as 'draft' | 'published' | 'archived',
 };
@@ -54,18 +57,20 @@ export function CreateDevotionalModal({
     if (!form.title.trim()) return;
     setLoading(true);
     try {
-      const { error } = await callApi('ADMIN_DEVOTIONAL_CREATE', {
-        payload: {
-          title: form.title.trim(),
-          excerpt: form.excerpt?.trim() ?? '',
-          content: form.content?.trim() ?? '',
-          category: form.category?.trim() || undefined,
-          author: form.author?.trim() || undefined,
-          type: form.type,
-          status: form.status,
-        },
-      });
-      if (error) throw new Error(error.message);
+      const payload: Record<string, unknown> = {
+        title: form.title.trim(),
+        excerpt: form.excerpt?.trim() ?? '',
+        content: form.content?.trim() ?? '',
+        category: form.category?.trim() || undefined,
+        author: form.author?.trim() || undefined,
+        coverImage: form.coverImage?.trim() || undefined,
+        type: form.type,
+        status: form.status,
+      };
+      if (form.ownerUserId) payload.ownerUserId = form.ownerUserId;
+
+      const res = await callApi('ADMIN_DEVOTIONAL_CREATE', { payload });
+      if (res.type !== 'success') throw new Error(res.error?.message ?? 'Create failed');
       setForm(defaultForm);
       onOpenChange(false);
       onSuccess();
@@ -89,6 +94,11 @@ export function CreateDevotionalModal({
           <DialogDescription>Add a new devotional</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="grid gap-4">
+          <AdminUserAccountPicker
+            value={form.ownerUserId}
+            onChange={(userId, _u) => setForm(f => ({ ...f, ownerUserId: userId }))}
+            description="Optional. Links this devotional to a user’s artist profile on the server."
+          />
           <RegularInput
             label="Title"
             value={form.title}
@@ -119,6 +129,12 @@ export function CreateDevotionalModal({
             value={form.category}
             onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
             placeholder="Enter category"
+          />
+          <RegularInput
+            label="Cover image URL"
+            value={form.coverImage}
+            onChange={e => setForm(f => ({ ...f, coverImage: e.target.value }))}
+            placeholder="Featured image URL"
           />
           <RegularTextarea
             label="Excerpt"

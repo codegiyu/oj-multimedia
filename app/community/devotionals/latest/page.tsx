@@ -5,6 +5,7 @@ import { SubPageHero } from '@/components/general/SubPageHero';
 import { DevotionalsPageSkeleton } from '@/components/section/community/devotionals/DevotionalsPageSkeleton';
 import { DailyDevotionalsSection } from '@/components/section/community/devotionals/DailyDevotionalsSection';
 import { DevotionalsCategoryFilter } from '@/components/section/community/devotionals/DevotionalsCategoryFilter';
+import { Skeleton } from '@/components/ui/skeleton';
 import { filterByCategory } from '@/lib/utils/community/devotionals';
 import { callServerApi } from '@/lib/services/serverApi';
 import { mapToDailyDevotional } from '@/lib/utils/communityApiMappers';
@@ -65,7 +66,7 @@ export default async function LatestDevotionalsPage({ searchParams }: LatestDevo
       />
       <Suspense fallback={<DevotionalsPageSkeleton />}>
         <div className="container mx-auto px-4 pb-16">
-          <Suspense fallback={<div className="h-10 mb-6 animate-pulse bg-muted rounded" />}>
+          <Suspense fallback={<Skeleton className="mb-6 h-10 w-full max-w-xs rounded-md" />}>
             <DevotionalsCategoryFilter />
           </Suspense>
           <DailyDevotionalsSection

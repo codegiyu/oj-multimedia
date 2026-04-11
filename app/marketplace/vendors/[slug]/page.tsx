@@ -4,6 +4,7 @@ import { VendorStorePageClient } from '@/components/section/marketplace/VendorSt
 import { VendorStorePageSkeleton } from '@/components/section/marketplace/VendorStorePageSkeleton';
 import { callServerApi } from '@/lib/services/serverApi';
 import type { IMarketplaceVendor, IMarketplaceProduct } from '@/lib/constants/endpoints';
+import { MainLayout } from '@/components/layout/MainLayout';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -44,8 +45,10 @@ export default async function VendorStorePage({ params }: PageProps) {
   const { vendor, products } = await fetchVendorAndProducts(slug);
 
   return (
-    <Suspense fallback={<VendorStorePageSkeleton />}>
-      <VendorStorePageClient vendor={vendor} products={products} />
-    </Suspense>
+    <MainLayout>
+      <Suspense fallback={<VendorStorePageSkeleton />}>
+        <VendorStorePageClient vendor={vendor} products={products} />
+      </Suspense>
+    </MainLayout>
   );
 }

@@ -14,6 +14,7 @@ function videoCategoryToLabel(category: VideoItem['category']): string {
     live: 'Live Performances',
     podcasts: 'Podcasts',
     sermon: 'Sermon',
+    movie: 'Movies',
   };
   return map[category] ?? category;
 }

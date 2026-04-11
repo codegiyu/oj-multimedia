@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { Download, Lock, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { MusicItemWithArtist } from '@/lib/utils/music';
+import { getPublicMusicDownloadUrl } from '@/lib/constants/endpoints';
+import { sendContentAnalyticsEvent } from '@/lib/services/contentAnalytics';
 
 interface DownloadButtonProps {
   musicItem: MusicItemWithArtist;
@@ -13,13 +15,13 @@ export const DownloadButton = ({ musicItem }: DownloadButtonProps) => {
   const [isDownloading, setIsDownloading] = useState(false);
   const [isDownloaded, setIsDownloaded] = useState(false);
 
-  const handleDownload = async () => {
-    if (!musicItem.downloadUrl) return;
+  const idOrSlug = musicItem.slug || musicItem._id;
+  const trackedDownloadUrl = getPublicMusicDownloadUrl(idOrSlug);
+  const useTrackedDownload =
+    !musicItem.isMonetizable && Boolean(musicItem.audioUrl || musicItem.downloadUrl);
 
-    // Check if monetizable
+  const handleDownload = async () => {
     if (musicItem.isMonetizable && musicItem.downloadPrice) {
-      // TODO: Integrate with payment system
-      // For now, show a placeholder
       const proceed = window.confirm(
         `This download costs $${musicItem.downloadPrice.toFixed(2)}. Proceed to payment?`
       );
@@ -29,11 +31,10 @@ export const DownloadButton = ({ musicItem }: DownloadButtonProps) => {
     setIsDownloading(true);
 
     try {
-      // Simulate download
-      await new Promise(resolve => setTimeout(resolve, 1500));
-
-      // In a real app, this would trigger the actual download
-      if (musicItem.downloadUrl) {
+      if (useTrackedDownload) {
+        window.location.href = trackedDownloadUrl;
+      } else if (musicItem.downloadUrl) {
+        sendContentAnalyticsEvent('music', idOrSlug, 'download');
         const link = document.createElement('a');
         link.href = musicItem.downloadUrl;
         const artistName =
@@ -42,6 +43,8 @@ export const DownloadButton = ({ musicItem }: DownloadButtonProps) => {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+      } else {
+        return;
       }
 
       setIsDownloaded(true);
@@ -53,14 +56,14 @@ export const DownloadButton = ({ musicItem }: DownloadButtonProps) => {
     }
   };
 
-  if (!musicItem.downloadUrl) {
+  if (!useTrackedDownload && !musicItem.downloadUrl) {
     return null;
   }
 
   return (
     <div className="flex items-center gap-4">
       <Button
-        onClick={handleDownload}
+        onClick={() => void handleDownload()}
         disabled={isDownloading || isDownloaded}
         size="lg"
         className="flex items-center gap-2">

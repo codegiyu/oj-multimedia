@@ -193,6 +193,7 @@ export function DevotionalsPageClient() {
       <DevotionalsDetailsDrawer
         clickedRowDetails={clickedRowDetails}
         setClickedRowDetails={setClickedRowDetails}
+        onSaved={handleRefresh}
       />
 
       <CreateDevotionalModal

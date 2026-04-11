@@ -1,0 +1,17 @@
+---
+description: Local repo names and absolute paths for cross-repo work
+alwaysApply: true
+---
+
+# Local repository paths
+
+When the user mentions a repo by short name, resolve it to these paths (Windows). Prefer these paths for tools, imports, and cross-repo references.
+
+| Name | Absolute path | Relative from this repo root |
+|------|---------------|------------------------------|
+| **oj-multimedia** (this app) | `C:\Users\EDWARD\Documents\safe\freelance\oj-multimedia` | `.` |
+| **oj-backend** | `C:\Users\EDWARD\Documents\safe\freelance\oj-backend` | `../oj-backend` |
+
+If a path does not exist on disk, say so and ask whether the folder was moved or renamed.
+
+For day-to-day editing of both projects together, open `oj-stack.code-workspace` in Cursor so both folders are workspace roots (fewer out-of-workspace permission prompts).

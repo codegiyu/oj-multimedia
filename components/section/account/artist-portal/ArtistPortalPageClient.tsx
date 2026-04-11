@@ -2,128 +2,249 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { SectionContainer } from '@/components/general/SectionContainer';
+import { DashboardPageHeader, DashboardStatCard } from '@/components/layout/user-dashboard';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Music2, Video, Upload, BarChart3 } from 'lucide-react';
+import { Music2, Video, MessageCircle, BarChart3, TrendingUp, Download } from 'lucide-react';
 import type { ClientArtistProfile } from '@/lib/constants/endpoints';
 import type { IArtistDashboardStatsRes } from '@/lib/constants/endpoints';
+import { cn } from '@/lib/utils';
+
+export type ArtistRecentUpload = {
+  kind: 'music' | 'video';
+  _id: string;
+  title: string;
+  createdAt: string;
+  status: string;
+  views: number;
+  plays?: number;
+};
 
 export interface ArtistPortalPageClientProps {
   artist: ClientArtistProfile | null;
   stats: IArtistDashboardStatsRes | null;
   hasArtistProfile: boolean;
   errorMessage: string | null;
+  recentUploads: ArtistRecentUpload[];
+}
+
+function formatViews(n: number) {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
+  return String(n);
 }
 
 export function ArtistPortalPageClient({
   stats,
   hasArtistProfile,
   errorMessage,
+  recentUploads,
 }: ArtistPortalPageClientProps) {
   const router = useRouter();
   const tracksCount = stats?.tracksCount ?? 0;
   const videosCount = stats?.videosCount ?? 0;
   const totalPlays = stats?.totalPlays ?? 0;
+  const totalViews = stats?.totalViews ?? totalPlays;
+  const totalDownloads = stats?.totalDownloads ?? 0;
 
   if (!hasArtistProfile) {
     return (
-      <SectionContainer>
-        <div className="max-w-5xl mx-auto space-y-6">
-          <h1 className="text-2xl md:text-3xl font-bold text-foreground">Artist Portal</h1>
-          <Card className="p-8 text-center">
-            <p className="text-muted-foreground mb-4">
-              Complete your artist profile to manage your music and videos.
-            </p>
-            <Button asChild variant="default" className="bg-primary hover:bg-primary/90">
-              <Link href="/account/artist-portal/settings">Go to settings</Link>
-            </Button>
-          </Card>
-        </div>
-      </SectionContainer>
+      <div className="space-y-8">
+        <DashboardPageHeader
+          title="Artist portal"
+          description="Complete your profile to manage music and videos."
+        />
+        <Card className="border-border/80 p-8 text-center shadow-sm">
+          <p className="text-muted-foreground mb-4">
+            Complete your artist profile to manage your music and videos.
+          </p>
+          <Button asChild className="rounded-full bg-primary hover:bg-primary/90">
+            <Link href="/account/artist-portal/settings">Go to settings</Link>
+          </Button>
+        </Card>
+      </div>
     );
   }
 
   return (
-    <SectionContainer>
-      <div className="max-w-5xl mx-auto space-y-8">
-        <div className="space-y-2">
-          <h1 className="text-2xl md:text-3xl font-bold text-foreground">Artist Portal</h1>
-          <p className="text-sm text-muted-foreground">
-            Manage your artist profile, music, and videos.
-          </p>
+    <div className="space-y-8">
+      <DashboardPageHeader
+        title="Artist overview"
+        description="Track your content performance at a glance">
+        <Button asChild className="rounded-full bg-primary px-5 hover:bg-primary/90">
+          <Link href="/account/artist-portal/upload" className="gap-2">
+            <MessageCircle className="h-4 w-4" />
+            Submit for publishing
+          </Link>
+        </Button>
+      </DashboardPageHeader>
+
+      {errorMessage && (
+        <div className="rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive flex items-center justify-between gap-4">
+          <span>{errorMessage}</span>
+          <Button
+            variant="outline"
+            size="sm"
+            className="border-destructive text-destructive hover:bg-destructive/10"
+            onClick={() => router.refresh()}>
+            Retry
+          </Button>
         </div>
+      )}
 
-        {errorMessage && (
-          <div className="rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive flex items-center justify-between gap-4">
-            <span>{errorMessage}</span>
-            <Button
-              variant="outline"
-              size="sm"
-              className="border-destructive text-destructive hover:bg-destructive/10"
-              onClick={() => router.refresh()}>
-              Retry
-            </Button>
-          </div>
-        )}
-
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <Card className="p-4 flex items-center justify-between">
-            <div>
-              <p className="text-sm text-muted-foreground">Tracks</p>
-              <p className="text-2xl font-bold text-foreground">{tracksCount}</p>
-            </div>
-            <Music2 className="w-6 h-6 text-primary" />
-          </Card>
-          <Card className="p-4 flex items-center justify-between">
-            <div>
-              <p className="text-sm text-muted-foreground">Videos</p>
-              <p className="text-2xl font-bold text-foreground">{videosCount}</p>
-            </div>
-            <Video className="w-6 h-6 text-primary" />
-          </Card>
-          <Card className="p-4 flex items-center justify-between">
-            <div>
-              <p className="text-sm text-muted-foreground">Total plays</p>
-              <p className="text-2xl font-bold text-foreground">{totalPlays}</p>
-            </div>
-            <BarChart3 className="w-6 h-6 text-primary" />
-          </Card>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="p-6 space-y-3">
-            <Music2 className="w-8 h-8 text-primary" />
-            <h2 className="font-semibold text-foreground">Manage music</h2>
-            <p className="text-sm text-muted-foreground">
-              View, edit, and organize your music catalogue.
-            </p>
-            <Button asChild variant="outline" className="w-fit">
-              <Link href="/account/artist-portal/music">Go to music</Link>
-            </Button>
-          </Card>
-
-          <Card className="p-6 space-y-3">
-            <Video className="w-8 h-8 text-primary" />
-            <h2 className="font-semibold text-foreground">Manage videos</h2>
-            <p className="text-sm text-muted-foreground">Keep your video content up to date.</p>
-            <Button asChild variant="outline" className="w-fit">
-              <Link href="/account/artist-portal/videos">Go to videos</Link>
-            </Button>
-          </Card>
-
-          <Card className="p-6 space-y-3">
-            <Upload className="w-8 h-8 text-primary" />
-            <h2 className="font-semibold text-foreground">Upload content</h2>
-            <p className="text-sm text-muted-foreground">
-              Upload new music or video content to your catalogue.
-            </p>
-            <Button asChild className="w-fit bg-primary hover:bg-primary/90">
-              <Link href="/account/artist-portal/upload">Upload</Link>
-            </Button>
-          </Card>
-        </div>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+        <DashboardStatCard
+          label="Total tracks"
+          value={tracksCount}
+          hint={
+            stats?.tracksAddedThisMonth != null
+              ? `+${stats.tracksAddedThisMonth} new this month`
+              : 'Tracks tied to your profile'
+          }
+          icon={Music2}
+          corner={
+            stats?.tracksAddedThisMonth != null && stats.tracksAddedThisMonth > 0 ? (
+              <TrendingUp className="h-4 w-4 text-emerald-600" aria-hidden />
+            ) : undefined
+          }
+        />
+        <DashboardStatCard
+          label="Total plays"
+          value={formatViews(totalPlays)}
+          hint={
+            stats?.playsDeltaPercent != null
+              ? `${stats.playsDeltaPercent >= 0 ? '+' : ''}${stats.playsDeltaPercent}% vs prior period`
+              : 'Streaming starts on your tracks'
+          }
+          icon={BarChart3}
+          corner={
+            stats?.playsDeltaPercent != null && stats.playsDeltaPercent > 0 ? (
+              <TrendingUp className="h-4 w-4 text-emerald-600" aria-hidden />
+            ) : undefined
+          }
+        />
+        <DashboardStatCard
+          label="Videos"
+          value={videosCount}
+          hint="Published and draft videos"
+          icon={Video}
+        />
+        <DashboardStatCard
+          label="Views"
+          value={formatViews(totalViews)}
+          hint={
+            stats?.music && stats?.video
+              ? `Music ${formatViews(stats.music.views)} · Video ${formatViews(stats.video.views)}`
+              : 'Impressions across your catalogue'
+          }
+          icon={BarChart3}
+        />
+        <DashboardStatCard
+          label="Downloads"
+          value={formatViews(totalDownloads)}
+          hint={
+            stats?.music && stats?.video
+              ? `Music ${formatViews(stats.music.downloads)} · Video ${formatViews(stats.video.downloads)}`
+              : 'Reported file downloads'
+          }
+          icon={Download}
+        />
       </div>
-    </SectionContainer>
+
+      <Card className="border-border/80 shadow-sm">
+        <div className="border-b border-border/60 px-5 py-4 md:px-6">
+          <h2 className="text-lg font-semibold text-foreground">Recent uploads</h2>
+        </div>
+        <div className="divide-y divide-border/60">
+          {recentUploads.length === 0 ? (
+            <div className="px-5 py-10 text-center text-sm text-muted-foreground md:px-6">
+              Nothing published yet.{' '}
+              <Link
+                href="/account/artist-portal/upload"
+                className="font-medium text-primary hover:underline">
+                Message the team to submit
+              </Link>{' '}
+              or view{' '}
+              <Link
+                href="/account/artist-portal/music"
+                className="font-medium text-primary hover:underline">
+                My music
+              </Link>
+              .
+            </div>
+          ) : (
+            recentUploads.map(row => (
+              <div
+                key={`${row.kind}-${row._id}`}
+                className="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center sm:justify-between md:px-6">
+                <div className="flex min-w-0 flex-1 items-center gap-3">
+                  <div
+                    className={cn(
+                      'flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary'
+                    )}>
+                    {row.kind === 'music' ? (
+                      <Music2 className="h-5 w-5" />
+                    ) : (
+                      <Video className="h-5 w-5" />
+                    )}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="font-semibold text-foreground line-clamp-1">{row.title}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {new Date(row.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4 sm:justify-end">
+                  <span className="text-sm text-muted-foreground">
+                    {row.kind === 'video'
+                      ? `${formatViews(row.views)} views`
+                      : `${formatViews(row.plays ?? row.views)} plays`}
+                  </span>
+                  <span
+                    className={cn(
+                      'rounded-full px-2.5 py-0.5 text-xs font-medium capitalize',
+                      row.status === 'published'
+                        ? 'bg-emerald-500/15 text-emerald-800 dark:text-emerald-400'
+                        : 'bg-amber-500/15 text-amber-800 dark:text-amber-400'
+                    )}>
+                    {row.status}
+                  </span>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </Card>
+
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <Card className="border-border/80 p-6 shadow-sm transition-shadow hover:shadow-md">
+          <Music2 className="mb-3 h-8 w-8 text-primary" />
+          <h3 className="font-semibold text-foreground">My music</h3>
+          <p className="mt-1 text-sm text-muted-foreground">View and organize your catalogue.</p>
+          <Button asChild variant="outline" className="mt-4 rounded-full">
+            <Link href="/account/artist-portal/music">Open music</Link>
+          </Button>
+        </Card>
+        <Card className="border-border/80 p-6 shadow-sm transition-shadow hover:shadow-md">
+          <Video className="mb-3 h-8 w-8 text-primary" />
+          <h3 className="font-semibold text-foreground">My videos</h3>
+          <p className="mt-1 text-sm text-muted-foreground">Keep video content up to date.</p>
+          <Button asChild variant="outline" className="mt-4 rounded-full">
+            <Link href="/account/artist-portal/videos">Open videos</Link>
+          </Button>
+        </Card>
+        <Card className="border-border/80 p-6 shadow-sm transition-shadow hover:shadow-md">
+          <MessageCircle className="mb-3 h-8 w-8 text-primary" />
+          <h3 className="font-semibold text-foreground">Submit content</h3>
+          <p className="mt-1 text-sm text-muted-foreground">
+            New music and videos are added by admins after you reach us on WhatsApp or contact.
+          </p>
+          <Button asChild className="mt-4 rounded-full bg-primary hover:bg-primary/90">
+            <Link href="/account/artist-portal/upload">Open submit page</Link>
+          </Button>
+        </Card>
+      </div>
+    </div>
   );
 }

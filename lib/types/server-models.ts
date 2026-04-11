@@ -375,6 +375,7 @@ export interface IMusic {
   videoUrl?: string;
   instrumentalUrl?: string;
   downloadUrl?: string;
+  excerpt?: string;
   category?: string;
   status: 'draft' | 'published' | 'archived';
   isFeatured: boolean;
@@ -382,6 +383,8 @@ export interface IMusic {
   submissionFee: number;
   views: number;
   downloads: number;
+  /** Stream / play starts (distinct from page views when API provides it). */
+  plays?: number;
   chartPosition: number;
   displayOrder: number;
   seo?: {
@@ -402,9 +405,13 @@ export interface IVideo {
   category?: string;
   description?: string;
   videoUrl?: string;
+  videoFileUrl?: string;
+  embedUrl?: string;
   downloadUrl?: string;
   duration?: string;
   views: number;
+  plays?: number;
+  downloads?: number;
   status: 'draft' | 'published' | 'archived';
   isFeatured: boolean;
   isMonetizable: boolean;
@@ -484,6 +491,9 @@ export interface IDevotional {
   status: 'draft' | 'published' | 'archived';
   isFeatured: boolean;
   views: number;
+  /** Linked artist profile id for attribution and dashboards. */
+  artist?: string;
+  plays?: number;
   displayOrder: number;
   seo?: {
     metaTitle?: string;
@@ -500,15 +510,14 @@ export interface INewsArticle {
   slug: string;
   content: string;
   excerpt?: string;
-  category:
-    | 'celebrity-news'
-    | 'church-announcements'
-    | 'inspirational-stories'
-    | 'scholarship-alerts'
-    | 'jobs'
-    | 'movie-reviews';
+  category?: string;
   coverImage?: string;
   images: string[];
+  audioUrl?: string;
+  videoFileUrl?: string;
+  embedUrl?: string;
+  downloadUrl?: string;
+  hasVideo?: boolean;
   author?: string;
   status: 'draft' | 'published' | 'archived';
   isFeatured: boolean;

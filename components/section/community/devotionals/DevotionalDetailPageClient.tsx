@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Clock, Eye, Calendar, Share2, Bookmark, BookOpen } from 'lucide-react';
 import Link from 'next/link';
@@ -7,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { toast } from '@/components/atoms/Toast';
 import type { DevotionalItem } from '@/lib/constants/community/devotionals';
 import { RelatedDevotionals } from './RelatedDevotionals';
+import { sendContentAnalyticsEvent } from '@/lib/services/contentAnalytics';
 
 interface DevotionalDetailPageClientProps {
   devotional: DevotionalItem;
@@ -17,6 +19,10 @@ export const DevotionalDetailPageClient = ({
   devotional,
   relatedDevotionals,
 }: DevotionalDetailPageClientProps) => {
+  useEffect(() => {
+    sendContentAnalyticsEvent('devotional', devotional._id, 'view');
+  }, [devotional._id]);
+
   const handleShare = async () => {
     try {
       if (navigator.share) {

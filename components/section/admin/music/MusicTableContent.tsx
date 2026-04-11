@@ -85,6 +85,24 @@ export function MusicTableContent({
         ),
       },
       {
+        id: 'downloads',
+        header: <DataTableColumnHeader title="Downloads" />,
+        meta: { width: '6rem' },
+        cell: row => {
+          const n = (row as { downloads?: number }).downloads ?? 0;
+          return <DataTableCellWrapper text={String(n)}>{n}</DataTableCellWrapper>;
+        },
+      },
+      {
+        id: 'plays',
+        header: <DataTableColumnHeader title="Plays" />,
+        meta: { width: '6rem' },
+        cell: row => {
+          const n = row.plays ?? 0;
+          return <DataTableCellWrapper text={String(n)}>{n}</DataTableCellWrapper>;
+        },
+      },
+      {
         id: 'created',
         header: <DataTableColumnHeader title="Created" />,
         meta: { width: '12rem' },

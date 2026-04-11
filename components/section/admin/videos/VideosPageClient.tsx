@@ -80,7 +80,7 @@ export function VideosPageClient() {
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
-  }, [refreshKey]);
+  }, [refreshKey, page, pageSize, searchQuery, filterStatus]);
 
   const handleRefresh = () => setRefreshKey(k => k + 1);
   const handleRowClick = (row: ArtistVideoListItem, index: number) => {
@@ -189,6 +189,7 @@ export function VideosPageClient() {
       <VideosDetailsDrawer
         clickedRowDetails={clickedRowDetails}
         setClickedRowDetails={setClickedRowDetails}
+        onSaved={handleRefresh}
       />
 
       <CreateVideoModal open={createOpen} onOpenChange={setCreateOpen} onSuccess={handleRefresh} />

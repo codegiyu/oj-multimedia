@@ -29,6 +29,7 @@ export function MusicPageClient() {
   const [pageSize] = useQueryState('pagesize', parseAsInteger.withDefault(DEFAULT_PAGE_SIZE));
   const [searchQuery, setSearchQuery] = useQueryState('search', parseAsString.withDefault(''));
   const [filterStatus, setFilterStatus] = useQueryState('status', parseAsString.withDefault('all'));
+  const [sortKey, setSortKey] = useQueryState('sort', parseAsString.withDefault('newest'));
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [refreshKey, setRefreshKey] = useState(0);
@@ -52,7 +53,9 @@ export function MusicPageClient() {
       const params = new URLSearchParams();
       params.append('page', String(page));
       params.append('limit', String(pageSize));
-      params.append('sort', '-createdAt');
+      const sort =
+        sortKey === 'downloads' ? '-downloads' : sortKey === 'plays' ? '-plays' : '-createdAt';
+      params.append('sort', sort);
       if (searchQuery.trim()) params.append('search', searchQuery.trim());
       if (filterStatus && filterStatus !== 'all') params.append('status', filterStatus);
       const { data, error } = await callApi('ADMIN_MUSIC_LIST', {
@@ -80,7 +83,7 @@ export function MusicPageClient() {
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
-  }, [refreshKey]);
+  }, [refreshKey, page, pageSize, searchQuery, filterStatus, sortKey]);
 
   const handleRefresh = () => setRefreshKey(k => k + 1);
   const handleRowClick = (row: ArtistMusicListItem, index: number) => {
@@ -164,6 +167,19 @@ export function MusicPageClient() {
                     setPage(1);
                   },
                 },
+                {
+                  label: 'Sort',
+                  value: sortKey,
+                  options: [
+                    { text: 'Newest', value: 'newest' },
+                    { text: 'Downloads', value: 'downloads' },
+                    { text: 'Plays', value: 'plays' },
+                  ],
+                  onChange: v => {
+                    setSortKey(v);
+                    setPage(1);
+                  },
+                },
               ]}
               onApplyFilters={() => setPage(1)}
             />
@@ -189,6 +205,7 @@ export function MusicPageClient() {
       <MusicDetailsDrawer
         clickedRowDetails={clickedRowDetails}
         setClickedRowDetails={setClickedRowDetails}
+        onSaved={handleRefresh}
       />
 
       <CreateMusicModal open={createOpen} onOpenChange={setCreateOpen} onSuccess={handleRefresh} />

@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import type { Metadata } from 'next';
-import { MainLayout } from '@/components/layout/MainLayout';
+import { Skeleton } from '@/components/ui/skeleton';
 import { VendorEditProductPageClient } from '@/components/section/account/vendor/VendorEditProductPageClient';
 import { VendorCreateStoreState } from '@/components/section/account/vendor/VendorCreateStoreState';
 import { callServerApi } from '@/lib/services/serverApi';
@@ -14,8 +14,8 @@ export const metadata: Metadata = {
 function EditProductSkeleton() {
   return (
     <div className="max-w-2xl mx-auto py-8 space-y-4">
-      <div className="h-8 w-40 rounded-md bg-muted" />
-      <div className="h-64 rounded-lg bg-muted" />
+      <Skeleton className="h-8 w-40 rounded-md" />
+      <Skeleton className="h-64 w-full rounded-lg" />
     </div>
   );
 }
@@ -26,11 +26,9 @@ interface PageProps {
 
 export default function EditVendorProductPage({ params }: PageProps) {
   return (
-    <MainLayout hideHeader hideFooter>
-      <Suspense fallback={<EditProductSkeleton />}>
-        <EditVendorProductPageServer params={params} />
-      </Suspense>
-    </MainLayout>
+    <Suspense fallback={<EditProductSkeleton />}>
+      <EditVendorProductPageServer params={params} />
+    </Suspense>
   );
 }
 

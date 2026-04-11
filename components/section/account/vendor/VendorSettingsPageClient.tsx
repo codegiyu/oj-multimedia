@@ -3,13 +3,16 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { z } from 'zod';
-import { SectionContainer } from '@/components/general/SectionContainer';
-import { Card } from '@/components/ui/card';
+import {
+  DashboardFormCard,
+  DashboardPageHeader,
+  DashboardSwitch,
+} from '@/components/layout/user-dashboard';
 import { Button } from '@/components/ui/button';
 import { RegularBtn } from '@/components/atoms/RegularBtn';
 import { RegularInput } from '@/components/atoms/RegularInput';
 import { RegularTextarea } from '@/components/atoms/RegularTextarea';
-import { Settings } from 'lucide-react';
+import { Store, Landmark, Phone, Eye } from 'lucide-react';
 import { toast } from 'sonner';
 import { useForm } from '@/lib/hooks/use-form';
 import { callApi } from '@/lib/services/callApi';
@@ -79,6 +82,8 @@ export function VendorSettingsPageClient({
   const [initialLoading] = useState(false);
   const [hasVendorProfile, setHasVendorProfile] = useState<boolean | null>(initialHasVendorProfile);
   const [dismissedLoadError, setDismissedLoadError] = useState(false);
+  const [storeVisible, setStoreVisible] = useState(true);
+  const [vacationMode, setVacationMode] = useState(false);
 
   const initialFormValues: VendorSettingsValues = {
     storeName: initialVendor?.storeName ?? '',
@@ -140,195 +145,225 @@ export function VendorSettingsPageClient({
   });
 
   return (
-    <SectionContainer>
-      <div className="max-w-2xl mx-auto">
-        <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-4 flex items-center gap-2">
-          <Settings className="w-8 h-8 text-primary" />
-          Vendor Settings
-        </h1>
-        {initialLoading && (
-          <p className="text-sm text-muted-foreground mb-4">Loading store settings...</p>
-        )}
-        {!initialLoading && hasVendorProfile === false && (
-          <VendorCreateStoreState description="You need a vendor store before you can configure vendor settings. Become a vendor to start selling on the marketplace." />
-        )}
+    <div className="mx-auto max-w-3xl space-y-8">
+      {initialLoading && <p className="text-sm text-muted-foreground">Loading store settings...</p>}
+      {!initialLoading && hasVendorProfile === false && (
+        <VendorCreateStoreState description="You need a vendor store before you can configure vendor settings. Become a vendor to start selling on the marketplace." />
+      )}
 
-        {hasVendorProfile !== false && initialLoadError && !dismissedLoadError && (
-          <div className="mb-4 rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive flex items-center justify-between gap-4">
-            <span>{initialLoadError} You can retry or edit and save.</span>
-            <div className="flex gap-2 shrink-0">
-              <Button
-                variant="outline"
-                size="sm"
-                className="border-destructive text-destructive hover:bg-destructive/10"
-                onClick={() => router.refresh()}>
-                Retry
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-destructive hover:bg-destructive/10"
-                onClick={() => setDismissedLoadError(true)}>
-                Dismiss
-              </Button>
+      {hasVendorProfile !== false && (
+        <>
+          <DashboardPageHeader
+            title="Store settings"
+            description="Configure your store preferences"
+          />
+
+          {initialLoadError && !dismissedLoadError && (
+            <div className="rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive flex items-center justify-between gap-4">
+              <span>{initialLoadError} You can retry or edit and save.</span>
+              <div className="flex shrink-0 gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border-destructive text-destructive hover:bg-destructive/10"
+                  onClick={() => router.refresh()}>
+                  Retry
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-destructive hover:bg-destructive/10"
+                  onClick={() => setDismissedLoadError(true)}>
+                  Dismiss
+                </Button>
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {hasVendorProfile !== false && (
-          <Card className="p-6 md:p-8">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <h2 className="text-lg font-semibold text-foreground mb-4">Store profile</h2>
-                <div className="space-y-4">
-                  <RegularInput
-                    label="Store name"
-                    name="storeName"
-                    required
-                    value={formValues.storeName}
-                    onChange={handleInputChange}
-                    placeholder="Enter store name"
-                    disabled={initialLoading || submitting}
-                    errors={errorsVisible ? (formErrors.storeName ?? []) : []}
-                  />
-                  <RegularTextarea
-                    label="Store description"
-                    name="storeDescription"
-                    value={formValues.storeDescription ?? ''}
-                    onChange={handleInputChange}
-                    placeholder="Describe your store"
-                    rows={3}
-                    disabled={initialLoading || submitting}
-                  />
-                  <ImageUploadField
-                    label="Logo"
-                    helperText="Upload your store logo."
-                    entityType="vendor"
-                    entityId={initialVendor?._id ?? ''}
-                    intent="logo"
-                    value={formValues.logoUrl ?? ''}
-                    onChange={url =>
-                      setFormValues(prev => ({
-                        ...prev,
-                        logoUrl: url,
-                      }))
-                    }
-                  />
-                  <ImageUploadField
-                    label="Cover image"
-                    helperText="Upload a wide cover image for your store."
-                    entityType="vendor"
-                    entityId={initialVendor?._id ?? ''}
-                    intent="banner-image"
-                    value={formValues.coverImageUrl ?? ''}
-                    onChange={url =>
-                      setFormValues(prev => ({
-                        ...prev,
-                        coverImageUrl: url,
-                      }))
-                    }
-                  />
+          <DashboardFormCard
+            title="Store status"
+            description="Control your store's visibility and availability. (UI only — API support pending.)"
+            icon={Eye}>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between gap-4 border-b border-border/60 pb-4">
+                <div>
+                  <p className="font-medium text-foreground">Store visibility</p>
+                  <p className="text-sm text-muted-foreground">
+                    Make your store visible to customers.
+                  </p>
                 </div>
+                <DashboardSwitch checked={storeVisible} onCheckedChange={setStoreVisible} />
               </div>
-
-              <div>
-                <h2 className="text-lg font-semibold text-foreground mb-4">Contact</h2>
-                <div className="space-y-4">
-                  <RegularInput
-                    label="Email"
-                    name="email"
-                    type="email"
-                    required
-                    value={formValues.email}
-                    onChange={handleInputChange}
-                    placeholder="Enter email"
-                    disabled={initialLoading || submitting}
-                    errors={errorsVisible ? (formErrors.email ?? []) : []}
-                  />
-                  <RegularInput
-                    label="Phone"
-                    name="phone"
-                    type="tel"
-                    required
-                    value={formValues.phone}
-                    onChange={handleInputChange}
-                    placeholder="Enter phone number"
-                    disabled={initialLoading || submitting}
-                    errors={errorsVisible ? (formErrors.phone ?? []) : []}
-                  />
-                  <RegularInput
-                    label="WhatsApp"
-                    name="whatsapp"
-                    type="tel"
-                    required
-                    value={formValues.whatsapp}
-                    onChange={handleInputChange}
-                    placeholder="Enter WhatsApp number"
-                    disabled={initialLoading || submitting}
-                    errors={errorsVisible ? (formErrors.whatsapp ?? []) : []}
-                  />
-                  <RegularTextarea
-                    label="Address"
-                    name="address"
-                    value={formValues.address ?? ''}
-                    onChange={handleInputChange}
-                    placeholder="Enter address"
-                    rows={2}
-                    disabled={initialLoading || submitting}
-                  />
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <p className="font-medium text-foreground">Vacation mode</p>
+                  <p className="text-sm text-muted-foreground">
+                    Pause new orders while you are away.
+                  </p>
                 </div>
+                <DashboardSwitch checked={vacationMode} onCheckedChange={setVacationMode} />
               </div>
+            </div>
+          </DashboardFormCard>
 
-              <div>
-                <h2 className="text-lg font-semibold text-foreground mb-4">Bank account</h2>
-                <div className="space-y-4">
-                  <RegularInput
-                    label="Account name"
-                    name="bankAccountName"
-                    value={formValues.bankAccountName ?? ''}
-                    onChange={handleInputChange}
-                    placeholder="Bank account name"
-                    disabled={initialLoading || submitting}
-                  />
-                  <RegularInput
-                    label="Account number"
-                    name="bankAccountNumber"
-                    value={formValues.bankAccountNumber ?? ''}
-                    onChange={handleInputChange}
-                    placeholder="Bank account number"
-                    disabled={initialLoading || submitting}
-                  />
-                  <RegularInput
-                    label="Bank name"
-                    name="bankName"
-                    value={formValues.bankName ?? ''}
-                    onChange={handleInputChange}
-                    placeholder="Bank name"
-                    disabled={initialLoading || submitting}
-                  />
-                </div>
-              </div>
-
-              <RegularBtn
-                type="submit"
-                variant="default"
-                className="bg-primary hover:bg-primary/90"
-                disabled={!isValid || initialLoading || submitting}
-                loading={submitting}
-                onDisabledClick={() => {
-                  const messages = getSettingsValidationMessages(formValues, formErrors);
-                  if (messages.length > 0) {
-                    toast.error(messages.length === 1 ? messages[0] : messages.join('. '));
-                  } else if (submitting) {
-                    toast.info('Please wait, saving settings…');
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <DashboardFormCard
+              title="Store profile"
+              description="Public information about your store."
+              icon={Store}>
+              <div className="space-y-4">
+                <RegularInput
+                  label="Store name"
+                  name="storeName"
+                  required
+                  value={formValues.storeName}
+                  onChange={handleInputChange}
+                  placeholder="Enter store name"
+                  disabled={initialLoading || submitting}
+                  errors={errorsVisible ? (formErrors.storeName ?? []) : []}
+                />
+                <RegularTextarea
+                  label="Store description"
+                  name="storeDescription"
+                  value={formValues.storeDescription ?? ''}
+                  onChange={handleInputChange}
+                  placeholder="Describe your store"
+                  rows={3}
+                  disabled={initialLoading || submitting}
+                />
+                <ImageUploadField
+                  label="Logo"
+                  helperText="Upload your store logo."
+                  entityType="vendor"
+                  entityId={initialVendor?._id ?? ''}
+                  intent="logo"
+                  value={formValues.logoUrl ?? ''}
+                  onChange={url =>
+                    setFormValues(prev => ({
+                      ...prev,
+                      logoUrl: url,
+                    }))
                   }
-                }}>
-                {submitting ? 'Saving…' : 'Save settings'}
-              </RegularBtn>
-            </form>
-          </Card>
-        )}
-      </div>
-    </SectionContainer>
+                />
+                <ImageUploadField
+                  label="Cover image"
+                  helperText="Upload a wide cover image for your store."
+                  entityType="vendor"
+                  entityId={initialVendor?._id ?? ''}
+                  intent="banner-image"
+                  value={formValues.coverImageUrl ?? ''}
+                  onChange={url =>
+                    setFormValues(prev => ({
+                      ...prev,
+                      coverImageUrl: url,
+                    }))
+                  }
+                />
+              </div>
+            </DashboardFormCard>
+
+            <DashboardFormCard
+              title="Contact information"
+              description="How buyers can reach you."
+              icon={Phone}>
+              <div className="grid gap-4 md:grid-cols-2">
+                <RegularInput
+                  label="Email"
+                  name="email"
+                  type="email"
+                  required
+                  value={formValues.email}
+                  onChange={handleInputChange}
+                  placeholder="Enter email"
+                  disabled={initialLoading || submitting}
+                  errors={errorsVisible ? (formErrors.email ?? []) : []}
+                />
+                <RegularInput
+                  label="Phone"
+                  name="phone"
+                  type="tel"
+                  required
+                  value={formValues.phone}
+                  onChange={handleInputChange}
+                  placeholder="Enter phone number"
+                  disabled={initialLoading || submitting}
+                  errors={errorsVisible ? (formErrors.phone ?? []) : []}
+                />
+                <RegularInput
+                  label="WhatsApp"
+                  name="whatsapp"
+                  type="tel"
+                  required
+                  value={formValues.whatsapp}
+                  onChange={handleInputChange}
+                  placeholder="Enter WhatsApp number"
+                  disabled={initialLoading || submitting}
+                  errors={errorsVisible ? (formErrors.whatsapp ?? []) : []}
+                />
+                <RegularTextarea
+                  label="Address"
+                  name="address"
+                  value={formValues.address ?? ''}
+                  onChange={handleInputChange}
+                  placeholder="Enter address"
+                  rows={2}
+                  disabled={initialLoading || submitting}
+                  className="md:col-span-2"
+                />
+              </div>
+            </DashboardFormCard>
+
+            <DashboardFormCard
+              title="Bank account"
+              description="Payout details for your store."
+              icon={Landmark}>
+              <div className="space-y-4">
+                <RegularInput
+                  label="Account name"
+                  name="bankAccountName"
+                  value={formValues.bankAccountName ?? ''}
+                  onChange={handleInputChange}
+                  placeholder="Bank account name"
+                  disabled={initialLoading || submitting}
+                />
+                <RegularInput
+                  label="Account number"
+                  name="bankAccountNumber"
+                  value={formValues.bankAccountNumber ?? ''}
+                  onChange={handleInputChange}
+                  placeholder="Bank account number"
+                  disabled={initialLoading || submitting}
+                />
+                <RegularInput
+                  label="Bank name"
+                  name="bankName"
+                  value={formValues.bankName ?? ''}
+                  onChange={handleInputChange}
+                  placeholder="Bank name"
+                  disabled={initialLoading || submitting}
+                />
+              </div>
+            </DashboardFormCard>
+
+            <RegularBtn
+              type="submit"
+              variant="default"
+              className="rounded-full bg-primary hover:bg-primary/90"
+              disabled={!isValid || initialLoading || submitting}
+              loading={submitting}
+              onDisabledClick={() => {
+                const messages = getSettingsValidationMessages(formValues, formErrors);
+                if (messages.length > 0) {
+                  toast.error(messages.length === 1 ? messages[0] : messages.join('. '));
+                } else if (submitting) {
+                  toast.info('Please wait, saving settings…');
+                }
+              }}>
+              {submitting ? 'Saving…' : 'Save settings'}
+            </RegularBtn>
+          </form>
+        </>
+      )}
+    </div>
   );
 }

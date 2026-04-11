@@ -3,6 +3,7 @@ import { Suspense } from 'react';
 import { ProductDetailClient } from '@/components/section/marketplace/ProductDetailClient';
 import { ProductDetailSkeleton } from '@/components/section/marketplace/ProductDetailSkeleton';
 import { callServerApi } from '@/lib/services/serverApi';
+import { MainLayout } from '@/components/layout/MainLayout';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -33,8 +34,10 @@ export default async function ProductDetailPage({ params }: PageProps) {
   const product = await fetchProductBySlug(slug);
 
   return (
-    <Suspense fallback={<ProductDetailSkeleton />}>
-      <ProductDetailClient product={product} />
-    </Suspense>
+    <MainLayout>
+      <Suspense fallback={<ProductDetailSkeleton />}>
+        <ProductDetailClient product={product} />
+      </Suspense>
+    </MainLayout>
   );
 }

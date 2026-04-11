@@ -78,7 +78,7 @@ export function NewsPageClient() {
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
-  }, [refreshKey]);
+  }, [refreshKey, page, pageSize, searchQuery, filterStatus]);
 
   const handleRefresh = () => setRefreshKey(k => k + 1);
   const handleRowClick = (row: PublicNewsListItem, index: number) => {
@@ -150,6 +150,7 @@ export function NewsPageClient() {
       <NewsDetailsDrawer
         clickedRowDetails={clickedRowDetails}
         setClickedRowDetails={setClickedRowDetails}
+        onSaved={handleRefresh}
       />
 
       <CreateNewsModal open={createOpen} onOpenChange={setCreateOpen} onSuccess={handleRefresh} />

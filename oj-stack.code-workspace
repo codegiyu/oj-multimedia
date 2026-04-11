@@ -1,0 +1,13 @@
+{
+  "folders": [
+    {
+      "name": "oj-multimedia",
+      "path": "."
+    },
+    {
+      "name": "oj-backend",
+      "path": "../oj-backend"
+    }
+  ],
+  "settings": {}
+}

@@ -32,8 +32,8 @@ export const UploadCTA = () => {
               Share Your Creativity
             </h2>
             <p className="text-primary-foreground/80 text-lg mb-8">
-              Upload your music, videos, or share your story and reach thousands of listeners. Join
-              our growing community of creators.
+              Publishing is curated by our team. Reach out on the contact page or WhatsApp to submit
+              music, videos, or stories for review.
             </p>
 
             <div className="flex flex-wrap justify-center gap-4 mb-8">
@@ -41,17 +41,17 @@ export const UploadCTA = () => {
                 variant="cta"
                 size="lg"
                 className="gap-2 bg-primary-foreground/10 border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/20 hover:border-primary-foreground/50"
-                linkProps={{ href: '/community/promote-your-content' }}>
+                linkProps={{ href: '/contact' }}>
                 <Music className="w-5 h-5" />
-                Upload Music
+                Submit music
               </RegularBtn>
               <RegularBtn
                 variant="cta"
                 size="lg"
                 className="gap-2 bg-primary-foreground/10 border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/20 hover:border-primary-foreground/50"
-                linkProps={{ href: '/community/promote-your-content' }}>
+                linkProps={{ href: '/contact' }}>
                 <Video className="w-5 h-5" />
-                Upload Video
+                Submit video
               </RegularBtn>
               <RegularBtn
                 variant="cta"
@@ -64,7 +64,7 @@ export const UploadCTA = () => {
             </div>
 
             <p className="text-primary-foreground/60 text-sm">
-              Free to upload • Instant publishing • Analytics included
+              Admin-reviewed publishing • We reply via your chosen channel • Analytics when live
             </p>
           </div>
         </motion.div>

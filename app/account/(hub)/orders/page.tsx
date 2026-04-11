@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
-import { MainLayout } from '@/components/layout/MainLayout';
 import { AccountOrdersPageClient } from '@/components/section/account/AccountOrdersPageClient';
+import { Skeleton } from '@/components/ui/skeleton';
 import type { Metadata } from 'next';
 import { callServerApi } from '@/lib/services/serverApi';
 
@@ -12,11 +12,11 @@ export const metadata: Metadata = {
 function AccountOrdersPageSkeleton() {
   return (
     <div className="max-w-4xl mx-auto py-8 space-y-4">
-      <div className="h-7 w-40 rounded-md bg-muted" />
+      <Skeleton className="h-7 w-40 rounded-md" />
       <div className="space-y-3 mt-4">
-        <div className="h-24 w-full rounded-lg bg-muted" />
-        <div className="h-24 w-full rounded-lg bg-muted" />
-        <div className="h-24 w-full rounded-lg bg-muted" />
+        <Skeleton className="h-24 w-full rounded-lg" />
+        <Skeleton className="h-24 w-full rounded-lg" />
+        <Skeleton className="h-24 w-full rounded-lg" />
       </div>
     </div>
   );
@@ -32,11 +32,9 @@ export default function AccountOrdersPage({
   const status = searchParams?.status ?? '';
 
   return (
-    <MainLayout hideHeader hideFooter>
-      <Suspense fallback={<AccountOrdersPageSkeleton />}>
-        <AccountOrdersPageClientServer page={page} pageSize={pageSize} status={status} />
-      </Suspense>
-    </MainLayout>
+    <Suspense fallback={<AccountOrdersPageSkeleton />}>
+      <AccountOrdersPageClientServer page={page} pageSize={pageSize} status={status} />
+    </Suspense>
   );
 }
 

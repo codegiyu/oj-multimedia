@@ -11,7 +11,7 @@
  * - Company-backed (Mux) - reliable long-term maintenance
  */
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import {
   MediaController,
   MediaControlBar,
@@ -28,9 +28,18 @@ interface AudioPlayerProps {
   audioUrl: string;
   title?: string;
   artist?: string;
+  /** Fires once when playback actually starts. */
+  onFirstPlay?: () => void;
 }
 
-export const AudioPlayer = ({ audioUrl, title, artist }: AudioPlayerProps) => {
+export const AudioPlayer = ({ audioUrl, title, artist, onFirstPlay }: AudioPlayerProps) => {
+  const rootRef = useRef<HTMLDivElement>(null);
+  const playedRef = useRef(false);
+
+  useEffect(() => {
+    playedRef.current = false;
+  }, [audioUrl]);
+
   useEffect(() => {
     // Ensure media-chrome web components are properly defined
     if (typeof window !== 'undefined') {
@@ -42,8 +51,21 @@ export const AudioPlayer = ({ audioUrl, title, artist }: AudioPlayerProps) => {
     }
   }, []);
 
+  useEffect(() => {
+    if (!onFirstPlay || !rootRef.current) return;
+    const el = rootRef.current.querySelector('audio');
+    if (!el) return;
+    const onPlay = () => {
+      if (playedRef.current) return;
+      playedRef.current = true;
+      onFirstPlay();
+    };
+    el.addEventListener('play', onPlay);
+    return () => el.removeEventListener('play', onPlay);
+  }, [audioUrl, onFirstPlay]);
+
   return (
-    <div className="bg-card rounded-2xl p-6 shadow-lg border border-border/50">
+    <div ref={rootRef} className="bg-card rounded-2xl p-6 shadow-lg border border-border/50">
       {/* Title and Artist */}
       {(title || artist) && (
         <div className="mb-4 text-center">

@@ -17,6 +17,7 @@ postcss.config.mjs
 tailwind.config.ts
 tsconfig.json
 *.webmanifest
+*.code-workspace
 
 # CSS files
 app/globals.css

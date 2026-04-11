@@ -2,8 +2,6 @@
 
 import { Suspense } from 'react';
 import { AuthProtect } from '@/components/AuthProtect';
-import { Footer } from '@/components/layout/Footer';
-import { Header } from '@/components/layout/Header';
 import { Loader2 } from 'lucide-react';
 
 function AuthProtectFallback() {
@@ -19,12 +17,8 @@ function AuthProtectFallback() {
 
 export default function AccountLayout({ children }: { children: React.ReactNode }) {
   return (
-    <>
-      <Header />
-      <Suspense fallback={<AuthProtectFallback />}>
-        <AuthProtect>{children}</AuthProtect>
-      </Suspense>
-      <Footer />
-    </>
+    <Suspense fallback={<AuthProtectFallback />}>
+      <AuthProtect>{children}</AuthProtect>
+    </Suspense>
   );
 }

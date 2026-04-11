@@ -15,6 +15,30 @@ export const api = axios.create({
   withCredentials: true, // Include credentials (cookies) with requests
 });
 
+/**
+ * Align browser axios responses with `callServerApi`: accept either the standard
+ * `{ success, message, data }` envelope or a raw JSON body as the payload.
+ */
+export function normalizeAxiosSuccessBody(raw: unknown): ApiSuccessResponse<keyof AllEndpoints> {
+  if (raw !== null && typeof raw === 'object') {
+    const o = raw as Record<string, unknown>;
+    if (o.success === true && 'data' in o) {
+      return {
+        success: true,
+        message: typeof o.message === 'string' ? o.message : '',
+        responseCode: typeof o.responseCode === 'number' ? o.responseCode : 200,
+        data: o.data as ApiSuccessResponse<keyof AllEndpoints>['data'],
+      };
+    }
+  }
+  return {
+    success: true,
+    message: '',
+    responseCode: 200,
+    data: raw as ApiSuccessResponse<keyof AllEndpoints>['data'],
+  };
+}
+
 export const callApi = async <T extends keyof AllEndpoints>(
   endpoint: T,
   options: Omit<AllEndpoints[T], 'response'>,
@@ -37,10 +61,11 @@ export const callApi = async <T extends keyof AllEndpoints>(
       requestConfig.data = options.payload;
     }
 
-    const response: AxiosResponse<ApiSuccessResponse<T>> =
-      await api.request<ApiSuccessResponse<T>>(requestConfig);
+    const response: AxiosResponse<unknown> = await api.request(requestConfig);
 
-    return getDataFromRequest({ data: response.data }, endpoint);
+    const normalized = normalizeAxiosSuccessBody(response.data) as ApiSuccessResponse<T>;
+
+    return getDataFromRequest({ data: normalized }, endpoint);
   } catch (error) {
     if (isServerCall) {
       const thisErr = error as unknown as {

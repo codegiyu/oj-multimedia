@@ -386,4 +386,21 @@ export interface ResourcesListData {
 - Detail endpoints return `{ [detailKey]: {} }` (e.g. `devotional`, `testimony`, `prayerRequest`, `question`, `poll`, `artist`).
 - `:idOrSlug` is either a MongoDB ObjectId (24 hex) or a slug string; backend resolves and returns 404 if not found.
 
+---
+
+## 5. Content ownership and analytics (cross-cutting)
+
+The frontend calls additional **admin** and **public** routes for linking content to user accounts and for analytics. Full request/response contracts for the backend service are documented in **[docs/CONTENT_OWNERSHIP_AND_ANALYTICS_API.md](docs/CONTENT_OWNERSHIP_AND_ANALYTICS_API.md)**.
+
+Summary:
+
+| Method | Path | Purpose |
+|--------|------|---------|
+| GET | `/admin/users?search=&limit=` | Admin user search for linking |
+| POST | `/public/analytics/content-event` | Public view / play / download events |
+| GET | `/admin/artists/:id/dashboard-stats` | Combined analytics for an artist (admin) |
+| GET | `/public/videos/:idOrSlug/download` | Optional tracked video download (parity with music) |
+
+`GET /artist/dashboard-stats` should return extended aggregates (`totalDownloads`, per–content-type breakdown, optional month/delta hints) as typed in `lib/constants/endpoints.ts` (`IArtistDashboardStatsRes`).
+
 Copy this file into the **oj-multimedia** repo root (or a `docs/` folder) and use the types/constants for API client and UI.

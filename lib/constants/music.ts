@@ -6,6 +6,8 @@
  */
 export interface MusicItem {
   _id: string;
+  /** URL slug from API (for download redirect path). */
+  slug?: string;
   title: string;
   /** Artist profile _id (e.g. 'ap-1'). Getters populate to { _id, name }. */
   artist: string;

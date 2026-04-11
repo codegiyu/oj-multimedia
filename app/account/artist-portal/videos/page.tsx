@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
-import { MainLayout } from '@/components/layout/MainLayout';
 import { ArtistPortalVideosPageClient } from '@/components/section/account/artist-portal/ArtistPortalVideosPageClient';
+import { Skeleton } from '@/components/ui/skeleton';
 import type { Metadata } from 'next';
 import { callServerApi } from '@/lib/services/serverApi';
 import type { ApiErrorResponse } from '@/lib/types/http';
@@ -13,12 +13,12 @@ export const metadata: Metadata = {
 function ArtistVideosPageSkeleton() {
   return (
     <div className="max-w-5xl mx-auto py-8 space-y-4">
-      <div className="h-7 w-40 rounded-md bg-muted" />
-      <div className="h-10 w-48 rounded-md bg-muted" />
+      <Skeleton className="h-7 w-40 rounded-md" />
+      <Skeleton className="h-10 w-48 rounded-md" />
       <div className="space-y-3 mt-4">
-        <div className="h-24 w-full rounded-lg bg-muted" />
-        <div className="h-24 w-full rounded-lg bg-muted" />
-        <div className="h-24 w-full rounded-lg bg-muted" />
+        <Skeleton className="h-24 w-full rounded-lg" />
+        <Skeleton className="h-24 w-full rounded-lg" />
+        <Skeleton className="h-24 w-full rounded-lg" />
       </div>
     </div>
   );
@@ -34,11 +34,9 @@ export default function ArtistPortalVideosPage({
   const status = searchParams?.status ?? '';
 
   return (
-    <MainLayout hideHeader hideFooter>
-      <Suspense fallback={<ArtistVideosPageSkeleton />}>
-        <ArtistVideosPageClientServer page={page} pageSize={pageSize} status={status} />
-      </Suspense>
-    </MainLayout>
+    <Suspense fallback={<ArtistVideosPageSkeleton />}>
+      <ArtistVideosPageClientServer page={page} pageSize={pageSize} status={status} />
+    </Suspense>
   );
 }
 

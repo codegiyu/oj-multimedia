@@ -28,6 +28,11 @@ export interface NewsItem {
   comments?: number; // Optional - not all items need comments (e.g., trending items)
   likes?: number;
   videoUrl?: string; // Presence indicates video story
+  audioUrl?: string;
+  videoFileUrl?: string;
+  embedUrl?: string;
+  downloadUrl?: string;
+  youtubeEmbedUrl?: string;
   duration?: string; // For video items
   rank?: number; // For trending items
   isFeatured?: boolean; // Mark for featured section
