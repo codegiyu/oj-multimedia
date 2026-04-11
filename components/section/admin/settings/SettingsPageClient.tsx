@@ -1,9 +1,10 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
 import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useQueryState, parseAsStringLiteral } from 'nuqs';
 import { useSiteSettingsStore } from '@/lib/store/useSiteSettingsStore';
+import type { ClientSiteSettings } from '@/lib/constants/endpoints';
 import { DashboardPageWrapper } from '@/components/general/DashboardPageWrapper';
 import { cn } from '@/lib/utils';
 import {
@@ -106,14 +107,22 @@ const tabConfig: {
   },
 ];
 
-export const SettingsPageClient = () => {
-  const { settings, isLoading, fetchError, actions } = useSiteSettingsStore(state => ({
+export interface SettingsPageClientProps {
+  initialSettings: ClientSiteSettings | null;
+  initialLoadError: string | null;
+}
+
+export const SettingsPageClient = ({
+  initialSettings,
+  initialLoadError,
+}: SettingsPageClientProps) => {
+  const router = useRouter();
+  const { settings, fetchError, actions } = useSiteSettingsStore(state => ({
     settings: state.settings,
-    isLoading: state.isLoading,
     fetchError: state.fetchError,
     actions: state.actions,
   }));
-  const { fetchAllSettings } = actions;
+  const { setSettings } = actions;
 
   const [activeTab, setActiveTab] = useQueryState(
     'tab',
@@ -121,11 +130,16 @@ export const SettingsPageClient = () => {
   );
 
   useEffect(() => {
-    fetchAllSettings({ force: true });
-  }, []);
+    if (initialSettings) {
+      setSettings(initialSettings);
+    }
+  }, [initialSettings, setSettings]);
+
+  const displaySettings = settings ?? initialSettings;
+  const displayError = fetchError ?? initialLoadError;
 
   const renderTabContent = () => {
-    if (fetchError && !settings) {
+    if (displayError && !displaySettings) {
       return (
         <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-6">
           <div className="flex flex-col items-center gap-4 text-center">
@@ -134,11 +148,11 @@ export const SettingsPageClient = () => {
             </div>
             <div>
               <h3 className="font-semibold text-destructive">Failed to load settings</h3>
-              <p className="mt-1 text-sm text-muted-foreground">{fetchError}</p>
+              <p className="mt-1 text-sm text-muted-foreground">{displayError}</p>
             </div>
             <button
               type="button"
-              onClick={() => fetchAllSettings({ force: true })}
+              onClick={() => router.refresh()}
               className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">
               <RefreshCw className="h-4 w-4" />
               Retry
@@ -147,31 +161,31 @@ export const SettingsPageClient = () => {
         </div>
       );
     }
-    if (isLoading || !settings) {
+    if (!displaySettings) {
       return <TabContentSkeleton />;
     }
 
     switch (activeTab) {
       case 'app-details':
-        return <AppDetailsTab settings={settings} />;
+        return <AppDetailsTab settings={displaySettings} />;
       case 'contact-info':
-        return <ContactInfoTab settings={settings} />;
+        return <ContactInfoTab settings={displaySettings} />;
       case 'socials':
-        return <SocialsTab settings={settings} />;
+        return <SocialsTab settings={displaySettings} />;
       case 'seo':
-        return <SEOTab settings={settings} />;
+        return <SEOTab settings={displaySettings} />;
       case 'branding':
-        return <BrandingTab settings={settings} />;
+        return <BrandingTab settings={displaySettings} />;
       case 'legal':
-        return <LegalTab settings={settings} />;
+        return <LegalTab settings={displaySettings} />;
       case 'features':
-        return <FeaturesTab settings={settings} />;
+        return <FeaturesTab settings={displaySettings} />;
       case 'localization':
-        return <LocalizationTab settings={settings} />;
+        return <LocalizationTab settings={displaySettings} />;
       case 'analytics':
-        return <AnalyticsTab settings={settings} />;
+        return <AnalyticsTab settings={displaySettings} />;
       default:
-        return <AppDetailsTab settings={settings} />;
+        return <AppDetailsTab settings={displaySettings} />;
     }
   };
 

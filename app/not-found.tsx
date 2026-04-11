@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function NoPage() {
   return (
-    <MainLayout hideHeader hideFooter>
+    <MainLayout>
       <div className="min-h-screen bg-background flex items-center justify-center px-4">
         <SectionContainer>
           <div className="text-center grid gap-8 mx-auto">

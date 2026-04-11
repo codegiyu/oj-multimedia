@@ -1,10 +1,9 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useQueryState, parseAsInteger, parseAsString } from 'nuqs';
-import { FilterableDataPage } from '@/components/general/FilterableDataPage';
-import { DEFAULT_PAGE_SIZE } from '@/components/general/DataTable';
+import { AdminDashboardListLayout } from '@/components/section/admin/AdminDashboardListLayout';
 import { callApi } from '@/lib/services/callApi';
 import type { IHomeAdvertItem } from '@/lib/constants/endpoints';
 import { RegularBtn } from '@/components/atoms/RegularBtn';
@@ -22,8 +21,6 @@ import type { SelectOption } from '@/lib/types/general';
 import { Badge } from '@/components/ui/badge';
 import { ApprovalModal } from '@/components/section/admin/shared';
 
-const SEARCH_DEBOUNCE_MS = 300;
-
 const slotFilterOptions: SelectOption[] = [
   { text: 'All slots', value: 'all' },
   { text: 'After hero', value: 'after_hero' },
@@ -32,16 +29,25 @@ const slotFilterOptions: SelectOption[] = [
 
 const slotFormOptions = slotFilterOptions.filter(o => o.value !== 'all');
 
-export function HomeAdvertsPageClient() {
-  const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1));
-  const [pageSize] = useQueryState('pagesize', parseAsInteger.withDefault(DEFAULT_PAGE_SIZE));
-  const [slotFilter, setSlotFilter] = useQueryState('slot', parseAsString.withDefault('all'));
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+export interface HomeAdvertsPageClientProps {
+  pageTitle: string;
+  pageDescription: string;
+  adverts: IHomeAdvertItem[];
+  totalPages: number;
+  listError: string | null;
+}
 
-  const [refreshKey, setRefreshKey] = useState(0);
-  const [adverts, setAdverts] = useState<IHomeAdvertItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [totalPages, setTotalPages] = useState(1);
+export function HomeAdvertsPageClient({
+  pageTitle,
+  pageDescription,
+  adverts,
+  totalPages,
+  listError,
+}: HomeAdvertsPageClientProps) {
+  const router = useRouter();
+  const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1));
+  // const [pageSize] = useQueryState('pagesize', parseAsInteger.withDefault(DEFAULT_PAGE_SIZE));
+  const [slotFilter, setSlotFilter] = useQueryState('slot', parseAsString.withDefault('all'));
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<IHomeAdvertItem | null>(null);
@@ -54,40 +60,7 @@ export function HomeAdvertsPageClient() {
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
-  const fetchList = async () => {
-    setLoading(true);
-    try {
-      const params = new URLSearchParams();
-      params.append('page', String(page));
-      params.append('limit', String(pageSize));
-      params.append('sort', 'displayOrder');
-      if (slotFilter && slotFilter !== 'all') params.append('slot', slotFilter);
-      const res = await callApi('ADMIN_HOME_ADVERTS_LIST', {
-        query: `?${params.toString()}` as `?${string}`,
-      });
-      if (res.type !== 'success') {
-        setAdverts([]);
-        setTotalPages(1);
-        return;
-      }
-      setAdverts(res.data.adverts ?? []);
-      setTotalPages(res.data.pagination?.totalPages ?? 1);
-    } catch {
-      setAdverts([]);
-      setTotalPages(1);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    debounceRef.current = setTimeout(() => fetchList(), SEARCH_DEBOUNCE_MS);
-    return () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-    };
-  }, [refreshKey, page, pageSize, slotFilter]);
-
-  const handleRefresh = () => setRefreshKey(k => k + 1);
+  const handleRefresh = () => router.refresh();
 
   const openCreate = () => {
     setEditTarget(null);
@@ -165,28 +138,100 @@ export function HomeAdvertsPageClient() {
   };
 
   return (
-    <section className="h-full grid grid-rows-[auto_1fr] gap-4 sm:gap-6 overflow-hidden">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div className="flex-1 min-w-0">
-          <FilterableDataPage
-            filters={[
-              {
-                label: 'Slot',
-                value: slotFilter,
-                options: slotFilterOptions,
-                onChange: v => {
-                  setSlotFilter(v);
-                  setPage(1);
-                },
-              },
-            ]}
-            onApplyFilters={() => setPage(1)}
-          />
-        </div>
-        <RegularBtn LeftIcon={Plus} text="New advert" onClick={openCreate} />
-      </div>
+    <AdminDashboardListLayout
+      title={pageTitle}
+      description={pageDescription}
+      pageHeaderActions={<RegularBtn LeftIcon={Plus} text="New advert" onClick={openCreate} />}
+      listError={listError}
+      filterableDataPageProps={{
+        filters: [
+          {
+            label: 'Slot',
+            value: slotFilter,
+            options: slotFilterOptions,
+            onChange: v => {
+              setSlotFilter(v);
+              setPage(1);
+            },
+          },
+        ],
+        onApplyFilters: () => setPage(1),
+      }}
+      mainClassName="rounded-lg border border-border overflow-hidden flex flex-col min-h-0"
+      extraContent={
+        <>
+          <Dialog
+            open={dialogOpen}
+            onOpenChange={v => !v && (setDialogOpen(false), setEditTarget(null))}>
+            <DialogContent className="max-w-md">
+              <DialogHeader>
+                <DialogTitle>{editTarget ? 'Edit home advert' : 'New home advert'}</DialogTitle>
+              </DialogHeader>
+              <div className="grid gap-4 py-2">
+                <RegularSelect
+                  label="Slot"
+                  value={formSlot}
+                  onSelectChange={v => setFormSlot(v as IHomeAdvertItem['slot'])}
+                  options={slotFormOptions}
+                />
+                <RegularInput
+                  label="Image URL"
+                  value={formImage}
+                  onChange={e => setFormImage(e.target.value)}
+                  required
+                />
+                <RegularInput
+                  label="Link URL (optional)"
+                  value={formLink}
+                  onChange={e => setFormLink(e.target.value)}
+                />
+                <RegularInput
+                  label="Display order"
+                  value={formOrder}
+                  onChange={e => setFormOrder(e.target.value)}
+                />
+                <RegularSelect
+                  label="Active"
+                  value={formActive}
+                  onSelectChange={setFormActive}
+                  options={[
+                    { text: 'Yes', value: 'yes' },
+                    { text: 'No', value: 'no' },
+                  ]}
+                />
+              </div>
+              <DialogFooter>
+                <RegularBtn
+                  type="button"
+                  variant="ghost"
+                  text="Cancel"
+                  onClick={() => setDialogOpen(false)}
+                />
+                <RegularBtn
+                  type="button"
+                  text="Save"
+                  loading={saving}
+                  disabled={saving || !formImage.trim()}
+                  onClick={() => void handleSave()}
+                />
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
 
-      <div className="rounded-lg border border-border overflow-hidden flex flex-col min-h-0">
+          {deleteTarget && (
+            <ApprovalModal
+              open={!!deleteTarget}
+              onOpenChange={v => !v && setDeleteTarget(null)}
+              title="Delete advert"
+              description="Remove this home banner?"
+              confirmText="Delete"
+              onConfirm={() => void handleDelete()}
+              loading={deleting}
+            />
+          )}
+        </>
+      }>
+      <div className="flex flex-col min-h-0 flex-1">
         <div className="overflow-auto sleek-scrollbar flex-1">
           <table className="w-full text-sm">
             <thead className="bg-muted/50 sticky top-0">
@@ -200,13 +245,7 @@ export function HomeAdvertsPageClient() {
               </tr>
             </thead>
             <tbody>
-              {loading ? (
-                <tr>
-                  <td colSpan={6} className="p-8 text-center text-muted-foreground">
-                    Loading…
-                  </td>
-                </tr>
-              ) : adverts.length === 0 ? (
+              {adverts.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="p-8 text-center text-muted-foreground">
                     No home adverts yet.
@@ -274,76 +313,6 @@ export function HomeAdvertsPageClient() {
           </div>
         )}
       </div>
-
-      <Dialog
-        open={dialogOpen}
-        onOpenChange={v => !v && (setDialogOpen(false), setEditTarget(null))}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>{editTarget ? 'Edit home advert' : 'New home advert'}</DialogTitle>
-          </DialogHeader>
-          <div className="grid gap-4 py-2">
-            <RegularSelect
-              label="Slot"
-              value={formSlot}
-              onSelectChange={v => setFormSlot(v as IHomeAdvertItem['slot'])}
-              options={slotFormOptions}
-            />
-            <RegularInput
-              label="Image URL"
-              value={formImage}
-              onChange={e => setFormImage(e.target.value)}
-              required
-            />
-            <RegularInput
-              label="Link URL (optional)"
-              value={formLink}
-              onChange={e => setFormLink(e.target.value)}
-            />
-            <RegularInput
-              label="Display order"
-              value={formOrder}
-              onChange={e => setFormOrder(e.target.value)}
-            />
-            <RegularSelect
-              label="Active"
-              value={formActive}
-              onSelectChange={setFormActive}
-              options={[
-                { text: 'Yes', value: 'yes' },
-                { text: 'No', value: 'no' },
-              ]}
-            />
-          </div>
-          <DialogFooter>
-            <RegularBtn
-              type="button"
-              variant="ghost"
-              text="Cancel"
-              onClick={() => setDialogOpen(false)}
-            />
-            <RegularBtn
-              type="button"
-              text="Save"
-              loading={saving}
-              disabled={saving || !formImage.trim()}
-              onClick={() => void handleSave()}
-            />
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {deleteTarget && (
-        <ApprovalModal
-          open={!!deleteTarget}
-          onOpenChange={v => !v && setDeleteTarget(null)}
-          title="Delete advert"
-          description="Remove this home banner?"
-          confirmText="Delete"
-          onConfirm={() => void handleDelete()}
-          loading={deleting}
-        />
-      )}
-    </section>
+    </AdminDashboardListLayout>
   );
 }

@@ -1,6 +1,8 @@
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { PageHeader } from '@/components/general/PageHeader';
 import { EmailLogsPageClient } from '@/components/section/admin/email-logs/EmailLogsPageClient';
+import { serverFetchAdminEmailLogsList } from '@/lib/services/adminDashboardServerData';
+import { parseAdminEmailLogsListParams } from '@/lib/utils/adminDashboardSearchParams';
 import { Metadata } from 'next';
 import { Suspense } from 'react';
 import { Loader2 } from 'lucide-react';
@@ -21,7 +23,11 @@ function EmailLogsPageFallback() {
   );
 }
 
-export default function EmailLogsPage() {
+interface EmailLogsPageProps {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}
+
+export default function EmailLogsPage({ searchParams }: EmailLogsPageProps) {
   return (
     <DashboardLayout>
       <section className="h-full overflow-hidden">
@@ -31,10 +37,21 @@ export default function EmailLogsPage() {
             description="View and manage email delivery logs and resend failed emails"
           />
           <Suspense fallback={<EmailLogsPageFallback />}>
-            <EmailLogsPageClient />
+            <AdminEmailLogsPageServer searchParams={searchParams} />
           </Suspense>
         </section>
       </section>
     </DashboardLayout>
   );
+}
+
+async function AdminEmailLogsPageServer({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const raw = await searchParams;
+  const params = parseAdminEmailLogsListParams(raw);
+  const { items, totalPages, listError } = await serverFetchAdminEmailLogsList(params);
+  return <EmailLogsPageClient emailLogs={items} totalPages={totalPages} listError={listError} />;
 }

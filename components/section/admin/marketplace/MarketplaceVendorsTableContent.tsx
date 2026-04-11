@@ -7,6 +7,7 @@ import {
   DataTableCellWrapper,
   DataTableColumnHeader,
   type DataTableColumn,
+  type DataTableTab,
 } from '@/components/general/DataTable';
 import type { IMarketplaceVendor } from '@/lib/constants/endpoints';
 import { MarketplaceVendorsActionsMenu } from './MarketplaceVendorsActionsMenu';
@@ -32,6 +33,9 @@ function StatusBadge({ status }: { status?: string }) {
 }
 
 interface MarketplaceVendorsTableContentProps {
+  tabs: DataTableTab[];
+  activeTab: string;
+  onTabChange: (value: string) => void;
   vendors: IMarketplaceVendor[];
   loading: boolean;
   onRefresh: () => void;
@@ -45,6 +49,9 @@ interface MarketplaceVendorsTableContentProps {
 }
 
 export function MarketplaceVendorsTableContent({
+  tabs,
+  activeTab,
+  onTabChange,
   vendors,
   loading,
   onRefresh,
@@ -115,6 +122,10 @@ export function MarketplaceVendorsTableContent({
 
   return (
     <DataTable<IMarketplaceVendor>
+      tabs={tabs}
+      activeTab={activeTab}
+      onTabChange={onTabChange}
+      tabsShowNavigation={false}
       data={vendors}
       columns={columns}
       loading={loading}

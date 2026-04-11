@@ -196,6 +196,10 @@ export const Footer = () => {
               <Link href="/terms-and-conditions" className="hover:text-primary transition-colors">
                 Terms of Service
               </Link>
+              <span className="hidden md:inline text-muted-foreground/50">|</span>
+              <Link href="/admin/dashboard/home" className="hover:text-primary transition-colors">
+                Admin
+              </Link>
             </div>
             <p>
               Built by{' '}

@@ -1,7 +1,6 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
-import { useMemo, useState, useCallback, useEffect } from 'react';
+import { useMemo } from 'react';
 import { format } from 'date-fns';
 import {
   DataTable,
@@ -10,18 +9,8 @@ import {
   type DataTableColumn,
 } from '@/components/general/DataTable';
 import { Badge } from '@/components/ui/badge';
-import type { IEmailLog, IEmailLogsListRes } from '@/lib/constants/endpoints';
+import type { IEmailLog } from '@/lib/constants/endpoints';
 import { EmailLogActionsMenu } from './EmailLogActionsMenu';
-import { callApi } from '@/lib/services/callApi';
-
-// const statusOptions = [
-//   { text: 'All Statuses', value: 'all' },
-//   { text: 'Pending', value: 'pending' },
-//   { text: 'Sent', value: 'sent' },
-//   { text: 'Delivered', value: 'delivered' },
-//   { text: 'Failed', value: 'failed' },
-//   { text: 'Bounced', value: 'bounced' },
-// ];
 
 function getStatusVariant(status: string): 'default' | 'secondary' | 'destructive' | 'outline' {
   switch (status) {
@@ -48,11 +37,11 @@ const tabs = [
 ];
 
 interface EmailLogsTableContentProps {
+  emailLogs: IEmailLog[];
+  totalPages: number;
   page: number;
-  pageSize: number;
   tab: string;
   filterStatus: string;
-  refreshKey: number;
   onRefresh: () => void;
   onPageChange: (page: number) => void;
   onTabChange: (value: string) => void;
@@ -61,47 +50,17 @@ interface EmailLogsTableContentProps {
 }
 
 export function EmailLogsTableContent({
+  emailLogs,
+  totalPages,
   page,
-  pageSize,
   tab,
   filterStatus,
-  refreshKey,
   onRefresh,
   onPageChange,
   onTabChange,
   onRowClick,
   onViewEmail,
 }: EmailLogsTableContentProps) {
-  const [data, setData] = useState<IEmailLogsListRes | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  const fetchLogs = useCallback(async () => {
-    setLoading(true);
-    try {
-      const params = new URLSearchParams();
-      if (filterStatus !== 'all') params.append('status', filterStatus);
-      params.append('page', String(page));
-      params.append('limit', String(pageSize));
-      params.append('sort', '-createdAt');
-      const { data: res } = await callApi('ADMIN_EMAIL_LOGS_LIST', {
-        query: `?${params.toString()}`,
-      });
-      setData(res ?? null);
-    } catch (err) {
-      console.error('Failed to fetch email logs:', err);
-      setData(null);
-    } finally {
-      setLoading(false);
-    }
-  }, [page, pageSize, filterStatus, refreshKey]);
-
-  useEffect(() => {
-    fetchLogs();
-  }, []);
-
-  const emailLogs = data?.emailLogs ?? [];
-  const totalPages = data?.pagination?.totalPages ?? 1;
-
   const filteredEmailLogs = useMemo(() => {
     return emailLogs.filter(log => {
       const tabMatch = tab === 'all' || log.status === tab;
@@ -194,7 +153,7 @@ export function EmailLogsTableContent({
         ),
       },
     ],
-    []
+    [onRefresh, onViewEmail]
   );
 
   return (
@@ -204,7 +163,7 @@ export function EmailLogsTableContent({
       onTabChange={onTabChange}
       data={filteredEmailLogs}
       columns={columns}
-      loading={loading}
+      loading={false}
       onRefresh={onRefresh}
       emptyStateWord="email logs"
       pagination={{

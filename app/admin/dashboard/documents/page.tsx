@@ -1,6 +1,11 @@
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { PageHeader } from '@/components/general/PageHeader';
-import { DocumentsPageClient } from '@/components/section/admin/documents/DocumentsPageClient';
+import {
+  DocumentsPageClient,
+  type AdminDocument,
+} from '@/components/section/admin/documents/DocumentsPageClient';
+import { serverFetchAdminDocumentsList } from '@/lib/services/adminDashboardServerData';
+import { parseAdminDocumentsListParams } from '@/lib/utils/adminDashboardSearchParams';
 import { Metadata } from 'next';
 import { Suspense } from 'react';
 import { Loader2 } from 'lucide-react';
@@ -21,17 +26,38 @@ function DocumentsPageFallback() {
   );
 }
 
-export default function DocumentsPage() {
+interface DocumentsPageProps {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}
+
+export default function DocumentsPage({ searchParams }: DocumentsPageProps) {
   return (
     <DashboardLayout>
       <section className="h-full overflow-hidden">
         <section className="h-full space-y-6 overflow-auto sleek-scrollbar">
           <PageHeader title="Documents" description="View and verify uploaded documents" />
           <Suspense fallback={<DocumentsPageFallback />}>
-            <DocumentsPageClient />
+            <AdminDocumentsPageServer searchParams={searchParams} />
           </Suspense>
         </section>
       </section>
     </DashboardLayout>
+  );
+}
+
+async function AdminDocumentsPageServer({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const raw = await searchParams;
+  const docParams = parseAdminDocumentsListParams(raw);
+  const { items, totalPages, listError } = await serverFetchAdminDocumentsList(docParams);
+  return (
+    <DocumentsPageClient
+      documents={items as AdminDocument[]}
+      totalPages={totalPages}
+      listError={listError}
+    />
   );
 }

@@ -6,6 +6,7 @@ import {
   DataTableCellWrapper,
   DataTableColumnHeader,
   type DataTableColumn,
+  type DataTableTab,
 } from '@/components/general/DataTable';
 import type { PopulatedMarketplaceOrder } from '@/lib/constants/endpoints';
 import { Badge } from '@/components/ui/badge';
@@ -40,6 +41,9 @@ function StatusBadge({ status }: { status?: string }) {
 }
 
 interface MarketplaceOrdersTableContentProps {
+  tabs: DataTableTab[];
+  activeTab: string;
+  onTabChange: (value: string) => void;
   orders: PopulatedMarketplaceOrder[];
   loading: boolean;
   onRefresh: () => void;
@@ -50,6 +54,9 @@ interface MarketplaceOrdersTableContentProps {
 }
 
 export function MarketplaceOrdersTableContent({
+  tabs,
+  activeTab,
+  onTabChange,
   orders,
   loading,
   onRefresh,
@@ -116,6 +123,10 @@ export function MarketplaceOrdersTableContent({
 
   return (
     <DataTable<PopulatedMarketplaceOrder>
+      tabs={tabs}
+      activeTab={activeTab}
+      onTabChange={onTabChange}
+      tabsShowNavigation={false}
       data={orders}
       columns={columns}
       loading={loading}

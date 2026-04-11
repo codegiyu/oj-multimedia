@@ -2,6 +2,8 @@
 
 import { ReactNode } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
+import { getPublicSiteHref } from '@/lib/constants/texts';
 
 interface AuthLayoutProps {
   children: ReactNode;
@@ -9,19 +11,27 @@ interface AuthLayoutProps {
 }
 
 export default function AuthLayout({ children, subtitle = 'Admin Dashboard' }: AuthLayoutProps) {
+  const publicSiteHref = getPublicSiteHref();
+  const publicSiteIsExternal = publicSiteHref.startsWith('http');
+
   return (
     <main className="min-h-screen flex flex-col items-center justify-between bg-zinc-50 px-4 py-12 dark:bg-black sm:px-6 lg:px-8">
       {/* Logo */}
       <div className="w-fit flex flex-col items-center mx-auto">
         <div className="mb-6 flex items-center justify-center">
-          <Image
-            src="/images/logo-badge.png"
-            alt="OJ Multimedia"
-            width={256}
-            height={64}
-            className="h-16 w-auto"
-            priority
-          />
+          <Link
+            href={publicSiteHref}
+            className="rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+            {...(publicSiteIsExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>
+            <Image
+              src="/images/logo-badge.png"
+              alt="OJ Multimedia"
+              width={256}
+              height={64}
+              className="h-16 w-auto"
+              priority
+            />
+          </Link>
         </div>
         <h2 className="text-center text-2xl font-semibold tracking-tight text-foreground">
           {subtitle}

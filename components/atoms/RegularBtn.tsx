@@ -95,14 +95,24 @@ export const RegularBtn = ({
         <Loader className={cn('size-4 text-white animate-pulse', loadingIconClassName)} />
       ) : (
         <>
-          {LeftIcon && <LeftIcon {...leftIconProps} />}
+          {LeftIcon && (
+            <LeftIcon
+              className={cn('size-4', leftIconProps.className)}
+              {...omit(leftIconProps, 'className')}
+            />
+          )}
           <div className="gap-3 grid place-items-center transition-colors relative overflow-hidden">
             <span className={cn('font-poppins ', textClassName)}>{text}</span>
             {loading && (
               <Loader className={cn('size-4 text-white animate-pulse', loadingIconClassName)} />
             )}
           </div>
-          {RightIcon && <RightIcon {...rightIconProps} />}
+          {RightIcon && (
+            <RightIcon
+              className={cn('size-4', rightIconProps.className)}
+              {...omit(rightIconProps, 'className')}
+            />
+          )}
         </>
       )}
     </button>

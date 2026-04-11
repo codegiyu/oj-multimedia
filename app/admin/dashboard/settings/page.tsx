@@ -1,5 +1,6 @@
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { SettingsPageClient } from '@/components/section/admin/settings/SettingsPageClient';
+import { serverFetchSiteSettingsAll } from '@/lib/services/adminDashboardServerData';
 import { Metadata } from 'next';
 import { Suspense } from 'react';
 import { Loader2 } from 'lucide-react';
@@ -24,8 +25,13 @@ export default function SettingsPage() {
   return (
     <DashboardLayout>
       <Suspense fallback={<SettingsPageFallback />}>
-        <SettingsPageClient />
+        <AdminSettingsPageServer />
       </Suspense>
     </DashboardLayout>
   );
+}
+
+async function AdminSettingsPageServer() {
+  const { settings, loadError } = await serverFetchSiteSettingsAll();
+  return <SettingsPageClient initialSettings={settings} initialLoadError={loadError} />;
 }

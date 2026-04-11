@@ -109,6 +109,17 @@ export interface IUserUpdateMePayload {
   avatar?: string;
 }
 
+export interface IAdminMeRes {
+  user: ClientAdmin;
+}
+
+export interface IAdminUpdateMePayload {
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  avatar?: string;
+}
+
 export interface IUserWishlistProductSummary {
   _id: string;
   name: string;
@@ -626,6 +637,9 @@ export interface AllEndpoints {
     Partial<ClientSiteSettings>,
     undefined
   >;
+
+  ADMIN_GET_ME: EndpointDefinition<undefined, IAdminMeRes, undefined>;
+  ADMIN_UPDATE_ME: EndpointDefinition<IAdminUpdateMePayload, IAdminMeRes, undefined>;
 
   // Notifications
   NOTIFICATIONS_LIST: EndpointDefinition<undefined, INotificationsListRes, `?${string}`>;
@@ -1240,6 +1254,9 @@ export const ENDPOINTS: Record<keyof AllEndpoints, EndpointDetails> = {
     path: '/admin/site-settings',
     method: 'PATCH',
   },
+
+  ADMIN_GET_ME: { path: '/admin/me', method: 'GET' },
+  ADMIN_UPDATE_ME: { path: '/admin/me', method: 'PATCH' },
 
   // Notifications
   NOTIFICATIONS_LIST: { path: '/notifications', method: 'GET' },
