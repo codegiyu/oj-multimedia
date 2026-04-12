@@ -61,21 +61,13 @@ async function ArtistVideosPageClientServer({
     const responseCode = (res.error as ApiErrorResponse | undefined)?.responseCode;
 
     if (responseCode === 403 || responseCode === 404) {
-      return (
-        <ArtistPortalVideosPageClient
-          initialVideos={[]}
-          initialTotalPages={1}
-          initialHasArtistProfile={false}
-          initialErrorMessage={null}
-        />
-      );
+      return null;
     }
 
     return (
       <ArtistPortalVideosPageClient
         initialVideos={[]}
         initialTotalPages={1}
-        initialHasArtistProfile={true}
         initialErrorMessage={res.message || 'Unable to load videos.'}
       />
     );
@@ -85,7 +77,6 @@ async function ArtistVideosPageClientServer({
     <ArtistPortalVideosPageClient
       initialVideos={res.data.videos}
       initialTotalPages={res.data.pagination?.totalPages ?? 1}
-      initialHasArtistProfile={true}
       initialErrorMessage={null}
     />
   );

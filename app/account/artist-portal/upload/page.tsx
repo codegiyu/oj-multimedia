@@ -33,14 +33,15 @@ async function ArtistUploadPageServer() {
 
   if (meRes.type === 'error' || !meRes.data) {
     const responseCode = (meRes.error as ApiErrorResponse | undefined)?.responseCode;
-    const hasArtistProfile = responseCode !== 403 && responseCode !== 404;
+    if (responseCode === 403 || responseCode === 404) {
+      return null;
+    }
     return (
       <ArtistPortalUploadPageClient
-        initialHasArtistProfile={hasArtistProfile}
         initialLoadError={meRes.error?.message ?? 'Unable to load artist profile.'}
       />
     );
   }
 
-  return <ArtistPortalUploadPageClient initialHasArtistProfile={true} initialLoadError={null} />;
+  return <ArtistPortalUploadPageClient initialLoadError={null} />;
 }

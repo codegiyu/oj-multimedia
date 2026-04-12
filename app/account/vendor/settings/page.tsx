@@ -38,24 +38,16 @@ async function VendorSettingsPageClientServer() {
     const responseCode = (res.error as ApiErrorResponse | undefined)?.responseCode;
 
     if (responseCode === 403 || responseCode === 404) {
-      return <VendorSettingsPageClient initialVendor={null} initialHasVendorProfile={false} />;
+      return null;
     }
 
-    // Show the page but mark as vendor (so the form shows) with empty defaults.
     return (
       <VendorSettingsPageClient
         initialVendor={null}
-        initialHasVendorProfile={true}
         initialLoadError={res.message || "We couldn't load your settings."}
       />
     );
   }
 
-  return (
-    <VendorSettingsPageClient
-      initialVendor={res.data}
-      initialHasVendorProfile={true}
-      initialLoadError={null}
-    />
-  );
+  return <VendorSettingsPageClient initialVendor={res.data} initialLoadError={null} />;
 }

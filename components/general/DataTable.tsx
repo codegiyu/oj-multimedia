@@ -22,6 +22,7 @@ import { GhostBtn } from '../atoms/GhostBtn';
 import { CheckCheck, Copy, Inbox, RefreshCw } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/section/news/EmptyState';
+import { ADMIN_DASHBOARD_LIST_PAGE_SIZE } from '@/lib/constants/pagination';
 
 export interface DataTableColumnMeta {
   width?: number | string;
@@ -68,7 +69,7 @@ export interface DataTableProps<TData> {
   getRowId?: (row: TData, index: number) => string;
 }
 
-export const DEFAULT_PAGE_SIZE = 12;
+export const DEFAULT_PAGE_SIZE = ADMIN_DASHBOARD_LIST_PAGE_SIZE;
 
 function getWidthStyle(value?: string | number) {
   return typeof value === 'number' ? { width: `${value}px` } : value ? { width: value } : undefined;

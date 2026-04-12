@@ -14,7 +14,6 @@ import { callApi } from '@/lib/services/callApi';
 import type { IVendorOrdersRes } from '@/lib/constants/endpoints';
 import { formatPrice } from '@/lib/utils/marketplace';
 import type { ApiErrorResponse } from '@/lib/types/http';
-import { VendorCreateStoreState } from './VendorCreateStoreState';
 import { cn } from '@/lib/utils';
 
 const STATUS_OPTIONS = [
@@ -238,20 +237,17 @@ function VendorOrdersList({
 export interface VendorOrdersPageClientProps {
   initialOrders: IVendorOrdersRes['orders'];
   initialTotalPages: number;
-  initialHasVendorProfile: boolean;
   initialErrorMessage: string | null;
 }
 
 export function VendorOrdersPageClient({
   initialOrders,
   initialTotalPages,
-  initialHasVendorProfile,
   initialErrorMessage,
 }: VendorOrdersPageClientProps) {
   const [statusFilter, setStatusFilter] = useQueryState('status', parseAsString.withDefault(''));
   const [orders, setOrders] = useState<IVendorOrdersRes['orders']>(initialOrders);
   const [loading, setLoading] = useState(false);
-  const [hasVendorProfile, setHasVendorProfile] = useState<boolean | null>(initialHasVendorProfile);
   const [errorMessage, setErrorMessage] = useState<string | null>(initialErrorMessage);
   const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1));
   const [pageSize] = useQueryState('pagesize', parseAsInteger.withDefault(10));
@@ -290,14 +286,11 @@ export function VendorOrdersPageClient({
         const responseCode = (error as ApiErrorResponse | undefined)?.responseCode;
 
         if (responseCode === 403 || responseCode === 404) {
-          setHasVendorProfile(false);
           setErrorMessage(null);
         } else {
-          setHasVendorProfile(true);
           setErrorMessage(message || 'Unable to load orders.');
         }
       } else {
-        setHasVendorProfile(true);
         setOrders(data.orders);
         setTotalPages(data.pagination.totalPages || 1);
         setErrorMessage(null);
@@ -312,12 +305,6 @@ export function VendorOrdersPageClient({
       cancelled = true;
     };
   }, [statusFilter, page, pageSize, reloadIndex]);
-
-  if (hasVendorProfile === false) {
-    return (
-      <VendorCreateStoreState description="You need a vendor store before you can receive orders. Become a vendor to start selling on the marketplace." />
-    );
-  }
 
   return (
     <div className="space-y-4">

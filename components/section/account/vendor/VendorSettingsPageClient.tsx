@@ -18,8 +18,11 @@ import { useForm } from '@/lib/hooks/use-form';
 import { callApi } from '@/lib/services/callApi';
 import { ImageUploadField } from '@/components/general/MediaUploadField';
 import type { IVendorMeRes, IVendorUpdateSettingsPayload } from '@/lib/constants/endpoints';
-import type { ApiErrorResponse } from '@/lib/types/http';
-import { VendorCreateStoreState } from './VendorCreateStoreState';
+
+const optionalStoredImageUrl = z
+  .string()
+  .optional()
+  .refine(v => v == null || v === '' || /^https?:\/\/.+/i.test(v), 'Must be a valid image URL');
 
 const vendorSettingsSchema = z.object({
   storeName: z.string().min(1, 'Store name is required'),
@@ -31,8 +34,8 @@ const vendorSettingsSchema = z.object({
   bankAccountName: z.string().optional(),
   bankAccountNumber: z.string().optional(),
   bankName: z.string().optional(),
-  logoUrl: z.string().url('Please enter a valid URL').optional().or(z.literal('')),
-  coverImageUrl: z.string().url('Please enter a valid URL').optional().or(z.literal('')),
+  logoUrl: optionalStoredImageUrl,
+  coverImageUrl: optionalStoredImageUrl,
 });
 
 type VendorSettingsValues = z.infer<typeof vendorSettingsSchema>;
@@ -69,18 +72,15 @@ function getSettingsValidationMessages(
 
 export interface VendorSettingsPageClientProps {
   initialVendor: IVendorMeRes | null;
-  initialHasVendorProfile: boolean;
   initialLoadError?: string | null;
 }
 
 export function VendorSettingsPageClient({
   initialVendor,
-  initialHasVendorProfile,
   initialLoadError = null,
 }: VendorSettingsPageClientProps) {
   const router = useRouter();
   const [initialLoading] = useState(false);
-  const [hasVendorProfile, setHasVendorProfile] = useState<boolean | null>(initialHasVendorProfile);
   const [dismissedLoadError, setDismissedLoadError] = useState(false);
   const [storeVisible, setStoreVisible] = useState(true);
   const [vacationMode, setVacationMode] = useState(false);
@@ -129,12 +129,6 @@ export function VendorSettingsPageClient({
       const { data, error, message } = await callApi('VENDOR_UPDATE_SETTINGS', { payload });
 
       if (error || !data) {
-        const responseCode = (error as ApiErrorResponse | undefined)?.responseCode;
-
-        if (responseCode === 403 || responseCode === 404) {
-          setHasVendorProfile(false);
-        }
-
         toast.error(message || 'Failed to save settings.');
         return false;
       }
@@ -147,11 +141,7 @@ export function VendorSettingsPageClient({
   return (
     <div className="mx-auto max-w-3xl space-y-8">
       {initialLoading && <p className="text-sm text-muted-foreground">Loading store settings...</p>}
-      {!initialLoading && hasVendorProfile === false && (
-        <VendorCreateStoreState description="You need a vendor store before you can configure vendor settings. Become a vendor to start selling on the marketplace." />
-      )}
-
-      {hasVendorProfile !== false && (
+      {!initialLoading && (
         <>
           <DashboardPageHeader
             title="Store settings"

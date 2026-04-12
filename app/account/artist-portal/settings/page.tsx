@@ -38,29 +38,16 @@ async function ArtistSettingsPageClientServer() {
     const responseCode = (res.error as ApiErrorResponse | undefined)?.responseCode;
 
     if (responseCode === 403 || responseCode === 404) {
-      return (
-        <ArtistPortalSettingsPageClient
-          initialArtist={null}
-          initialHasArtistProfile={false}
-          initialLoadError={null}
-        />
-      );
+      return null;
     }
 
     return (
       <ArtistPortalSettingsPageClient
         initialArtist={null}
-        initialHasArtistProfile={true}
         initialLoadError={res.message || "We couldn't load your artist profile."}
       />
     );
   }
 
-  return (
-    <ArtistPortalSettingsPageClient
-      initialArtist={res.data.artist}
-      initialHasArtistProfile={true}
-      initialLoadError={null}
-    />
-  );
+  return <ArtistPortalSettingsPageClient initialArtist={res.data.artist} initialLoadError={null} />;
 }

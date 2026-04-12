@@ -1,5 +1,4 @@
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import { PageHeader } from '@/components/general/PageHeader';
 import {
   DocumentsPageClient,
   type AdminDocument,
@@ -35,7 +34,6 @@ export default function DocumentsPage({ searchParams }: DocumentsPageProps) {
     <DashboardLayout>
       <section className="h-full overflow-hidden">
         <section className="h-full space-y-6 overflow-auto sleek-scrollbar">
-          <PageHeader title="Documents" description="View and verify uploaded documents" />
           <Suspense fallback={<DocumentsPageFallback />}>
             <AdminDocumentsPageServer searchParams={searchParams} />
           </Suspense>
@@ -55,6 +53,8 @@ async function AdminDocumentsPageServer({
   const { items, totalPages, listError } = await serverFetchAdminDocumentsList(docParams);
   return (
     <DocumentsPageClient
+      pageTitle="Documents"
+      pageDescription="View and verify uploaded documents"
       documents={items as AdminDocument[]}
       totalPages={totalPages}
       listError={listError}

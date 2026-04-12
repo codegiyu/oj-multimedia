@@ -2,7 +2,6 @@ import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { Skeleton } from '@/components/ui/skeleton';
 import { VendorEditProductPageClient } from '@/components/section/account/vendor/VendorEditProductPageClient';
-import { VendorCreateStoreState } from '@/components/section/account/vendor/VendorCreateStoreState';
 import { callServerApi } from '@/lib/services/serverApi';
 import type { ApiErrorResponse } from '@/lib/types/http';
 
@@ -39,9 +38,7 @@ async function EditVendorProductPageServer({ params }: { params: Promise<{ id: s
   if (res.error || !res.data) {
     const responseCode = (res.error as ApiErrorResponse | undefined)?.responseCode;
     if (responseCode === 403 || responseCode === 404) {
-      return (
-        <VendorCreateStoreState description="You need a vendor store before you can edit products. Become a vendor to start selling on the marketplace." />
-      );
+      return null;
     }
   }
 

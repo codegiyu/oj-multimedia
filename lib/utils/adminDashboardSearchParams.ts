@@ -1,13 +1,26 @@
-import { DEFAULT_PAGE_SIZE } from '@/components/general/DataTable';
+import { ADMIN_DASHBOARD_LIST_PAGE_SIZE } from '@/lib/constants/pagination';
 
 export function firstSearchParam(value: string | string[] | undefined): string | undefined {
   if (value === undefined) return undefined;
   return Array.isArray(value) ? value[0] : value;
 }
 
+/** Resolves list page size from URL (`pagesize`, `pageSize`, or `limit`). */
+export function firstListPageSizeParam(
+  raw: Record<string, string | string[] | undefined>
+): string | undefined {
+  return (
+    firstSearchParam(raw.pagesize) ?? firstSearchParam(raw.pageSize) ?? firstSearchParam(raw.limit)
+  );
+}
+
 export function parsePositiveInt(value: string | undefined, fallback: number): number {
-  const n = parseInt(String(value ?? ''), 10);
-  return Number.isFinite(n) && n > 0 ? n : fallback;
+  const fb =
+    Number.isFinite(fallback) && fallback > 0
+      ? Math.floor(fallback)
+      : ADMIN_DASHBOARD_LIST_PAGE_SIZE;
+  const n = parseInt(String(value ?? '').trim(), 10);
+  return Number.isFinite(n) && n > 0 ? n : fb;
 }
 
 export interface AdminStandardListParams {
@@ -22,7 +35,7 @@ export function parseAdminStandardListParams(
 ): AdminStandardListParams {
   return {
     page: parsePositiveInt(firstSearchParam(raw.page), 1),
-    pageSize: parsePositiveInt(firstSearchParam(raw.pagesize), DEFAULT_PAGE_SIZE),
+    pageSize: parsePositiveInt(firstListPageSizeParam(raw), ADMIN_DASHBOARD_LIST_PAGE_SIZE),
     search: firstSearchParam(raw.search) ?? '',
     status: firstSearchParam(raw.status) ?? 'all',
   };
@@ -68,7 +81,7 @@ export function parseAdminHomeAdvertsListParams(
 ): AdminHomeAdvertsListParams {
   return {
     page: parsePositiveInt(firstSearchParam(raw.page), 1),
-    pageSize: parsePositiveInt(firstSearchParam(raw.pagesize), DEFAULT_PAGE_SIZE),
+    pageSize: parsePositiveInt(firstListPageSizeParam(raw), ADMIN_DASHBOARD_LIST_PAGE_SIZE),
     slot: firstSearchParam(raw.slot) ?? 'all',
   };
 }
@@ -84,7 +97,7 @@ export function parseAdminDocumentsListParams(
 ): AdminDocumentsListParams {
   return {
     page: parsePositiveInt(firstSearchParam(raw.page), 1),
-    pageSize: parsePositiveInt(firstSearchParam(raw.pagesize), DEFAULT_PAGE_SIZE),
+    pageSize: parsePositiveInt(firstListPageSizeParam(raw), ADMIN_DASHBOARD_LIST_PAGE_SIZE),
     status: firstSearchParam(raw.status) ?? 'all',
   };
 }
@@ -100,7 +113,7 @@ export function parseAdminEmailLogsListParams(
 ): AdminEmailLogsListParams {
   return {
     page: parsePositiveInt(firstSearchParam(raw.page), 1),
-    pageSize: parsePositiveInt(firstSearchParam(raw.pagesize), DEFAULT_PAGE_SIZE),
+    pageSize: parsePositiveInt(firstListPageSizeParam(raw), ADMIN_DASHBOARD_LIST_PAGE_SIZE),
     filterStatus: firstSearchParam(raw.status) ?? 'all',
   };
 }

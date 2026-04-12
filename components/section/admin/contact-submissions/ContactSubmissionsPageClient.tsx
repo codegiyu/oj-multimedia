@@ -3,20 +3,23 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useQueryState, parseAsInteger, parseAsString } from 'nuqs';
-import { FilterableDataPage } from '@/components/general/FilterableDataPage';
+import { AdminDashboardListLayout } from '@/components/section/admin/AdminDashboardListLayout';
 import type { ContactSubmission } from '@/lib/constants/endpoints';
 import type { ClickedRowDetails } from '@/components/general/TableRowDetailsDrawer';
 import { ContactSubmissionDetailsDrawer } from './ContactSubmissionDetailsDrawer';
 import { ContactSubmissionsTableContent } from './ContactSubmissionsTableContent';
-import { AlertCircle } from 'lucide-react';
 
 export interface ContactSubmissionsPageClientProps {
+  pageTitle: string;
+  pageDescription: string;
   submissions: ContactSubmission[];
   totalPages: number;
   listError: string | null;
 }
 
 export function ContactSubmissionsPageClient({
+  pageTitle,
+  pageDescription,
   submissions,
   totalPages,
   listError,
@@ -37,22 +40,22 @@ export function ContactSubmissionsPageClient({
   };
 
   return (
-    <section className="h-full grid grid-rows-[auto_1fr] gap-4 sm:gap-6 overflow-hidden">
-      {listError && (
-        <div className="rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive flex items-start gap-2">
-          <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
-          <span>{listError}</span>
-        </div>
-      )}
-      <section className="grid gap-4 sm:gap-6">
-        <FilterableDataPage
-          searchPlaceholder="Search contact submissions..."
-          searchValue={searchQuery}
-          onSearchChange={setSearchQuery}
-          onSearchApply={() => setPage(1)}
+    <AdminDashboardListLayout
+      title={pageTitle}
+      description={pageDescription}
+      listError={listError}
+      filterableDataPageProps={{
+        searchPlaceholder: 'Search contact submissions...',
+        searchValue: searchQuery,
+        onSearchChange: setSearchQuery,
+        onSearchApply: () => setPage(1),
+      }}
+      extraContent={
+        <ContactSubmissionDetailsDrawer
+          clickedRowDetails={clickedRowDetails}
+          setClickedRowDetails={setClickedRowDetails}
         />
-      </section>
-
+      }>
       <ContactSubmissionsTableContent
         submissions={submissions}
         loading={false}
@@ -62,11 +65,6 @@ export function ContactSubmissionsPageClient({
         totalPages={totalPages}
         onPageChange={setPage}
       />
-
-      <ContactSubmissionDetailsDrawer
-        clickedRowDetails={clickedRowDetails}
-        setClickedRowDetails={setClickedRowDetails}
-      />
-    </section>
+    </AdminDashboardListLayout>
   );
 }

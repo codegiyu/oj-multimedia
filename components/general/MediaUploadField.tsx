@@ -1,7 +1,7 @@
 'use client';
 
-import { useId } from 'react';
-import { ImageIcon, Upload as UploadIcon } from 'lucide-react';
+import { useId, useRef } from 'react';
+import { ImageIcon, ImagePlus, Upload as UploadIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -33,8 +33,9 @@ export function ImageUploadField({
   accept = 'image/*',
   className,
 }: BaseProps) {
-  const inputId = useId();
-  const { previewUrl, loading, progress, handleFileChange, uploadFile } = useFileUpload({
+  const labelId = useId();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { previewUrl, loading, progress, handleFileSelect, uploadFile } = useFileUpload({
     entityType,
     entityId,
     intent,
@@ -43,51 +44,68 @@ export function ImageUploadField({
     },
   });
 
-  const showPreview = previewUrl || value;
+  const showPreview = Boolean(previewUrl || value);
+
+  const pickAndUpload = async (fileList: FileList | null) => {
+    const file = fileList?.[0];
+    if (!file || !entityId) return;
+    handleFileSelect(file);
+    const result = await uploadFile({ file });
+    if (result?.url) {
+      onChange(result.url);
+    }
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
 
   return (
     <div className={cn('space-y-2', className)}>
-      <Label htmlFor={inputId}>{label}</Label>
-      <div className="flex items-center gap-4">
-        <div className="w-20 h-20 rounded-md border border-dashed border-muted flex items-center justify-center overflow-hidden bg-muted">
+      <Label id={labelId}>{label}</Label>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
+        <div
+          className={cn(
+            'relative flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-dashed border-border bg-muted/60',
+            showPreview && 'border-solid'
+          )}
+          aria-hidden={!showPreview}>
           {showPreview ? (
             <img
               src={previewUrl ?? (value as string)}
-              alt={label}
-              className="w-full h-full object-cover"
+              alt=""
+              className="h-full w-full object-cover"
             />
           ) : (
-            <ImageIcon className="w-6 h-6 text-muted-foreground" />
+            <ImageIcon className="h-10 w-10 text-muted-foreground" />
           )}
         </div>
-        <div className="flex-1 space-y-2">
-          <Input
-            id={inputId}
+        <div className="min-w-0 flex-1 space-y-2">
+          <input
+            ref={fileInputRef}
             type="file"
             accept={accept}
-            onChange={handleFileChange}
+            className="sr-only"
+            aria-labelledby={labelId}
             disabled={loading || !entityId}
+            onChange={e => void pickAndUpload(e.target.files)}
           />
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Button
               type="button"
               size="sm"
+              variant="outline"
               disabled={loading || !entityId}
-              onClick={async () => {
-                const result = await uploadFile();
-                if (result?.url) {
-                  onChange(result.url);
-                }
-              }}>
-              <UploadIcon className="w-4 h-4 mr-1" />
-              {loading ? 'Uploading…' : 'Upload'}
+              onClick={() => fileInputRef.current?.click()}>
+              <ImagePlus className="mr-1.5 h-4 w-4" />
+              {showPreview ? 'Change image' : 'Add image'}
             </Button>
-            {progress > 0 && progress < 100 && <Progress value={progress} className="h-1 flex-1" />}
+            {loading ? <span className="text-xs text-muted-foreground">Uploading…</span> : null}
           </div>
+          {progress > 0 && progress < 100 && <Progress value={progress} className="h-1 max-w-xs" />}
           {helperText && (
             <p className="text-xs text-muted-foreground">
               {helperText}
-              {!entityId && ' (save settings first to enable uploads)'}
+              {!entityId ? ' Save your profile first if uploads stay disabled.' : ''}
             </p>
           )}
         </div>

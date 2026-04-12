@@ -103,3 +103,22 @@ Keep `GET /public/music/:idOrSlug/download` as incrementing **`downloads`** and 
 Music/video list and detail items SHOULD expose: **`views`**, **`plays`** (music/video), **`downloads`** where applicable, **`artist`**, **`ownerLocked`**, optional **`ownerUserId`**.
 
 Devotionals: optional **`artist`**, **`plays`**, **`views`**, **`ownerLocked`** when linked.
+
+## 5. Artist self-service: create profile
+
+Authenticated users without an artist record use the Next.js “Become an artist” flow. The app calls:
+
+### `POST /artist/me`
+
+- **Auth:** Same session/JWT as other `/artist/*` routes.
+- **Body (JSON):**
+  - **`name`** (string, required) — public artist name; server should derive **`slug`** (unique).
+  - Optional: **`bio`**, **`image`**, **`coverImage`**, **`genre`**, **`socials`** — same fields as `PATCH /artist/me` / artist model.
+
+**Behavior:**
+
+1. Resolve the authenticated user.
+2. If **`user.artistId`** is already set (or an artist row exists for this user), respond **`409 Conflict`** with a clear message (client may tell the user to refresh).
+3. Otherwise create an **`Artist`** document with **`user`** = current user id, set defaults (**`isActive`**, **`isFeatured`**, **`displayOrder`** per product rules), set **`user.artistId`**, and return the same **`data`** shape as **`GET /artist/me`**: `{ "artist": { … } }` (standard success envelope).
+
+**Errors:** **`401`** if unauthenticated; **`409`** if profile already exists; **`400`** for validation (e.g. missing `name`, invalid slug collision after retry).

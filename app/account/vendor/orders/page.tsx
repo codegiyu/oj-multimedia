@@ -59,21 +59,13 @@ async function VendorOrdersPageClientServer({
     const responseCode = (res.error as ApiErrorResponse | undefined)?.responseCode;
 
     if (responseCode === 403 || responseCode === 404) {
-      return (
-        <VendorOrdersPageClient
-          initialOrders={[]}
-          initialTotalPages={1}
-          initialHasVendorProfile={false}
-          initialErrorMessage={null}
-        />
-      );
+      return null;
     }
 
     return (
       <VendorOrdersPageClient
         initialOrders={[]}
         initialTotalPages={1}
-        initialHasVendorProfile={true}
         initialErrorMessage={res.message || 'Unable to load orders.'}
       />
     );
@@ -83,7 +75,6 @@ async function VendorOrdersPageClientServer({
     <VendorOrdersPageClient
       initialOrders={res.data.orders}
       initialTotalPages={res.data.pagination.totalPages || 1}
-      initialHasVendorProfile={true}
       initialErrorMessage={null}
     />
   );

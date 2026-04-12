@@ -61,21 +61,13 @@ async function ArtistMusicPageClientServer({
     const responseCode = (res.error as ApiErrorResponse | undefined)?.responseCode;
 
     if (responseCode === 403 || responseCode === 404) {
-      return (
-        <ArtistPortalMusicPageClient
-          initialMusic={[]}
-          initialTotalPages={1}
-          initialHasArtistProfile={false}
-          initialErrorMessage={null}
-        />
-      );
+      return null;
     }
 
     return (
       <ArtistPortalMusicPageClient
         initialMusic={[]}
         initialTotalPages={1}
-        initialHasArtistProfile={true}
         initialErrorMessage={res.message || 'Unable to load music.'}
       />
     );
@@ -85,7 +77,6 @@ async function ArtistMusicPageClientServer({
     <ArtistPortalMusicPageClient
       initialMusic={res.data.music}
       initialTotalPages={res.data.pagination?.totalPages ?? 1}
-      initialHasArtistProfile={true}
       initialErrorMessage={null}
     />
   );

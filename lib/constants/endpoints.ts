@@ -9,6 +9,7 @@ import {
   IMusic,
   IVideo,
   INewsArticle,
+  IGospelVerse,
 } from '@/lib/types/server-models';
 import type {
   CommunityHubData,
@@ -290,6 +291,16 @@ export interface IArtistUpdateMePayload {
     youtube?: string;
     website?: string;
   };
+}
+
+/** First-time artist profile for the authenticated user (`POST /artist/me`). */
+export interface IArtistCreateMePayload {
+  name: string;
+  bio?: string;
+  image?: string;
+  coverImage?: string;
+  genre?: string;
+  socials?: IArtistUpdateMePayload['socials'];
 }
 
 export type ArtistMusicListItem = Omit<ClientMusic, 'artist'> &
@@ -789,6 +800,13 @@ export interface AllEndpoints {
     `/${string}`
   >;
 
+  // Admin content - Gospel verses (daily verse of the day)
+  ADMIN_GOSPEL_VERSES_LIST: EndpointDefinition<
+    undefined,
+    GetListRes<IGospelVerse, 'gospelVerses'>,
+    `?${string}`
+  >;
+
   // Admin content - Testimonies
   ADMIN_TESTIMONIES_LIST: EndpointDefinition<undefined, TestimoniesListData, `?${string}`>;
   ADMIN_TESTIMONY_ITEM: EndpointDefinition<undefined, TestimonyDetailData, `/${string}`>;
@@ -1015,6 +1033,7 @@ export interface AllEndpoints {
 
   // Artist dashboard
   ARTIST_GET_ME: EndpointDefinition<undefined, IArtistMeRes, undefined>;
+  ARTIST_CREATE_ME: EndpointDefinition<IArtistCreateMePayload, IArtistMeRes, undefined>;
   ARTIST_UPDATE_ME: EndpointDefinition<IArtistUpdateMePayload, IArtistMeRes, undefined>;
   ARTIST_GET_DASHBOARD_STATS: EndpointDefinition<undefined, IArtistDashboardStatsRes, undefined>;
   ARTIST_GET_MUSIC: EndpointDefinition<undefined, IArtistMusicListRes, `?${string}`>;
@@ -1342,6 +1361,8 @@ export const ENDPOINTS: Record<keyof AllEndpoints, EndpointDetails> = {
   ADMIN_DEVOTIONAL_APPROVE: { path: '/admin/devotionals', method: 'POST' },
   ADMIN_DEVOTIONAL_REJECT: { path: '/admin/devotionals', method: 'POST' },
 
+  ADMIN_GOSPEL_VERSES_LIST: { path: '/admin/gospel-verses', method: 'GET' },
+
   ADMIN_TESTIMONIES_LIST: { path: '/admin/testimonies', method: 'GET' },
   ADMIN_TESTIMONY_ITEM: { path: '/admin/testimonies', method: 'GET' },
   ADMIN_TESTIMONY_CREATE: { path: '/admin/testimonies', method: 'POST' },
@@ -1459,6 +1480,10 @@ export const ENDPOINTS: Record<keyof AllEndpoints, EndpointDetails> = {
   ARTIST_GET_ME: {
     path: '/artist/me',
     method: 'GET',
+  },
+  ARTIST_CREATE_ME: {
+    path: '/artist/me',
+    method: 'POST',
   },
   ARTIST_UPDATE_ME: {
     path: '/artist/me',

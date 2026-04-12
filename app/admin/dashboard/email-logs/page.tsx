@@ -1,5 +1,4 @@
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import { PageHeader } from '@/components/general/PageHeader';
 import { EmailLogsPageClient } from '@/components/section/admin/email-logs/EmailLogsPageClient';
 import { serverFetchAdminEmailLogsList } from '@/lib/services/adminDashboardServerData';
 import { parseAdminEmailLogsListParams } from '@/lib/utils/adminDashboardSearchParams';
@@ -32,10 +31,6 @@ export default function EmailLogsPage({ searchParams }: EmailLogsPageProps) {
     <DashboardLayout>
       <section className="h-full overflow-hidden">
         <section className="h-full space-y-6 overflow-auto sleek-scrollbar">
-          <PageHeader
-            title="Email Logs"
-            description="View and manage email delivery logs and resend failed emails"
-          />
           <Suspense fallback={<EmailLogsPageFallback />}>
             <AdminEmailLogsPageServer searchParams={searchParams} />
           </Suspense>
@@ -53,5 +48,13 @@ async function AdminEmailLogsPageServer({
   const raw = await searchParams;
   const params = parseAdminEmailLogsListParams(raw);
   const { items, totalPages, listError } = await serverFetchAdminEmailLogsList(params);
-  return <EmailLogsPageClient emailLogs={items} totalPages={totalPages} listError={listError} />;
+  return (
+    <EmailLogsPageClient
+      pageTitle="Email Logs"
+      pageDescription="View and manage email delivery logs and resend failed emails"
+      emailLogs={items}
+      totalPages={totalPages}
+      listError={listError}
+    />
+  );
 }

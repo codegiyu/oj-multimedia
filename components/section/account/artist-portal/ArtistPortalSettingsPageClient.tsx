@@ -16,12 +16,18 @@ import type { ClientArtistProfile } from '@/lib/constants/endpoints';
 import type { ApiErrorResponse } from '@/lib/types/http';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
+import { useAuthStore } from '@/lib/store/useAuthStore';
+
+const optionalStoredImageUrl = z
+  .string()
+  .optional()
+  .refine(v => v == null || v === '' || /^https?:\/\/.+/i.test(v), 'Must be a valid image URL');
 
 const artistSettingsSchema = z.object({
   name: z.string().min(1, 'Artist name is required'),
   bio: z.string().optional(),
-  image: z.url('Please enter a valid image URL').optional().or(z.literal('')),
-  coverImage: z.url('Please enter a valid image URL').optional().or(z.literal('')),
+  image: optionalStoredImageUrl,
+  coverImage: optionalStoredImageUrl,
   genre: z.string().optional(),
   facebook: z.url('Please enter a valid URL').optional().or(z.literal('')),
   instagram: z.url('Please enter a valid URL').optional().or(z.literal('')),
@@ -34,16 +40,18 @@ type ArtistSettingsValues = z.infer<typeof artistSettingsSchema>;
 
 export interface ArtistPortalSettingsPageClientProps {
   initialArtist: ClientArtistProfile | null;
-  initialHasArtistProfile: boolean;
   initialLoadError: string | null;
 }
 
 export function ArtistPortalSettingsPageClient({
   initialArtist,
-  initialHasArtistProfile,
   initialLoadError = null,
 }: ArtistPortalSettingsPageClientProps) {
   const router = useRouter();
+  const user = useAuthStore(s => s.user);
+  const userId =
+    user && typeof user === 'object' && '_id' in user ? String((user as { _id: string })._id) : '';
+  const artistUploadEntityId = initialArtist?._id ?? userId;
   const [dismissedLoadError, setDismissedLoadError] = useState(false);
 
   const socials = initialArtist?.socials;
@@ -109,23 +117,6 @@ export function ArtistPortalSettingsPageClient({
     },
   });
 
-  if (!initialHasArtistProfile) {
-    return (
-      <div className="mx-auto max-w-2xl space-y-6">
-        <DashboardPageHeader title="My account" description="Artist profile and public presence" />
-        <Card className="border-border/80 p-8 text-center shadow-sm">
-          <p className="text-muted-foreground mb-4">
-            Complete your artist profile to manage your music and videos. Contact support if you
-            need an artist account.
-          </p>
-          <Button variant="outline" className="rounded-full" onClick={() => router.refresh()}>
-            Retry
-          </Button>
-        </Card>
-      </div>
-    );
-  }
-
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <DashboardPageHeader
@@ -185,7 +176,7 @@ export function ArtistPortalSettingsPageClient({
             label="Profile image"
             helperText="Upload a square image for your artist profile."
             entityType="artist"
-            entityId=""
+            entityId={artistUploadEntityId}
             intent="avatar"
             value={formValues.image ?? ''}
             onChange={url =>
@@ -200,7 +191,7 @@ export function ArtistPortalSettingsPageClient({
             label="Cover image"
             helperText="Upload a wide image for your artist banner."
             entityType="artist"
-            entityId=""
+            entityId={artistUploadEntityId}
             intent="banner-image"
             value={formValues.coverImage ?? ''}
             onChange={url =>

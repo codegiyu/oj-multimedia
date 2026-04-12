@@ -4,58 +4,46 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useQueryState, parseAsInteger, parseAsString } from 'nuqs';
 import { AdminDashboardListLayout } from '@/components/section/admin/AdminDashboardListLayout';
+import type { IGospelVerse } from '@/lib/types/server-models';
 import type { ClickedRowDetails } from '@/components/general/TableRowDetailsDrawer';
-import { DocumentsTableContent } from './DocumentsTableContent';
-import { DocumentsDetailsDrawer } from './DocumentsDetailsDrawer';
+import { GospelVerseDetailsDrawer } from './GospelVerseDetailsDrawer';
+import { GospelVersesTableContent } from './GospelVersesTableContent';
 
-export interface AdminDocument {
-  _id: string;
-  status?: string;
-  entityType?: string;
-  entityId?: string;
-  intent?: string;
-  key?: string;
-  createdAt?: string;
-  updatedAt?: string;
-  [key: string]: unknown;
-}
+const statusOptions = [
+  { text: 'All', value: 'all' },
+  { text: 'Active', value: 'active' },
+  { text: 'Inactive', value: 'inactive' },
+];
 
-export interface DocumentsPageClientProps {
+export interface GospelVersesPageClientProps {
   pageTitle: string;
   pageDescription: string;
-  documents: AdminDocument[];
+  gospelVerses: IGospelVerse[];
   totalPages: number;
   listError: string | null;
 }
 
-export function DocumentsPageClient({
+export function GospelVersesPageClient({
   pageTitle,
   pageDescription,
-  documents,
+  gospelVerses,
   totalPages,
   listError,
-}: DocumentsPageClientProps) {
+}: GospelVersesPageClientProps) {
   const router = useRouter();
   const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1));
-  // const [pageSize] = useQueryState('pagesize', parseAsInteger.withDefault(DEFAULT_PAGE_SIZE));
+  const [searchQuery, setSearchQuery] = useQueryState('search', parseAsString.withDefault(''));
   const [filterStatus, setFilterStatus] = useQueryState('status', parseAsString.withDefault('all'));
 
   const [clickedRowDetails, setClickedRowDetails] = useState<
-    ClickedRowDetails<AdminDocument, string> | undefined
+    ClickedRowDetails<IGospelVerse, string> | undefined
   >(undefined);
 
   const handleRefresh = () => router.refresh();
 
-  const handleRowClick = (row: AdminDocument, index: number) => {
+  const handleRowClick = (row: IGospelVerse, index: number) => {
     setClickedRowDetails({ data: row, index, tab: undefined });
   };
-
-  const statusOptions = [
-    { text: 'All', value: 'all' },
-    { text: 'Pending', value: 'pending' },
-    { text: 'Verified', value: 'verified' },
-    { text: 'Rejected', value: 'rejected' },
-  ];
 
   return (
     <AdminDashboardListLayout
@@ -63,7 +51,10 @@ export function DocumentsPageClient({
       description={pageDescription}
       listError={listError}
       filterableDataPageProps={{
-        searchPlaceholder: 'Filter by entity type...',
+        searchPlaceholder: 'Search by reference or verse text...',
+        searchValue: searchQuery,
+        onSearchChange: setSearchQuery,
+        onSearchApply: () => setPage(1),
         filters: [
           {
             label: 'Status',
@@ -78,14 +69,13 @@ export function DocumentsPageClient({
         onApplyFilters: () => setPage(1),
       }}
       extraContent={
-        <DocumentsDetailsDrawer
+        <GospelVerseDetailsDrawer
           clickedRowDetails={clickedRowDetails}
           setClickedRowDetails={setClickedRowDetails}
-          onVerify={handleRefresh}
         />
       }>
-      <DocumentsTableContent
-        documents={documents}
+      <GospelVersesTableContent
+        gospelVerses={gospelVerses}
         loading={false}
         onRefresh={handleRefresh}
         onRowClick={handleRowClick}

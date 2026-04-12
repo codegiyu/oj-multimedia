@@ -43,16 +43,13 @@ async function VendorPageClientServer() {
     const responseCode = meRes.error?.responseCode;
 
     if (responseCode === 403 || responseCode === 404) {
-      return (
-        <VendorPageClient vendor={null} stats={null} hasVendorProfile={false} errorMessage={null} />
-      );
+      return null;
     }
 
     return (
       <VendorPageClient
         vendor={null}
         stats={null}
-        hasVendorProfile={true}
         errorMessage={meRes.message || 'Unable to load vendor profile.'}
       />
     );
@@ -67,7 +64,6 @@ async function VendorPageClientServer() {
     <VendorPageClient
       vendor={vendor}
       stats={stats}
-      hasVendorProfile={true}
       errorMessage={
         statsRes.type === 'error' ? statsRes.message || 'Unable to load dashboard stats.' : null
       }
