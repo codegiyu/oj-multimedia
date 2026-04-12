@@ -53,21 +53,13 @@ async function VendorProductsPageClientServer({
     const responseCode = (res.error as ApiErrorResponse | undefined)?.responseCode;
 
     if (responseCode === 403 || responseCode === 404) {
-      return (
-        <VendorProductsPageClient
-          initialProducts={[]}
-          initialTotalPages={1}
-          initialHasVendorProfile={false}
-          initialErrorMessage={null}
-        />
-      );
+      return null;
     }
 
     return (
       <VendorProductsPageClient
         initialProducts={[]}
         initialTotalPages={1}
-        initialHasVendorProfile={true}
         initialErrorMessage={res.message || 'Unable to load products.'}
       />
     );
@@ -77,7 +69,6 @@ async function VendorProductsPageClientServer({
     <VendorProductsPageClient
       initialProducts={res.data.products}
       initialTotalPages={res.data.pagination.totalPages || 1}
-      initialHasVendorProfile={true}
       initialErrorMessage={null}
     />
   );

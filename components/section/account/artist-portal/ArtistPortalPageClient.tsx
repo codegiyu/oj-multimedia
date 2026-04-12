@@ -6,8 +6,7 @@ import { DashboardPageHeader, DashboardStatCard } from '@/components/layout/user
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Music2, Video, MessageCircle, BarChart3, TrendingUp, Download } from 'lucide-react';
-import type { ClientArtistProfile } from '@/lib/constants/endpoints';
-import type { IArtistDashboardStatsRes } from '@/lib/constants/endpoints';
+import type { IArtistDashboardStatsRes, IArtistMeRes } from '@/lib/constants/endpoints';
 import { cn } from '@/lib/utils';
 
 export type ArtistRecentUpload = {
@@ -21,11 +20,10 @@ export type ArtistRecentUpload = {
 };
 
 export interface ArtistPortalPageClientProps {
-  artist: ClientArtistProfile | null;
   stats: IArtistDashboardStatsRes | null;
-  hasArtistProfile: boolean;
   errorMessage: string | null;
   recentUploads: ArtistRecentUpload[];
+  artist: IArtistMeRes['artist'] | null;
 }
 
 function formatViews(n: number) {
@@ -36,7 +34,6 @@ function formatViews(n: number) {
 
 export function ArtistPortalPageClient({
   stats,
-  hasArtistProfile,
   errorMessage,
   recentUploads,
 }: ArtistPortalPageClientProps) {
@@ -46,25 +43,6 @@ export function ArtistPortalPageClient({
   const totalPlays = stats?.totalPlays ?? 0;
   const totalViews = stats?.totalViews ?? totalPlays;
   const totalDownloads = stats?.totalDownloads ?? 0;
-
-  if (!hasArtistProfile) {
-    return (
-      <div className="space-y-8">
-        <DashboardPageHeader
-          title="Artist portal"
-          description="Complete your profile to manage music and videos."
-        />
-        <Card className="border-border/80 p-8 text-center shadow-sm">
-          <p className="text-muted-foreground mb-4">
-            Complete your artist profile to manage your music and videos.
-          </p>
-          <Button asChild className="rounded-full bg-primary hover:bg-primary/90">
-            <Link href="/account/artist-portal/settings">Go to settings</Link>
-          </Button>
-        </Card>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-8">

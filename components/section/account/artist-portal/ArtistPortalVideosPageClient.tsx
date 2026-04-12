@@ -23,19 +23,16 @@ const STATUS_FILTERS: Array<{ value: '' | 'draft' | 'published' | 'archived'; la
 export interface ArtistPortalVideosPageClientProps {
   initialVideos: ArtistVideoListItem[];
   initialTotalPages: number;
-  initialHasArtistProfile: boolean;
   initialErrorMessage: string | null;
 }
 
 export function ArtistPortalVideosPageClient({
   initialVideos,
   initialTotalPages,
-  initialHasArtistProfile,
   initialErrorMessage,
 }: ArtistPortalVideosPageClientProps) {
   const [videos, setVideos] = useState<ArtistVideoListItem[]>(initialVideos);
   const [loading, setLoading] = useState(false);
-  const [hasArtistProfile, setHasArtistProfile] = useState<boolean | null>(initialHasArtistProfile);
   const [errorMessage, setErrorMessage] = useState<string | null>(initialErrorMessage);
   const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1));
   const [pageSize] = useQueryState('pagesize', parseAsInteger.withDefault(10));
@@ -85,14 +82,11 @@ export function ArtistPortalVideosPageClient({
         setTotalPages(1);
         const responseCode = (error as ApiErrorResponse | undefined)?.responseCode;
         if (responseCode === 403 || responseCode === 404) {
-          setHasArtistProfile(false);
           setErrorMessage(null);
         } else {
-          setHasArtistProfile(true);
           setErrorMessage(message || 'Unable to load videos.');
         }
       } else {
-        setHasArtistProfile(true);
         setVideos(data.videos);
         setTotalPages(data.pagination?.totalPages ?? 1);
         setErrorMessage(null);
@@ -107,22 +101,6 @@ export function ArtistPortalVideosPageClient({
       cancelled = true;
     };
   }, [page, pageSize, status, reloadIndex]);
-
-  if (hasArtistProfile === false) {
-    return (
-      <div className="space-y-6">
-        <DashboardPageHeader title="My videos" description="Manage your video content" />
-        <Card className="border-border/80 p-8 text-center shadow-sm">
-          <p className="text-muted-foreground">
-            Complete your artist profile to manage your videos.
-          </p>
-          <Button asChild className="mt-4 rounded-full" variant="outline">
-            <Link href="/account/artist-portal/settings">Go to settings</Link>
-          </Button>
-        </Card>
-      </div>
-    );
-  }
 
   return (
     <div className="relative space-y-6">

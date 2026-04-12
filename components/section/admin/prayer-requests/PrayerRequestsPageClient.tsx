@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useQueryState, parseAsInteger, parseAsString } from 'nuqs';
-import { FilterableDataPage } from '@/components/general/FilterableDataPage';
+import { AdminDashboardListLayout } from '@/components/section/admin/AdminDashboardListLayout';
 import type { PrayerRequestListItem } from '@/lib/types/community';
 import type { ClickedRowDetails } from '@/components/general/TableRowDetailsDrawer';
 import { PrayerRequestsDetailsDrawer } from './PrayerRequestsDetailsDrawer';
@@ -11,7 +11,6 @@ import { PrayerRequestsTableContent } from './PrayerRequestsTableContent';
 import { AnswerPrayerRequestModal } from './AnswerPrayerRequestModal';
 import { ApprovalModal } from '@/components/section/admin/shared';
 import { callApi } from '@/lib/services/callApi';
-import { AlertCircle } from 'lucide-react';
 
 const statusOptions = [
   { text: 'All', value: 'all' },
@@ -20,12 +19,16 @@ const statusOptions = [
 ];
 
 export interface PrayerRequestsPageClientProps {
+  pageTitle: string;
+  pageDescription: string;
   prayerRequests: PrayerRequestListItem[];
   totalPages: number;
   listError: string | null;
 }
 
 export function PrayerRequestsPageClient({
+  pageTitle,
+  pageDescription,
   prayerRequests,
   totalPages,
   listError,
@@ -73,38 +76,57 @@ export function PrayerRequestsPageClient({
   };
 
   return (
-    <section className="h-full grid grid-rows-[auto_1fr] gap-4 sm:gap-6 overflow-hidden">
-      {listError && (
-        <div className="rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive flex items-start gap-2">
-          <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
-          <span>{listError}</span>
-        </div>
-      )}
-      <section className="grid gap-4 sm:gap-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="flex-1 min-w-0">
-            <FilterableDataPage
-              searchPlaceholder="Search prayer requests..."
-              searchValue={searchQuery}
-              onSearchChange={setSearchQuery}
-              onSearchApply={() => setPage(1)}
-              filters={[
-                {
-                  label: 'Status',
-                  value: filterStatus,
-                  options: statusOptions,
-                  onChange: v => {
-                    setFilterStatus(v);
-                    setPage(1);
-                  },
-                },
-              ]}
-              onApplyFilters={() => setPage(1)}
-            />
-          </div>
-        </div>
-      </section>
+    <AdminDashboardListLayout
+      title={pageTitle}
+      description={pageDescription}
+      listError={listError}
+      filterableDataPageProps={{
+        searchPlaceholder: 'Search prayer requests...',
+        searchValue: searchQuery,
+        onSearchChange: setSearchQuery,
+        onSearchApply: () => setPage(1),
+        filters: [
+          {
+            label: 'Status',
+            value: filterStatus,
+            options: statusOptions,
+            onChange: v => {
+              setFilterStatus(v);
+              setPage(1);
+            },
+          },
+        ],
+        onApplyFilters: () => setPage(1),
+      }}
+      extraContent={
+        <>
+          <PrayerRequestsDetailsDrawer
+            clickedRowDetails={clickedRowDetails}
+            setClickedRowDetails={setClickedRowDetails}
+          />
 
+          <AnswerPrayerRequestModal
+            open={!!answerTarget}
+            onOpenChange={val => !val && setAnswerTarget(null)}
+            prayerRequest={answerTarget}
+            onSuccess={handleRefresh}
+          />
+
+          {deleteTarget && (
+            <ApprovalModal
+              open={!!deleteTarget}
+              onOpenChange={val => !val && setDeleteTarget(null)}
+              title="Delete prayer request"
+              description={
+                deleteTarget ? `Delete "${deleteTarget.title}"? This cannot be undone.` : ''
+              }
+              confirmText="Delete"
+              onConfirm={handleDelete}
+              loading={actionLoading}
+            />
+          )}
+        </>
+      }>
       <PrayerRequestsTableContent
         prayerRequests={prayerRequests}
         loading={false}
@@ -117,30 +139,6 @@ export function PrayerRequestsPageClient({
         onEdit={handleEdit}
         onDelete={m => setDeleteTarget(m)}
       />
-
-      <PrayerRequestsDetailsDrawer
-        clickedRowDetails={clickedRowDetails}
-        setClickedRowDetails={setClickedRowDetails}
-      />
-
-      <AnswerPrayerRequestModal
-        open={!!answerTarget}
-        onOpenChange={val => !val && setAnswerTarget(null)}
-        prayerRequest={answerTarget}
-        onSuccess={handleRefresh}
-      />
-
-      {deleteTarget && (
-        <ApprovalModal
-          open={!!deleteTarget}
-          onOpenChange={val => !val && setDeleteTarget(null)}
-          title="Delete prayer request"
-          description={deleteTarget ? `Delete "${deleteTarget.title}"? This cannot be undone.` : ''}
-          confirmText="Delete"
-          onConfirm={handleDelete}
-          loading={actionLoading}
-        />
-      )}
-    </section>
+    </AdminDashboardListLayout>
   );
 }

@@ -22,6 +22,9 @@ import type { NewsItem as NewsFeedItem } from '@/components/section/news/NewsFee
 import type { TrendingStory } from '@/components/section/news/TrendingSidebar';
 import type { VideoNewsItem } from '@/components/section/news/VideoNews';
 import type { NewsItem as NewsDetailItem } from '@/lib/constants/news';
+import type { FeaturedArtist } from '@/components/section/music/FeaturedArtists';
+import type { FeaturedCreator } from '@/components/section/video/CreatorSpotlight';
+import { mapToCommunityArtist } from '@/lib/utils/communityApiMappers';
 
 function toArtistSummary(item: PublicMusicListItem) {
   const a = item.artist;
@@ -286,6 +289,37 @@ export function mapPublicNewsToVideoNewsItem(item: PublicNewsListItem): VideoNew
     views: String(item.views ?? 0),
     author: item.author,
     date: newsDate(item),
+  };
+}
+
+/** `GET /public/artists` list item → music “Featured Artists” section */
+export function mapPublicArtistToFeaturedArtist(item: Record<string, unknown>): FeaturedArtist {
+  const a = mapToCommunityArtist(item);
+  return {
+    ...a,
+    songs: a.songs ?? 0,
+  };
+}
+
+/** `GET /public/artists` list item → videos “Creator Spotlight” section */
+export function mapPublicArtistToFeaturedCreator(item: Record<string, unknown>): FeaturedCreator {
+  const a = mapToCommunityArtist(item);
+  const viewsRaw = item.views ?? item.totalViews;
+  const viewsStr =
+    viewsRaw == null ? '0' : typeof viewsRaw === 'number' ? String(viewsRaw) : String(viewsRaw);
+  const videosRaw = item.videos;
+  const videos =
+    typeof videosRaw === 'number' && !Number.isNaN(videosRaw) ? videosRaw : Number(videosRaw) || 0;
+  return {
+    _id: a._id,
+    name: a.name,
+    category: a.genre || 'Creator',
+    avatar: a.image,
+    followers: a.followers,
+    videos,
+    views: viewsStr,
+    verified: a.verified,
+    latestVideo: undefined,
   };
 }
 

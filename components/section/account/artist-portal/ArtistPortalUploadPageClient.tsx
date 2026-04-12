@@ -5,12 +5,10 @@ import Link from 'next/link';
 import { MessageCircle } from 'lucide-react';
 import { DashboardPageHeader } from '@/components/layout/user-dashboard';
 import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { RegularBtn } from '@/components/atoms/RegularBtn';
 import { useInitSiteSettingsStore } from '@/lib/store/useSiteSettingsStore';
 
 export interface ArtistPortalUploadPageClientProps {
-  initialHasArtistProfile: boolean;
   initialLoadError: string | null;
 }
 
@@ -25,7 +23,6 @@ function buildWhatsAppHref(raw: string | undefined): string | null {
 }
 
 export function ArtistPortalUploadPageClient({
-  initialHasArtistProfile,
   initialLoadError,
 }: ArtistPortalUploadPageClientProps) {
   const settings = useInitSiteSettingsStore(s => s.settings);
@@ -39,25 +36,6 @@ export function ArtistPortalUploadPageClient({
     () => buildWhatsAppHref(settings?.contactInfo?.whatsapp),
     [settings?.contactInfo?.whatsapp]
   );
-
-  if (!initialHasArtistProfile) {
-    return (
-      <div className="mx-auto max-w-2xl space-y-6">
-        <DashboardPageHeader
-          title="Submit content"
-          description="Complete your profile, then reach the team on WhatsApp or contact"
-        />
-        <Card className="border-border/80 p-8 text-center shadow-sm">
-          <p className="text-muted-foreground mb-4">
-            Complete your artist profile before contacting the team about submissions.
-          </p>
-          <Button asChild variant="outline" className="rounded-full">
-            <Link href="/account/artist-portal/settings">Go to settings</Link>
-          </Button>
-        </Card>
-      </div>
-    );
-  }
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">

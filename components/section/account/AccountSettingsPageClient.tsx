@@ -16,13 +16,19 @@ import { useForm } from '@/lib/hooks/use-form';
 import { useAuthStore } from '@/lib/store/useAuthStore';
 import { callApi } from '@/lib/services/callApi';
 import type { PopulatedUser } from '@/lib/constants/endpoints';
+import { ImageUploadField } from '@/components/general/MediaUploadField';
+
+const optionalStoredImageUrl = z
+  .string()
+  .optional()
+  .refine(v => v == null || v === '' || /^https?:\/\/.+/i.test(v), 'Must be a valid image URL');
 
 const profileSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),
   lastName: z.string().min(1, 'Last name is required'),
   email: z.email('Please enter a valid email'),
   phoneNumber: z.string().optional(),
-  avatar: z.string().url('Please enter a valid URL').optional().or(z.literal('')),
+  avatar: optionalStoredImageUrl,
 });
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
@@ -224,16 +230,20 @@ export function AccountSettingsPageClient({
                   onChange={handleProfileInputChange}
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="avatar">Avatar URL (optional)</Label>
-                <RegularInput
-                  id="avatar"
-                  name="avatar"
-                  value={profileValues.avatar ?? ''}
-                  onChange={handleProfileInputChange}
-                  errors={profileErrorsVisible ? (profileErrors.avatar ?? []) : []}
-                />
-              </div>
+              <ImageUploadField
+                label="Profile photo"
+                helperText="Upload a profile picture (optional)."
+                entityType="user"
+                entityId={initialUser._id}
+                intent="avatar"
+                value={profileValues.avatar ?? ''}
+                onChange={url =>
+                  setProfileFormValues(prev => ({
+                    ...prev,
+                    avatar: url,
+                  }))
+                }
+              />
               <RegularBtn
                 type="submit"
                 variant="default"

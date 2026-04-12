@@ -3,12 +3,11 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useQueryState, parseAsInteger, parseAsString } from 'nuqs';
-import { FilterableDataPage } from '@/components/general/FilterableDataPage';
+import { AdminDashboardListLayout } from '@/components/section/admin/AdminDashboardListLayout';
 import type { IEmailLog } from '@/lib/constants/endpoints';
 import type { ClickedRowDetails } from '@/components/general/TableRowDetailsDrawer';
 import { EmailLogDetailsDrawer } from './EmailLogDetailsDrawer';
 import { EmailLogsTableContent } from './EmailLogsTableContent';
-import { AlertCircle } from 'lucide-react';
 
 const STATUS_FILTER_LABEL = 'Status';
 
@@ -22,12 +21,16 @@ const statusOptions = [
 ];
 
 export interface EmailLogsPageClientProps {
+  pageTitle: string;
+  pageDescription: string;
   emailLogs: IEmailLog[];
   totalPages: number;
   listError: string | null;
 }
 
 export function EmailLogsPageClient({
+  pageTitle,
+  pageDescription,
   emailLogs,
   totalPages,
   listError,
@@ -45,31 +48,32 @@ export function EmailLogsPageClient({
   const handleRefresh = () => router.refresh();
 
   return (
-    <section className="h-full grid grid-rows-[auto_1fr] gap-4 sm:gap-6 overflow-hidden">
-      {listError && (
-        <div className="rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive flex items-start gap-2">
-          <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
-          <span>{listError}</span>
-        </div>
-      )}
-      <section className="grid gap-4 sm:gap-6">
-        <FilterableDataPage
-          searchPlaceholder="Search email logs..."
-          filters={[
-            {
-              label: STATUS_FILTER_LABEL,
-              value: filterStatus,
-              options: statusOptions,
-              onChange: value => {
-                setFilterStatus(value);
-                setPage(1);
-              },
+    <AdminDashboardListLayout
+      title={pageTitle}
+      description={pageDescription}
+      listError={listError}
+      filterableDataPageProps={{
+        searchPlaceholder: 'Search email logs...',
+        filters: [
+          {
+            label: STATUS_FILTER_LABEL,
+            value: filterStatus,
+            options: statusOptions,
+            onChange: value => {
+              setFilterStatus(value);
+              setPage(1);
             },
-          ]}
-          onApplyFilters={() => setPage(1)}
+          },
+        ],
+        onApplyFilters: () => setPage(1),
+      }}
+      extraContent={
+        <EmailLogDetailsDrawer
+          clickedRowDetails={clickedRowDetails}
+          setClickedRowDetails={setClickedRowDetails}
+          onResend={handleRefresh}
         />
-      </section>
-
+      }>
       <EmailLogsTableContent
         emailLogs={emailLogs}
         totalPages={totalPages}
@@ -87,12 +91,6 @@ export function EmailLogsPageClient({
         }}
         onViewEmail={() => {}}
       />
-
-      <EmailLogDetailsDrawer
-        clickedRowDetails={clickedRowDetails}
-        setClickedRowDetails={setClickedRowDetails}
-        onResend={handleRefresh}
-      />
-    </section>
+    </AdminDashboardListLayout>
   );
 }

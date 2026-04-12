@@ -9,7 +9,6 @@ import type { FeaturedVideo } from '@/components/section/video/FeaturedVideos';
 import type { RecentVideoUpload } from '@/components/section/video/RecentVideoUploads';
 import type { ShortFormVideo } from '@/components/section/video/ShortFormVideos';
 import type { FeaturedCreator } from '@/components/section/video/CreatorSpotlight';
-import { ARTIST_PROFILES } from '@/lib/constants/community/artists';
 import { callServerApi } from '@/lib/services/serverApi';
 import { filterByCategory } from '@/lib/utils/videos';
 import {
@@ -17,6 +16,7 @@ import {
   mapPublicVideoToFeaturedVideo,
   mapPublicVideoToRecentUpload,
   mapPublicVideoToShortForm,
+  mapPublicArtistToFeaturedCreator,
 } from '@/lib/utils/publicApiMappers';
 
 export const metadata: Metadata = {
@@ -32,11 +32,12 @@ async function fetchVideoSections(category: string) {
     category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';
   const baseQuery = `?limit=12&page=1&status=published${categoryParam}` as const;
 
-  const [trendingRes, featuredRes, recentRes, shortRes] = await Promise.all([
+  const [trendingRes, featuredRes, recentRes, shortRes, artistsRes] = await Promise.all([
     callServerApi('PUBLIC_GET_VIDEOS', { query: `${baseQuery}&type=trending` }),
     callServerApi('PUBLIC_GET_VIDEOS', { query: `${baseQuery}&type=featured` }),
     callServerApi('PUBLIC_GET_VIDEOS', { query: `${baseQuery}&type=recent` }),
     callServerApi('PUBLIC_GET_VIDEOS', { query: `${baseQuery}&type=short-form` }),
+    callServerApi('PUBLIC_GET_ARTISTS', { query: '?page=1&limit=6' as `?${string}` }),
   ]);
 
   let errorMessage: string | null = null;
@@ -67,19 +68,10 @@ async function fetchVideoSections(category: string) {
     .map(mapPublicVideoToShortForm)
     .slice(0, 8);
 
-  const featuredCreators: FeaturedCreator[] = ARTIST_PROFILES.filter(p => p.isFeatured)
+  const rawArtists = artistsRes.type === 'success' ? (artistsRes.data?.artists ?? []) : [];
+  const featuredCreators: FeaturedCreator[] = rawArtists
     .slice(0, 6)
-    .map(p => ({
-      _id: p._id,
-      name: p.name,
-      category: p.genre ?? 'Creator',
-      avatar: p.image ?? '',
-      followers: p.followers ?? '0',
-      videos: p.videos ?? 0,
-      views: '0',
-      verified: p.verified ?? false,
-      latestVideo: undefined,
-    }));
+    .map(a => mapPublicArtistToFeaturedCreator(a as unknown as Record<string, unknown>));
 
   return {
     trendingVideos,

@@ -22,19 +22,16 @@ const STATUS_FILTERS: Array<{ value: '' | 'draft' | 'published' | 'archived'; la
 export interface ArtistPortalMusicPageClientProps {
   initialMusic: ArtistMusicListItem[];
   initialTotalPages: number;
-  initialHasArtistProfile: boolean;
   initialErrorMessage: string | null;
 }
 
 export function ArtistPortalMusicPageClient({
   initialMusic,
   initialTotalPages,
-  initialHasArtistProfile,
   initialErrorMessage,
 }: ArtistPortalMusicPageClientProps) {
   const [music, setMusic] = useState<ArtistMusicListItem[]>(initialMusic);
   const [loading, setLoading] = useState(false);
-  const [hasArtistProfile, setHasArtistProfile] = useState<boolean | null>(initialHasArtistProfile);
   const [errorMessage, setErrorMessage] = useState<string | null>(initialErrorMessage);
   const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1));
   const [pageSize] = useQueryState('pagesize', parseAsInteger.withDefault(10));
@@ -84,14 +81,11 @@ export function ArtistPortalMusicPageClient({
         setTotalPages(1);
         const responseCode = (error as ApiErrorResponse | undefined)?.responseCode;
         if (responseCode === 403 || responseCode === 404) {
-          setHasArtistProfile(false);
           setErrorMessage(null);
         } else {
-          setHasArtistProfile(true);
           setErrorMessage(message || 'Unable to load music.');
         }
       } else {
-        setHasArtistProfile(true);
         setMusic(data.music);
         setTotalPages(data.pagination?.totalPages ?? 1);
         setErrorMessage(null);
@@ -106,22 +100,6 @@ export function ArtistPortalMusicPageClient({
       cancelled = true;
     };
   }, [page, pageSize, status, reloadIndex]);
-
-  if (hasArtistProfile === false) {
-    return (
-      <div className="space-y-6">
-        <DashboardPageHeader title="My music" description="Manage your music catalogue" />
-        <Card className="border-border/80 p-8 text-center shadow-sm">
-          <p className="text-muted-foreground">
-            Complete your artist profile to manage your music.
-          </p>
-          <Button asChild className="mt-4 rounded-full" variant="outline">
-            <Link href="/account/artist-portal/settings">Go to settings</Link>
-          </Button>
-        </Card>
-      </div>
-    );
-  }
 
   const playsLabel = (item: ArtistMusicListItem) =>
     'views' in item && typeof item.views === 'number'

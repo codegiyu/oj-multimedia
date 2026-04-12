@@ -1,5 +1,4 @@
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import { PageHeader } from '@/components/general/PageHeader';
 import { PrayerRequestsPageClient } from '@/components/section/admin/prayer-requests/PrayerRequestsPageClient';
 import { serverFetchAdminPrayerRequestsList } from '@/lib/services/adminDashboardServerData';
 import { parseAdminStandardListParams } from '@/lib/utils/adminDashboardSearchParams';
@@ -32,10 +31,6 @@ export default function PrayerRequestsPage({ searchParams }: PrayerRequestsPageP
     <DashboardLayout>
       <section className="h-full overflow-hidden">
         <section className="h-full space-y-6 overflow-auto sleek-scrollbar">
-          <PageHeader
-            title="Prayer Requests"
-            description="Manage prayer requests, answer submissions"
-          />
           <Suspense fallback={<PrayerRequestsPageFallback />}>
             <AdminPrayerRequestsPageServer searchParams={searchParams} />
           </Suspense>
@@ -55,6 +50,8 @@ async function AdminPrayerRequestsPageServer({
   const { items, totalPages, listError } = await serverFetchAdminPrayerRequestsList(listParams);
   return (
     <PrayerRequestsPageClient
+      pageTitle="Prayer Requests"
+      pageDescription="Manage prayer requests, answer submissions"
       prayerRequests={items}
       totalPages={totalPages}
       listError={listError}

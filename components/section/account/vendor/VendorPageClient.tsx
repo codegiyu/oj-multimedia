@@ -7,28 +7,15 @@ import { Button } from '@/components/ui/button';
 import { Package, ShoppingBag, CreditCard, Settings, ArrowRight, TrendingUp } from 'lucide-react';
 import type { IVendorDashboardStatsRes, IVendorMeRes } from '@/lib/constants/endpoints';
 import { formatPrice } from '@/lib/utils/marketplace';
-import { VendorCreateStoreState } from './VendorCreateStoreState';
 import { VendorDashboardCharts } from './VendorDashboardCharts';
 
 export interface VendorPageClientProps {
   vendor: IVendorMeRes | null;
   stats: IVendorDashboardStatsRes | null;
-  hasVendorProfile: boolean;
   errorMessage: string | null;
 }
 
-export function VendorPageClient({
-  vendor,
-  stats,
-  hasVendorProfile,
-  errorMessage,
-}: VendorPageClientProps) {
-  if (!hasVendorProfile) {
-    return (
-      <VendorCreateStoreState description="You do not have a vendor store yet. Become a vendor to start listing products and receive orders that are organized and sent to your WhatsApp." />
-    );
-  }
-
+export function VendorPageClient({ vendor, stats, errorMessage }: VendorPageClientProps) {
   const productsCount = stats?.productsCount ?? 0;
   const pendingOrdersCount = stats?.pendingOrdersCount ?? 0;
   const revenue = stats?.totalPaidRevenue ?? 0;

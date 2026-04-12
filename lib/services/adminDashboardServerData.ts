@@ -11,6 +11,7 @@ import type {
   PopulatedMarketplaceOrder,
   PublicNewsListItem,
 } from '@/lib/constants/endpoints';
+import type { IGospelVerse } from '@/lib/types/server-models';
 import type {
   DevotionalListItem,
   PollListItem,
@@ -28,6 +29,17 @@ import {
   type AdminEmailLogsListParams,
 } from '@/lib/utils/adminDashboardSearchParams';
 import { callServerApi } from '@/lib/services/serverApi';
+import { ADMIN_DASHBOARD_LIST_PAGE_SIZE } from '@/lib/constants/pagination';
+
+/** Ensures API `limit` is a positive integer string (backend: `^[0-9]+$`). */
+function limitQueryValue(pageSize: unknown): string {
+  const n =
+    typeof pageSize === 'number' && Number.isFinite(pageSize)
+      ? Math.floor(pageSize)
+      : parseInt(String(pageSize ?? '').trim(), 10);
+  const safe = Number.isFinite(n) && n > 0 ? n : ADMIN_DASHBOARD_LIST_PAGE_SIZE;
+  return String(safe);
+}
 
 export type AdminListPayload<T> = {
   items: T[];
@@ -38,7 +50,7 @@ export type AdminListPayload<T> = {
 function standardQueryParams(p: AdminStandardListParams, sort: string): URLSearchParams {
   const params = new URLSearchParams();
   params.set('page', String(p.page));
-  params.set('limit', String(p.pageSize));
+  params.set('limit', limitQueryValue(p.pageSize));
   params.set('sort', sort);
   if (p.search.trim()) params.set('search', p.search.trim());
   if (p.status && p.status !== 'all') params.set('status', p.status);
@@ -137,6 +149,23 @@ export async function serverFetchAdminDevotionalsList(
   };
 }
 
+export async function serverFetchAdminGospelVersesList(
+  p: AdminStandardListParams
+): Promise<AdminListPayload<IGospelVerse>> {
+  const params = standardQueryParams(p, '-createdAt');
+  const res = await callServerApi('ADMIN_GOSPEL_VERSES_LIST', {
+    query: `?${params.toString()}` as `?${string}`,
+  });
+  if (res.type === 'error') {
+    return { items: [], totalPages: 1, listError: res.message ?? 'Failed to load gospel verses' };
+  }
+  return {
+    items: res.data.gospelVerses ?? [],
+    totalPages: res.data.pagination?.totalPages ?? 1,
+    listError: null,
+  };
+}
+
 export async function serverFetchAdminResourcesList(
   p: AdminStandardListParams
 ): Promise<AdminListPayload<ResourceListItem>> {
@@ -193,7 +222,7 @@ export async function serverFetchAdminContactSubmissionsList(
 ): Promise<AdminListPayload<ContactSubmission>> {
   const params = new URLSearchParams();
   params.set('page', String(p.page));
-  params.set('limit', String(p.pageSize));
+  params.set('limit', limitQueryValue(p.pageSize));
   params.set('sort', '-createdAt');
   if (p.search.trim()) params.set('search', p.search.trim());
   const res = await callServerApi('ADMIN_CONTACT_SUBMISSIONS_LIST', {
@@ -214,7 +243,7 @@ export async function serverFetchAdminDocumentsList(
 ): Promise<AdminListPayload<Record<string, unknown>>> {
   const params = new URLSearchParams();
   params.set('page', String(p.page));
-  params.set('limit', String(p.pageSize));
+  params.set('limit', limitQueryValue(p.pageSize));
   params.set('sort', '-createdAt');
   if (p.status && p.status !== 'all') params.set('status', p.status);
   const res = await callServerApi('ADMIN_DOCUMENTS_LIST', {
@@ -236,7 +265,7 @@ export async function serverFetchAdminEmailLogsList(
   const params = new URLSearchParams();
   if (p.filterStatus !== 'all') params.set('status', p.filterStatus);
   params.set('page', String(p.page));
-  params.set('limit', String(p.pageSize));
+  params.set('limit', limitQueryValue(p.pageSize));
   params.set('sort', '-createdAt');
   const res = await callServerApi('ADMIN_EMAIL_LOGS_LIST', {
     query: `?${params.toString()}` as `?${string}`,
@@ -256,7 +285,7 @@ export async function serverFetchAdminContentCategoriesList(
 ): Promise<AdminListPayload<IContentCategoryItem>> {
   const params = new URLSearchParams();
   params.set('page', String(p.page));
-  params.set('limit', String(p.pageSize));
+  params.set('limit', limitQueryValue(p.pageSize));
   params.set('sort', 'displayOrder');
   if (p.search.trim()) params.set('search', p.search.trim());
   if (p.scope && p.scope !== 'all') params.set('scope', p.scope);
@@ -278,7 +307,7 @@ export async function serverFetchAdminHomeAdvertsList(
 ): Promise<AdminListPayload<IHomeAdvertItem>> {
   const params = new URLSearchParams();
   params.set('page', String(p.page));
-  params.set('limit', String(p.pageSize));
+  params.set('limit', limitQueryValue(p.pageSize));
   params.set('sort', 'displayOrder');
   if (p.slot && p.slot !== 'all') params.set('slot', p.slot);
   const res = await callServerApi('ADMIN_HOME_ADVERTS_LIST', {
@@ -299,7 +328,7 @@ export async function serverFetchAdminArtistsList(
 ): Promise<AdminListPayload<ArtistListItem>> {
   const params = new URLSearchParams();
   params.set('page', String(p.page));
-  params.set('limit', String(p.pageSize));
+  params.set('limit', limitQueryValue(p.pageSize));
   params.set('sort', '-createdAt');
   if (p.search.trim()) params.set('search', p.search.trim());
   const res = await callServerApi('ADMIN_ARTISTS_LIST', {
@@ -320,7 +349,7 @@ export async function serverFetchAdminPastorsList(
 ): Promise<AdminListPayload<PastorListItem>> {
   const params = new URLSearchParams();
   params.set('page', String(p.page));
-  params.set('limit', String(p.pageSize));
+  params.set('limit', limitQueryValue(p.pageSize));
   params.set('sort', '-createdAt');
   if (p.search.trim()) params.set('search', p.search.trim());
   const res = await callServerApi('ADMIN_PASTORS_LIST', {

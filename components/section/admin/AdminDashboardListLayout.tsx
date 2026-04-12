@@ -57,8 +57,7 @@ export function AdminDashboardListLayout({
     toolbar === undefined && (toolbarBeforeFilters != null || filterableDataPageProps != null);
 
   return (
-    <section
-      className={cn('flex h-full min-h-0 flex-col gap-4 sm:gap-6 overflow-hidden', className)}>
+    <section className={cn('flex min-h-full flex-col gap-4 sm:gap-6 overflow-hidden', className)}>
       <PageHeader
         title={title}
         description={description}

@@ -8,13 +8,13 @@ import type { TrendingSong } from '@/components/section/music/TrendingSongs';
 import type { ChartSong } from '@/components/section/music/TopMusicCharts';
 import type { RecentUpload } from '@/components/section/music/RecentUploads';
 import type { FeaturedArtist } from '@/components/section/music/FeaturedArtists';
-import { ARTIST_PROFILES } from '@/lib/constants/community/artists';
 import { callServerApi } from '@/lib/services/serverApi';
 import { filterByCategory } from '@/lib/utils/music';
 import {
   mapPublicMusicToTrendingSong,
   mapPublicMusicToChartSong,
   mapPublicMusicToRecentUpload,
+  mapPublicArtistToFeaturedArtist,
 } from '@/lib/utils/publicApiMappers';
 
 export const metadata: Metadata = {
@@ -30,12 +30,13 @@ async function fetchMusicSections(category: string, period: string) {
     category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';
   const baseQuery = `?limit=12&page=1&status=published${categoryParam}`;
 
-  const [trendingRes, chartsRes, recentRes] = await Promise.all([
+  const [trendingRes, chartsRes, recentRes, artistsRes] = await Promise.all([
     callServerApi('PUBLIC_GET_MUSIC', { query: `${baseQuery}&type=trending` as `?${string}` }),
     callServerApi('PUBLIC_GET_MUSIC', {
       query: `${baseQuery}&type=charts&period=${period}` as `?${string}`,
     }),
     callServerApi('PUBLIC_GET_MUSIC', { query: `${baseQuery}&type=recent` as `?${string}` }),
+    callServerApi('PUBLIC_GET_ARTISTS', { query: '?page=1&limit=6' as `?${string}` }),
   ]);
 
   let errorMessage: string | null = null;
@@ -64,17 +65,10 @@ async function fetchMusicSections(category: string, period: string) {
     .map(mapPublicMusicToRecentUpload)
     .slice(0, 6);
 
-  const featuredArtists: FeaturedArtist[] = ARTIST_PROFILES.filter(p => p.isFeatured)
+  const rawArtists = artistsRes.type === 'success' ? (artistsRes.data?.artists ?? []) : [];
+  const featuredArtists: FeaturedArtist[] = rawArtists
     .slice(0, 6)
-    .map(p => ({
-      _id: p._id,
-      name: p.name,
-      genre: p.genre ?? '',
-      image: p.image ?? '',
-      followers: p.followers ?? '0',
-      verified: p.verified ?? false,
-      songs: p.songs ?? 0,
-    }));
+    .map(a => mapPublicArtistToFeaturedArtist(a as unknown as Record<string, unknown>));
 
   return {
     trendingSongs,

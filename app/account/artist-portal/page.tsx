@@ -76,24 +76,15 @@ async function ArtistPortalPageClientServer() {
     const responseCode = meRes.error?.responseCode;
 
     if (responseCode === 403 || responseCode === 404) {
-      return (
-        <ArtistPortalPageClient
-          artist={null}
-          stats={null}
-          hasArtistProfile={false}
-          errorMessage={null}
-          recentUploads={[]}
-        />
-      );
+      return null;
     }
 
     return (
       <ArtistPortalPageClient
-        artist={null}
         stats={null}
-        hasArtistProfile={true}
         errorMessage={meRes.message || 'Unable to load artist profile.'}
         recentUploads={[]}
+        artist={null}
       />
     );
   }
@@ -113,13 +104,12 @@ async function ArtistPortalPageClientServer() {
 
   return (
     <ArtistPortalPageClient
-      artist={artist}
       stats={stats}
-      hasArtistProfile={true}
       errorMessage={
         statsRes.type === 'error' ? statsRes.message || 'Unable to load dashboard stats.' : null
       }
       recentUploads={recentUploads}
+      artist={artist}
     />
   );
 }

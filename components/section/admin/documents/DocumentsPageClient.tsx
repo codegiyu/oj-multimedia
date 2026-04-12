@@ -3,11 +3,10 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useQueryState, parseAsInteger, parseAsString } from 'nuqs';
-import { FilterableDataPage } from '@/components/general/FilterableDataPage';
+import { AdminDashboardListLayout } from '@/components/section/admin/AdminDashboardListLayout';
 import type { ClickedRowDetails } from '@/components/general/TableRowDetailsDrawer';
 import { DocumentsTableContent } from './DocumentsTableContent';
 import { DocumentsDetailsDrawer } from './DocumentsDetailsDrawer';
-import { AlertCircle } from 'lucide-react';
 
 export interface AdminDocument {
   _id: string;
@@ -22,12 +21,16 @@ export interface AdminDocument {
 }
 
 export interface DocumentsPageClientProps {
+  pageTitle: string;
+  pageDescription: string;
   documents: AdminDocument[];
   totalPages: number;
   listError: string | null;
 }
 
 export function DocumentsPageClient({
+  pageTitle,
+  pageDescription,
   documents,
   totalPages,
   listError,
@@ -55,33 +58,32 @@ export function DocumentsPageClient({
   ];
 
   return (
-    <section className="h-full grid grid-rows-[auto_1fr] gap-4 sm:gap-6 overflow-hidden">
-      {listError && (
-        <div className="rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive flex items-start gap-2">
-          <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
-          <span>{listError}</span>
-        </div>
-      )}
-      <section className="grid gap-4 sm:gap-6">
-        <div className="flex-1 min-w-0">
-          <FilterableDataPage
-            searchPlaceholder="Filter by entity type..."
-            filters={[
-              {
-                label: 'Status',
-                value: filterStatus,
-                options: statusOptions,
-                onChange: v => {
-                  setFilterStatus(v);
-                  setPage(1);
-                },
-              },
-            ]}
-            onApplyFilters={() => setPage(1)}
-          />
-        </div>
-      </section>
-
+    <AdminDashboardListLayout
+      title={pageTitle}
+      description={pageDescription}
+      listError={listError}
+      filterableDataPageProps={{
+        searchPlaceholder: 'Filter by entity type...',
+        filters: [
+          {
+            label: 'Status',
+            value: filterStatus,
+            options: statusOptions,
+            onChange: v => {
+              setFilterStatus(v);
+              setPage(1);
+            },
+          },
+        ],
+        onApplyFilters: () => setPage(1),
+      }}
+      extraContent={
+        <DocumentsDetailsDrawer
+          clickedRowDetails={clickedRowDetails}
+          setClickedRowDetails={setClickedRowDetails}
+          onVerify={handleRefresh}
+        />
+      }>
       <DocumentsTableContent
         documents={documents}
         loading={false}
@@ -91,12 +93,6 @@ export function DocumentsPageClient({
         totalPages={totalPages}
         onPageChange={setPage}
       />
-
-      <DocumentsDetailsDrawer
-        clickedRowDetails={clickedRowDetails}
-        setClickedRowDetails={setClickedRowDetails}
-        onVerify={handleRefresh}
-      />
-    </section>
+    </AdminDashboardListLayout>
   );
 }

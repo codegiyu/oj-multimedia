@@ -14,7 +14,6 @@ import type { IVendorProductsRes } from '@/lib/constants/endpoints';
 import { getProductCategoryName, getProductSubCategoryName } from '@/lib/constants/endpoints';
 import type { ApiErrorResponse } from '@/lib/types/http';
 import { toast } from 'sonner';
-import { VendorCreateStoreState } from './VendorCreateStoreState';
 import { EmptyState } from '@/components/section/news/EmptyState';
 import {
   DropdownMenu,
@@ -180,19 +179,16 @@ function VendorProductsList({
 export interface VendorProductsPageClientProps {
   initialProducts: IVendorProductsRes['products'];
   initialTotalPages: number;
-  initialHasVendorProfile: boolean;
   initialErrorMessage: string | null;
 }
 
 export function VendorProductsPageClient({
   initialProducts,
   initialTotalPages,
-  initialHasVendorProfile,
   initialErrorMessage,
 }: VendorProductsPageClientProps) {
   const [products, setProducts] = useState<IVendorProductsRes['products']>(initialProducts);
   const [loading, setLoading] = useState(false);
-  const [hasVendorProfile, setHasVendorProfile] = useState<boolean | null>(initialHasVendorProfile);
   const [errorMessage, setErrorMessage] = useState<string | null>(initialErrorMessage);
   const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1));
   const [pageSize] = useQueryState('pagesize', parseAsInteger.withDefault(10));
@@ -238,14 +234,11 @@ export function VendorProductsPageClient({
         const responseCode = (error as ApiErrorResponse | undefined)?.responseCode;
 
         if (responseCode === 403 || responseCode === 404) {
-          setHasVendorProfile(false);
           setErrorMessage(null);
         } else {
-          setHasVendorProfile(true);
           setErrorMessage(message || 'Unable to load products.');
         }
       } else {
-        setHasVendorProfile(true);
         setProducts(data.products);
         setTotalPages(data.pagination.totalPages || 1);
         setErrorMessage(null);
@@ -260,12 +253,6 @@ export function VendorProductsPageClient({
       cancelled = true;
     };
   }, [page, pageSize, reloadIndex]);
-
-  if (hasVendorProfile === false) {
-    return (
-      <VendorCreateStoreState description="You need a vendor store before you can add products. Become a vendor to start selling on the marketplace." />
-    );
-  }
 
   return (
     <div className="space-y-4">

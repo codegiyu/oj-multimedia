@@ -2,7 +2,6 @@ import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { Skeleton } from '@/components/ui/skeleton';
 import { VendorNewProductPageClient } from '@/components/section/account/vendor/VendorNewProductPageClient';
-import { VendorCreateStoreState } from '@/components/section/account/vendor/VendorCreateStoreState';
 import { callServerApi } from '@/lib/services/serverApi';
 import type { ApiErrorResponse } from '@/lib/types/http';
 
@@ -34,9 +33,7 @@ async function NewVendorProductPageServer() {
   if (res.error || !res.data) {
     const responseCode = (res.error as ApiErrorResponse | undefined)?.responseCode;
     if (responseCode === 403 || responseCode === 404) {
-      return (
-        <VendorCreateStoreState description="You need a vendor store before you can add products. Become a vendor to start selling on the marketplace." />
-      );
+      return null;
     }
   }
 

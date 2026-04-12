@@ -5,6 +5,7 @@ import { Providers } from '@/components/Providers';
 import { omit } from 'lodash';
 import { ScrollRestorationHandler } from '@/components/general/ScrollRestorationHandler';
 import { LoadAnimationScreen } from '@/components/general/LoadAnimationScreen';
+import NextTopLoader from 'nextjs-toploader';
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
@@ -39,6 +40,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`antialiased`}>
+        <NextTopLoader color="hsl(var(--primary))" height={3} showSpinner={false} />
         <ScrollRestorationHandler />
         <LoadAnimationScreen />
         <Providers>{children}</Providers>
