@@ -1,4 +1,4 @@
-FROM node:20-slim AS base
+FROM node:22-slim AS deps
 
 WORKDIR /app
 COPY package*.json ./
@@ -7,7 +7,7 @@ COPY package*.json ./
 RUN npm ci
 
 # ---- Build Stage ----
-FROM base AS builder
+FROM deps AS builder
 
 WORKDIR /app
 COPY . .
@@ -15,8 +15,22 @@ COPY . .
 # Build Next.js app
 RUN npm run build
 
+# ---- Production Dependencies Stage ----
+FROM node:22-slim AS prod-deps
+
+WORKDIR /app
+COPY package*.json ./
+
+# Install only production dependencies for runtime image
+RUN npm ci --omit=dev
+
 # ---- Production Stage ----
-FROM node:20-slim AS runner
+FROM node:22-slim AS runner
+
+# Apply Debian security updates (reduces OS-layer CVEs reported by image scanners)
+RUN apt-get update \
+  && apt-get upgrade -y --no-install-recommends \
+  && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
@@ -29,7 +43,7 @@ COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/next.config.ts ./
-COPY --from=builder /app/node_modules ./node_modules
+COPY --from=prod-deps /app/node_modules ./node_modules
 
 EXPOSE 3009
 
