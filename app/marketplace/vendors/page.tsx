@@ -11,7 +11,6 @@ export const metadata: Metadata = {
   description: 'Browse vendor stores on our marketplace. Shop directly from verified sellers.',
 };
 
-
 const DEFAULT_LIMIT = 24;
 
 async function fetchVendorsData(params: { page?: string; limit?: string }): Promise<{

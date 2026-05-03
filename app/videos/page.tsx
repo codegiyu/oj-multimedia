@@ -25,7 +25,6 @@ export const metadata: Metadata = {
     'Discover trending videos, watch creative content, explore music videos, short clips, talks, and inspirational videos from talented creators. Publishing is curated—contact us to submit videos for review.',
 };
 
-
 async function fetchVideoSections(category: string) {
   const categoryParam =
     category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';

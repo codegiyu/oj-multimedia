@@ -17,7 +17,6 @@ export const metadata: Metadata = {
     "Read powerful testimonies from our community. Stories of healing, breakthrough, transformation, and God's faithfulness in the lives of believers.",
 };
 
-
 const DEFAULT_LIMIT = 12;
 
 async function fetchTestimoniesData(page: number): Promise<{

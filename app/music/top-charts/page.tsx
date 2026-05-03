@@ -15,7 +15,6 @@ export const metadata: Metadata = {
     'View the top music charts across all genres. See what songs are ranking highest this week, month, or all-time.',
 };
 
-
 async function fetchChartSongs(category: string, period: string) {
   const categoryParam =
     category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';

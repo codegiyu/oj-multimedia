@@ -13,15 +13,18 @@ export const metadata: Metadata = {
     'Participate in community polls, share your opinion, and see what others think. Vote on topics that matter to you and engage with the community.',
 };
 
-
 async function fetchPollsData(): Promise<{
   activePolls: Poll[];
   recentPolls: Poll[];
   initialErrorMessage: string | null;
 }> {
   const [activeRes, closedRes] = await Promise.all([
-    callPublicServerApi('PUBLIC_GET_POLLS', { query: '?limit=20&page=1&status=active' as `?${string}` }),
-    callPublicServerApi('PUBLIC_GET_POLLS', { query: '?limit=3&page=1&status=closed' as `?${string}` }),
+    callPublicServerApi('PUBLIC_GET_POLLS', {
+      query: '?limit=20&page=1&status=active' as `?${string}`,
+    }),
+    callPublicServerApi('PUBLIC_GET_POLLS', {
+      query: '?limit=3&page=1&status=closed' as `?${string}`,
+    }),
   ]);
   const errorMessage =
     activeRes.type === 'error' ? (activeRes.error?.message ?? 'Failed to load polls') : null;

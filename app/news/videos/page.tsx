@@ -15,7 +15,6 @@ export const metadata: Metadata = {
     'Watch video stories covering behind-the-scenes content, inspiration, lifestyle, documentaries, and more.',
 };
 
-
 async function fetchVideoNews(category: string) {
   const categoryParam =
     category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';

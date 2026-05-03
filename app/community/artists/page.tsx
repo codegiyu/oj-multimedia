@@ -14,7 +14,6 @@ export const metadata: Metadata = {
     'Discover artists and creators. Explore profiles, music, and videos from talented creators in our community.',
 };
 
-
 const ARTISTS_LIMIT = 24;
 
 async function fetchArtistsData(page: number): Promise<{

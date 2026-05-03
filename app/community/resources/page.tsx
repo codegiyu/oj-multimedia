@@ -30,7 +30,6 @@ export const metadata: Metadata = {
     'Download free e-books, sermon templates, beats, wallpapers, and explore affiliate products. Access resources to support your faith journey.',
 };
 
-
 const RESOURCE_TYPE_ORDER: (typeof RESOURCE_TYPES)[number][] = [
   'ebook',
   'template',

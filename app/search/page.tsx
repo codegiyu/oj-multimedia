@@ -13,7 +13,6 @@ export const metadata = {
     'Search through music, news articles, videos, devotionals, sermons, testimonies, prayer requests, questions, polls, and resources. Find exactly what you are looking for on OJ Multimedia.',
 };
 
-
 type SearchPageProps = {
   searchParams: Promise<{ q?: string; type?: string; page?: string; limit?: string }>;
 };

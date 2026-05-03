@@ -16,7 +16,6 @@ export const metadata: Metadata = {
     'Shop from verified vendors - fashion, food, health & beauty, accessories, digital products, and more. Discover unique products and services.',
 };
 
-
 const DEFAULT_PAGE_SIZE = 8;
 
 async function fetchMarketplaceLandingData(): Promise<{

@@ -11,7 +11,6 @@ export const metadata: Metadata = {
     "Have a question, prayer request, or want to partner with us? Reach out and let's connect.",
 };
 
-
 function isStringArray(value: unknown): value is string[] {
   return Array.isArray(value) && value.every(v => typeof v === 'string');
 }

@@ -16,7 +16,6 @@ export const metadata: Metadata = {
     'Join our vibrant community - share stories, connect with others, participate in discussions, polls, and engage with content creators.',
 };
 
-
 const DEFAULT_CATEGORY_COUNTS: Record<string, number> = {
   devotionals: 0,
   testimonies: 0,

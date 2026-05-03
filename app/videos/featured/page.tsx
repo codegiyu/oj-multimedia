@@ -15,7 +15,6 @@ export const metadata: Metadata = {
     'Discover featured videos - editor picks and popular uploads. Hand-selected content that stands out.',
 };
 
-
 async function fetchFeaturedVideos(category: string) {
   const categoryParam =
     category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';

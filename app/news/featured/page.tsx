@@ -15,7 +15,6 @@ export const metadata: Metadata = {
     'Explore our featured stories - handpicked articles covering lifestyle, inspiration, culture, and trending topics.',
 };
 
-
 async function fetchFeaturedStories(category: string) {
   const categoryParam =
     category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';

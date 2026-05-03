@@ -23,7 +23,6 @@ export const metadata: Metadata = {
     'Stay updated with the latest news, announcements, inspirational stories, lifestyle content, and trending topics. Explore recent updates and popular stories.',
 };
 
-
 async function fetchNewsSections(category: string) {
   const categoryParam =
     category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';

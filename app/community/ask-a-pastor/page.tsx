@@ -18,7 +18,6 @@ export const metadata: Metadata = {
     'Submit your questions to our pastors, browse answered questions, and get biblical guidance on faith, life, and spiritual matters.',
 };
 
-
 async function fetchAskAPastorData(): Promise<{
   activeQuestions: Question[];
   answeredQuestions: AnsweredQuestion[];

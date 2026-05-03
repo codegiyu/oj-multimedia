@@ -18,7 +18,6 @@ interface ArtistDetailPageProps {
   params: Promise<{ id: string }>;
 }
 
-
 export async function generateMetadata({ params }: ArtistDetailPageProps): Promise<Metadata> {
   const resolvedParams = await params;
   const id = resolvedParams.id;

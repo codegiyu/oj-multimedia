@@ -15,7 +15,6 @@ export const metadata: Metadata = {
     "Discover what's trending now - the most popular stories, topics, and discussions everyone is talking about.",
 };
 
-
 async function fetchTrendingStories(category: string) {
   const categoryParam =
     category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';

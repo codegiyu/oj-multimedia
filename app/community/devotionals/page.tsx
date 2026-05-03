@@ -26,7 +26,6 @@ export const metadata: Metadata = {
     'Explore daily devotionals, Bible study series, prayer points, Christian living tips, and marriage & family guidance. Grow in your faith with inspiring content.',
 };
 
-
 const baseQuery = '?limit=12&page=1&status=published';
 
 async function fetchDevotionalsData(): Promise<{

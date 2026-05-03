@@ -19,7 +19,9 @@ export async function generateMetadata({ params }: NewsStoryPageProps): Promise<
       description: 'The requested news story could not be found.',
     };
   }
-  const res = await callPublicServerApi('PUBLIC_GET_NEWS_ITEM', { query: `/${encodeURIComponent(id)}` });
+  const res = await callPublicServerApi('PUBLIC_GET_NEWS_ITEM', {
+    query: `/${encodeURIComponent(id)}`,
+  });
   if (res.type === 'error') {
     return {
       title: 'Story Not Found',
@@ -55,13 +57,14 @@ export async function generateMetadata({ params }: NewsStoryPageProps): Promise<
   };
 }
 
-
 export default async function NewsStoryPage({ params }: NewsStoryPageProps) {
   const resolvedParams = await params;
   const id = resolvedParams.id;
   if (!id) notFound();
 
-  const res = await callPublicServerApi('PUBLIC_GET_NEWS_ITEM', { query: `/${encodeURIComponent(id)}` });
+  const res = await callPublicServerApi('PUBLIC_GET_NEWS_ITEM', {
+    query: `/${encodeURIComponent(id)}`,
+  });
   if (res.type === 'error') notFound();
 
   const data = res.data;
