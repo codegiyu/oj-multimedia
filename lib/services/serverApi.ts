@@ -15,23 +15,34 @@ export const SERVER_FETCH_REVALIDATE_SECONDS = 60;
 
 type ServerFetchMode = 'public-cacheable' | 'private-auth';
 
+type UpstreamAuthHeaders = {
+  cookie?: string;
+  authorization?: string;
+};
+
 /**
- * Cookie string to forward to the API from a Server Component / Route Handler.
+ * Headers to forward to the upstream API so it can resolve auth the same way as Fastify:
+ * cookie first, then `Authorization: Bearer …` as fallback.
  * Prefer the raw `Cookie` header (what the browser sent to Next), then `cookies().getAll()`.
  */
-async function getCookieHeaderForUpstreamApi(): Promise<string | undefined> {
-  const headerList = await headers();
-  const raw = headerList.get('cookie')?.trim();
-  if (raw) return raw;
+async function getUpstreamAuthHeaders(headerList: Headers): Promise<UpstreamAuthHeaders> {
+  const authorization = headerList.get('authorization')?.trim() || undefined;
 
-  const cookieStore = await cookies();
-  const joined = cookieStore
-    .getAll()
-    .map(({ name, value }) => `${name}=${value}`)
-    .join('; ')
-    .trim();
+  let cookie = headerList.get('cookie')?.trim() || undefined;
+  if (!cookie) {
+    const cookieStore = await cookies();
+    cookie =
+      cookieStore
+        .getAll()
+        .map(({ name, value }) => `${name}=${value}`)
+        .join('; ')
+        .trim() || undefined;
+  }
 
-  return joined || undefined;
+  const out: UpstreamAuthHeaders = {};
+  if (cookie) out.cookie = cookie;
+  if (authorization) out.authorization = authorization;
+  return out;
 }
 
 function isSpeculativePrefetchRequest(headerList: Headers): boolean {
@@ -51,27 +62,29 @@ function isSpeculativePrefetchRequest(headerList: Headers): boolean {
 async function runServerFetch<T extends keyof AllEndpoints>(
   endpoint: T,
   options: Omit<AllEndpoints[T], 'response'>,
-  cookieHeader: string | undefined,
+  upstreamAuth: UpstreamAuthHeaders | undefined,
   mode: ServerFetchMode
 ): Promise<ResponseMessage<T>> {
   const { path, method } = ENDPOINTS[endpoint];
   const hasBody = Boolean(options.payload);
-  // ISR only for explicit public fetches. Never for private-auth: when cookieHeader is missing,
-  // `cookieHeader == null` would wrongly enable revalidate and Next can cache 401s by URL.
+  // ISR only for explicit public fetches. Never for private-auth — Next can cache 401s by URL.
   const useRevalidate = mode === 'public-cacheable' && method === 'GET' && !hasBody;
+
+  const hasUpstreamCookie = Boolean(upstreamAuth?.cookie);
 
   try {
     const response = await fetch(`${SERVER_BASE_URL}${path}${options.query || ''}`, {
       method,
       headers: {
         'Content-Type': 'application/json',
-        ...(cookieHeader ? { cookie: cookieHeader } : {}),
+        ...(upstreamAuth?.cookie ? { Cookie: upstreamAuth.cookie } : {}),
+        ...(upstreamAuth?.authorization ? { Authorization: upstreamAuth.authorization } : {}),
       },
       body: options.payload ? JSON.stringify(options.payload) : undefined,
       ...(useRevalidate
         ? { next: { revalidate: SERVER_FETCH_REVALIDATE_SECONDS } }
         : { cache: 'no-store' }),
-      ...(cookieHeader ? { credentials: 'include' as RequestCredentials } : {}),
+      ...(hasUpstreamCookie ? { credentials: 'include' as RequestCredentials } : {}),
     });
 
     const json = (await response.json().catch(() => null)) as
@@ -138,9 +151,13 @@ export const callServerApi = async <T extends keyof AllEndpoints>(
   await connection();
 
   const headerList = await headers();
-  const cookieHeader = await getCookieHeaderForUpstreamApi();
+  const upstreamAuth = await getUpstreamAuthHeaders(headerList);
 
-  if (!cookieHeader && isSpeculativePrefetchRequest(headerList)) {
+  if (
+    !upstreamAuth.cookie &&
+    !upstreamAuth.authorization &&
+    isSpeculativePrefetchRequest(headerList)
+  ) {
     const error: ApiErrorResponse = {
       success: false,
       message: 'Skipped auth upstream call during speculative prefetch',
@@ -150,5 +167,5 @@ export const callServerApi = async <T extends keyof AllEndpoints>(
     return getDataFromRequest<T>({ error }, endpoint);
   }
 
-  return runServerFetch(endpoint, options, cookieHeader, 'private-auth');
+  return runServerFetch(endpoint, options, upstreamAuth, 'private-auth');
 };
