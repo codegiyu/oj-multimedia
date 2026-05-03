@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { PromoteYourContentClient } from '@/components/section/community/promote/PromoteYourContentClient';
-import { callServerApi } from '@/lib/services/serverApi';
+import { callPublicServerApi } from '@/lib/services/serverApi';
 import {
   FEATURED_OPTIONS_FALLBACK,
   PRICING_OPTIONS_FALLBACK,
@@ -17,13 +17,12 @@ export const metadata: Metadata = {
     'Promote your songs and ministry, get featured, and explore sponsorship opportunities. Content publishing is curated by our team—contact us to submit material for review.',
 };
 
-export const dynamic = 'force-dynamic';
 
 async function fetchPromotionData() {
   const [featuredRes, pricingRes, contactRes] = await Promise.all([
-    callServerApi('PUBLIC_GET_FEATURED_OPTIONS', {}),
-    callServerApi('PUBLIC_GET_PROMOTION_PRICING_OPTIONS', {}),
-    callServerApi('PUBLIC_GET_PROMOTION_CONTACT', {}),
+    callPublicServerApi('PUBLIC_GET_FEATURED_OPTIONS', {}),
+    callPublicServerApi('PUBLIC_GET_PROMOTION_PRICING_OPTIONS', {}),
+    callPublicServerApi('PUBLIC_GET_PROMOTION_CONTACT', {}),
   ]);
 
   const featuredOptions: FeaturedOption[] =

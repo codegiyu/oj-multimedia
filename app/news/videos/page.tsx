@@ -6,7 +6,7 @@ import { VideoNewsPageClient } from '@/components/section/news';
 import { filterByCategory } from '@/components/section/news/categoryUtils';
 import { NewsPageSkeleton } from '@/components/section/news/NewsPageSkeleton';
 import type { VideoNewsItem } from '@/components/section/news/VideoNews';
-import { callServerApi } from '@/lib/services/serverApi';
+import { callPublicServerApi } from '@/lib/services/serverApi';
 import { mapPublicNewsToVideoNewsItem } from '@/lib/utils/publicApiMappers';
 
 export const metadata: Metadata = {
@@ -15,13 +15,12 @@ export const metadata: Metadata = {
     'Watch video stories covering behind-the-scenes content, inspiration, lifestyle, documentaries, and more.',
 };
 
-export const dynamic = 'force-dynamic';
 
 async function fetchVideoNews(category: string) {
   const categoryParam =
     category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';
   const query = `?limit=50&page=1&status=published&type=video${categoryParam}` as const;
-  const res = await callServerApi('PUBLIC_GET_NEWS', { query });
+  const res = await callPublicServerApi('PUBLIC_GET_NEWS', { query });
 
   if (res.type === 'error') {
     return {

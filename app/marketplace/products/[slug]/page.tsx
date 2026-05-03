@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { ProductDetailClient } from '@/components/section/marketplace/ProductDetailClient';
 import { ProductDetailSkeleton } from '@/components/section/marketplace/ProductDetailSkeleton';
-import { callServerApi } from '@/lib/services/serverApi';
+import { callPublicServerApi } from '@/lib/services/serverApi';
 import { MainLayout } from '@/components/layout/MainLayout';
 
 interface PageProps {
@@ -10,7 +10,7 @@ interface PageProps {
 }
 
 async function fetchProductBySlug(slug: string) {
-  const res = await callServerApi('MARKETPLACE_GET_PRODUCT_BY_SLUG', {
+  const res = await callPublicServerApi('MARKETPLACE_GET_PRODUCT_BY_SLUG', {
     query: `/${encodeURIComponent(slug)}` as `/${string}`,
   });
   if (res.type === 'error') return null;

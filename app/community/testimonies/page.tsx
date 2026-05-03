@@ -7,7 +7,7 @@ import {
   type Testimony,
 } from '@/components/section/community/testimonies/TestimoniesPageClient';
 import { TestimoniesPageSkeleton } from '@/components/section/community/testimonies/TestimoniesPageSkeleton';
-import { callServerApi } from '@/lib/services/serverApi';
+import { callPublicServerApi } from '@/lib/services/serverApi';
 import { mapToTestimony } from '@/lib/utils/communityApiMappers';
 import type { Pagination } from '@/lib/types/community';
 
@@ -17,7 +17,6 @@ export const metadata: Metadata = {
     "Read powerful testimonies from our community. Stories of healing, breakthrough, transformation, and God's faithfulness in the lives of believers.",
 };
 
-export const dynamic = 'force-dynamic';
 
 const DEFAULT_LIMIT = 12;
 
@@ -28,10 +27,10 @@ async function fetchTestimoniesData(page: number): Promise<{
   initialErrorMessage: string | null;
 }> {
   const [allRes, featuredRes] = await Promise.all([
-    callServerApi('PUBLIC_GET_TESTIMONIES', {
+    callPublicServerApi('PUBLIC_GET_TESTIMONIES', {
       query: `?limit=${DEFAULT_LIMIT}&page=${page}&type=all` as `?${string}`,
     }),
-    callServerApi('PUBLIC_GET_TESTIMONIES', {
+    callPublicServerApi('PUBLIC_GET_TESTIMONIES', {
       query: '?limit=3&page=1&type=featured' as `?${string}`,
     }),
   ]);

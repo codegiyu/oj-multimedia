@@ -14,7 +14,6 @@ export const metadata: Metadata = {
     'Browse active prayer requests from our community. Join us in praying for these needs and see how God is moving.',
 };
 
-export const dynamic = 'force-dynamic';
 
 async function generateActivePrayerRequestsData() {
   await new Promise(resolve => setTimeout(resolve, 1500));

@@ -5,7 +5,7 @@ import { SubPageHero } from '@/components/general/SubPageHero';
 import { FeaturedVideosPageClient } from '@/components/section/video/FeaturedVideosPageClient';
 import { VideoPageSkeleton } from '@/components/section/video/VideoPageSkeleton';
 import type { FeaturedVideo } from '@/components/section/video/FeaturedVideos';
-import { callServerApi } from '@/lib/services/serverApi';
+import { callPublicServerApi } from '@/lib/services/serverApi';
 import { filterByCategory } from '@/lib/utils/videos';
 import { mapPublicVideoToFeaturedVideo } from '@/lib/utils/publicApiMappers';
 
@@ -15,13 +15,12 @@ export const metadata: Metadata = {
     'Discover featured videos - editor picks and popular uploads. Hand-selected content that stands out.',
 };
 
-export const dynamic = 'force-dynamic';
 
 async function fetchFeaturedVideos(category: string) {
   const categoryParam =
     category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';
   const query = `?limit=50&page=1&status=published&type=featured${categoryParam}` as const;
-  const res = await callServerApi('PUBLIC_GET_VIDEOS', { query });
+  const res = await callPublicServerApi('PUBLIC_GET_VIDEOS', { query });
   if (res.type === 'error') {
     return {
       featuredVideos: [] as FeaturedVideo[],

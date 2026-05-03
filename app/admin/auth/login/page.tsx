@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function AdminLoginPage() {
   return (
-    <AuthLayout subtitle="Sign in to your account">
+    <AuthLayout subtitle="">
       <Card>
         <CardHeader className="space-y-0 border-b border-foreground/20 pt-6 pb-6">
           <CardTitle className="text-2xl">Sign in to your account</CardTitle>

@@ -14,7 +14,7 @@ import {
   type PollOption,
 } from '@/components/section/home';
 import { HomePageSkeleton } from '@/components/section/home/HomePageSkeleton';
-import { callServerApi } from '@/lib/services/serverApi';
+import { callPublicServerApi } from '@/lib/services/serverApi';
 import type {
   IPublicMusicListRes,
   IPublicVideosListRes,
@@ -28,6 +28,7 @@ import type {
   IHomeAdvertItem,
 } from '@/lib/constants/endpoints';
 import type { HomeDevotionalCard } from '@/components/section/home';
+import { formatCompactNumber } from '@/lib/utils/general';
 
 export const metadata = {
   title: 'Home - Discover Music, Charts & Latest Content',
@@ -35,20 +36,11 @@ export const metadata = {
     'Explore our dynamic homepage featuring music categories, top charts, recent uploads, download metrics, trending content, and discover new music and audio content. Stay engaged with our lively, ever-updating platform.',
 };
 
-export const dynamic = 'force-dynamic';
-
 type HomeSearchParams = Promise<{
   genre?: string;
   category?: string;
   marketplaceCategory?: string;
 }>;
-
-const formatNumber = (value?: number | null): string => {
-  if (!value || Number.isNaN(value)) return '0';
-  if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`;
-  if (value >= 1_000) return `${(value / 1_000).toFixed(1)}K`;
-  return String(value);
-};
 
 const genreToCategorySlug = (genre: string | undefined): string | null => {
   if (!genre || genre.toLowerCase() === 'all') return null;
@@ -107,7 +99,7 @@ function mapPublicMusicToHomeTrending(
       name: typeof item.artist === 'string' ? 'Unknown' : (item.artist?.name ?? 'Unknown'),
     },
     cover: (item as { coverImage?: string }).coverImage ?? '',
-    plays: formatNumber((item as { views?: number }).views),
+    plays: formatCompactNumber((item as { views?: number }).views),
     genre:
       (item as { genre?: string }).genre ?? (item as { category?: string }).category ?? 'Other',
     isNew: Boolean(
@@ -128,7 +120,7 @@ function mapPublicVideoToHomeTrending(
         ? 'Unknown'
         : ((item as { artist?: { name?: string } }).artist?.name ?? 'Unknown'),
     thumbnail: (item as { thumbnail?: string }).thumbnail ?? '',
-    views: formatNumber((item as { views?: number }).views),
+    views: formatCompactNumber((item as { views?: number }).views),
     duration: (item as { duration?: string }).duration ?? '--:--',
     category: (item as { category?: string }).category ?? 'Video',
   };
@@ -199,21 +191,21 @@ async function fetchHomeSections(filters: {
     limit: '12',
     page: '1',
     status: 'published',
-    type: 'latest',
+    type: 'recent',
     excludeCategory: 'sermon',
   });
   const latestSermonsQuery = new URLSearchParams({
     limit: '12',
     page: '1',
     status: 'published',
-    type: 'latest',
+    type: 'recent',
     category: 'sermon',
   });
   const latestMoviesQuery = new URLSearchParams({
     limit: '12',
     page: '1',
     status: 'published',
-    type: 'latest',
+    type: 'recent',
     category: 'movie',
   });
   const featuredNewsQuery = new URLSearchParams({
@@ -251,47 +243,47 @@ async function fetchHomeSections(filters: {
     trendingNewsRes,
     devotionalsRes,
   ] = await Promise.all([
-    callServerApi('PUBLIC_GET_MUSIC', {
+    callPublicServerApi('PUBLIC_GET_MUSIC', {
       query: `?${baseMusicQuery.toString()}`,
     }),
-    callServerApi('PUBLIC_GET_VIDEOS', {
+    callPublicServerApi('PUBLIC_GET_VIDEOS', {
       query: `?${baseVideoQuery.toString()}`,
     }),
-    callServerApi('PUBLIC_GET_NEWS', {
+    callPublicServerApi('PUBLIC_GET_NEWS', {
       query: `?${baseNewsQuery.toString()}`,
     }),
-    callServerApi('PUBLIC_GET_MUSIC', {
+    callPublicServerApi('PUBLIC_GET_MUSIC', {
       query: `?${baseChartsQuery.toString()}`,
     }),
-    callServerApi('PUBLIC_GET_ARTISTS', {
+    callPublicServerApi('PUBLIC_GET_ARTISTS', {
       query: '?page=1&limit=4',
     }),
-    callServerApi('MARKETPLACE_GET_PRODUCTS', {
+    callPublicServerApi('MARKETPLACE_GET_PRODUCTS', {
       query: `?${marketplaceQuery.toString()}`,
     }),
-    callServerApi('PUBLIC_GET_POLLS', {
+    callPublicServerApi('PUBLIC_GET_POLLS', {
       query: '?status=active&page=1&limit=1',
     }),
-    callServerApi('PUBLIC_GET_TESTIMONIES', {
+    callPublicServerApi('PUBLIC_GET_TESTIMONIES', {
       query: '?type=featured&page=1&limit=3&status=published',
     }),
-    callServerApi('PUBLIC_GET_HOME_ADVERTS', {}),
-    callServerApi('PUBLIC_GET_MUSIC', {
+    callPublicServerApi('PUBLIC_GET_HOME_ADVERTS', {}),
+    callPublicServerApi('PUBLIC_GET_MUSIC', {
       query: `?${latestMusicQuery.toString()}`,
     }),
-    callServerApi('PUBLIC_GET_MUSIC', {
+    callPublicServerApi('PUBLIC_GET_MUSIC', {
       query: `?${latestSermonsQuery.toString()}`,
     }),
-    callServerApi('PUBLIC_GET_VIDEOS', {
+    callPublicServerApi('PUBLIC_GET_VIDEOS', {
       query: `?${latestMoviesQuery.toString()}`,
     }),
-    callServerApi('PUBLIC_GET_NEWS', {
+    callPublicServerApi('PUBLIC_GET_NEWS', {
       query: `?${featuredNewsQuery.toString()}`,
     }),
-    callServerApi('PUBLIC_GET_NEWS', {
+    callPublicServerApi('PUBLIC_GET_NEWS', {
       query: `?${trendingNewsQuery.toString()}`,
     }),
-    callServerApi('PUBLIC_GET_DEVOTIONALS', {
+    callPublicServerApi('PUBLIC_GET_DEVOTIONALS', {
       query: `?${devotionalsQuery.toString()}`,
     }),
   ]);
@@ -413,7 +405,7 @@ async function fetchHomeSections(filters: {
       name: typeof item.artist === 'string' ? 'Unknown' : (item.artist?.name ?? 'Unknown'),
     },
     cover: (item as any).coverImage ?? (item as any).cover ?? '',
-    plays: formatNumber((item as any).views as number | undefined),
+    plays: formatCompactNumber((item as any).views as number | undefined),
     trend: ((item as any).trend as ChartItem['trend']) ?? 'same',
     change: (item as any).change,
   }));

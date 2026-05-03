@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { VideoDetailPageClient } from '@/components/section/video/VideoDetailPageClient';
-import { callServerApi } from '@/lib/services/serverApi';
+import { callPublicServerApi } from '@/lib/services/serverApi';
 import { mapPublicVideoToDetailItem } from '@/lib/utils/publicApiMappers';
 import type { VideoItemWithCreator } from '@/lib/utils/videos';
 
@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: VideoDetailPageProps): Promis
     };
   }
 
-  const res = await callServerApi('PUBLIC_GET_VIDEO_ITEM', { query: `/${encodeURIComponent(id)}` });
+  const res = await callPublicServerApi('PUBLIC_GET_VIDEO_ITEM', { query: `/${encodeURIComponent(id)}` });
   if (res.type === 'error') {
     return {
       title: 'Video Not Found',
@@ -40,7 +40,6 @@ export async function generateMetadata({ params }: VideoDetailPageProps): Promis
   };
 }
 
-export const dynamic = 'force-dynamic';
 
 export default async function VideoDetailPage({ params }: VideoDetailPageProps) {
   const resolvedParams = await params;
@@ -50,7 +49,7 @@ export default async function VideoDetailPage({ params }: VideoDetailPageProps) 
     notFound();
   }
 
-  const res = await callServerApi('PUBLIC_GET_VIDEO_ITEM', { query: `/${encodeURIComponent(id)}` });
+  const res = await callPublicServerApi('PUBLIC_GET_VIDEO_ITEM', { query: `/${encodeURIComponent(id)}` });
   if (res.type === 'error') {
     notFound();
   }
@@ -59,7 +58,7 @@ export default async function VideoDetailPage({ params }: VideoDetailPageProps) 
   const videoItem = mapPublicVideoToDetailItem(data.video) as VideoItemWithCreator;
 
   const category = videoItem.category ?? 'creative';
-  const relatedRes = await callServerApi('PUBLIC_GET_VIDEOS', {
+  const relatedRes = await callPublicServerApi('PUBLIC_GET_VIDEOS', {
     query: `?limit=4&page=1&status=published&type=recent&category=${encodeURIComponent(category)}`,
   });
   const relatedList = relatedRes.type === 'success' ? (relatedRes.data?.videos ?? []) : [];

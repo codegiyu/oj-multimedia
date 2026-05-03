@@ -13,7 +13,6 @@ export const metadata: Metadata = {
     "Explore comprehensive Bible study series designed to deepen your understanding of God's Word.",
 };
 
-export const dynamic = 'force-dynamic';
 
 async function generateBibleStudyData() {
   await new Promise(resolve => setTimeout(resolve, 1500));

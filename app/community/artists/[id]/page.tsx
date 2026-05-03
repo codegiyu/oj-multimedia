@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { ArtistDetailPageClient } from '@/components/section/community/artists/ArtistDetailPageClient';
-import { callServerApi } from '@/lib/services/serverApi';
+import { callPublicServerApi } from '@/lib/services/serverApi';
 import { mapPublicMusicToDetailItem } from '@/lib/utils/publicApiMappers';
 import { mapPublicVideoToDetailItem } from '@/lib/utils/publicApiMappers';
 import type { MusicItemWithArtist } from '@/lib/utils/music';
@@ -18,7 +18,6 @@ interface ArtistDetailPageProps {
   params: Promise<{ id: string }>;
 }
 
-export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }: ArtistDetailPageProps): Promise<Metadata> {
   const resolvedParams = await params;
@@ -31,7 +30,7 @@ export async function generateMetadata({ params }: ArtistDetailPageProps): Promi
     };
   }
 
-  const res = await callServerApi('PUBLIC_GET_ARTIST_ITEM', {
+  const res = await callPublicServerApi('PUBLIC_GET_ARTIST_ITEM', {
     query: `/${encodeURIComponent(id)}`,
   });
   if (res.type === 'error') {
@@ -56,7 +55,7 @@ export default async function ArtistDetailPage({ params }: ArtistDetailPageProps
     notFound();
   }
 
-  const artistRes = await callServerApi('PUBLIC_GET_ARTIST_ITEM', {
+  const artistRes = await callPublicServerApi('PUBLIC_GET_ARTIST_ITEM', {
     query: `/${encodeURIComponent(id)}`,
   });
   if (artistRes.type === 'error' || !artistRes.data?.artist) {
@@ -78,10 +77,10 @@ export default async function ArtistDetailPage({ params }: ArtistDetailPageProps
   };
 
   const [musicRes, videoRes] = await Promise.all([
-    callServerApi('PUBLIC_GET_MUSIC', {
+    callPublicServerApi('PUBLIC_GET_MUSIC', {
       query: `?artist=${encodeURIComponent(artistId)}&status=published&page=1&limit=12`,
     }),
-    callServerApi('PUBLIC_GET_VIDEOS', {
+    callPublicServerApi('PUBLIC_GET_VIDEOS', {
       query: `?artist=${encodeURIComponent(artistId)}&status=published&page=1&limit=12`,
     }),
   ]);

@@ -14,7 +14,6 @@ export const metadata: Metadata = {
     'Browse answered questions from our pastors. Get biblical guidance on faith, life, and spiritual matters.',
 };
 
-export const dynamic = 'force-dynamic';
 
 async function generateAnsweredQuestionsData() {
   await new Promise(resolve => setTimeout(resolve, 1500));

@@ -13,7 +13,6 @@ export const metadata: Metadata = {
   description: 'Discover the most popular and widely read devotionals in our community.',
 };
 
-export const dynamic = 'force-dynamic';
 
 async function generatePopularDevotionalsData() {
   await new Promise(resolve => setTimeout(resolve, 1500));

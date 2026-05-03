@@ -12,10 +12,12 @@ import {
 } from '../ui/select';
 import { cn } from '@/lib/utils';
 import { InputWrapper } from '../general/InputWrapper';
-import { ComponentPropsWithRef, FocusEvent, useEffect, useRef, useState } from 'react';
+import { ComponentPropsWithRef, FocusEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 
 const LOAD_MORE_SENTINEL_VALUE = '__load_more__';
+/** Radix SelectItem rejects `value=""`; map optional / placeholder options through this sentinel. */
+const EMPTY_OPTION_SENTINEL = '__oj_select_empty__';
 
 export interface RegularSelectProps extends Omit<ComponentPropsWithRef<'div'>, 'className'> {
   label?: string;
@@ -103,6 +105,18 @@ export const RegularSelect = ({
     };
   }, [hasMore, loadingMore, options.length, isDropdownOpen, onLoadMore]);
 
+  const { itemsForSelect, rootSelectValue } = useMemo(() => {
+    const emptyOpts = options.filter(o => o.value === '');
+    const rest = options.filter(o => o.value !== '' && o.value != null);
+    const hasEmptyPlaceholder = emptyOpts.length > 0;
+    const itemsForSelect: SelectOption[] = hasEmptyPlaceholder
+      ? [{ ...emptyOpts[0], value: EMPTY_OPTION_SENTINEL }, ...rest]
+      : rest;
+    const rootSelectValue =
+      value === '' ? (hasEmptyPlaceholder ? EMPTY_OPTION_SENTINEL : undefined) : value;
+    return { itemsForSelect, rootSelectValue };
+  }, [options, value]);
+
   const defaultClearSubtext =
     !hideClearSubtext && value !== '' ? (
       <button
@@ -135,8 +149,15 @@ export const RegularSelect = ({
         className={cn('w-full flex items-center', className)}
         {...props}>
         <Select
-          value={value}
-          onValueChange={v => v && v !== LOAD_MORE_SENTINEL_VALUE && onSelectChange(v)}
+          value={rootSelectValue}
+          onValueChange={v => {
+            if (!v || v === LOAD_MORE_SENTINEL_VALUE) return;
+            if (v === EMPTY_OPTION_SENTINEL) {
+              onSelectChange('');
+              return;
+            }
+            onSelectChange(v);
+          }}
           onOpenChange={open => setIsDropdownOpen(open === true)}
           name={name}>
           <SelectTrigger
@@ -179,7 +200,7 @@ export const RegularSelect = ({
                   <span className="text-muted-foreground text-sm truncate">Loading options...</span>
                 </div>
               </SelectItem>
-            ) : options.length === 0 ? (
+            ) : itemsForSelect.length === 0 ? (
               <SelectItem
                 value="__no_options__"
                 disabled
@@ -192,11 +213,11 @@ export const RegularSelect = ({
               </SelectItem>
             ) : (
               <>
-                {options.map(
+                {itemsForSelect.map(
                   ({ text, altText, value: optValue, disabled: optDisabled = false }, idx) => (
                     <SelectItem
-                      key={idx}
-                      value={optValue}
+                      key={`${String(optValue)}-${idx}`}
+                      value={String(optValue)}
                       disabled={optDisabled}
                       className="overflow-hidden">
                       <div className="flex w-full items-center gap-3 overflow-hidden">

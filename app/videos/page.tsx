@@ -9,7 +9,7 @@ import type { FeaturedVideo } from '@/components/section/video/FeaturedVideos';
 import type { RecentVideoUpload } from '@/components/section/video/RecentVideoUploads';
 import type { ShortFormVideo } from '@/components/section/video/ShortFormVideos';
 import type { FeaturedCreator } from '@/components/section/video/CreatorSpotlight';
-import { callServerApi } from '@/lib/services/serverApi';
+import { callPublicServerApi } from '@/lib/services/serverApi';
 import { filterByCategory } from '@/lib/utils/videos';
 import {
   mapPublicVideoToTrendingVideo,
@@ -25,7 +25,6 @@ export const metadata: Metadata = {
     'Discover trending videos, watch creative content, explore music videos, short clips, talks, and inspirational videos from talented creators. Publishing is curated—contact us to submit videos for review.',
 };
 
-export const dynamic = 'force-dynamic';
 
 async function fetchVideoSections(category: string) {
   const categoryParam =
@@ -33,11 +32,11 @@ async function fetchVideoSections(category: string) {
   const baseQuery = `?limit=12&page=1&status=published${categoryParam}` as const;
 
   const [trendingRes, featuredRes, recentRes, shortRes, artistsRes] = await Promise.all([
-    callServerApi('PUBLIC_GET_VIDEOS', { query: `${baseQuery}&type=trending` }),
-    callServerApi('PUBLIC_GET_VIDEOS', { query: `${baseQuery}&type=featured` }),
-    callServerApi('PUBLIC_GET_VIDEOS', { query: `${baseQuery}&type=recent` }),
-    callServerApi('PUBLIC_GET_VIDEOS', { query: `${baseQuery}&type=short-form` }),
-    callServerApi('PUBLIC_GET_ARTISTS', { query: '?page=1&limit=6' as `?${string}` }),
+    callPublicServerApi('PUBLIC_GET_VIDEOS', { query: `${baseQuery}&type=trending` }),
+    callPublicServerApi('PUBLIC_GET_VIDEOS', { query: `${baseQuery}&type=featured` }),
+    callPublicServerApi('PUBLIC_GET_VIDEOS', { query: `${baseQuery}&type=recent` }),
+    callPublicServerApi('PUBLIC_GET_VIDEOS', { query: `${baseQuery}&type=short-form` }),
+    callPublicServerApi('PUBLIC_GET_ARTISTS', { query: '?page=1&limit=6' as `?${string}` }),
   ]);
 
   let errorMessage: string | null = null;

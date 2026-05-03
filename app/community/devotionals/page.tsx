@@ -11,7 +11,7 @@ import {
   type MarriageFamily,
 } from '@/components/section/community/devotionals/DevotionalsPageClient';
 import { DevotionalsPageSkeleton } from '@/components/section/community/devotionals/DevotionalsPageSkeleton';
-import { callServerApi } from '@/lib/services/serverApi';
+import { callPublicServerApi } from '@/lib/services/serverApi';
 import {
   mapToDailyDevotional,
   mapToBibleStudy,
@@ -26,7 +26,6 @@ export const metadata: Metadata = {
     'Explore daily devotionals, Bible study series, prayer points, Christian living tips, and marriage & family guidance. Grow in your faith with inspiring content.',
 };
 
-export const dynamic = 'force-dynamic';
 
 const baseQuery = '?limit=12&page=1&status=published';
 
@@ -39,19 +38,19 @@ async function fetchDevotionalsData(): Promise<{
   initialErrorMessage: string | null;
 }> {
   const [dailyRes, bibleRes, prayerRes, livingRes, marriageRes] = await Promise.all([
-    callServerApi('PUBLIC_GET_DEVOTIONALS', {
+    callPublicServerApi('PUBLIC_GET_DEVOTIONALS', {
       query: `${baseQuery}&type=daily` as `?${string}`,
     }),
-    callServerApi('PUBLIC_GET_DEVOTIONALS', {
+    callPublicServerApi('PUBLIC_GET_DEVOTIONALS', {
       query: `${baseQuery}&type=bible-study` as `?${string}`,
     }),
-    callServerApi('PUBLIC_GET_DEVOTIONALS', {
+    callPublicServerApi('PUBLIC_GET_DEVOTIONALS', {
       query: `${baseQuery}&type=prayer-points` as `?${string}`,
     }),
-    callServerApi('PUBLIC_GET_DEVOTIONALS', {
+    callPublicServerApi('PUBLIC_GET_DEVOTIONALS', {
       query: `${baseQuery}&type=living-tips` as `?${string}`,
     }),
-    callServerApi('PUBLIC_GET_DEVOTIONALS', {
+    callPublicServerApi('PUBLIC_GET_DEVOTIONALS', {
       query: `${baseQuery}&type=marriage-family` as `?${string}`,
     }),
   ]);

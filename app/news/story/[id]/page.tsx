@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { NewsDetailPageClient } from '@/components/section/news/NewsDetailPageClient';
-import { callServerApi } from '@/lib/services/serverApi';
+import { callPublicServerApi } from '@/lib/services/serverApi';
 import { mapPublicNewsToDetailItem } from '@/lib/utils/publicApiMappers';
 import type { NewsItem } from '@/lib/constants/news';
 
@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: NewsStoryPageProps): Promise<
       description: 'The requested news story could not be found.',
     };
   }
-  const res = await callServerApi('PUBLIC_GET_NEWS_ITEM', { query: `/${encodeURIComponent(id)}` });
+  const res = await callPublicServerApi('PUBLIC_GET_NEWS_ITEM', { query: `/${encodeURIComponent(id)}` });
   if (res.type === 'error') {
     return {
       title: 'Story Not Found',
@@ -55,14 +55,13 @@ export async function generateMetadata({ params }: NewsStoryPageProps): Promise<
   };
 }
 
-export const dynamic = 'force-dynamic';
 
 export default async function NewsStoryPage({ params }: NewsStoryPageProps) {
   const resolvedParams = await params;
   const id = resolvedParams.id;
   if (!id) notFound();
 
-  const res = await callServerApi('PUBLIC_GET_NEWS_ITEM', { query: `/${encodeURIComponent(id)}` });
+  const res = await callPublicServerApi('PUBLIC_GET_NEWS_ITEM', { query: `/${encodeURIComponent(id)}` });
   if (res.type === 'error') notFound();
 
   const data = res.data;
@@ -72,7 +71,7 @@ export default async function NewsStoryPage({ params }: NewsStoryPageProps) {
   const categorySlug = rawArticle.category
     ? `&category=${encodeURIComponent(rawArticle.category)}`
     : '';
-  const relatedRes = await callServerApi('PUBLIC_GET_NEWS', {
+  const relatedRes = await callPublicServerApi('PUBLIC_GET_NEWS', {
     query: `?limit=4&page=1&status=published&type=latest${categorySlug}`,
   });
   const relatedList = relatedRes.type === 'success' ? (relatedRes.data?.articles ?? []) : [];

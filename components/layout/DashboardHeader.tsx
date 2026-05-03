@@ -20,13 +20,12 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { GhostBtn } from '../atoms/GhostBtn';
 import { getPersonDisplayName, getPersonInitials } from '@/lib/utils/general';
-import { Logo } from '../icons';
 import { getPublicSiteHref } from '@/lib/constants/texts';
 
 export const DashboardHeader = () => {
   return (
     <header className="sticky top-0 z-50 h-14 flex items-center gap-4 border-b border-border bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 px-4">
-      <Link href="/admin/dashboard/home" className="flex items-center gap-2 lg:hidden">
+      <Link href="/admin/dashboard/home" className="flex items-center gap-2 md:hidden">
         <LogoHeaderIcon />
         <span className="hidden md:inline-block text-lg font-semibold">Admin</span>
       </Link>
@@ -46,11 +45,7 @@ export const DashboardHeader = () => {
 };
 
 function LogoHeaderIcon() {
-  return (
-    <i className="text-primary text-4xl">
-      <Logo />
-    </i>
-  );
+  return <img src="/images/logo-badge.png" alt="OJ Multimedia" className={'h-9 w-auto'} />;
 }
 
 const MobileMenuButton = () => {

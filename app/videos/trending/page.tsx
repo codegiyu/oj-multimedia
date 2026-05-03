@@ -5,7 +5,7 @@ import { SubPageHero } from '@/components/general/SubPageHero';
 import { TrendingVideosPageClient } from '@/components/section/video/TrendingVideosPageClient';
 import { VideoPageSkeleton } from '@/components/section/video/VideoPageSkeleton';
 import type { TrendingVideo } from '@/components/section/video/TrendingVideos';
-import { callServerApi } from '@/lib/services/serverApi';
+import { callPublicServerApi } from '@/lib/services/serverApi';
 import { filterByCategory } from '@/lib/utils/videos';
 import { mapPublicVideoToTrendingVideo } from '@/lib/utils/publicApiMappers';
 
@@ -15,13 +15,12 @@ export const metadata: Metadata = {
     "Discover what's trending now - the most popular videos everyone is watching. Stay ahead of the video content scene.",
 };
 
-export const dynamic = 'force-dynamic';
 
 async function fetchTrendingVideos(category: string) {
   const categoryParam =
     category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';
   const query = `?limit=50&page=1&status=published&type=trending${categoryParam}` as const;
-  const res = await callServerApi('PUBLIC_GET_VIDEOS', { query });
+  const res = await callPublicServerApi('PUBLIC_GET_VIDEOS', { query });
   if (res.type === 'error') {
     return {
       trendingVideos: [] as TrendingVideo[],

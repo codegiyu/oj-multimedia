@@ -3,7 +3,7 @@ import { Suspense } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { MarketplacePageClient } from '@/components/section/marketplace/MarketplacePageClient';
 import { MarketplacePageSkeleton } from '@/components/section/marketplace/MarketplacePageSkeleton';
-import { callServerApi } from '@/lib/services/serverApi';
+import { callPublicServerApi } from '@/lib/services/serverApi';
 import type {
   IMarketplaceProduct,
   IMarketplaceCategory,
@@ -16,7 +16,6 @@ export const metadata: Metadata = {
     'Shop from verified vendors - fashion, food, health & beauty, accessories, digital products, and more. Discover unique products and services.',
 };
 
-export const dynamic = 'force-dynamic';
 
 const DEFAULT_PAGE_SIZE = 8;
 
@@ -29,14 +28,14 @@ async function fetchMarketplaceLandingData(): Promise<{
 }> {
   try {
     const [categoriesRes, featuredRes, hotRes, vendorsRes] = await Promise.all([
-      callServerApi('MARKETPLACE_GET_CATEGORIES', {}),
-      callServerApi('MARKETPLACE_GET_PRODUCTS', {
+      callPublicServerApi('MARKETPLACE_GET_CATEGORIES', {}),
+      callPublicServerApi('MARKETPLACE_GET_PRODUCTS', {
         query: `?featured=1&limit=${DEFAULT_PAGE_SIZE}&status=published` as `?${string}`,
       }),
-      callServerApi('MARKETPLACE_GET_PRODUCTS', {
+      callPublicServerApi('MARKETPLACE_GET_PRODUCTS', {
         query: `?sort=recent&limit=${DEFAULT_PAGE_SIZE}&status=published` as `?${string}`,
       }),
-      callServerApi('MARKETPLACE_GET_VENDORS', {
+      callPublicServerApi('MARKETPLACE_GET_VENDORS', {
         query: `?limit=6` as `?${string}`,
       }),
     ]);

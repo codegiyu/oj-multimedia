@@ -330,6 +330,14 @@ export function formatPopulation(num: number): string {
   return `${(num / 1_000_000_000).toFixed(num % 1_000_000_000 === 0 ? 0 : 1)}B+`;
 }
 
+/** Compact count for UI (plays, views, downloads): `1.2K`, `3.4M`. Falsy or NaN → `"0"`. */
+export function formatCompactNumber(value?: number | null): string {
+  if (!value || Number.isNaN(value)) return '0';
+  if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`;
+  if (value >= 1_000) return `${(value / 1_000).toFixed(1)}K`;
+  return String(value);
+}
+
 export const scrollToSection = (id: string) => {
   document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
 };

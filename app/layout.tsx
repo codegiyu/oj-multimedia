@@ -32,6 +32,9 @@ export const viewport: Viewport = {
   colorScheme: 'only light',
 };
 
+/** ISR: regenerate static pages at most every 60s (public + nested routes inherit unless overridden). */
+export const revalidate = 60;
+
 export default function RootLayout({
   children,
 }: Readonly<{

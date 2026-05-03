@@ -5,7 +5,7 @@ import { SubPageHero } from '@/components/general/SubPageHero';
 import { ShortFormVideosPageClient } from '@/components/section/video/ShortFormVideosPageClient';
 import { VideoPageSkeleton } from '@/components/section/video/VideoPageSkeleton';
 import type { ShortFormVideo } from '@/components/section/video/ShortFormVideos';
-import { callServerApi } from '@/lib/services/serverApi';
+import { callPublicServerApi } from '@/lib/services/serverApi';
 import { filterByCategory } from '@/lib/utils/videos';
 import { mapPublicVideoToShortForm } from '@/lib/utils/publicApiMappers';
 
@@ -15,13 +15,12 @@ export const metadata: Metadata = {
     'Discover short form videos - quick, engaging content perfect for quick viewing. Bite-sized entertainment and inspiration.',
 };
 
-export const dynamic = 'force-dynamic';
 
 async function fetchShortFormVideos(category: string) {
   const categoryParam =
     category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';
   const query = `?limit=50&page=1&status=published&type=short-form${categoryParam}` as const;
-  const res = await callServerApi('PUBLIC_GET_VIDEOS', { query });
+  const res = await callPublicServerApi('PUBLIC_GET_VIDEOS', { query });
   if (res.type === 'error') {
     return {
       shortFormVideos: [] as ShortFormVideo[],
