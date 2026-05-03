@@ -41,7 +41,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" data-scroll-behavior="smooth">
       <body className={`antialiased`}>
         <NextTopLoader color="hsl(var(--primary))" height={3} showSpinner={false} />
         <ScrollRestorationHandler />
