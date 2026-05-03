@@ -8,6 +8,7 @@ import { Card } from '@/components/ui/card';
 import { Music2, Video, MessageCircle, BarChart3, TrendingUp, Download } from 'lucide-react';
 import type { IArtistDashboardStatsRes, IArtistMeRes } from '@/lib/constants/endpoints';
 import { cn } from '@/lib/utils';
+import { formatCompactNumber } from '@/lib/utils/general';
 
 export type ArtistRecentUpload = {
   kind: 'music' | 'video';
@@ -24,12 +25,6 @@ export interface ArtistPortalPageClientProps {
   errorMessage: string | null;
   recentUploads: ArtistRecentUpload[];
   artist: IArtistMeRes['artist'] | null;
-}
-
-function formatViews(n: number) {
-  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
-  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
-  return String(n);
 }
 
 export function ArtistPortalPageClient({
@@ -88,7 +83,7 @@ export function ArtistPortalPageClient({
         />
         <DashboardStatCard
           label="Total plays"
-          value={formatViews(totalPlays)}
+          value={formatCompactNumber(totalPlays)}
           hint={
             stats?.playsDeltaPercent != null
               ? `${stats.playsDeltaPercent >= 0 ? '+' : ''}${stats.playsDeltaPercent}% vs prior period`
@@ -109,20 +104,20 @@ export function ArtistPortalPageClient({
         />
         <DashboardStatCard
           label="Views"
-          value={formatViews(totalViews)}
+          value={formatCompactNumber(totalViews)}
           hint={
             stats?.music && stats?.video
-              ? `Music ${formatViews(stats.music.views)} · Video ${formatViews(stats.video.views)}`
+              ? `Music ${formatCompactNumber(stats.music.views)} · Video ${formatCompactNumber(stats.video.views)}`
               : 'Impressions across your catalogue'
           }
           icon={BarChart3}
         />
         <DashboardStatCard
           label="Downloads"
-          value={formatViews(totalDownloads)}
+          value={formatCompactNumber(totalDownloads)}
           hint={
             stats?.music && stats?.video
-              ? `Music ${formatViews(stats.music.downloads)} · Video ${formatViews(stats.video.downloads)}`
+              ? `Music ${formatCompactNumber(stats.music.downloads)} · Video ${formatCompactNumber(stats.video.downloads)}`
               : 'Reported file downloads'
           }
           icon={Download}
@@ -176,8 +171,8 @@ export function ArtistPortalPageClient({
                 <div className="flex items-center gap-4 sm:justify-end">
                   <span className="text-sm text-muted-foreground">
                     {row.kind === 'video'
-                      ? `${formatViews(row.views)} views`
-                      : `${formatViews(row.plays ?? row.views)} plays`}
+                      ? `${formatCompactNumber(row.views)} views`
+                      : `${formatCompactNumber(row.plays ?? row.views)} plays`}
                   </span>
                   <span
                     className={cn(

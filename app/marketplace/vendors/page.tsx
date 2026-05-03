@@ -3,7 +3,7 @@ import { Suspense } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { MarketplaceVendorsPageClient } from '@/components/section/marketplace/MarketplaceVendorsPageClient';
 import { MarketplaceVendorsPageSkeleton } from '@/components/section/marketplace/MarketplaceVendorsPageSkeleton';
-import { callServerApi } from '@/lib/services/serverApi';
+import { callPublicServerApi } from '@/lib/services/serverApi';
 import type { IMarketplaceVendor } from '@/lib/constants/endpoints';
 
 export const metadata: Metadata = {
@@ -11,7 +11,6 @@ export const metadata: Metadata = {
   description: 'Browse vendor stores on our marketplace. Shop directly from verified sellers.',
 };
 
-export const dynamic = 'force-dynamic';
 
 const DEFAULT_LIMIT = 24;
 
@@ -25,7 +24,7 @@ async function fetchVendorsData(params: { page?: string; limit?: string }): Prom
   const query = `?page=${page}&limit=${limit}`;
 
   try {
-    const res = await callServerApi('MARKETPLACE_GET_VENDORS', {
+    const res = await callPublicServerApi('MARKETPLACE_GET_VENDORS', {
       query: query as `?${string}`,
     });
     const err = res.type === 'error' ? (res.error?.message ?? null) : null;

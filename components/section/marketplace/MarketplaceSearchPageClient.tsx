@@ -32,6 +32,13 @@ const SORT_OPTIONS = [
   { value: 'hot', label: 'Popular' },
 ] as const;
 
+/** Reserved filter value so native `<option>` never uses `value=""` (invalid / fragile for controlled selects). */
+const FILTER_ALL = '__all__';
+
+function filterValueFromSelect(raw: string) {
+  return raw === FILTER_ALL ? '' : raw;
+}
+
 export function MarketplaceSearchPageClient({
   categories = [],
   vendors = [],
@@ -54,11 +61,13 @@ export function MarketplaceSearchPageClient({
   };
 
   const handleCategoryChange = (value: string) => {
-    setCategory(value || null).then(() => router.refresh());
+    const next = filterValueFromSelect(value);
+    setCategory(next || null).then(() => router.refresh());
   };
 
   const handleVendorChange = (value: string) => {
-    setVendor(value || null).then(() => router.refresh());
+    const next = filterValueFromSelect(value);
+    setVendor(next || null).then(() => router.refresh());
   };
 
   const handleSortChange = (value: string) => {
@@ -124,10 +133,10 @@ export function MarketplaceSearchPageClient({
             </label>
             <select
               id="mp-category"
-              value={category}
+              value={category || FILTER_ALL}
               onChange={e => handleCategoryChange(e.target.value)}
               className="rounded-md border border-input bg-background px-3 py-2 text-sm">
-              <option value="">All categories</option>
+              <option value={FILTER_ALL}>All categories</option>
               {categories.map(cat => (
                 <option key={cat._id} value={cat.slug}>
                   {cat.name}
@@ -139,10 +148,10 @@ export function MarketplaceSearchPageClient({
             </label>
             <select
               id="mp-vendor"
-              value={vendor}
+              value={vendor || FILTER_ALL}
               onChange={e => handleVendorChange(e.target.value)}
               className="rounded-md border border-input bg-background px-3 py-2 text-sm">
-              <option value="">All vendors</option>
+              <option value={FILTER_ALL}>All vendors</option>
               {vendors.map(v => (
                 <option key={v._id} value={v.slug}>
                   {v.storeName}

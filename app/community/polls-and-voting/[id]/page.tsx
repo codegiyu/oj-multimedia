@@ -2,14 +2,13 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { PollDetailPageClient } from '@/components/section/community/polls/PollDetailPageClient';
-import { callServerApi } from '@/lib/services/serverApi';
+import { callPublicServerApi } from '@/lib/services/serverApi';
 import { mapToPoll } from '@/lib/utils/communityApiMappers';
 
 interface PollDetailPageProps {
   params: Promise<{ id: string }>;
 }
 
-export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }: PollDetailPageProps): Promise<Metadata> {
   const resolvedParams = await params;
@@ -17,7 +16,7 @@ export async function generateMetadata({ params }: PollDetailPageProps): Promise
   if (!id) {
     return { title: 'Poll Not Found', description: 'The requested poll could not be found.' };
   }
-  const res = await callServerApi('PUBLIC_GET_POLL_ITEM', { query: `/${encodeURIComponent(id)}` });
+  const res = await callPublicServerApi('PUBLIC_GET_POLL_ITEM', { query: `/${encodeURIComponent(id)}` });
   if (res.type === 'error') {
     return { title: 'Poll Not Found', description: 'The requested poll could not be found.' };
   }
@@ -34,7 +33,7 @@ export default async function PollDetailPage({ params }: PollDetailPageProps) {
   const id = resolvedParams.id;
   if (!id) notFound();
 
-  const res = await callServerApi('PUBLIC_GET_POLL_ITEM', { query: `/${encodeURIComponent(id)}` });
+  const res = await callPublicServerApi('PUBLIC_GET_POLL_ITEM', { query: `/${encodeURIComponent(id)}` });
   if (res.type === 'error') notFound();
 
   const data = res.data;

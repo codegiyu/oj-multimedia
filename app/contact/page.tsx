@@ -1,7 +1,7 @@
 import { MainLayout } from '@/components/layout/MainLayout';
 import { ContactHero } from '@/components/section/public/contact/ContactHero';
 import { ContactPageClient } from '@/components/section/public/contact';
-import { callServerApi } from '@/lib/services/serverApi';
+import { callPublicServerApi } from '@/lib/services/serverApi';
 import type { ContactInfo, Social } from '@/lib/types/site-settings';
 import type { Metadata } from 'next';
 
@@ -11,7 +11,6 @@ export const metadata: Metadata = {
     "Have a question, prayer request, or want to partner with us? Reach out and let's connect.",
 };
 
-export const dynamic = 'force-dynamic';
 
 function isStringArray(value: unknown): value is string[] {
   return Array.isArray(value) && value.every(v => typeof v === 'string');
@@ -44,8 +43,8 @@ async function fetchContactPageData(): Promise<{
   error: string | null;
 }> {
   const [contactRes, socialsRes] = await Promise.all([
-    callServerApi('GET_SITE_SETTINGS', { query: '/contactInfo' as `/${string}` }),
-    callServerApi('GET_SITE_SETTINGS', { query: '/socials' as `/${string}` }),
+    callPublicServerApi('GET_SITE_SETTINGS', { query: '/contactInfo' as `/${string}` }),
+    callPublicServerApi('GET_SITE_SETTINGS', { query: '/socials' as `/${string}` }),
   ]);
 
   const contactError = contactRes.error?.message ?? null;

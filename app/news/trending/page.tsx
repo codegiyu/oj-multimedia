@@ -6,7 +6,7 @@ import { TrendingStoriesPageClient } from '@/components/section/news';
 import { NewsPageSkeleton } from '@/components/section/news/NewsPageSkeleton';
 import { filterByCategory } from '@/components/section/news/categoryUtils';
 import type { TrendingStory } from '@/components/section/news/TrendingSidebar';
-import { callServerApi } from '@/lib/services/serverApi';
+import { callPublicServerApi } from '@/lib/services/serverApi';
 import { mapPublicNewsToTrendingStory } from '@/lib/utils/publicApiMappers';
 
 export const metadata: Metadata = {
@@ -15,13 +15,12 @@ export const metadata: Metadata = {
     "Discover what's trending now - the most popular stories, topics, and discussions everyone is talking about.",
 };
 
-export const dynamic = 'force-dynamic';
 
 async function fetchTrendingStories(category: string) {
   const categoryParam =
     category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';
   const query = `?limit=50&page=1&status=published&type=trending${categoryParam}` as const;
-  const res = await callServerApi('PUBLIC_GET_NEWS', { query });
+  const res = await callPublicServerApi('PUBLIC_GET_NEWS', { query });
 
   if (res.type === 'error') {
     return {

@@ -3,7 +3,7 @@ import { Suspense } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { MarketplaceSearchPageClient } from '@/components/section/marketplace/MarketplaceSearchPageClient';
 import { MarketplaceProductsPageSkeleton } from '@/components/section/marketplace/MarketplaceProductsPageSkeleton';
-import { callServerApi } from '@/lib/services/serverApi';
+import { callPublicServerApi } from '@/lib/services/serverApi';
 import type {
   IMarketplaceCategory,
   IMarketplaceVendor,
@@ -15,7 +15,6 @@ export const metadata: Metadata = {
   description: 'Search products and filter by category, vendor, and more.',
 };
 
-export const dynamic = 'force-dynamic';
 
 const DEFAULT_LIMIT = 24;
 
@@ -52,9 +51,9 @@ async function fetchSearchData(
 
   try {
     const [categoriesRes, vendorsRes, productsRes] = await Promise.all([
-      callServerApi('MARKETPLACE_GET_CATEGORIES', {}),
-      callServerApi('MARKETPLACE_GET_VENDORS', { query: `?limit=100` as `?${string}` }),
-      callServerApi('MARKETPLACE_GET_PRODUCTS', {
+      callPublicServerApi('MARKETPLACE_GET_CATEGORIES', {}),
+      callPublicServerApi('MARKETPLACE_GET_VENDORS', { query: `?limit=100` as `?${string}` }),
+      callPublicServerApi('MARKETPLACE_GET_PRODUCTS', {
         query: `?${query.toString()}` as `?${string}`,
       }),
     ]);

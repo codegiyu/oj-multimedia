@@ -8,7 +8,7 @@ import type { TrendingSong } from '@/components/section/music/TrendingSongs';
 import type { ChartSong } from '@/components/section/music/TopMusicCharts';
 import type { RecentUpload } from '@/components/section/music/RecentUploads';
 import type { FeaturedArtist } from '@/components/section/music/FeaturedArtists';
-import { callServerApi } from '@/lib/services/serverApi';
+import { callPublicServerApi } from '@/lib/services/serverApi';
 import { filterByCategory } from '@/lib/utils/music';
 import {
   mapPublicMusicToTrendingSong,
@@ -23,7 +23,6 @@ export const metadata: Metadata = {
     'Discover the latest music across multiple categories, download MP3s, watch music videos, explore artist profiles, and check out top charts and download metrics.',
 };
 
-export const dynamic = 'force-dynamic';
 
 async function fetchMusicSections(category: string, period: string) {
   const categoryParam =
@@ -31,12 +30,12 @@ async function fetchMusicSections(category: string, period: string) {
   const baseQuery = `?limit=12&page=1&status=published${categoryParam}`;
 
   const [trendingRes, chartsRes, recentRes, artistsRes] = await Promise.all([
-    callServerApi('PUBLIC_GET_MUSIC', { query: `${baseQuery}&type=trending` as `?${string}` }),
-    callServerApi('PUBLIC_GET_MUSIC', {
+    callPublicServerApi('PUBLIC_GET_MUSIC', { query: `${baseQuery}&type=trending` as `?${string}` }),
+    callPublicServerApi('PUBLIC_GET_MUSIC', {
       query: `${baseQuery}&type=charts&period=${period}` as `?${string}`,
     }),
-    callServerApi('PUBLIC_GET_MUSIC', { query: `${baseQuery}&type=recent` as `?${string}` }),
-    callServerApi('PUBLIC_GET_ARTISTS', { query: '?page=1&limit=6' as `?${string}` }),
+    callPublicServerApi('PUBLIC_GET_MUSIC', { query: `${baseQuery}&type=recent` as `?${string}` }),
+    callPublicServerApi('PUBLIC_GET_ARTISTS', { query: '?page=1&limit=6' as `?${string}` }),
   ]);
 
   let errorMessage: string | null = null;

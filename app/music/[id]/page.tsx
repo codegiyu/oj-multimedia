@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { MusicDetailPageClient } from '@/components/section/music/MusicDetailPageClient';
-import { callServerApi } from '@/lib/services/serverApi';
+import { callPublicServerApi } from '@/lib/services/serverApi';
 import { mapPublicMusicToDetailItem } from '@/lib/utils/publicApiMappers';
 import type { MusicItemWithArtist } from '@/lib/utils/music';
 
@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: MusicDetailPageProps): Promis
     };
   }
 
-  const res = await callServerApi('PUBLIC_GET_MUSIC_ITEM', { query: `/${encodeURIComponent(id)}` });
+  const res = await callPublicServerApi('PUBLIC_GET_MUSIC_ITEM', { query: `/${encodeURIComponent(id)}` });
   if (res.type === 'error') {
     return {
       title: 'Music Not Found',
@@ -40,7 +40,6 @@ export async function generateMetadata({ params }: MusicDetailPageProps): Promis
   };
 }
 
-export const dynamic = 'force-dynamic';
 
 export default async function MusicDetailPage({ params }: MusicDetailPageProps) {
   const resolvedParams = await params;
@@ -50,7 +49,7 @@ export default async function MusicDetailPage({ params }: MusicDetailPageProps) 
     notFound();
   }
 
-  const res = await callServerApi('PUBLIC_GET_MUSIC_ITEM', { query: `/${encodeURIComponent(id)}` });
+  const res = await callPublicServerApi('PUBLIC_GET_MUSIC_ITEM', { query: `/${encodeURIComponent(id)}` });
   if (res.type === 'error') {
     notFound();
   }
@@ -59,7 +58,7 @@ export default async function MusicDetailPage({ params }: MusicDetailPageProps) 
   const musicItem = mapPublicMusicToDetailItem(data.music);
 
   const category = musicItem.category ?? 'gospel';
-  const relatedRes = await callServerApi('PUBLIC_GET_MUSIC', {
+  const relatedRes = await callPublicServerApi('PUBLIC_GET_MUSIC', {
     query: `?limit=4&page=1&status=published&type=recent&category=${encodeURIComponent(category)}`,
   });
   const relatedList = relatedRes.type === 'success' ? (relatedRes.data?.music ?? []) : [];

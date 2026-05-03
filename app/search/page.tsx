@@ -5,7 +5,7 @@ import { SearchFormSkeleton } from '@/components/section/public/search/SearchFor
 import { SearchResultsClient } from '@/components/section/public/search/SearchResultsClient';
 import { SearchResultsSkeleton } from '@/components/section/public/search/SearchResultsSkeleton';
 import type { ISearchResultItem } from '@/lib/constants/endpoints';
-import { callServerApi } from '@/lib/services/serverApi';
+import { callPublicServerApi } from '@/lib/services/serverApi';
 
 export const metadata = {
   title: 'Search - Find Music, News, Videos & Community Content',
@@ -13,7 +13,6 @@ export const metadata = {
     'Search through music, news articles, videos, devotionals, sermons, testimonies, prayer requests, questions, polls, and resources. Find exactly what you are looking for on OJ Multimedia.',
 };
 
-export const dynamic = 'force-dynamic';
 
 type SearchPageProps = {
   searchParams: Promise<{ q?: string; type?: string; page?: string; limit?: string }>;
@@ -36,7 +35,7 @@ async function fetchSearchResults(params: {
   if (params.page) searchParams.set('page', params.page);
   if (params.limit) searchParams.set('limit', params.limit);
 
-  const res = await callServerApi('PUBLIC_SEARCH', {
+  const res = await callPublicServerApi('PUBLIC_SEARCH', {
     query: `?${searchParams.toString()}` as `?${string}`,
   });
 

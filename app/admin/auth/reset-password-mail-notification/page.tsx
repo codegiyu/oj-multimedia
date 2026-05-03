@@ -32,7 +32,7 @@ function MailNotificationFallback() {
 
 export default function ResetPasswordMailNotificationPage() {
   return (
-    <AuthLayout subtitle="Check Your Email">
+    <AuthLayout subtitle="">
       <Suspense fallback={<MailNotificationFallback />}>
         <ResetPasswordMailNotificationClient />
       </Suspense>

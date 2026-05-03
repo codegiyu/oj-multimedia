@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { VendorStorePageClient } from '@/components/section/marketplace/VendorStorePageClient';
 import { VendorStorePageSkeleton } from '@/components/section/marketplace/VendorStorePageSkeleton';
-import { callServerApi } from '@/lib/services/serverApi';
+import { callPublicServerApi } from '@/lib/services/serverApi';
 import type { IMarketplaceVendor, IMarketplaceProduct } from '@/lib/constants/endpoints';
 import { MainLayout } from '@/components/layout/MainLayout';
 
@@ -15,10 +15,10 @@ async function fetchVendorAndProducts(slug: string): Promise<{
   products: IMarketplaceProduct[];
 }> {
   const [vendorRes, productsRes] = await Promise.all([
-    callServerApi('MARKETPLACE_GET_VENDOR_BY_SLUG', {
+    callPublicServerApi('MARKETPLACE_GET_VENDOR_BY_SLUG', {
       query: `/${encodeURIComponent(slug)}` as `/${string}`,
     }),
-    callServerApi('MARKETPLACE_GET_PRODUCTS', {
+    callPublicServerApi('MARKETPLACE_GET_PRODUCTS', {
       query: `?vendor=${encodeURIComponent(slug)}&limit=100&status=published` as `?${string}`,
     }),
   ]);

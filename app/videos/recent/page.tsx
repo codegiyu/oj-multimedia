@@ -5,7 +5,7 @@ import { SubPageHero } from '@/components/general/SubPageHero';
 import { RecentVideosPageClient } from '@/components/section/video/RecentVideosPageClient';
 import { VideoPageSkeleton } from '@/components/section/video/VideoPageSkeleton';
 import type { RecentVideoUpload } from '@/components/section/video/RecentVideoUploads';
-import { callServerApi } from '@/lib/services/serverApi';
+import { callPublicServerApi } from '@/lib/services/serverApi';
 import { filterByCategory } from '@/lib/utils/videos';
 import { mapPublicVideoToRecentUpload } from '@/lib/utils/publicApiMappers';
 
@@ -15,13 +15,12 @@ export const metadata: Metadata = {
     'Discover the latest video uploads from creators. Fresh content just added to the platform.',
 };
 
-export const dynamic = 'force-dynamic';
 
 async function fetchRecentVideos(category: string) {
   const categoryParam =
     category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';
   const query = `?limit=50&page=1&status=published&type=recent${categoryParam}` as const;
-  const res = await callServerApi('PUBLIC_GET_VIDEOS', { query });
+  const res = await callPublicServerApi('PUBLIC_GET_VIDEOS', { query });
   if (res.type === 'error') {
     return {
       recentUploads: [] as RecentVideoUpload[],

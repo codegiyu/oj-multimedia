@@ -12,7 +12,7 @@ import {
   type AffiliateProduct,
 } from '@/components/section/community/resources/ResourcesPageClient';
 import { ResourcesPageSkeleton } from '@/components/section/community/resources/ResourcesPageSkeleton';
-import { callServerApi } from '@/lib/services/serverApi';
+import { callPublicServerApi } from '@/lib/services/serverApi';
 import { RESOURCE_TYPES } from '@/lib/types/community';
 import {
   mapToEbook,
@@ -30,7 +30,6 @@ export const metadata: Metadata = {
     'Download free e-books, sermon templates, beats, wallpapers, and explore affiliate products. Access resources to support your faith journey.',
 };
 
-export const dynamic = 'force-dynamic';
 
 const RESOURCE_TYPE_ORDER: (typeof RESOURCE_TYPES)[number][] = [
   'ebook',
@@ -47,12 +46,12 @@ async function fetchResourcesData(): Promise<
   const [resourceRequests, downloadCategoriesRes] = await Promise.all([
     Promise.all(
       RESOURCE_TYPE_ORDER.map(type =>
-        callServerApi('PUBLIC_GET_RESOURCES', {
+        callPublicServerApi('PUBLIC_GET_RESOURCES', {
           query: `${baseQuery}&type=${type}` as `?${string}`,
         })
       )
     ),
-    callServerApi('PUBLIC_GET_RESOURCE_DOWNLOAD_CATEGORIES', {}),
+    callPublicServerApi('PUBLIC_GET_RESOURCE_DOWNLOAD_CATEGORIES', {}),
   ]);
   const results = resourceRequests;
   let initialErrorMessage: string | null = null;

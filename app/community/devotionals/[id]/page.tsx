@@ -2,14 +2,13 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { DevotionalDetailPageClient } from '@/components/section/community/devotionals/DevotionalDetailPageClient';
-import { callServerApi } from '@/lib/services/serverApi';
+import { callPublicServerApi } from '@/lib/services/serverApi';
 import { mapToDailyDevotional } from '@/lib/utils/communityApiMappers';
 
 interface DevotionalDetailPageProps {
   params: Promise<{ id: string }>;
 }
 
-export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }: DevotionalDetailPageProps): Promise<Metadata> {
   const resolvedParams = await params;
@@ -20,7 +19,7 @@ export async function generateMetadata({ params }: DevotionalDetailPageProps): P
       description: 'The requested devotional could not be found.',
     };
   }
-  const res = await callServerApi('PUBLIC_GET_DEVOTIONAL_ITEM', {
+  const res = await callPublicServerApi('PUBLIC_GET_DEVOTIONAL_ITEM', {
     query: `/${encodeURIComponent(id)}`,
   });
   if (res.type === 'error') {
@@ -44,7 +43,7 @@ export default async function DevotionalDetailPage({ params }: DevotionalDetailP
   const id = resolvedParams.id;
   if (!id) notFound();
 
-  const res = await callServerApi('PUBLIC_GET_DEVOTIONAL_ITEM', {
+  const res = await callPublicServerApi('PUBLIC_GET_DEVOTIONAL_ITEM', {
     query: `/${encodeURIComponent(id)}`,
   });
   if (res.type === 'error') notFound();

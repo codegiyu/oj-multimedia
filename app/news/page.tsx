@@ -9,7 +9,7 @@ import type { FeaturedStory } from '@/components/section/news/FeaturedStories';
 import type { NewsItem as NewsFeedItem } from '@/components/section/news/NewsFeed';
 import type { TrendingStory } from '@/components/section/news/TrendingSidebar';
 import type { VideoNewsItem } from '@/components/section/news/VideoNews';
-import { callServerApi } from '@/lib/services/serverApi';
+import { callPublicServerApi } from '@/lib/services/serverApi';
 import {
   mapPublicNewsToFeaturedStory,
   mapPublicNewsToFeedItem,
@@ -23,7 +23,6 @@ export const metadata: Metadata = {
     'Stay updated with the latest news, announcements, inspirational stories, lifestyle content, and trending topics. Explore recent updates and popular stories.',
 };
 
-export const dynamic = 'force-dynamic';
 
 async function fetchNewsSections(category: string) {
   const categoryParam =
@@ -31,10 +30,10 @@ async function fetchNewsSections(category: string) {
   const baseQuery = `?limit=15&page=1&status=published${categoryParam}` as const;
 
   const [featuredRes, latestRes, trendingRes, videoRes] = await Promise.all([
-    callServerApi('PUBLIC_GET_NEWS', { query: `${baseQuery}&type=featured` }),
-    callServerApi('PUBLIC_GET_NEWS', { query: `${baseQuery}&type=latest` }),
-    callServerApi('PUBLIC_GET_NEWS', { query: `${baseQuery}&type=trending` }),
-    callServerApi('PUBLIC_GET_NEWS', { query: `${baseQuery}&type=video` }),
+    callPublicServerApi('PUBLIC_GET_NEWS', { query: `${baseQuery}&type=featured` }),
+    callPublicServerApi('PUBLIC_GET_NEWS', { query: `${baseQuery}&type=latest` }),
+    callPublicServerApi('PUBLIC_GET_NEWS', { query: `${baseQuery}&type=trending` }),
+    callPublicServerApi('PUBLIC_GET_NEWS', { query: `${baseQuery}&type=video` }),
   ]);
 
   let errorMessage: string | null = null;

@@ -13,7 +13,6 @@ export const metadata: Metadata = {
     'Read featured testimonies of transformation, healing, and breakthrough from our community.',
 };
 
-export const dynamic = 'force-dynamic';
 
 async function generateFeaturedTestimoniesData() {
   await new Promise(resolve => setTimeout(resolve, 1500));

@@ -3,7 +3,7 @@ import { Suspense } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { MarketplaceProductsPageClient } from '@/components/section/marketplace/MarketplaceProductsPageClient';
 import { MarketplaceProductsPageSkeleton } from '@/components/section/marketplace/MarketplaceProductsPageSkeleton';
-import { callServerApi } from '@/lib/services/serverApi';
+import { callPublicServerApi } from '@/lib/services/serverApi';
 import type {
   IMarketplaceCategory,
   IMarketplaceSubCategory,
@@ -15,7 +15,6 @@ export const metadata: Metadata = {
   description: 'Browse all products from our marketplace vendors. Filter by category.',
 };
 
-export const dynamic = 'force-dynamic';
 
 const DEFAULT_LIMIT = 24;
 
@@ -57,14 +56,14 @@ async function fetchProductsPageData(params: {
 
   try {
     const [categoriesRes, productsRes] = await Promise.all([
-      callServerApi('MARKETPLACE_GET_CATEGORIES', {}),
-      callServerApi('MARKETPLACE_GET_PRODUCTS', {
+      callPublicServerApi('MARKETPLACE_GET_CATEGORIES', {}),
+      callPublicServerApi('MARKETPLACE_GET_PRODUCTS', {
         query: `?${query.toString()}` as `?${string}`,
       }),
     ]);
 
     const subcategoriesRes = params.category
-      ? await callServerApi('MARKETPLACE_GET_SUBCATEGORIES', {
+      ? await callPublicServerApi('MARKETPLACE_GET_SUBCATEGORIES', {
           query: `?category=${encodeURIComponent(params.category)}` as `?${string}`,
         })
       : null;

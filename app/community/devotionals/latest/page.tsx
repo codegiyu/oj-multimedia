@@ -7,7 +7,7 @@ import { DailyDevotionalsSection } from '@/components/section/community/devotion
 import { DevotionalsCategoryFilter } from '@/components/section/community/devotionals/DevotionalsCategoryFilter';
 import { Skeleton } from '@/components/ui/skeleton';
 import { filterByCategory } from '@/lib/utils/community/devotionals';
-import { callServerApi } from '@/lib/services/serverApi';
+import { callPublicServerApi } from '@/lib/services/serverApi';
 import { mapToDailyDevotional } from '@/lib/utils/communityApiMappers';
 import type { DailyDevotional } from '@/components/section/community/devotionals/DevotionalsPageClient';
 
@@ -16,7 +16,6 @@ export const metadata: Metadata = {
   description: 'Browse the latest daily devotionals for inspiration and spiritual growth.',
 };
 
-export const dynamic = 'force-dynamic';
 
 async function fetchLatestDevotionals(category: string): Promise<{
   latestDevotionals: DailyDevotional[];
@@ -24,7 +23,7 @@ async function fetchLatestDevotionals(category: string): Promise<{
 }> {
   const categoryParam =
     category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';
-  const res = await callServerApi('PUBLIC_GET_DEVOTIONALS', {
+  const res = await callPublicServerApi('PUBLIC_GET_DEVOTIONALS', {
     query: `?limit=50&page=1&status=published&type=latest${categoryParam}` as `?${string}`,
   });
   if (res.type === 'error') {

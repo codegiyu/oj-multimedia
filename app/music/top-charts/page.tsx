@@ -5,7 +5,7 @@ import { SubPageHero } from '@/components/general/SubPageHero';
 import { TopChartsPageClient } from '@/components/section/music/TopChartsPageClient';
 import { MusicPageSkeleton } from '@/components/section/music/MusicPageSkeleton';
 import type { ChartSong } from '@/components/section/music/TopMusicCharts';
-import { callServerApi } from '@/lib/services/serverApi';
+import { callPublicServerApi } from '@/lib/services/serverApi';
 import { filterByCategory } from '@/lib/utils/music';
 import { mapPublicMusicToChartSong } from '@/lib/utils/publicApiMappers';
 
@@ -15,14 +15,13 @@ export const metadata: Metadata = {
     'View the top music charts across all genres. See what songs are ranking highest this week, month, or all-time.',
 };
 
-export const dynamic = 'force-dynamic';
 
 async function fetchChartSongs(category: string, period: string) {
   const categoryParam =
     category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';
   const query =
     `?limit=100&page=1&status=published&type=charts&period=${encodeURIComponent(period)}${categoryParam}` as const;
-  const res = await callServerApi('PUBLIC_GET_MUSIC', { query });
+  const res = await callPublicServerApi('PUBLIC_GET_MUSIC', { query });
   if (res.type === 'error') {
     return {
       chartSongs: [] as (ChartSong & { category?: string })[],

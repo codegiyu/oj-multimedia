@@ -4,7 +4,7 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { SubPageHero } from '@/components/general/SubPageHero';
 import { ArtistsPageClient } from '@/components/section/community/artists/ArtistsPageClient';
 import { Skeleton } from '@/components/ui/skeleton';
-import { callServerApi } from '@/lib/services/serverApi';
+import { callPublicServerApi } from '@/lib/services/serverApi';
 import { mapToCommunityArtist } from '@/lib/utils/communityApiMappers';
 import type { Pagination } from '@/lib/types/community';
 
@@ -14,7 +14,6 @@ export const metadata: Metadata = {
     'Discover artists and creators. Explore profiles, music, and videos from talented creators in our community.',
 };
 
-export const dynamic = 'force-dynamic';
 
 const ARTISTS_LIMIT = 24;
 
@@ -31,7 +30,7 @@ async function fetchArtistsData(page: number): Promise<{
   pagination: Pagination | null;
   initialErrorMessage: string | null;
 }> {
-  const res = await callServerApi('PUBLIC_GET_ARTISTS', {
+  const res = await callPublicServerApi('PUBLIC_GET_ARTISTS', {
     query: `?limit=${ARTISTS_LIMIT}&page=${page}` as `?${string}`,
   });
   if (res.type === 'error') {

@@ -9,7 +9,7 @@ import {
   type AvailablePastor,
 } from '@/components/section/community/ask-a-pastor/AskAPastorPageClient';
 import { AskAPastorPageSkeleton } from '@/components/section/community/ask-a-pastor/AskAPastorPageSkeleton';
-import { callServerApi } from '@/lib/services/serverApi';
+import { callPublicServerApi } from '@/lib/services/serverApi';
 import { mapToQuestion, mapToAnsweredQuestion, mapToPastor } from '@/lib/utils/communityApiMappers';
 
 export const metadata: Metadata = {
@@ -18,7 +18,6 @@ export const metadata: Metadata = {
     'Submit your questions to our pastors, browse answered questions, and get biblical guidance on faith, life, and spiritual matters.',
 };
 
-export const dynamic = 'force-dynamic';
 
 async function fetchAskAPastorData(): Promise<{
   activeQuestions: Question[];
@@ -28,13 +27,13 @@ async function fetchAskAPastorData(): Promise<{
   initialErrorMessage: string | null;
 }> {
   const [activeRes, answeredRes, pastorsRes] = await Promise.all([
-    callServerApi('PUBLIC_GET_ASK_A_PASTOR_QUESTIONS', {
+    callPublicServerApi('PUBLIC_GET_ASK_A_PASTOR_QUESTIONS', {
       query: '?limit=50&page=1&status=active' as `?${string}`,
     }),
-    callServerApi('PUBLIC_GET_ASK_A_PASTOR_QUESTIONS', {
+    callPublicServerApi('PUBLIC_GET_ASK_A_PASTOR_QUESTIONS', {
       query: '?limit=20&page=1&status=answered' as `?${string}`,
     }),
-    callServerApi('PUBLIC_GET_ASK_A_PASTOR_PASTORS', {}),
+    callPublicServerApi('PUBLIC_GET_ASK_A_PASTOR_PASTORS', {}),
   ]);
   const errorMessage =
     activeRes.type === 'error' ? (activeRes.error?.message ?? 'Failed to load questions') : null;

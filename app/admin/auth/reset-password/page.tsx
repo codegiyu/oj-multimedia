@@ -26,7 +26,7 @@ function ResetPasswordFallback() {
 
 export default function ResetPasswordPage() {
   return (
-    <AuthLayout subtitle="Reset Your Password">
+    <AuthLayout subtitle="">
       <Suspense fallback={<ResetPasswordFallback />}>
         <ResetPasswordPageClient />
       </Suspense>

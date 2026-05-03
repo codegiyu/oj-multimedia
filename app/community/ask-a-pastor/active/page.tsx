@@ -14,7 +14,6 @@ export const metadata: Metadata = {
     'Browse questions that are currently awaiting answers from our pastors. Submit your own question or pray for those seeking guidance.',
 };
 
-export const dynamic = 'force-dynamic';
 
 async function generateActiveQuestionsData() {
   await new Promise(resolve => setTimeout(resolve, 1500));

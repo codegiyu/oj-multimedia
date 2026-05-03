@@ -32,7 +32,7 @@ export function AppSidebar() {
         <div
           className={isCollapsed ? 'flex flex-col items-center gap-2' : 'flex items-center gap-3'}>
           <Link
-            href="/admin/dashboard"
+            href="/admin/dashboard/home"
             className="flex items-center shrink-0 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-lg">
             <img src="/images/logo-badge.png" alt="OJ Multimedia" className={'h-9 w-auto'} />
           </Link>

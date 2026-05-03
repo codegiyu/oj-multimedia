@@ -6,7 +6,7 @@ import { FeaturedStoriesPageClient } from '@/components/section/news/FeaturedSto
 import { NewsPageSkeleton } from '@/components/section/news/NewsPageSkeleton';
 import { filterByCategory } from '@/components/section/news/categoryUtils';
 import type { FeaturedStory } from '@/components/section/news/FeaturedStories';
-import { callServerApi } from '@/lib/services/serverApi';
+import { callPublicServerApi } from '@/lib/services/serverApi';
 import { mapPublicNewsToFeaturedStory } from '@/lib/utils/publicApiMappers';
 
 export const metadata: Metadata = {
@@ -15,13 +15,12 @@ export const metadata: Metadata = {
     'Explore our featured stories - handpicked articles covering lifestyle, inspiration, culture, and trending topics.',
 };
 
-export const dynamic = 'force-dynamic';
 
 async function fetchFeaturedStories(category: string) {
   const categoryParam =
     category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';
   const query = `?limit=50&page=1&status=published&type=featured${categoryParam}` as const;
-  const res = await callServerApi('PUBLIC_GET_NEWS', { query });
+  const res = await callPublicServerApi('PUBLIC_GET_NEWS', { query });
 
   if (res.type === 'error') {
     return {

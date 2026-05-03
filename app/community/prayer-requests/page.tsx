@@ -8,7 +8,7 @@ import type {
   PrayerRequest,
   AnsweredPrayer,
 } from '@/components/section/community/prayer-requests/PrayerRequestsPageClient';
-import { callServerApi } from '@/lib/services/serverApi';
+import { callPublicServerApi } from '@/lib/services/serverApi';
 import { mapToPrayerRequest, mapToAnsweredPrayer } from '@/lib/utils/communityApiMappers';
 import type { Pagination } from '@/lib/types/community';
 
@@ -18,7 +18,6 @@ export const metadata: Metadata = {
     'Share your prayer requests, pray for others, and witness answered prayers. Join our community in lifting each other up in prayer.',
 };
 
-export const dynamic = 'force-dynamic';
 
 const ACTIVE_LIMIT = 12;
 
@@ -30,10 +29,10 @@ async function fetchPrayerRequestsData(page: number): Promise<{
   initialErrorMessage: string | null;
 }> {
   const [activeRes, answeredRes] = await Promise.all([
-    callServerApi('PUBLIC_GET_PRAYER_REQUESTS', {
+    callPublicServerApi('PUBLIC_GET_PRAYER_REQUESTS', {
       query: `?limit=${ACTIVE_LIMIT}&page=${page}&status=active` as `?${string}`,
     }),
-    callServerApi('PUBLIC_GET_PRAYER_REQUESTS', {
+    callPublicServerApi('PUBLIC_GET_PRAYER_REQUESTS', {
       query: '?limit=20&page=1&status=answered' as `?${string}`,
     }),
   ]);
