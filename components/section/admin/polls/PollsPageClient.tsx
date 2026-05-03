@@ -46,6 +46,7 @@ export function PollsPageClient({
   >(undefined);
 
   const [createOpen, setCreateOpen] = useState(false);
+  const [editPollId, setEditPollId] = useState<string | null>(null);
   const [openTarget, setOpenTarget] = useState<PollListItem | null>(null);
   const [closeTarget, setCloseTarget] = useState<PollListItem | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<PollListItem | null>(null);
@@ -112,7 +113,8 @@ export function PollsPageClient({
   };
 
   const handleEdit = (p: PollListItem) => {
-    setClickedRowDetails({ data: p, index: -1, tab: undefined });
+    setEditPollId(p._id);
+    setCreateOpen(true);
   };
 
   return (
@@ -120,7 +122,14 @@ export function PollsPageClient({
       title={pageTitle}
       description={pageDescription}
       pageHeaderActions={
-        <RegularBtn LeftIcon={Plus} text="Create Poll" onClick={() => setCreateOpen(true)} />
+        <RegularBtn
+          LeftIcon={Plus}
+          text="Create Poll"
+          onClick={() => {
+            setEditPollId(null);
+            setCreateOpen(true);
+          }}
+        />
       }
       listError={listError}
       filterableDataPageProps={{
@@ -150,7 +159,11 @@ export function PollsPageClient({
 
           <CreatePollModal
             open={createOpen}
-            onOpenChange={setCreateOpen}
+            onOpenChange={open => {
+              if (!open) setEditPollId(null);
+              setCreateOpen(open);
+            }}
+            editId={editPollId}
             onSuccess={handleRefresh}
           />
 

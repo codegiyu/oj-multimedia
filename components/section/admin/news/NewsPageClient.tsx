@@ -47,6 +47,7 @@ export function NewsPageClient({
   >(undefined);
 
   const [createOpen, setCreateOpen] = useState(false);
+  const [editNewsId, setEditNewsId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<PublicNewsListItem | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
 
@@ -75,7 +76,8 @@ export function NewsPageClient({
   };
 
   const handleEdit = (n: PublicNewsListItem) => {
-    setClickedRowDetails({ data: n, index: -1, tab: undefined });
+    setEditNewsId(n._id);
+    setCreateOpen(true);
   };
 
   return (
@@ -83,7 +85,14 @@ export function NewsPageClient({
       title={pageTitle}
       description={pageDescription}
       pageHeaderActions={
-        <RegularBtn LeftIcon={Plus} text="Create News" onClick={() => setCreateOpen(true)} />
+        <RegularBtn
+          LeftIcon={Plus}
+          text="Create News"
+          onClick={() => {
+            setEditNewsId(null);
+            setCreateOpen(true);
+          }}
+        />
       }
       listError={listError}
       filterableDataPageProps={{
@@ -109,12 +118,15 @@ export function NewsPageClient({
           <NewsDetailsDrawer
             clickedRowDetails={clickedRowDetails}
             setClickedRowDetails={setClickedRowDetails}
-            onSaved={handleRefresh}
           />
 
           <CreateNewsModal
             open={createOpen}
-            onOpenChange={setCreateOpen}
+            onOpenChange={open => {
+              if (!open) setEditNewsId(null);
+              setCreateOpen(open);
+            }}
+            editId={editNewsId}
             onSuccess={handleRefresh}
           />
 

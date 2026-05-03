@@ -9,6 +9,7 @@ import type { ClickedRowDetails } from '@/components/general/TableRowDetailsDraw
 import { PrayerRequestsDetailsDrawer } from './PrayerRequestsDetailsDrawer';
 import { PrayerRequestsTableContent } from './PrayerRequestsTableContent';
 import { AnswerPrayerRequestModal } from './AnswerPrayerRequestModal';
+import { PrayerRequestEditModal } from './PrayerRequestEditModal';
 import { ApprovalModal } from '@/components/section/admin/shared';
 import { callApi } from '@/lib/services/callApi';
 
@@ -44,6 +45,8 @@ export function PrayerRequestsPageClient({
   >(undefined);
 
   const [answerTarget, setAnswerTarget] = useState<PrayerRequestListItem | null>(null);
+  const [editPrayerId, setEditPrayerId] = useState<string | null>(null);
+  const [editPrayerOpen, setEditPrayerOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<PrayerRequestListItem | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
 
@@ -72,7 +75,8 @@ export function PrayerRequestsPageClient({
   };
 
   const handleEdit = (pr: PrayerRequestListItem) => {
-    setClickedRowDetails({ data: pr, index: -1, tab: undefined });
+    setEditPrayerId(pr._id);
+    setEditPrayerOpen(true);
   };
 
   return (
@@ -109,6 +113,16 @@ export function PrayerRequestsPageClient({
             open={!!answerTarget}
             onOpenChange={val => !val && setAnswerTarget(null)}
             prayerRequest={answerTarget}
+            onSuccess={handleRefresh}
+          />
+
+          <PrayerRequestEditModal
+            open={editPrayerOpen}
+            onOpenChange={open => {
+              if (!open) setEditPrayerId(null);
+              setEditPrayerOpen(open);
+            }}
+            prayerRequestId={editPrayerId}
             onSuccess={handleRefresh}
           />
 

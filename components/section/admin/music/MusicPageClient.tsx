@@ -48,6 +48,7 @@ export function MusicPageClient({
   >(undefined);
 
   const [createOpen, setCreateOpen] = useState(false);
+  const [editMusicId, setEditMusicId] = useState<string | null>(null);
   const [approveTarget, setApproveTarget] = useState<ArtistMusicListItem | null>(null);
   const [rejectTarget, setRejectTarget] = useState<ArtistMusicListItem | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<ArtistMusicListItem | null>(null);
@@ -113,7 +114,8 @@ export function MusicPageClient({
   };
 
   const handleEdit = (m: ArtistMusicListItem) => {
-    setClickedRowDetails({ data: m, index: -1, tab: undefined });
+    setEditMusicId(m._id);
+    setCreateOpen(true);
   };
 
   return (
@@ -121,7 +123,14 @@ export function MusicPageClient({
       title={pageTitle}
       description={pageDescription}
       pageHeaderActions={
-        <RegularBtn LeftIcon={Plus} text="Create Music" onClick={() => setCreateOpen(true)} />
+        <RegularBtn
+          LeftIcon={Plus}
+          text="Create Music"
+          onClick={() => {
+            setEditMusicId(null);
+            setCreateOpen(true);
+          }}
+        />
       }
       listError={listError}
       filterableDataPageProps={{
@@ -160,12 +169,15 @@ export function MusicPageClient({
           <MusicDetailsDrawer
             clickedRowDetails={clickedRowDetails}
             setClickedRowDetails={setClickedRowDetails}
-            onSaved={handleRefresh}
           />
 
           <CreateMusicModal
             open={createOpen}
-            onOpenChange={setCreateOpen}
+            onOpenChange={open => {
+              if (!open) setEditMusicId(null);
+              setCreateOpen(open);
+            }}
+            editId={editMusicId}
             onSuccess={handleRefresh}
           />
 

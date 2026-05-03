@@ -12,17 +12,7 @@ import { RegularInput } from '@/components/atoms/RegularInput';
 import { RegularSelect } from '@/components/atoms/RegularSelect';
 import { RegularTextarea } from '@/components/atoms/RegularTextarea';
 import { toast } from '@/components/atoms/Toast';
-
-const TESTIMONY_CATEGORY_OPTIONS = [
-  { value: 'healing', text: 'Healing' },
-  { value: 'purpose', text: 'Purpose' },
-  { value: 'prayer', text: 'Prayer' },
-  { value: 'marriage', text: 'Marriage' },
-  { value: 'provision', text: 'Provision' },
-  { value: 'deliverance', text: 'Deliverance' },
-  { value: 'salvation', text: 'Salvation' },
-  { value: 'blessing', text: 'Blessing' },
-];
+import { TESTIMONY_CATEGORY_SELECT_OPTIONS } from '@/lib/constants/communityCategorySelectOptions';
 
 export const ShareTestimony = () => {
   const router = useRouter();
@@ -124,7 +114,7 @@ export const ShareTestimony = () => {
                   value={category}
                   onSelectChange={setCategory}
                   placeholder="Select a category"
-                  options={TESTIMONY_CATEGORY_OPTIONS}
+                  options={TESTIMONY_CATEGORY_SELECT_OPTIONS}
                 />
 
                 <RegularTextarea

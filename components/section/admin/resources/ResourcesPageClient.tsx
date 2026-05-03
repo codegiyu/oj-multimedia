@@ -47,6 +47,7 @@ export function ResourcesPageClient({
   >(undefined);
 
   const [createOpen, setCreateOpen] = useState(false);
+  const [editResourceId, setEditResourceId] = useState<string | null>(null);
   const [approveTarget, setApproveTarget] = useState<ResourceListItem | null>(null);
   const [rejectTarget, setRejectTarget] = useState<ResourceListItem | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<ResourceListItem | null>(null);
@@ -112,7 +113,8 @@ export function ResourcesPageClient({
   };
 
   const handleEdit = (r: ResourceListItem) => {
-    setClickedRowDetails({ data: r, index: -1, tab: undefined });
+    setEditResourceId(r._id);
+    setCreateOpen(true);
   };
 
   return (
@@ -120,7 +122,14 @@ export function ResourcesPageClient({
       title={pageTitle}
       description={pageDescription}
       pageHeaderActions={
-        <RegularBtn LeftIcon={Plus} text="Create Resource" onClick={() => setCreateOpen(true)} />
+        <RegularBtn
+          LeftIcon={Plus}
+          text="Create Resource"
+          onClick={() => {
+            setEditResourceId(null);
+            setCreateOpen(true);
+          }}
+        />
       }
       listError={listError}
       filterableDataPageProps={{
@@ -150,7 +159,11 @@ export function ResourcesPageClient({
 
           <CreateResourceModal
             open={createOpen}
-            onOpenChange={setCreateOpen}
+            onOpenChange={open => {
+              if (!open) setEditResourceId(null);
+              setCreateOpen(open);
+            }}
+            editId={editResourceId}
             onSuccess={handleRefresh}
           />
 

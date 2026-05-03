@@ -12,17 +12,9 @@ import { RegularInput } from '@/components/atoms/RegularInput';
 import { RegularSelect } from '@/components/atoms/RegularSelect';
 import { RegularTextarea } from '@/components/atoms/RegularTextarea';
 import { toast } from '@/components/atoms/Toast';
+import { POLL_CATEGORY_SELECT_OPTIONS } from '@/lib/constants/communityCategorySelectOptions';
 
-const POLL_CATEGORY_OPTIONS = [
-  { value: 'worship', text: 'Worship' },
-  { value: 'spiritual-growth', text: 'Spiritual Growth' },
-  { value: 'content', text: 'Content' },
-  { value: 'devotionals', text: 'Devotionals' },
-  { value: 'sermons', text: 'Sermons' },
-  { value: 'ministry', text: 'Ministry' },
-  { value: 'prayer', text: 'Prayer' },
-  { value: 'social-media', text: 'Social Media' },
-];
+const POLL_CATEGORY_OPTIONS = POLL_CATEGORY_SELECT_OPTIONS;
 
 export const CreatePoll = () => {
   const router = useRouter();
