@@ -15,7 +15,6 @@ export const metadata: Metadata = {
     'Discover the latest video uploads from creators. Fresh content just added to the platform.',
 };
 
-
 async function fetchRecentVideos(category: string) {
   const categoryParam =
     category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';

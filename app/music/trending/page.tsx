@@ -15,7 +15,6 @@ export const metadata: Metadata = {
     "Discover what's trending now - the most popular songs everyone is listening to. Stay ahead of the music scene.",
 };
 
-
 async function fetchTrendingSongs(category: string) {
   const categoryParam =
     category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';

@@ -15,7 +15,6 @@ export const metadata: Metadata = {
   description: 'Search products and filter by category, vendor, and more.',
 };
 
-
 const DEFAULT_LIMIT = 24;
 
 interface PageProps {

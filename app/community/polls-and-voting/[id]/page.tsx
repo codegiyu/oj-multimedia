@@ -9,14 +9,15 @@ interface PollDetailPageProps {
   params: Promise<{ id: string }>;
 }
 
-
 export async function generateMetadata({ params }: PollDetailPageProps): Promise<Metadata> {
   const resolvedParams = await params;
   const id = resolvedParams.id;
   if (!id) {
     return { title: 'Poll Not Found', description: 'The requested poll could not be found.' };
   }
-  const res = await callPublicServerApi('PUBLIC_GET_POLL_ITEM', { query: `/${encodeURIComponent(id)}` });
+  const res = await callPublicServerApi('PUBLIC_GET_POLL_ITEM', {
+    query: `/${encodeURIComponent(id)}`,
+  });
   if (res.type === 'error') {
     return { title: 'Poll Not Found', description: 'The requested poll could not be found.' };
   }
@@ -33,7 +34,9 @@ export default async function PollDetailPage({ params }: PollDetailPageProps) {
   const id = resolvedParams.id;
   if (!id) notFound();
 
-  const res = await callPublicServerApi('PUBLIC_GET_POLL_ITEM', { query: `/${encodeURIComponent(id)}` });
+  const res = await callPublicServerApi('PUBLIC_GET_POLL_ITEM', {
+    query: `/${encodeURIComponent(id)}`,
+  });
   if (res.type === 'error') notFound();
 
   const data = res.data;

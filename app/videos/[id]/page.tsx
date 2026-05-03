@@ -21,7 +21,9 @@ export async function generateMetadata({ params }: VideoDetailPageProps): Promis
     };
   }
 
-  const res = await callPublicServerApi('PUBLIC_GET_VIDEO_ITEM', { query: `/${encodeURIComponent(id)}` });
+  const res = await callPublicServerApi('PUBLIC_GET_VIDEO_ITEM', {
+    query: `/${encodeURIComponent(id)}`,
+  });
   if (res.type === 'error') {
     return {
       title: 'Video Not Found',
@@ -40,7 +42,6 @@ export async function generateMetadata({ params }: VideoDetailPageProps): Promis
   };
 }
 
-
 export default async function VideoDetailPage({ params }: VideoDetailPageProps) {
   const resolvedParams = await params;
   const id = resolvedParams.id;
@@ -49,7 +50,9 @@ export default async function VideoDetailPage({ params }: VideoDetailPageProps) 
     notFound();
   }
 
-  const res = await callPublicServerApi('PUBLIC_GET_VIDEO_ITEM', { query: `/${encodeURIComponent(id)}` });
+  const res = await callPublicServerApi('PUBLIC_GET_VIDEO_ITEM', {
+    query: `/${encodeURIComponent(id)}`,
+  });
   if (res.type === 'error') {
     notFound();
   }

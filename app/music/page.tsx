@@ -23,14 +23,15 @@ export const metadata: Metadata = {
     'Discover the latest music across multiple categories, download MP3s, watch music videos, explore artist profiles, and check out top charts and download metrics.',
 };
 
-
 async function fetchMusicSections(category: string, period: string) {
   const categoryParam =
     category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';
   const baseQuery = `?limit=12&page=1&status=published${categoryParam}`;
 
   const [trendingRes, chartsRes, recentRes, artistsRes] = await Promise.all([
-    callPublicServerApi('PUBLIC_GET_MUSIC', { query: `${baseQuery}&type=trending` as `?${string}` }),
+    callPublicServerApi('PUBLIC_GET_MUSIC', {
+      query: `${baseQuery}&type=trending` as `?${string}`,
+    }),
     callPublicServerApi('PUBLIC_GET_MUSIC', {
       query: `${baseQuery}&type=charts&period=${period}` as `?${string}`,
     }),

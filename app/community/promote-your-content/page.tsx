@@ -17,7 +17,6 @@ export const metadata: Metadata = {
     'Promote your songs and ministry, get featured, and explore sponsorship opportunities. Content publishing is curated by our team—contact us to submit material for review.',
 };
 
-
 async function fetchPromotionData() {
   const [featuredRes, pricingRes, contactRes] = await Promise.all([
     callPublicServerApi('PUBLIC_GET_FEATURED_OPTIONS', {}),

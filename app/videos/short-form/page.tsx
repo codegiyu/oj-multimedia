@@ -15,7 +15,6 @@ export const metadata: Metadata = {
     'Discover short form videos - quick, engaging content perfect for quick viewing. Bite-sized entertainment and inspiration.',
 };
 
-
 async function fetchShortFormVideos(category: string) {
   const categoryParam =
     category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';

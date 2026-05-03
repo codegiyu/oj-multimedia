@@ -15,7 +15,6 @@ export const metadata: Metadata = {
     "Discover what's trending now - the most popular videos everyone is watching. Stay ahead of the video content scene.",
 };
 
-
 async function fetchTrendingVideos(category: string) {
   const categoryParam =
     category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';

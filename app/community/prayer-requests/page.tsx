@@ -18,7 +18,6 @@ export const metadata: Metadata = {
     'Share your prayer requests, pray for others, and witness answered prayers. Join our community in lifting each other up in prayer.',
 };
 
-
 const ACTIVE_LIMIT = 12;
 
 async function fetchPrayerRequestsData(page: number): Promise<{

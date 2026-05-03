@@ -21,7 +21,9 @@ export async function generateMetadata({ params }: MusicDetailPageProps): Promis
     };
   }
 
-  const res = await callPublicServerApi('PUBLIC_GET_MUSIC_ITEM', { query: `/${encodeURIComponent(id)}` });
+  const res = await callPublicServerApi('PUBLIC_GET_MUSIC_ITEM', {
+    query: `/${encodeURIComponent(id)}`,
+  });
   if (res.type === 'error') {
     return {
       title: 'Music Not Found',
@@ -40,7 +42,6 @@ export async function generateMetadata({ params }: MusicDetailPageProps): Promis
   };
 }
 
-
 export default async function MusicDetailPage({ params }: MusicDetailPageProps) {
   const resolvedParams = await params;
   const id = resolvedParams.id;
@@ -49,7 +50,9 @@ export default async function MusicDetailPage({ params }: MusicDetailPageProps) 
     notFound();
   }
 
-  const res = await callPublicServerApi('PUBLIC_GET_MUSIC_ITEM', { query: `/${encodeURIComponent(id)}` });
+  const res = await callPublicServerApi('PUBLIC_GET_MUSIC_ITEM', {
+    query: `/${encodeURIComponent(id)}`,
+  });
   if (res.type === 'error') {
     notFound();
   }

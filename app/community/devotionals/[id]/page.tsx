@@ -9,7 +9,6 @@ interface DevotionalDetailPageProps {
   params: Promise<{ id: string }>;
 }
 
-
 export async function generateMetadata({ params }: DevotionalDetailPageProps): Promise<Metadata> {
   const resolvedParams = await params;
   const id = resolvedParams.id;

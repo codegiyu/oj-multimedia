@@ -12,7 +12,6 @@ export const metadata: Metadata = {
   description: 'Read the most recent testimonies shared by our community members.',
 };
 
-
 async function generateLatestTestimoniesData() {
   await new Promise(resolve => setTimeout(resolve, 1500));
 

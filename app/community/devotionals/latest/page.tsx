@@ -16,7 +16,6 @@ export const metadata: Metadata = {
   description: 'Browse the latest daily devotionals for inspiration and spiritual growth.',
 };
 
-
 async function fetchLatestDevotionals(category: string): Promise<{
   latestDevotionals: DailyDevotional[];
   initialErrorMessage: string | null;
