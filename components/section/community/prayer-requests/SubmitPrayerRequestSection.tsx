@@ -11,17 +11,9 @@ import { RegularInput } from '@/components/atoms/RegularInput';
 import { RegularSelect } from '@/components/atoms/RegularSelect';
 import { RegularTextarea } from '@/components/atoms/RegularTextarea';
 import { Card, CardContent } from '@/components/ui/card';
-
-const PRAYER_CATEGORY_OPTIONS = [
-  { value: 'healing', text: 'Healing' },
-  { value: 'finance', text: 'Finance' },
-  { value: 'family', text: 'Family' },
-  { value: 'career', text: 'Career' },
-  { value: 'spiritual', text: 'Spiritual' },
-  { value: 'protection', text: 'Protection' },
-  { value: 'other', text: 'Other' },
-];
+import { PRAYER_CATEGORY_SELECT_OPTIONS } from '@/lib/constants/communityCategorySelectOptions';
 import { toast } from '@/components/atoms/Toast';
+
 import { SectionComp } from '@/components/general/SectionComp';
 
 export const SubmitPrayerRequestSection = () => {
@@ -137,7 +129,7 @@ export const SubmitPrayerRequestSection = () => {
                   value={category}
                   onSelectChange={setCategory}
                   placeholder="Select category"
-                  options={PRAYER_CATEGORY_OPTIONS}
+                  options={PRAYER_CATEGORY_SELECT_OPTIONS}
                 />
 
                 <RegularInput

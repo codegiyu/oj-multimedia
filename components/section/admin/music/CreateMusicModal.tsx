@@ -18,12 +18,19 @@ import { callApi } from '@/lib/services/callApi';
 import type {
   IArtistCreateMusicPayload,
   IAdminCreateMusicPayload,
+  IAdminUpdateMusicPayload,
+  ArtistMusicListItem,
 } from '@/lib/constants/endpoints';
 import { AdminUserAccountPicker } from '@/components/section/admin/shared/AdminUserAccountPicker';
+import {
+  ensureSelectContainsSlug,
+  loadAdminContentCategorySelectOptions,
+} from '@/lib/utils/adminContentCategorySelect';
 
 interface CreateMusicModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  editId: string | null;
   onSuccess: () => void;
 }
 
@@ -41,14 +48,40 @@ const defaultForm: IArtistCreateMusicPayload & { artistId: string; ownerUserId: 
   ownerUserId: '',
 };
 
-export function CreateMusicModal({ open, onOpenChange, onSuccess }: CreateMusicModalProps) {
+const statusOptions: SelectOption[] = [
+  { text: 'Draft', value: 'draft' },
+  { text: 'Published', value: 'published' },
+  { text: 'Archived', value: 'archived' },
+];
+
+function artistName(artist: ArtistMusicListItem['artist']): string {
+  if (!artist) return '—';
+  return typeof artist === 'string' ? artist : ((artist as { name?: string }).name ?? '—');
+}
+
+export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: CreateMusicModalProps) {
   const [form, setForm] = useState(defaultForm);
   const [loading, setLoading] = useState(false);
+  const [detailLoading, setDetailLoading] = useState(false);
   const [artistOptions, setArtistOptions] = useState<SelectOption[]>([]);
   const [artistsLoading, setArtistsLoading] = useState(false);
+  const [categoryOptions, setCategoryOptions] = useState<SelectOption[]>([
+    { text: 'None', value: '' },
+  ]);
+  const [categoriesLoading, setCategoriesLoading] = useState(false);
+  const [editStatus, setEditStatus] = useState<'draft' | 'published' | 'archived'>('draft');
+  const [assignOwnerUserId, setAssignOwnerUserId] = useState('');
+  const [ownerMeta, setOwnerMeta] = useState<{
+    ownerLocked: boolean;
+    ownerUserId: string;
+    hasArtist: boolean;
+  }>({ ownerLocked: false, ownerUserId: '', hasArtist: false });
+  const [editListRow, setEditListRow] = useState<ArtistMusicListItem | null>(null);
+
+  const isEdit = Boolean(editId);
 
   useEffect(() => {
-    if (!open) return;
+    if (!open || isEdit) return;
     setArtistsLoading(true);
     void callApi('ADMIN_ARTISTS_LIST', { query: '?limit=500' })
       .then(res => {
@@ -60,34 +93,123 @@ export function CreateMusicModal({ open, onOpenChange, onSuccess }: CreateMusicM
         ]);
       })
       .finally(() => setArtistsLoading(false));
+  }, [open, isEdit]);
+
+  useEffect(() => {
+    if (!open) return;
+    setCategoriesLoading(true);
+    void loadAdminContentCategorySelectOptions('music')
+      .then(opts => setCategoryOptions(opts))
+      .finally(() => setCategoriesLoading(false));
   }, [open]);
+
+  useEffect(() => {
+    if (!open) {
+      setForm(defaultForm);
+      setEditStatus('draft');
+      setAssignOwnerUserId('');
+      setOwnerMeta({ ownerLocked: false, ownerUserId: '', hasArtist: false });
+      setEditListRow(null);
+      return;
+    }
+    if (!editId) {
+      setForm(defaultForm);
+      setEditStatus('draft');
+      setAssignOwnerUserId('');
+      setOwnerMeta({ ownerLocked: false, ownerUserId: '', hasArtist: false });
+      setEditListRow(null);
+      return;
+    }
+    let cancelled = false;
+    setDetailLoading(true);
+    void (async () => {
+      try {
+        const res = await callApi('ADMIN_MUSIC_ITEM', {
+          query: `/${editId}` as `/${string}`,
+        });
+        if (cancelled || res.type !== 'success' || !res.data.music) return;
+        const m = res.data.music;
+        setEditListRow(m);
+        setCategoryOptions(prev => ensureSelectContainsSlug(prev, m.category ?? undefined));
+        setForm({
+          title: m.title ?? '',
+          description: m.description ?? '',
+          lyrics: m.lyrics ?? '',
+          excerpt: m.excerpt ?? '',
+          category: m.category ?? '',
+          coverImage: m.coverImage ?? '',
+          audioUrl: m.audioUrl ?? '',
+          videoUrl: m.videoUrl ?? '',
+          downloadUrl: m.downloadUrl ?? '',
+          artistId: '',
+          ownerUserId: '',
+        });
+        setEditStatus(m.status ?? 'draft');
+        const hasArtist = Boolean(m.artist);
+        setOwnerMeta({
+          ownerLocked: Boolean(m.ownerLocked ?? hasArtist),
+          ownerUserId: m.ownerUserId ?? '',
+          hasArtist,
+        });
+        setAssignOwnerUserId('');
+      } finally {
+        if (!cancelled) setDetailLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [open, editId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.title.trim()) return;
     setLoading(true);
     try {
-      const payload: IAdminCreateMusicPayload = {
-        title: form.title.trim(),
-        description: form.description?.trim() ?? '',
-        lyrics: form.lyrics?.trim() ?? '',
-        excerpt: form.excerpt?.trim() || undefined,
-        category: form.category?.trim() || undefined,
-        coverImage: form.coverImage?.trim() || undefined,
-        audioUrl: form.audioUrl?.trim() || undefined,
-        videoUrl: form.videoUrl?.trim() || undefined,
-        downloadUrl: form.downloadUrl?.trim() || undefined,
-      };
-      if (form.artistId) payload.artistId = form.artistId;
-      if (form.ownerUserId) payload.ownerUserId = form.ownerUserId;
-
-      const res = await callApi('ADMIN_MUSIC_CREATE', { payload });
-      if (res.type !== 'success') throw new Error(res.error?.message ?? 'Create failed');
+      if (editId) {
+        const payload: IAdminUpdateMusicPayload = {
+          title: form.title.trim(),
+          description: form.description?.trim() || undefined,
+          lyrics: form.lyrics?.trim() || undefined,
+          excerpt: form.excerpt?.trim() || undefined,
+          category: form.category?.trim() || undefined,
+          coverImage: form.coverImage?.trim() || undefined,
+          audioUrl: form.audioUrl?.trim() || undefined,
+          videoUrl: form.videoUrl?.trim() || undefined,
+          downloadUrl: form.downloadUrl?.trim() || undefined,
+          status: editStatus,
+        };
+        const canAssignOwner = !ownerMeta.ownerLocked && !ownerMeta.hasArtist;
+        if (canAssignOwner && assignOwnerUserId) {
+          payload.ownerUserId = assignOwnerUserId;
+        }
+        const res = await callApi('ADMIN_MUSIC_UPDATE', {
+          query: `/${editId}` as `/${string}`,
+          payload,
+        });
+        if (res.type !== 'success') throw new Error(res.error?.message ?? 'Update failed');
+      } else {
+        const payload: IAdminCreateMusicPayload = {
+          title: form.title.trim(),
+          description: form.description?.trim() ?? '',
+          lyrics: form.lyrics?.trim() ?? '',
+          excerpt: form.excerpt?.trim() || undefined,
+          category: form.category?.trim() || undefined,
+          coverImage: form.coverImage?.trim() || undefined,
+          audioUrl: form.audioUrl?.trim() || undefined,
+          videoUrl: form.videoUrl?.trim() || undefined,
+          downloadUrl: form.downloadUrl?.trim() || undefined,
+        };
+        if (form.artistId) payload.artistId = form.artistId;
+        if (form.ownerUserId) payload.ownerUserId = form.ownerUserId;
+        const res = await callApi('ADMIN_MUSIC_CREATE', { payload });
+        if (res.type !== 'success') throw new Error(res.error?.message ?? 'Create failed');
+      }
       setForm(defaultForm);
       onOpenChange(false);
       onSuccess();
     } catch (err) {
-      console.error('Create music failed:', err);
+      console.error(isEdit ? 'Update music failed:' : 'Create music failed:', err);
     } finally {
       setLoading(false);
     }
@@ -98,101 +220,145 @@ export function CreateMusicModal({ open, onOpenChange, onSuccess }: CreateMusicM
     onOpenChange(val);
   };
 
+  const categorySelectOptions = ensureSelectContainsSlug(categoryOptions, form.category);
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto" showCloseButton={!loading}>
         <DialogHeader>
-          <DialogTitle>Create Music</DialogTitle>
-          <DialogDescription>Add a new music track</DialogDescription>
+          <DialogTitle>{isEdit ? 'Edit music' : 'Create music'}</DialogTitle>
+          <DialogDescription>
+            {isEdit ? 'Update this track' : 'Add a new music track'}
+          </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="grid gap-4">
-          <RegularSelect
-            label="Artist profile (optional)"
-            value={form.artistId}
-            onSelectChange={v => setForm(f => ({ ...f, artistId: v }))}
-            options={artistOptions}
-            loading={artistsLoading}
-          />
-          <AdminUserAccountPicker
-            value={form.ownerUserId}
-            onChange={(userId, _u) =>
-              setForm(f => ({
-                ...f,
-                ownerUserId: userId,
-                ...(userId ? { artistId: '' } : {}),
-              }))
-            }
-            description="If set, the server links this user to an artist profile (creating one if needed). Choosing a user clears the artist dropdown; use one linking method if your API rejects both."
-          />
-          <RegularInput
-            label="Title"
-            value={form.title}
-            onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
-            placeholder="Enter title"
-            required
-          />
-          <RegularTextarea
-            label="Description"
-            value={form.description ?? ''}
-            onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
-            placeholder="Enter description"
-            rows={3}
-          />
-          <RegularTextarea
-            label="Lyrics"
-            value={form.lyrics ?? ''}
-            onChange={e => setForm(f => ({ ...f, lyrics: e.target.value }))}
-            placeholder="Enter lyrics (optional)"
-            rows={4}
-          />
-          <RegularInput
-            label="Excerpt"
-            value={form.excerpt ?? ''}
-            onChange={e => setForm(f => ({ ...f, excerpt: e.target.value }))}
-            placeholder="Short excerpt for cards"
-          />
-          <RegularInput
-            label="Category slug"
-            value={form.category ?? ''}
-            onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
-            placeholder="e.g. sermon, gospel"
-          />
-          <RegularInput
-            label="Cover image URL"
-            value={form.coverImage ?? ''}
-            onChange={e => setForm(f => ({ ...f, coverImage: e.target.value }))}
-          />
-          <RegularInput
-            label="Audio URL"
-            value={form.audioUrl ?? ''}
-            onChange={e => setForm(f => ({ ...f, audioUrl: e.target.value }))}
-          />
-          <RegularInput
-            label="Video URL (legacy)"
-            value={form.videoUrl ?? ''}
-            onChange={e => setForm(f => ({ ...f, videoUrl: e.target.value }))}
-          />
-          <RegularInput
-            label="Download URL"
-            value={form.downloadUrl ?? ''}
-            onChange={e => setForm(f => ({ ...f, downloadUrl: e.target.value }))}
-          />
-          <DialogFooter>
-            <RegularBtn
-              type="button"
-              text="Cancel"
-              variant="ghost"
-              onClick={() => handleOpenChange(false)}
-              disabled={loading}
+        {detailLoading ? (
+          <p className="text-sm text-muted-foreground py-4">Loading…</p>
+        ) : (
+          <form onSubmit={handleSubmit} className="grid gap-4">
+            {!isEdit && (
+              <>
+                <RegularSelect
+                  label="Artist profile (optional)"
+                  value={form.artistId}
+                  onSelectChange={v => setForm(f => ({ ...f, artistId: v }))}
+                  options={artistOptions}
+                  loading={artistsLoading}
+                />
+                <AdminUserAccountPicker
+                  value={form.ownerUserId}
+                  onChange={(userId, _u) =>
+                    setForm(f => ({
+                      ...f,
+                      ownerUserId: userId,
+                      ...(userId ? { artistId: '' } : {}),
+                    }))
+                  }
+                  description="If set, the server links this user to an artist profile (creating one if needed). Choosing a user clears the artist dropdown; use one linking method if your API rejects both."
+                />
+              </>
+            )}
+            <RegularInput
+              label="Title"
+              value={form.title}
+              onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
+              placeholder="Enter title"
+              required
             />
-            <RegularBtn
-              type="submit"
-              text="Create"
-              loading={loading}
-              disabled={!form.title.trim()}
+            {isEdit && (
+              <RegularSelect
+                label="Status"
+                value={editStatus}
+                onSelectChange={v => setEditStatus(v as 'draft' | 'published' | 'archived')}
+                options={statusOptions}
+              />
+            )}
+            <RegularSelect
+              label="Category"
+              value={form.category ?? ''}
+              onSelectChange={v => setForm(f => ({ ...f, category: v }))}
+              options={categorySelectOptions}
+              loading={categoriesLoading}
             />
-          </DialogFooter>
-        </form>
+            <RegularTextarea
+              label="Description"
+              value={form.description ?? ''}
+              onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
+              placeholder="Enter description"
+              rows={3}
+            />
+            <RegularTextarea
+              label="Lyrics"
+              value={form.lyrics ?? ''}
+              onChange={e => setForm(f => ({ ...f, lyrics: e.target.value }))}
+              placeholder="Enter lyrics (optional)"
+              rows={4}
+            />
+            <RegularInput
+              label="Excerpt"
+              value={form.excerpt ?? ''}
+              onChange={e => setForm(f => ({ ...f, excerpt: e.target.value }))}
+              placeholder="Short excerpt for cards"
+            />
+            <RegularInput
+              label="Cover image URL"
+              value={form.coverImage ?? ''}
+              onChange={e => setForm(f => ({ ...f, coverImage: e.target.value }))}
+            />
+            <RegularInput
+              label="Audio URL"
+              value={form.audioUrl ?? ''}
+              onChange={e => setForm(f => ({ ...f, audioUrl: e.target.value }))}
+            />
+            <RegularInput
+              label="Video URL (legacy)"
+              value={form.videoUrl ?? ''}
+              onChange={e => setForm(f => ({ ...f, videoUrl: e.target.value }))}
+            />
+            <RegularInput
+              label="Download URL"
+              value={form.downloadUrl ?? ''}
+              onChange={e => setForm(f => ({ ...f, downloadUrl: e.target.value }))}
+            />
+            {isEdit &&
+              (ownerMeta.ownerLocked || ownerMeta.hasArtist ? (
+                <p className="text-sm text-muted-foreground rounded-md border border-border px-3 py-2 bg-muted/20">
+                  Owner is set to artist profile <strong>{artistName(editListRow?.artist)}</strong>.
+                  It cannot be changed.
+                </p>
+              ) : (
+                <>
+                  <p className="text-sm text-muted-foreground">
+                    No artist profile linked yet. Link a user once; the server attaches an artist
+                    and locks ownership.
+                  </p>
+                  <AdminUserAccountPicker
+                    value={assignOwnerUserId || ownerMeta.ownerUserId}
+                    onChange={(id, _u) => setAssignOwnerUserId(id)}
+                    initialLabel={
+                      ownerMeta.ownerUserId && !assignOwnerUserId
+                        ? `Pending user id: ${ownerMeta.ownerUserId}`
+                        : null
+                    }
+                  />
+                </>
+              ))}
+            <DialogFooter>
+              <RegularBtn
+                type="button"
+                text="Cancel"
+                variant="ghost"
+                onClick={() => handleOpenChange(false)}
+                disabled={loading}
+              />
+              <RegularBtn
+                type="submit"
+                text={isEdit ? 'Save' : 'Create'}
+                loading={loading}
+                disabled={!form.title.trim()}
+              />
+            </DialogFooter>
+          </form>
+        )}
       </DialogContent>
     </Dialog>
   );

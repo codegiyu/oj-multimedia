@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -17,6 +17,7 @@ import { callApi } from '@/lib/services/callApi';
 interface CreateArtistModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  editId: string | null;
   onSuccess: () => void;
 }
 
@@ -26,28 +27,80 @@ const defaultForm = {
   genre: '',
 };
 
-export function CreateArtistModal({ open, onOpenChange, onSuccess }: CreateArtistModalProps) {
+export function CreateArtistModal({
+  open,
+  onOpenChange,
+  editId,
+  onSuccess,
+}: CreateArtistModalProps) {
   const [form, setForm] = useState(defaultForm);
   const [loading, setLoading] = useState(false);
+  const [detailLoading, setDetailLoading] = useState(false);
+
+  const isEdit = Boolean(editId);
+
+  useEffect(() => {
+    if (!open) {
+      setForm(defaultForm);
+      return;
+    }
+    if (!editId) {
+      setForm(defaultForm);
+      return;
+    }
+    let cancelled = false;
+    setDetailLoading(true);
+    void (async () => {
+      try {
+        const res = await callApi('ADMIN_ARTIST_ITEM', {
+          query: `/${editId}` as `/${string}`,
+        });
+        if (cancelled || res.type !== 'success' || !res.data.artist) return;
+        const a = res.data.artist;
+        setForm({
+          name: a.name ?? '',
+          bio: a.bio ?? '',
+          genre: a.genre ?? '',
+        });
+      } finally {
+        if (!cancelled) setDetailLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [open, editId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name.trim()) return;
     setLoading(true);
     try {
-      const { error } = await callApi('ADMIN_ARTIST_CREATE', {
-        payload: {
-          name: form.name.trim(),
-          bio: form.bio?.trim() ?? '',
-          genre: form.genre?.trim() ?? '',
-        },
-      });
-      if (error) throw new Error(error.message);
+      if (editId) {
+        const res = await callApi('ADMIN_ARTIST_UPDATE', {
+          query: `/${editId}` as `/${string}`,
+          payload: {
+            name: form.name.trim(),
+            bio: form.bio?.trim() ?? '',
+            genre: form.genre?.trim() ?? '',
+          },
+        });
+        if (res.type !== 'success') throw new Error(res.error?.message ?? 'Update failed');
+      } else {
+        const { error } = await callApi('ADMIN_ARTIST_CREATE', {
+          payload: {
+            name: form.name.trim(),
+            bio: form.bio?.trim() ?? '',
+            genre: form.genre?.trim() ?? '',
+          },
+        });
+        if (error) throw new Error(error.message);
+      }
       setForm(defaultForm);
       onOpenChange(false);
       onSuccess();
     } catch (err) {
-      console.error('Create artist failed:', err);
+      console.error(isEdit ? 'Update artist failed:' : 'Create artist failed:', err);
     } finally {
       setLoading(false);
     }
@@ -62,46 +115,52 @@ export function CreateArtistModal({ open, onOpenChange, onSuccess }: CreateArtis
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-w-md" showCloseButton={!loading}>
         <DialogHeader>
-          <DialogTitle>Create Artist</DialogTitle>
-          <DialogDescription>Add a new artist</DialogDescription>
+          <DialogTitle>{isEdit ? 'Edit artist' : 'Create artist'}</DialogTitle>
+          <DialogDescription>
+            {isEdit ? 'Update this artist' : 'Add a new artist'}
+          </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="grid gap-4">
-          <RegularInput
-            label="Name"
-            value={form.name}
-            onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-            placeholder="Enter name"
-            required
-          />
-          <RegularInput
-            label="Genre"
-            value={form.genre}
-            onChange={e => setForm(f => ({ ...f, genre: e.target.value }))}
-            placeholder="Enter genre"
-          />
-          <RegularTextarea
-            label="Bio"
-            value={form.bio}
-            onChange={e => setForm(f => ({ ...f, bio: e.target.value }))}
-            placeholder="Enter bio"
-            rows={3}
-          />
-          <DialogFooter>
-            <RegularBtn
-              type="button"
-              text="Cancel"
-              variant="ghost"
-              onClick={() => handleOpenChange(false)}
-              disabled={loading}
+        {detailLoading ? (
+          <p className="text-sm text-muted-foreground py-4">Loading…</p>
+        ) : (
+          <form onSubmit={handleSubmit} className="grid gap-4">
+            <RegularInput
+              label="Name"
+              value={form.name}
+              onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+              placeholder="Enter name"
+              required
             />
-            <RegularBtn
-              type="submit"
-              text="Create"
-              loading={loading}
-              disabled={!form.name.trim()}
+            <RegularInput
+              label="Genre"
+              value={form.genre}
+              onChange={e => setForm(f => ({ ...f, genre: e.target.value }))}
+              placeholder="Enter genre"
             />
-          </DialogFooter>
-        </form>
+            <RegularTextarea
+              label="Bio"
+              value={form.bio}
+              onChange={e => setForm(f => ({ ...f, bio: e.target.value }))}
+              placeholder="Enter bio"
+              rows={3}
+            />
+            <DialogFooter>
+              <RegularBtn
+                type="button"
+                text="Cancel"
+                variant="ghost"
+                onClick={() => handleOpenChange(false)}
+                disabled={loading}
+              />
+              <RegularBtn
+                type="submit"
+                text={isEdit ? 'Save' : 'Create'}
+                loading={loading}
+                disabled={!form.name.trim()}
+              />
+            </DialogFooter>
+          </form>
+        )}
       </DialogContent>
     </Dialog>
   );

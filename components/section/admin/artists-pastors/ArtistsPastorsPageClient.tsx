@@ -48,6 +48,8 @@ export function ArtistsPastorsPageClient({
 
   const [createArtistOpen, setCreateArtistOpen] = useState(false);
   const [createPastorOpen, setCreatePastorOpen] = useState(false);
+  const [editArtistId, setEditArtistId] = useState<string | null>(null);
+  const [editPastorId, setEditPastorId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<ArtistListItem | PastorListItem | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
 
@@ -83,12 +85,25 @@ export function ArtistsPastorsPageClient({
   };
 
   const handleEdit = (row: ArtistListItem | PastorListItem) => {
-    setClickedRowDetails({ data: row, index: -1, tab: activeTab });
+    if ('genre' in row) {
+      setEditPastorId(null);
+      setEditArtistId(row._id);
+      setCreateArtistOpen(true);
+    } else {
+      setEditArtistId(null);
+      setEditPastorId(row._id);
+      setCreatePastorOpen(true);
+    }
   };
 
   const handleCreateClick = () => {
-    if (activeTab === TAB_ARTISTS) setCreateArtistOpen(true);
-    else setCreatePastorOpen(true);
+    if (activeTab === TAB_ARTISTS) {
+      setEditArtistId(null);
+      setCreateArtistOpen(true);
+    } else {
+      setEditPastorId(null);
+      setCreatePastorOpen(true);
+    }
   };
 
   return (
@@ -118,12 +133,20 @@ export function ArtistsPastorsPageClient({
 
           <CreateArtistModal
             open={createArtistOpen}
-            onOpenChange={setCreateArtistOpen}
+            onOpenChange={open => {
+              if (!open) setEditArtistId(null);
+              setCreateArtistOpen(open);
+            }}
+            editId={editArtistId}
             onSuccess={handleRefresh}
           />
           <CreatePastorModal
             open={createPastorOpen}
-            onOpenChange={setCreatePastorOpen}
+            onOpenChange={open => {
+              if (!open) setEditPastorId(null);
+              setCreatePastorOpen(open);
+            }}
+            editId={editPastorId}
             onSuccess={handleRefresh}
           />
 

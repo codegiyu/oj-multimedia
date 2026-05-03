@@ -47,6 +47,7 @@ export function VideosPageClient({
   >(undefined);
 
   const [createOpen, setCreateOpen] = useState(false);
+  const [editVideoId, setEditVideoId] = useState<string | null>(null);
   const [approveTarget, setApproveTarget] = useState<ArtistVideoListItem | null>(null);
   const [rejectTarget, setRejectTarget] = useState<ArtistVideoListItem | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<ArtistVideoListItem | null>(null);
@@ -112,7 +113,8 @@ export function VideosPageClient({
   };
 
   const handleEdit = (v: ArtistVideoListItem) => {
-    setClickedRowDetails({ data: v, index: -1, tab: undefined });
+    setEditVideoId(v._id);
+    setCreateOpen(true);
   };
 
   return (
@@ -120,7 +122,14 @@ export function VideosPageClient({
       title={pageTitle}
       description={pageDescription}
       pageHeaderActions={
-        <RegularBtn LeftIcon={Plus} text="Create Video" onClick={() => setCreateOpen(true)} />
+        <RegularBtn
+          LeftIcon={Plus}
+          text="Create Video"
+          onClick={() => {
+            setEditVideoId(null);
+            setCreateOpen(true);
+          }}
+        />
       }
       listError={listError}
       filterableDataPageProps={{
@@ -146,12 +155,15 @@ export function VideosPageClient({
           <VideosDetailsDrawer
             clickedRowDetails={clickedRowDetails}
             setClickedRowDetails={setClickedRowDetails}
-            onSaved={handleRefresh}
           />
 
           <CreateVideoModal
             open={createOpen}
-            onOpenChange={setCreateOpen}
+            onOpenChange={open => {
+              if (!open) setEditVideoId(null);
+              setCreateOpen(open);
+            }}
+            editId={editVideoId}
             onSuccess={handleRefresh}
           />
 

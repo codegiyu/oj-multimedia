@@ -47,6 +47,7 @@ export function DevotionalsPageClient({
   >(undefined);
 
   const [createOpen, setCreateOpen] = useState(false);
+  const [editDevotionalId, setEditDevotionalId] = useState<string | null>(null);
   const [approveTarget, setApproveTarget] = useState<DevotionalListItem | null>(null);
   const [rejectTarget, setRejectTarget] = useState<DevotionalListItem | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<DevotionalListItem | null>(null);
@@ -112,7 +113,8 @@ export function DevotionalsPageClient({
   };
 
   const handleEdit = (d: DevotionalListItem) => {
-    setClickedRowDetails({ data: d, index: -1, tab: undefined });
+    setEditDevotionalId(d._id);
+    setCreateOpen(true);
   };
 
   return (
@@ -120,7 +122,14 @@ export function DevotionalsPageClient({
       title={pageTitle}
       description={pageDescription}
       pageHeaderActions={
-        <RegularBtn LeftIcon={Plus} text="Create Devotional" onClick={() => setCreateOpen(true)} />
+        <RegularBtn
+          LeftIcon={Plus}
+          text="Create Devotional"
+          onClick={() => {
+            setEditDevotionalId(null);
+            setCreateOpen(true);
+          }}
+        />
       }
       listError={listError}
       filterableDataPageProps={{
@@ -146,12 +155,15 @@ export function DevotionalsPageClient({
           <DevotionalsDetailsDrawer
             clickedRowDetails={clickedRowDetails}
             setClickedRowDetails={setClickedRowDetails}
-            onSaved={handleRefresh}
           />
 
           <CreateDevotionalModal
             open={createOpen}
-            onOpenChange={setCreateOpen}
+            onOpenChange={open => {
+              if (!open) setEditDevotionalId(null);
+              setCreateOpen(open);
+            }}
+            editId={editDevotionalId}
             onSuccess={handleRefresh}
           />
 

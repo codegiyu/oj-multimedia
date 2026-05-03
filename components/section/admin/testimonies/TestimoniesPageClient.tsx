@@ -47,6 +47,7 @@ export function TestimoniesPageClient({
   >(undefined);
 
   const [createOpen, setCreateOpen] = useState(false);
+  const [editTestimonyId, setEditTestimonyId] = useState<string | null>(null);
   const [approveTarget, setApproveTarget] = useState<TestimonyListItem | null>(null);
   const [rejectTarget, setRejectTarget] = useState<TestimonyListItem | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<TestimonyListItem | null>(null);
@@ -112,7 +113,8 @@ export function TestimoniesPageClient({
   };
 
   const handleEdit = (t: TestimonyListItem) => {
-    setClickedRowDetails({ data: t, index: -1, tab: undefined });
+    setEditTestimonyId(t._id);
+    setCreateOpen(true);
   };
 
   return (
@@ -120,7 +122,14 @@ export function TestimoniesPageClient({
       title={pageTitle}
       description={pageDescription}
       pageHeaderActions={
-        <RegularBtn LeftIcon={Plus} text="Create Testimony" onClick={() => setCreateOpen(true)} />
+        <RegularBtn
+          LeftIcon={Plus}
+          text="Create Testimony"
+          onClick={() => {
+            setEditTestimonyId(null);
+            setCreateOpen(true);
+          }}
+        />
       }
       listError={listError}
       filterableDataPageProps={{
@@ -150,7 +159,11 @@ export function TestimoniesPageClient({
 
           <CreateTestimonyModal
             open={createOpen}
-            onOpenChange={setCreateOpen}
+            onOpenChange={open => {
+              if (!open) setEditTestimonyId(null);
+              setCreateOpen(open);
+            }}
+            editId={editTestimonyId}
             onSuccess={handleRefresh}
           />
 
