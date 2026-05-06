@@ -4,8 +4,9 @@ import { motion } from 'framer-motion';
 import { useQueryState, parseAsString } from 'nuqs';
 import { Sparkles, Lightbulb, GraduationCap, Briefcase, Film, Church, Star } from 'lucide-react';
 import { ALL_CATEGORY_ID, NEWS_CATEGORIES } from '@/lib/constants/contentTaxonomy';
+import { useContentCategoryOptions } from '@/lib/hooks/useContentCategoryOptions';
 
-const categories = [{ id: ALL_CATEGORY_ID, label: 'All Stories' }, ...NEWS_CATEGORIES];
+const fallbackCategories = [{ id: ALL_CATEGORY_ID, label: 'All Stories' }, ...NEWS_CATEGORIES];
 const categoryIconById = {
   [ALL_CATEGORY_ID]: Sparkles,
   'christian-celebrity-news': Star,
@@ -17,6 +18,12 @@ const categoryIconById = {
 };
 
 export const NewsCategories = () => {
+  const { options } = useContentCategoryOptions({
+    scope: 'news',
+    includeAllOption: true,
+    allValue: ALL_CATEGORY_ID,
+    allLabel: 'All Stories',
+  });
   const [activeCategory, setActiveCategory] = useQueryState(
     'category',
     parseAsString.withDefault(ALL_CATEGORY_ID)
@@ -30,7 +37,10 @@ export const NewsCategories = () => {
     <section className="py-6 border-b border-border/50 sticky top-16 bg-background/95 backdrop-blur-md z-40">
       <div className="container mx-auto px-4">
         <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-hide">
-          {categories.map(category => {
+          {(options.length > 1
+            ? options.map(option => ({ id: option.value, label: option.text }))
+            : fallbackCategories
+          ).map(category => {
             const Icon = categoryIconById[category.id as keyof typeof categoryIconById] ?? Sparkles;
             const isActive = activeCategory === category.id;
 

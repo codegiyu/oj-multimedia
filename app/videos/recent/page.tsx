@@ -8,11 +8,8 @@ import type { RecentVideoUpload } from '@/components/section/video/RecentVideoUp
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import { filterByCategory } from '@/lib/utils/videos';
 import { mapPublicVideoToRecentUpload } from '@/lib/utils/publicApiMappers';
-import {
-  VIDEO_CATEGORIES,
-  VIDEO_TYPES,
-  normalizeCategoryId,
-} from '@/lib/constants/contentTaxonomy';
+import { VIDEO_TYPES } from '@/lib/constants/contentTaxonomy';
+import { normalizePublicCategoryByScope } from '@/lib/utils/contentCategoriesServer';
 
 export const metadata: Metadata = {
   title: 'Recent Uploads - Fresh Videos',
@@ -44,7 +41,7 @@ interface RecentVideosPageProps {
 
 export default async function RecentVideosPage({ searchParams }: RecentVideosPageProps) {
   const params = await searchParams;
-  const category = normalizeCategoryId(params.category, VIDEO_CATEGORIES);
+  const category = await normalizePublicCategoryByScope('video', params.category);
 
   return (
     <MainLayout>

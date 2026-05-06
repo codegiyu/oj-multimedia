@@ -3,8 +3,9 @@
 import { motion } from 'framer-motion';
 import { useQueryState, parseAsString } from 'nuqs';
 import { ALL_CATEGORY_ID, VIDEO_CATEGORIES } from '@/lib/constants/contentTaxonomy';
+import { useContentCategoryOptions } from '@/lib/hooks/useContentCategoryOptions';
 
-const categories = [{ id: ALL_CATEGORY_ID, label: 'All Videos' }, ...VIDEO_CATEGORIES];
+const fallbackCategories = [{ id: ALL_CATEGORY_ID, label: 'All Videos' }, ...VIDEO_CATEGORIES];
 
 const categoryEmojiById: Record<string, string> = {
   [ALL_CATEGORY_ID]: '🎬',
@@ -19,6 +20,12 @@ const categoryEmojiById: Record<string, string> = {
 };
 
 export const VideoCategories = () => {
+  const { options } = useContentCategoryOptions({
+    scope: 'video',
+    includeAllOption: true,
+    allValue: ALL_CATEGORY_ID,
+    allLabel: 'All Videos',
+  });
   const [activeCategory, setActiveCategory] = useQueryState(
     'category',
     parseAsString.withDefault(ALL_CATEGORY_ID)
@@ -32,7 +39,10 @@ export const VideoCategories = () => {
     <section className="py-6 border-b border-border/50">
       <div className="container mx-auto px-4">
         <div className="flex flex-wrap justify-center gap-2 pb-2">
-          {categories.map(category => (
+          {(options.length > 1
+            ? options.map(option => ({ id: option.value, label: option.text }))
+            : fallbackCategories
+          ).map(category => (
             <motion.button
               key={category.id}
               onClick={() => handleCategoryChange(category.id)}

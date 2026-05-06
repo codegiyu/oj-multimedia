@@ -20,6 +20,7 @@ import { RegularSelect } from '@/components/atoms/RegularSelect';
 import type { SelectOption } from '@/lib/types/general';
 import { Badge } from '@/components/ui/badge';
 import { ApprovalModal } from '@/components/section/admin/shared';
+import { useInitContentCategoriesStore } from '@/lib/store/useContentCategoriesStore';
 
 const scopeOptions: SelectOption[] = [
   { text: 'All scopes', value: 'all' },
@@ -110,6 +111,9 @@ export function ContentCategoriesPageClient({
       }
       setCreateOpen(false);
       setEditTarget(null);
+      useInitContentCategoriesStore
+        .getState()
+        .actions.invalidateScope(formScope as IContentCategoryItem['scope']);
       handleRefresh();
     } catch (e) {
       console.error(e);
@@ -126,6 +130,7 @@ export function ContentCategoriesPageClient({
         query: `/${deleteTarget._id}` as `/${string}`,
       });
       if (res.type !== 'success') throw new Error(res.error?.message ?? 'Failed');
+      useInitContentCategoriesStore.getState().actions.invalidateScope(deleteTarget.scope);
       setDeleteTarget(null);
       handleRefresh();
     } catch (e) {

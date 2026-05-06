@@ -4,10 +4,21 @@ import { useRouter } from 'next/navigation';
 import { useQueryState, parseAsString } from 'nuqs';
 import { BookOpen } from 'lucide-react';
 import { DEVOTIONAL_CATEGORY_FILTER_OPTIONS } from '@/lib/constants/communityCategorySelectOptions';
+import { useContentCategoryOptions } from '@/lib/hooks/useContentCategoryOptions';
 
 export const DevotionalsCategoryFilter = () => {
   const router = useRouter();
   const [category, setCategory] = useQueryState('category', parseAsString.withDefault('all'));
+  const { options } = useContentCategoryOptions({
+    scope: 'devotional',
+    includeAllOption: true,
+    allLabel: 'All',
+  });
+
+  const categoryOptions =
+    options.length > 1
+      ? options
+      : DEVOTIONAL_CATEGORY_FILTER_OPTIONS.map(({ text, value }) => ({ text, value }));
 
   const handleChange = async (value: string) => {
     await setCategory(value === 'all' ? null : value);
@@ -20,7 +31,7 @@ export const DevotionalsCategoryFilter = () => {
         <BookOpen className="w-4 h-4" />
         Category:
       </span>
-      {DEVOTIONAL_CATEGORY_FILTER_OPTIONS.map(cat => (
+      {categoryOptions.map(cat => (
         <button
           key={cat.value}
           type="button"

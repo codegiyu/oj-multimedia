@@ -8,7 +8,8 @@ import { NewsPageSkeleton } from '@/components/section/news/NewsPageSkeleton';
 import type { VideoNewsItem } from '@/components/section/news/VideoNews';
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import { mapPublicNewsToVideoNewsItem } from '@/lib/utils/publicApiMappers';
-import { NEWS_CATEGORIES, NEWS_TYPES, normalizeCategoryId } from '@/lib/constants/contentTaxonomy';
+import { NEWS_TYPES } from '@/lib/constants/contentTaxonomy';
+import { normalizePublicCategoryByScope } from '@/lib/utils/contentCategoriesServer';
 
 export const metadata: Metadata = {
   title: 'Video Stories - News & Lifestyle Updates',
@@ -41,7 +42,7 @@ interface VideoNewsPageProps {
 
 export default async function VideoNewsPage({ searchParams }: VideoNewsPageProps) {
   const params = await searchParams;
-  const category = normalizeCategoryId(params.category, NEWS_CATEGORIES);
+  const category = await normalizePublicCategoryByScope('news', params.category);
 
   return (
     <MainLayout>

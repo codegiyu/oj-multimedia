@@ -1,6 +1,6 @@
-import { callApi } from '@/lib/services/callApi';
 import type { IContentCategoryItem } from '@/lib/constants/endpoints';
 import type { SelectOption } from '@/lib/types/general';
+import { getAdminCategorySelectOptions } from '@/lib/hooks/useContentCategoryOptions';
 
 export type AdminContentCategoryScope = IContentCategoryItem['scope'];
 
@@ -13,22 +13,7 @@ const noneOption: SelectOption = { text: 'None', value: '' };
 export async function loadAdminContentCategorySelectOptions(
   scope: AdminContentCategoryScope
 ): Promise<SelectOption[]> {
-  const params = new URLSearchParams();
-  params.set('page', '1');
-  params.set('limit', '500');
-  params.set('sort', 'displayOrder');
-  params.set('scope', scope);
-  const res = await callApi('ADMIN_CONTENT_CATEGORIES_LIST', {
-    query: `?${params.toString()}` as `?${string}`,
-  });
-  if (res.type !== 'success') {
-    return [noneOption];
-  }
-  const cats = res.data.categories ?? [];
-  const rows: SelectOption[] = cats.map(c => ({
-    text: c.isActive === false ? `${c.name} (inactive)` : c.name,
-    value: c.slug,
-  }));
+  const rows = await getAdminCategorySelectOptions(scope);
   return [noneOption, ...rows];
 }
 
