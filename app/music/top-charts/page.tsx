@@ -8,12 +8,8 @@ import type { ChartSong } from '@/components/section/music/TopMusicCharts';
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import { filterByCategory } from '@/lib/utils/music';
 import { mapPublicMusicToChartSong } from '@/lib/utils/publicApiMappers';
-import {
-  CHART_PERIOD_VALUES,
-  MUSIC_TYPES,
-  MUSIC_CATEGORIES,
-  normalizeCategoryId,
-} from '@/lib/constants/contentTaxonomy';
+import { CHART_PERIOD_VALUES, MUSIC_TYPES } from '@/lib/constants/contentTaxonomy';
+import { normalizePublicCategoryByScope } from '@/lib/utils/contentCategoriesServer';
 
 export const metadata: Metadata = {
   title: 'Top Charts - Music Rankings',
@@ -48,7 +44,7 @@ interface TopChartsPageProps {
 
 export default async function TopChartsPage({ searchParams }: TopChartsPageProps) {
   const params = await searchParams;
-  const category = normalizeCategoryId(params.category, MUSIC_CATEGORIES);
+  const category = await normalizePublicCategoryByScope('music', params.category);
   const period = CHART_PERIOD_VALUES.includes(
     (params.period ?? 'weekly') as (typeof CHART_PERIOD_VALUES)[number]
   )

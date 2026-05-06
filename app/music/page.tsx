@@ -9,13 +9,9 @@ import type { ChartSong } from '@/components/section/music/TopMusicCharts';
 import type { RecentUpload } from '@/components/section/music/RecentUploads';
 import type { FeaturedArtist } from '@/components/section/music/FeaturedArtists';
 import { callPublicServerApi } from '@/lib/services/serverApi';
-import {
-  CHART_PERIOD_VALUES,
-  MUSIC_TYPES,
-  MUSIC_CATEGORIES,
-  normalizeCategoryId,
-} from '@/lib/constants/contentTaxonomy';
+import { CHART_PERIOD_VALUES, MUSIC_TYPES } from '@/lib/constants/contentTaxonomy';
 import { filterByCategory } from '@/lib/utils/music';
+import { normalizePublicCategoryByScope } from '@/lib/utils/contentCategoriesServer';
 import {
   mapPublicMusicToTrendingSong,
   mapPublicMusicToChartSong,
@@ -93,7 +89,7 @@ interface MusicPageProps {
 
 export default async function MusicPage({ searchParams }: MusicPageProps) {
   const params = await searchParams;
-  const category = normalizeCategoryId(params.category, MUSIC_CATEGORIES);
+  const category = await normalizePublicCategoryByScope('music', params.category);
   const period = CHART_PERIOD_VALUES.includes(
     (params.period ?? 'weekly') as (typeof CHART_PERIOD_VALUES)[number]
   )

@@ -8,11 +8,8 @@ import type { ShortFormVideo } from '@/components/section/video/ShortFormVideos'
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import { filterByCategory } from '@/lib/utils/videos';
 import { mapPublicVideoToShortForm } from '@/lib/utils/publicApiMappers';
-import {
-  VIDEO_CATEGORIES,
-  VIDEO_TYPES,
-  normalizeCategoryId,
-} from '@/lib/constants/contentTaxonomy';
+import { VIDEO_TYPES } from '@/lib/constants/contentTaxonomy';
+import { normalizePublicCategoryByScope } from '@/lib/utils/contentCategoriesServer';
 
 export const metadata: Metadata = {
   title: 'Short Form Videos - Quick Clips',
@@ -44,7 +41,7 @@ interface ShortFormVideosPageProps {
 
 export default async function ShortFormVideosPage({ searchParams }: ShortFormVideosPageProps) {
   const params = await searchParams;
-  const category = normalizeCategoryId(params.category, VIDEO_CATEGORIES);
+  const category = await normalizePublicCategoryByScope('video', params.category);
 
   return (
     <MainLayout>

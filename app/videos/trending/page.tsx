@@ -8,11 +8,8 @@ import type { TrendingVideo } from '@/components/section/video/TrendingVideos';
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import { filterByCategory } from '@/lib/utils/videos';
 import { mapPublicVideoToTrendingVideo } from '@/lib/utils/publicApiMappers';
-import {
-  VIDEO_CATEGORIES,
-  VIDEO_TYPES,
-  normalizeCategoryId,
-} from '@/lib/constants/contentTaxonomy';
+import { VIDEO_TYPES } from '@/lib/constants/contentTaxonomy';
+import { normalizePublicCategoryByScope } from '@/lib/utils/contentCategoriesServer';
 
 export const metadata: Metadata = {
   title: 'Trending Videos - Latest Content',
@@ -44,7 +41,7 @@ interface TrendingVideosPageProps {
 
 export default async function TrendingVideosPage({ searchParams }: TrendingVideosPageProps) {
   const params = await searchParams;
-  const category = normalizeCategoryId(params.category, VIDEO_CATEGORIES);
+  const category = await normalizePublicCategoryByScope('video', params.category);
 
   return (
     <MainLayout>

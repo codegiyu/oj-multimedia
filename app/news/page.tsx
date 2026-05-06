@@ -10,7 +10,8 @@ import type { NewsItem as NewsFeedItem } from '@/components/section/news/NewsFee
 import type { TrendingStory } from '@/components/section/news/TrendingSidebar';
 import type { VideoNewsItem } from '@/components/section/news/VideoNews';
 import { callPublicServerApi } from '@/lib/services/serverApi';
-import { NEWS_CATEGORIES, NEWS_TYPES, normalizeCategoryId } from '@/lib/constants/contentTaxonomy';
+import { NEWS_TYPES } from '@/lib/constants/contentTaxonomy';
+import { normalizePublicCategoryByScope } from '@/lib/utils/contentCategoriesServer';
 import {
   mapPublicNewsToFeaturedStory,
   mapPublicNewsToFeedItem,
@@ -83,7 +84,7 @@ interface NewsPageProps {
 
 export default async function NewsPage({ searchParams }: NewsPageProps) {
   const params = await searchParams;
-  const category = normalizeCategoryId(params.category, NEWS_CATEGORIES);
+  const category = await normalizePublicCategoryByScope('news', params.category);
 
   return (
     <MainLayout>

@@ -8,7 +8,8 @@ import { filterByCategory } from '@/components/section/news/categoryUtils';
 import type { TrendingStory } from '@/components/section/news/TrendingSidebar';
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import { mapPublicNewsToTrendingStory } from '@/lib/utils/publicApiMappers';
-import { NEWS_CATEGORIES, NEWS_TYPES, normalizeCategoryId } from '@/lib/constants/contentTaxonomy';
+import { NEWS_TYPES } from '@/lib/constants/contentTaxonomy';
+import { normalizePublicCategoryByScope } from '@/lib/utils/contentCategoriesServer';
 
 export const metadata: Metadata = {
   title: 'Trending Stories - News & Lifestyle Updates',
@@ -44,7 +45,7 @@ interface TrendingStoriesPageProps {
 
 export default async function TrendingStoriesPage({ searchParams }: TrendingStoriesPageProps) {
   const params = await searchParams;
-  const category = normalizeCategoryId(params.category, NEWS_CATEGORIES);
+  const category = await normalizePublicCategoryByScope('news', params.category);
 
   return (
     <MainLayout>

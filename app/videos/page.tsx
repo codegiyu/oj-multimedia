@@ -10,12 +10,9 @@ import type { RecentVideoUpload } from '@/components/section/video/RecentVideoUp
 import type { ShortFormVideo } from '@/components/section/video/ShortFormVideos';
 import type { FeaturedCreator } from '@/components/section/video/CreatorSpotlight';
 import { callPublicServerApi } from '@/lib/services/serverApi';
-import {
-  VIDEO_CATEGORIES,
-  VIDEO_TYPES,
-  normalizeCategoryId,
-} from '@/lib/constants/contentTaxonomy';
+import { VIDEO_TYPES } from '@/lib/constants/contentTaxonomy';
 import { filterByCategory } from '@/lib/utils/videos';
+import { normalizePublicCategoryByScope } from '@/lib/utils/contentCategoriesServer';
 import {
   mapPublicVideoToTrendingVideo,
   mapPublicVideoToFeaturedVideo,
@@ -98,7 +95,7 @@ interface VideosPageProps {
 
 export default async function VideosPage({ searchParams }: VideosPageProps) {
   const params = await searchParams;
-  const category = normalizeCategoryId(params.category, VIDEO_CATEGORIES);
+  const category = await normalizePublicCategoryByScope('video', params.category);
 
   return (
     <MainLayout>

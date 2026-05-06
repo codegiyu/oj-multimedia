@@ -8,11 +8,8 @@ import type { TrendingSong } from '@/components/section/music/TrendingSongs';
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import { filterByCategory } from '@/lib/utils/music';
 import { mapPublicMusicToTrendingSong } from '@/lib/utils/publicApiMappers';
-import {
-  MUSIC_CATEGORIES,
-  MUSIC_TYPES,
-  normalizeCategoryId,
-} from '@/lib/constants/contentTaxonomy';
+import { MUSIC_TYPES } from '@/lib/constants/contentTaxonomy';
+import { normalizePublicCategoryByScope } from '@/lib/utils/contentCategoriesServer';
 
 export const metadata: Metadata = {
   title: 'Trending Songs - Latest Music',
@@ -47,7 +44,7 @@ interface TrendingSongsPageProps {
 
 export default async function TrendingSongsPage({ searchParams }: TrendingSongsPageProps) {
   const params = await searchParams;
-  const category = normalizeCategoryId(params.category, MUSIC_CATEGORIES);
+  const category = await normalizePublicCategoryByScope('music', params.category);
 
   return (
     <MainLayout>
