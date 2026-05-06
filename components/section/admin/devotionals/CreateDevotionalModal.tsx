@@ -25,6 +25,7 @@ import {
 } from '@/lib/utils/adminContentCategorySelect';
 import { useFileUpload } from '@/lib/hooks/use-file-upload';
 import { MEDIA_FALLBACK_URLS } from '@/lib/constants/mediaFallbackUrls';
+import { PUBLISHABLE_STATUS_SELECT_OPTIONS } from '@/lib/constants/adminSelectOptions';
 
 interface CreateDevotionalModalProps {
   open: boolean;
@@ -44,12 +45,6 @@ const defaultForm = {
   type: 'daily' as (typeof DEVOTIONAL_TYPES)[number],
   status: 'draft' as 'draft' | 'published' | 'archived',
 };
-
-const statusOptions: SelectOption[] = [
-  { text: 'Draft', value: 'draft' },
-  { text: 'Published', value: 'published' },
-  { text: 'Archived', value: 'archived' },
-];
 
 const typeOptions: SelectOption[] = DEVOTIONAL_TYPES.map(t => ({ text: t, value: t }));
 
@@ -261,7 +256,7 @@ export function CreateDevotionalModal({
               label="Status"
               value={form.status}
               onSelectChange={v => setForm(f => ({ ...f, status: v as typeof form.status }))}
-              options={statusOptions}
+              options={[...PUBLISHABLE_STATUS_SELECT_OPTIONS] as SelectOption[]}
             />
             <RegularInput
               label="Author"

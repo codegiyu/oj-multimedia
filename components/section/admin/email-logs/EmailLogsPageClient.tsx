@@ -8,17 +8,9 @@ import type { IEmailLog } from '@/lib/constants/endpoints';
 import type { ClickedRowDetails } from '@/components/general/TableRowDetailsDrawer';
 import { EmailLogDetailsDrawer } from './EmailLogDetailsDrawer';
 import { EmailLogsTableContent } from './EmailLogsTableContent';
+import { EMAIL_LOG_STATUS_FILTER_SELECT_OPTIONS } from '@/lib/constants/adminSelectOptions';
 
 const STATUS_FILTER_LABEL = 'Status';
-
-const statusOptions = [
-  { text: 'All Statuses', value: 'all' },
-  { text: 'Pending', value: 'pending' },
-  { text: 'Sent', value: 'sent' },
-  { text: 'Delivered', value: 'delivered' },
-  { text: 'Failed', value: 'failed' },
-  { text: 'Bounced', value: 'bounced' },
-];
 
 export interface EmailLogsPageClientProps {
   pageTitle: string;
@@ -59,7 +51,7 @@ export function EmailLogsPageClient({
           {
             label: STATUS_FILTER_LABEL,
             value: filterStatus,
-            options: statusOptions,
+            options: [...EMAIL_LOG_STATUS_FILTER_SELECT_OPTIONS],
             onChange: value => {
               setFilterStatus(value);
               setPage(1);

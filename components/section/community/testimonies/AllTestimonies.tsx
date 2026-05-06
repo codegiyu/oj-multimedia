@@ -11,23 +11,12 @@ import { ListPagination } from '@/components/general/ListPagination';
 import { EmptyState } from '@/components/section/news/EmptyState';
 import type { Testimony } from './TestimoniesPageClient';
 import type { Pagination } from '@/lib/types/community';
+import { TESTIMONY_CATEGORY_FILTER_OPTIONS } from '@/lib/constants/communityCategorySelectOptions';
 
 interface AllTestimoniesProps {
   testimonies: Testimony[];
   pagination?: Pagination | null;
 }
-
-const categories = [
-  'All',
-  'Healing',
-  'Purpose',
-  'Prayer',
-  'Marriage',
-  'Provision',
-  'Deliverance',
-  'Salvation',
-  'Blessing',
-];
 
 export const AllTestimonies = ({ testimonies, pagination = null }: AllTestimoniesProps) => {
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -70,14 +59,14 @@ export const AllTestimonies = ({ testimonies, pagination = null }: AllTestimonie
       {/* Category Filter */}
       <div className="flex flex-wrap items-center gap-3 mb-8 justify-center">
         <Filter className="w-4 h-4 text-muted-foreground" />
-        {categories.map(category => (
+        {TESTIMONY_CATEGORY_FILTER_OPTIONS.map(category => (
           <Button
-            key={category}
-            variant={selectedCategory === category ? 'default' : 'outline'}
+            key={category.value}
+            variant={selectedCategory === category.text ? 'default' : 'outline'}
             size="sm"
-            onClick={() => setSelectedCategory(category)}
+            onClick={() => setSelectedCategory(category.text)}
             className="text-sm">
-            {category}
+            {category.text}
           </Button>
         ))}
       </div>

@@ -1,5 +1,10 @@
 import { populateArtist } from '@/lib/utils/community/artists';
 import { VIDEOS_ITEMS, type VideoItem } from '@/lib/constants/videos';
+import {
+  ALL_CATEGORY_ID,
+  VIDEO_CATEGORIES,
+  normalizeCategoryId,
+} from '@/lib/constants/contentTaxonomy';
 
 export type VideoItemCreator = { _id: string; name: string };
 
@@ -83,22 +88,11 @@ export function getRelatedVideos(
  * Maps category IDs from the URL query parameter to actual category values in the data
  */
 export const mapCategoryIdToValue = (categoryId: string | null | undefined): string | null => {
-  if (!categoryId || categoryId === 'all') {
+  const normalizedCategory = normalizeCategoryId(categoryId, VIDEO_CATEGORIES);
+  if (normalizedCategory === ALL_CATEGORY_ID) {
     return null; // null means show all
   }
-
-  const categoryMap: Record<string, string> = {
-    music: 'music',
-    short: 'short',
-    talks: 'talks',
-    creative: 'creative',
-    inspirational: 'inspirational',
-    live: 'live',
-    podcasts: 'podcasts',
-    sermon: 'sermon',
-  };
-
-  return categoryMap[categoryId] || null;
+  return normalizedCategory;
 };
 
 /**

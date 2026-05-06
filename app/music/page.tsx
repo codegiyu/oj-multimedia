@@ -9,6 +9,12 @@ import type { ChartSong } from '@/components/section/music/TopMusicCharts';
 import type { RecentUpload } from '@/components/section/music/RecentUploads';
 import type { FeaturedArtist } from '@/components/section/music/FeaturedArtists';
 import { callPublicServerApi } from '@/lib/services/serverApi';
+import {
+  CHART_PERIOD_VALUES,
+  MUSIC_TYPES,
+  MUSIC_CATEGORIES,
+  normalizeCategoryId,
+} from '@/lib/constants/contentTaxonomy';
 import { filterByCategory } from '@/lib/utils/music';
 import {
   mapPublicMusicToTrendingSong,
@@ -30,12 +36,14 @@ async function fetchMusicSections(category: string, period: string) {
 
   const [trendingRes, chartsRes, recentRes, artistsRes] = await Promise.all([
     callPublicServerApi('PUBLIC_GET_MUSIC', {
-      query: `${baseQuery}&type=trending` as `?${string}`,
+      query: `${baseQuery}&type=${MUSIC_TYPES.trending}` as `?${string}`,
     }),
     callPublicServerApi('PUBLIC_GET_MUSIC', {
-      query: `${baseQuery}&type=charts&period=${period}` as `?${string}`,
+      query: `${baseQuery}&type=${MUSIC_TYPES.charts}&period=${period}` as `?${string}`,
     }),
-    callPublicServerApi('PUBLIC_GET_MUSIC', { query: `${baseQuery}&type=recent` as `?${string}` }),
+    callPublicServerApi('PUBLIC_GET_MUSIC', {
+      query: `${baseQuery}&type=${MUSIC_TYPES.recent}` as `?${string}`,
+    }),
     callPublicServerApi('PUBLIC_GET_ARTISTS', { query: '?page=1&limit=6' as `?${string}` }),
   ]);
 
@@ -85,8 +93,12 @@ interface MusicPageProps {
 
 export default async function MusicPage({ searchParams }: MusicPageProps) {
   const params = await searchParams;
-  const category = params.category ?? 'all';
-  const period = params.period ?? 'weekly';
+  const category = normalizeCategoryId(params.category, MUSIC_CATEGORIES);
+  const period = CHART_PERIOD_VALUES.includes(
+    (params.period ?? 'weekly') as (typeof CHART_PERIOD_VALUES)[number]
+  )
+    ? (params.period ?? 'weekly')
+    : 'weekly';
 
   return (
     <MainLayout>

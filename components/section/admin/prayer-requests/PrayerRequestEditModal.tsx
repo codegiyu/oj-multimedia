@@ -16,7 +16,12 @@ import { RegularSelect } from '@/components/atoms/RegularSelect';
 import type { SelectOption } from '@/lib/types/general';
 import { callApi } from '@/lib/services/callApi';
 import { PRAYER_CATEGORY_SELECT_OPTIONS } from '@/lib/constants/communityCategorySelectOptions';
+import {
+  PRAYER_REQUEST_STATUS_SELECT_OPTIONS,
+  PRAYER_REQUEST_STATUS_VALUES,
+} from '@/lib/constants/adminSelectOptions';
 import { ensureSelectContainsSlug } from '@/lib/utils/adminContentCategorySelect';
+import { normalizeEnumValue } from '@/lib/utils/adminFormValidation';
 
 interface PrayerRequestEditModalProps {
   open: boolean;
@@ -24,11 +29,6 @@ interface PrayerRequestEditModalProps {
   prayerRequestId: string | null;
   onSuccess: () => void;
 }
-
-const statusOptions: SelectOption[] = [
-  { text: 'Active', value: 'active' },
-  { text: 'Answered', value: 'answered' },
-];
 
 const baseCategoryOptions: SelectOption[] = [
   { text: 'None', value: '' },
@@ -71,7 +71,7 @@ export function PrayerRequestEditModal({
         setTitle(pr.title ?? '');
         setContent(pr.content ?? '');
         setCategory(pr.category ?? '');
-        setStatus((pr.status as string) === 'answered' ? 'answered' : 'active');
+        setStatus(normalizeEnumValue(pr.status, PRAYER_REQUEST_STATUS_VALUES, 'active'));
       } finally {
         if (!cancelled) setDetailLoading(false);
       }
@@ -127,8 +127,10 @@ export function PrayerRequestEditModal({
             <RegularSelect
               label="Status"
               value={status}
-              onSelectChange={setStatus}
-              options={statusOptions}
+              onSelectChange={v =>
+                setStatus(normalizeEnumValue(v, PRAYER_REQUEST_STATUS_VALUES, 'active'))
+              }
+              options={[...PRAYER_REQUEST_STATUS_SELECT_OPTIONS] as SelectOption[]}
             />
             <RegularSelect
               label="Category"

@@ -8,6 +8,7 @@ import { filterByCategory } from '@/components/section/news/categoryUtils';
 import type { TrendingStory } from '@/components/section/news/TrendingSidebar';
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import { mapPublicNewsToTrendingStory } from '@/lib/utils/publicApiMappers';
+import { NEWS_CATEGORIES, NEWS_TYPES, normalizeCategoryId } from '@/lib/constants/contentTaxonomy';
 
 export const metadata: Metadata = {
   title: 'Trending Stories - News & Lifestyle Updates',
@@ -18,7 +19,8 @@ export const metadata: Metadata = {
 async function fetchTrendingStories(category: string) {
   const categoryParam =
     category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';
-  const query = `?limit=50&page=1&status=published&type=trending${categoryParam}` as const;
+  const query =
+    `?limit=50&page=1&status=published&type=${NEWS_TYPES.trending}${categoryParam}` as const;
   const res = await callPublicServerApi('PUBLIC_GET_NEWS', { query });
 
   if (res.type === 'error') {
@@ -42,7 +44,7 @@ interface TrendingStoriesPageProps {
 
 export default async function TrendingStoriesPage({ searchParams }: TrendingStoriesPageProps) {
   const params = await searchParams;
-  const category = params.category ?? 'all';
+  const category = normalizeCategoryId(params.category, NEWS_CATEGORIES);
 
   return (
     <MainLayout>

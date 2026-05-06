@@ -1,21 +1,10 @@
+import { NEWS_CATEGORIES, mapCategoryIdToLabel } from '@/lib/constants/contentTaxonomy';
+
 /**
  * Maps category IDs from the URL query parameter to actual category values in the data
  */
 export const mapCategoryIdToValue = (categoryId: string | null | undefined): string | null => {
-  if (!categoryId || categoryId === 'all') {
-    return null; // null means show all
-  }
-
-  const categoryMap: Record<string, string> = {
-    'christian-celebrity-news': 'Christian Celebrity News',
-    'church-announcements': 'Church & Ministry Announcements',
-    'inspirational-stories': 'Inspirational Stories',
-    'scholarship-alerts': 'Scholarship Alerts',
-    'jobs-ngo': 'Jobs (NGO / Faith-based)',
-    'christian-movie-reviews': 'Christian Movie Reviews',
-  };
-
-  return categoryMap[categoryId] || null;
+  return mapCategoryIdToLabel(categoryId, NEWS_CATEGORIES);
 };
 
 /**

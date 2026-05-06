@@ -8,6 +8,11 @@ import type { RecentVideoUpload } from '@/components/section/video/RecentVideoUp
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import { filterByCategory } from '@/lib/utils/videos';
 import { mapPublicVideoToRecentUpload } from '@/lib/utils/publicApiMappers';
+import {
+  VIDEO_CATEGORIES,
+  VIDEO_TYPES,
+  normalizeCategoryId,
+} from '@/lib/constants/contentTaxonomy';
 
 export const metadata: Metadata = {
   title: 'Recent Uploads - Fresh Videos',
@@ -18,7 +23,8 @@ export const metadata: Metadata = {
 async function fetchRecentVideos(category: string) {
   const categoryParam =
     category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';
-  const query = `?limit=50&page=1&status=published&type=recent${categoryParam}` as const;
+  const query =
+    `?limit=50&page=1&status=published&type=${VIDEO_TYPES.recent}${categoryParam}` as const;
   const res = await callPublicServerApi('PUBLIC_GET_VIDEOS', { query });
   if (res.type === 'error') {
     return {
@@ -38,7 +44,7 @@ interface RecentVideosPageProps {
 
 export default async function RecentVideosPage({ searchParams }: RecentVideosPageProps) {
   const params = await searchParams;
-  const category = params.category ?? 'all';
+  const category = normalizeCategoryId(params.category, VIDEO_CATEGORIES);
 
   return (
     <MainLayout>

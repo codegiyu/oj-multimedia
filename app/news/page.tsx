@@ -10,6 +10,7 @@ import type { NewsItem as NewsFeedItem } from '@/components/section/news/NewsFee
 import type { TrendingStory } from '@/components/section/news/TrendingSidebar';
 import type { VideoNewsItem } from '@/components/section/news/VideoNews';
 import { callPublicServerApi } from '@/lib/services/serverApi';
+import { NEWS_CATEGORIES, NEWS_TYPES, normalizeCategoryId } from '@/lib/constants/contentTaxonomy';
 import {
   mapPublicNewsToFeaturedStory,
   mapPublicNewsToFeedItem,
@@ -29,10 +30,10 @@ async function fetchNewsSections(category: string) {
   const baseQuery = `?limit=15&page=1&status=published${categoryParam}` as const;
 
   const [featuredRes, latestRes, trendingRes, videoRes] = await Promise.all([
-    callPublicServerApi('PUBLIC_GET_NEWS', { query: `${baseQuery}&type=featured` }),
-    callPublicServerApi('PUBLIC_GET_NEWS', { query: `${baseQuery}&type=latest` }),
-    callPublicServerApi('PUBLIC_GET_NEWS', { query: `${baseQuery}&type=trending` }),
-    callPublicServerApi('PUBLIC_GET_NEWS', { query: `${baseQuery}&type=video` }),
+    callPublicServerApi('PUBLIC_GET_NEWS', { query: `${baseQuery}&type=${NEWS_TYPES.featured}` }),
+    callPublicServerApi('PUBLIC_GET_NEWS', { query: `${baseQuery}&type=${NEWS_TYPES.latest}` }),
+    callPublicServerApi('PUBLIC_GET_NEWS', { query: `${baseQuery}&type=${NEWS_TYPES.trending}` }),
+    callPublicServerApi('PUBLIC_GET_NEWS', { query: `${baseQuery}&type=${NEWS_TYPES.video}` }),
   ]);
 
   let errorMessage: string | null = null;
@@ -82,7 +83,7 @@ interface NewsPageProps {
 
 export default async function NewsPage({ searchParams }: NewsPageProps) {
   const params = await searchParams;
-  const category = params.category ?? 'all';
+  const category = normalizeCategoryId(params.category, NEWS_CATEGORIES);
 
   return (
     <MainLayout>

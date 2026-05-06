@@ -2,27 +2,30 @@
 
 import { motion } from 'framer-motion';
 import { useQueryState, parseAsString } from 'nuqs';
+import { ALL_CATEGORY_ID, VIDEO_CATEGORIES } from '@/lib/constants/contentTaxonomy';
 
-const categories = [
-  { id: 'all', label: 'All Videos', emoji: '🎬' },
-  { id: 'music', label: 'Music Videos', emoji: '🎵' },
-  { id: 'short', label: 'Short Clips', emoji: '⚡' },
-  { id: 'talks', label: 'Talks & Speeches', emoji: '🎤' },
-  { id: 'creative', label: 'Creative Content', emoji: '✨' },
-  { id: 'inspirational', label: 'Inspirational', emoji: '💫' },
-  { id: 'live', label: 'Live Performances', emoji: '🎭' },
-  { id: 'podcasts', label: 'Podcasts / Video Talks', emoji: '🎙️' },
-  { id: 'sermon', label: 'Sermons', emoji: '📿' },
-];
+const categories = [{ id: ALL_CATEGORY_ID, label: 'All Videos' }, ...VIDEO_CATEGORIES];
+
+const categoryEmojiById: Record<string, string> = {
+  [ALL_CATEGORY_ID]: '🎬',
+  music: '🎵',
+  short: '⚡',
+  talks: '🎤',
+  creative: '✨',
+  inspirational: '💫',
+  live: '🎭',
+  podcasts: '🎙️',
+  sermon: '📿',
+};
 
 export const VideoCategories = () => {
   const [activeCategory, setActiveCategory] = useQueryState(
     'category',
-    parseAsString.withDefault('all')
+    parseAsString.withDefault(ALL_CATEGORY_ID)
   );
 
   const handleCategoryChange = (categoryId: string) => {
-    setActiveCategory(categoryId === 'all' ? null : categoryId);
+    setActiveCategory(categoryId === ALL_CATEGORY_ID ? null : categoryId);
   };
 
   return (
@@ -44,7 +47,7 @@ export const VideoCategories = () => {
                     : 'bg-muted hover:bg-muted/80 text-foreground'
                 }
               `}>
-              <span>{category.emoji}</span>
+              <span>{categoryEmojiById[category.id] ?? '🎬'}</span>
               <span>{category.label}</span>
             </motion.button>
           ))}

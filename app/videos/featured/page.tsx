@@ -8,6 +8,11 @@ import type { FeaturedVideo } from '@/components/section/video/FeaturedVideos';
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import { filterByCategory } from '@/lib/utils/videos';
 import { mapPublicVideoToFeaturedVideo } from '@/lib/utils/publicApiMappers';
+import {
+  VIDEO_CATEGORIES,
+  VIDEO_TYPES,
+  normalizeCategoryId,
+} from '@/lib/constants/contentTaxonomy';
 
 export const metadata: Metadata = {
   title: 'Featured Videos - Editor Picks',
@@ -18,7 +23,8 @@ export const metadata: Metadata = {
 async function fetchFeaturedVideos(category: string) {
   const categoryParam =
     category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';
-  const query = `?limit=50&page=1&status=published&type=featured${categoryParam}` as const;
+  const query =
+    `?limit=50&page=1&status=published&type=${VIDEO_TYPES.featured}${categoryParam}` as const;
   const res = await callPublicServerApi('PUBLIC_GET_VIDEOS', { query });
   if (res.type === 'error') {
     return {
@@ -38,7 +44,7 @@ interface FeaturedVideosPageProps {
 
 export default async function FeaturedVideosPage({ searchParams }: FeaturedVideosPageProps) {
   const params = await searchParams;
-  const category = params.category ?? 'all';
+  const category = normalizeCategoryId(params.category, VIDEO_CATEGORIES);
 
   return (
     <MainLayout>

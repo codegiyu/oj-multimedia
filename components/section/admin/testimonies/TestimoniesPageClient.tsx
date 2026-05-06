@@ -13,13 +13,7 @@ import { ApprovalModal, RejectModal } from '@/components/section/admin/shared';
 import { callApi } from '@/lib/services/callApi';
 import { RegularBtn } from '@/components/atoms/RegularBtn';
 import { Plus } from 'lucide-react';
-
-const statusOptions = [
-  { text: 'All', value: 'all' },
-  { text: 'Draft', value: 'draft' },
-  { text: 'Published', value: 'published' },
-  { text: 'Archived', value: 'archived' },
-];
+import { PUBLISHABLE_STATUS_FILTER_SELECT_OPTIONS } from '@/lib/constants/adminSelectOptions';
 
 export interface TestimoniesPageClientProps {
   pageTitle: string;
@@ -142,7 +136,7 @@ export function TestimoniesPageClient({
           {
             label: 'Status',
             value: filterStatus,
-            options: statusOptions,
+            options: [...PUBLISHABLE_STATUS_FILTER_SELECT_OPTIONS],
             onChange: v => {
               setFilterStatus(v);
               setPage(1);

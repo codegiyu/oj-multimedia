@@ -8,6 +8,7 @@ import { filterByCategory } from '@/components/section/news/categoryUtils';
 import type { FeaturedStory } from '@/components/section/news/FeaturedStories';
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import { mapPublicNewsToFeaturedStory } from '@/lib/utils/publicApiMappers';
+import { NEWS_CATEGORIES, NEWS_TYPES, normalizeCategoryId } from '@/lib/constants/contentTaxonomy';
 
 export const metadata: Metadata = {
   title: 'Featured Stories - News & Lifestyle Updates',
@@ -18,7 +19,8 @@ export const metadata: Metadata = {
 async function fetchFeaturedStories(category: string) {
   const categoryParam =
     category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';
-  const query = `?limit=50&page=1&status=published&type=featured${categoryParam}` as const;
+  const query =
+    `?limit=50&page=1&status=published&type=${NEWS_TYPES.featured}${categoryParam}` as const;
   const res = await callPublicServerApi('PUBLIC_GET_NEWS', { query });
 
   if (res.type === 'error') {
@@ -39,7 +41,7 @@ interface FeaturedStoriesPageProps {
 
 export default async function FeaturedStoriesPage({ searchParams }: FeaturedStoriesPageProps) {
   const params = await searchParams;
-  const category = params.category ?? 'all';
+  const category = normalizeCategoryId(params.category, NEWS_CATEGORIES);
 
   return (
     <MainLayout>
