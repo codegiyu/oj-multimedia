@@ -145,7 +145,7 @@ export function CreatePollModal({ open, onOpenChange, editId, onSuccess }: Creat
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto" showCloseButton={!loading}>
+      <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto" showCloseButton={!loading}>
         <DialogHeader>
           <DialogTitle>{isEdit ? 'Edit poll' : 'Create poll'}</DialogTitle>
           <DialogDescription>{isEdit ? 'Update this poll' : 'Add a new poll'}</DialogDescription>

@@ -64,7 +64,7 @@ export function CreateVendorModal({ open, onOpenChange, onSuccess }: CreateVendo
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-w-md" showCloseButton={!loading}>
+      <DialogContent className="max-w-xl" showCloseButton={!loading}>
         <DialogHeader>
           <DialogTitle>Create Vendor</DialogTitle>
           <DialogDescription>Add a new vendor</DialogDescription>

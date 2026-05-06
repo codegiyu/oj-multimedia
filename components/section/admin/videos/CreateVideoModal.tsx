@@ -216,7 +216,7 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto" showCloseButton={!loading}>
+      <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto" showCloseButton={!loading}>
         <DialogHeader>
           <DialogTitle>{isEdit ? 'Edit video' : 'Create video'}</DialogTitle>
           <DialogDescription>{isEdit ? 'Update this video' : 'Add a new video'}</DialogDescription>

@@ -67,7 +67,7 @@ export const TableRowDetails = ({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="right"
-        className="p-0 w-full max-w-[34.5rem] border-none"
+        className="p-0 w-full max-w-[40rem] border-none"
         aria-describedby={undefined}>
         <SheetTitle className="sr-only">{title}</SheetTitle>
         <section className="grid grid-rows-[auto_1fr_auto] w-full h-full rounded-[20px] bg-background overflow-hidden">

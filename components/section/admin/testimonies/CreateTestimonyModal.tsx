@@ -140,7 +140,7 @@ export function CreateTestimonyModal({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-w-md" showCloseButton={!loading}>
+      <DialogContent className="max-w-xl" showCloseButton={!loading}>
         <DialogHeader>
           <DialogTitle>{isEdit ? 'Edit testimony' : 'Create testimony'}</DialogTitle>
           <DialogDescription>
