@@ -23,6 +23,7 @@ import type {
   ArtistMusicListItem,
 } from '@/lib/constants/endpoints';
 import { AdminUserAccountPicker } from '@/components/section/admin/shared/AdminUserAccountPicker';
+import { MediaUrlOrUploadField } from '@/components/general/MediaUrlOrUploadField';
 import {
   ensureSelectContainsSlug,
   loadAdminContentCategorySelectOptions,
@@ -33,6 +34,8 @@ import {
   normalizeOptionalText,
   requireText,
 } from '@/lib/utils/adminFormValidation';
+import { useFileUpload } from '@/lib/hooks/use-file-upload';
+import { MEDIA_FALLBACK_URLS } from '@/lib/constants/mediaFallbackUrls';
 
 interface CreateMusicModalProps {
   open: boolean;
@@ -85,8 +88,26 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
     hasArtist: boolean;
   }>({ ownerLocked: false, ownerUserId: '', hasArtist: false });
   const [editListRow, setEditListRow] = useState<ArtistMusicListItem | null>(null);
+  const [pendingCover, setPendingCover] = useState<File | null>(null);
+  const [pendingAudio, setPendingAudio] = useState<File | null>(null);
+  const [pendingVideo, setPendingVideo] = useState<File | null>(null);
 
   const isEdit = Boolean(editId);
+  const coverUpload = useFileUpload({
+    entityType: 'music',
+    entityId: editId ?? 'music-pending',
+    intent: 'image',
+  });
+  const audioUpload = useFileUpload({
+    entityType: 'music',
+    entityId: editId ?? 'music-pending',
+    intent: 'other',
+  });
+  const videoUpload = useFileUpload({
+    entityType: 'music',
+    entityId: editId ?? 'music-pending',
+    intent: 'other',
+  });
 
   useEffect(() => {
     if (!open || isEdit) return;
@@ -182,18 +203,37 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
       const audioUrl = normalizeOptionalHttpUrl(form.audioUrl ?? '', 'Audio URL');
       const videoUrl = normalizeOptionalHttpUrl(form.videoUrl ?? '', 'Video URL');
       const downloadUrl = normalizeOptionalHttpUrl(form.downloadUrl ?? '', 'Download URL');
+      let finalCoverImage = coverImage;
+      let finalAudioUrl = audioUrl;
+      let finalVideoUrl = videoUrl;
+      const finalDownloadUrl = downloadUrl;
 
       if (editId) {
+        if (pendingCover) {
+          const upload = await coverUpload.uploadFile({ file: pendingCover, entityId: editId });
+          if (!upload?.url) throw new Error('Cover upload failed');
+          finalCoverImage = upload.url;
+        }
+        if (pendingAudio) {
+          const upload = await audioUpload.uploadFile({ file: pendingAudio, entityId: editId });
+          if (!upload?.url) throw new Error('Audio upload failed');
+          finalAudioUrl = upload.url;
+        }
+        if (pendingVideo) {
+          const upload = await videoUpload.uploadFile({ file: pendingVideo, entityId: editId });
+          if (!upload?.url) throw new Error('Video upload failed');
+          finalVideoUrl = upload.url;
+        }
         const payload: IAdminUpdateMusicPayload = {
           title,
           description: description || undefined,
           lyrics: lyrics || undefined,
           excerpt,
           category,
-          coverImage,
-          audioUrl,
-          videoUrl,
-          downloadUrl,
+          coverImage: finalCoverImage,
+          audioUrl: finalAudioUrl,
+          videoUrl: finalVideoUrl,
+          downloadUrl: finalDownloadUrl,
           status: editStatus,
         };
         const canAssignOwner = !ownerMeta.ownerLocked && !ownerMeta.hasArtist;
@@ -212,15 +252,53 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
           lyrics,
           excerpt,
           category,
-          coverImage,
-          audioUrl,
-          videoUrl,
-          downloadUrl,
+          coverImage: finalCoverImage || MEDIA_FALLBACK_URLS.image,
+          audioUrl: finalAudioUrl || MEDIA_FALLBACK_URLS.audio,
+          videoUrl: finalVideoUrl || MEDIA_FALLBACK_URLS.video,
+          downloadUrl: finalDownloadUrl || MEDIA_FALLBACK_URLS.file,
         };
         if (form.artistId) payload.artistId = form.artistId;
         if (form.ownerUserId) payload.ownerUserId = form.ownerUserId;
         const res = await callApi('ADMIN_MUSIC_CREATE', { payload });
         if (res.type !== 'success') throw new Error(res.error?.message ?? 'Create failed');
+        const createdId =
+          (res.data as { music?: { _id?: string }; _id?: string } | undefined)?.music?._id ??
+          (res.data as { _id?: string } | undefined)?._id;
+        if (createdId) {
+          if (pendingCover) {
+            const upload = await coverUpload.uploadFile({
+              file: pendingCover,
+              entityId: createdId,
+            });
+            if (upload?.url) finalCoverImage = upload.url;
+          }
+          if (pendingAudio) {
+            const upload = await audioUpload.uploadFile({
+              file: pendingAudio,
+              entityId: createdId,
+            });
+            if (upload?.url) finalAudioUrl = upload.url;
+          }
+          if (pendingVideo) {
+            const upload = await videoUpload.uploadFile({
+              file: pendingVideo,
+              entityId: createdId,
+            });
+            if (upload?.url) finalVideoUrl = upload.url;
+          }
+          if (pendingCover || pendingAudio || pendingVideo) {
+            const patchRes = await callApi('ADMIN_MUSIC_UPDATE', {
+              query: `/${createdId}` as `/${string}`,
+              payload: {
+                coverImage: finalCoverImage,
+                audioUrl: finalAudioUrl,
+                videoUrl: finalVideoUrl,
+              },
+            });
+            if (patchRes.type !== 'success')
+              throw new Error(patchRes.error?.message ?? 'Post-create media update failed');
+          }
+        }
       }
       setForm(defaultForm);
       onOpenChange(false);
@@ -318,20 +396,39 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
               onChange={e => setForm(f => ({ ...f, excerpt: e.target.value }))}
               placeholder="Short excerpt for cards"
             />
-            <RegularInput
+            <MediaUrlOrUploadField
               label="Cover image URL"
               value={form.coverImage ?? ''}
-              onChange={e => setForm(f => ({ ...f, coverImage: e.target.value }))}
+              onChange={value => setForm(f => ({ ...f, coverImage: value }))}
+              entityType="music"
+              entityId={editId}
+              fallbackEntityIdPrefix="music-cover"
+              intent="image"
+              accept="image/*"
+              defaultMode="upload"
+              onPendingFileChange={setPendingCover}
             />
-            <RegularInput
+            <MediaUrlOrUploadField
               label="Audio URL"
               value={form.audioUrl ?? ''}
-              onChange={e => setForm(f => ({ ...f, audioUrl: e.target.value }))}
+              onChange={value => setForm(f => ({ ...f, audioUrl: value }))}
+              entityType="music"
+              entityId={editId}
+              fallbackEntityIdPrefix="music-audio"
+              intent="other"
+              accept="audio/*"
+              onPendingFileChange={setPendingAudio}
             />
-            <RegularInput
+            <MediaUrlOrUploadField
               label="Video URL (legacy)"
               value={form.videoUrl ?? ''}
-              onChange={e => setForm(f => ({ ...f, videoUrl: e.target.value }))}
+              onChange={value => setForm(f => ({ ...f, videoUrl: value }))}
+              entityType="music"
+              entityId={editId}
+              fallbackEntityIdPrefix="music-video"
+              intent="other"
+              accept="video/*"
+              onPendingFileChange={setPendingVideo}
             />
             <RegularInput
               label="Download URL"

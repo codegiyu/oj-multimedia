@@ -23,6 +23,7 @@ import type {
   ArtistVideoListItem,
 } from '@/lib/constants/endpoints';
 import { AdminUserAccountPicker } from '@/components/section/admin/shared/AdminUserAccountPicker';
+import { MediaUrlOrUploadField } from '@/components/general/MediaUrlOrUploadField';
 import {
   ensureSelectContainsSlug,
   loadAdminContentCategorySelectOptions,
@@ -33,6 +34,8 @@ import {
   normalizeOptionalText,
   requireText,
 } from '@/lib/utils/adminFormValidation';
+import { useFileUpload } from '@/lib/hooks/use-file-upload';
+import { MEDIA_FALLBACK_URLS } from '@/lib/constants/mediaFallbackUrls';
 
 interface CreateVideoModalProps {
   open: boolean;
@@ -83,8 +86,26 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
     hasArtist: boolean;
   }>({ ownerLocked: false, ownerUserId: '', hasArtist: false });
   const [editListRow, setEditListRow] = useState<ArtistVideoListItem | null>(null);
+  const [pendingThumbnail, setPendingThumbnail] = useState<File | null>(null);
+  const [pendingVideoFile, setPendingVideoFile] = useState<File | null>(null);
+  const [pendingLegacyVideo, setPendingLegacyVideo] = useState<File | null>(null);
 
   const isEdit = Boolean(editId);
+  const thumbnailUpload = useFileUpload({
+    entityType: 'resource',
+    entityId: editId ?? 'video-pending',
+    intent: 'image',
+  });
+  const videoFileUpload = useFileUpload({
+    entityType: 'resource',
+    entityId: editId ?? 'video-pending',
+    intent: 'other',
+  });
+  const legacyVideoUpload = useFileUpload({
+    entityType: 'resource',
+    entityId: editId ?? 'video-pending',
+    intent: 'other',
+  });
 
   useEffect(() => {
     if (!open || isEdit) return;
@@ -176,14 +197,41 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
       const videoFileUrl = normalizeOptionalHttpUrl(form.videoFileUrl ?? '', 'Video file URL');
       const embedUrl = normalizeOptionalHttpUrl(form.embedUrl ?? '', 'Embed URL');
       const category = normalizeOptionalText(form.category ?? '');
+      let finalThumbnail = thumbnail;
+      let finalVideoFileUrl = videoFileUrl;
+      let finalVideoUrl = videoUrl;
 
       if (editId) {
+        if (pendingThumbnail) {
+          const upload = await thumbnailUpload.uploadFile({
+            file: pendingThumbnail,
+            entityId: editId,
+          });
+          if (!upload?.url) throw new Error('Thumbnail upload failed');
+          finalThumbnail = upload.url;
+        }
+        if (pendingVideoFile) {
+          const upload = await videoFileUpload.uploadFile({
+            file: pendingVideoFile,
+            entityId: editId,
+          });
+          if (!upload?.url) throw new Error('Video file upload failed');
+          finalVideoFileUrl = upload.url;
+        }
+        if (pendingLegacyVideo) {
+          const upload = await legacyVideoUpload.uploadFile({
+            file: pendingLegacyVideo,
+            entityId: editId,
+          });
+          if (!upload?.url) throw new Error('Legacy video upload failed');
+          finalVideoUrl = upload.url;
+        }
         const payload: IAdminUpdateVideoPayload = {
           title,
           description: description || undefined,
-          thumbnail,
-          videoUrl,
-          videoFileUrl,
+          thumbnail: finalThumbnail,
+          videoUrl: finalVideoUrl,
+          videoFileUrl: finalVideoFileUrl,
           embedUrl,
           category,
           status: editStatus,
@@ -201,9 +249,9 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
         const payload: IAdminCreateVideoPayload = {
           title,
           description,
-          thumbnail,
-          videoUrl,
-          videoFileUrl,
+          thumbnail: finalThumbnail || MEDIA_FALLBACK_URLS.image,
+          videoUrl: finalVideoUrl || MEDIA_FALLBACK_URLS.video,
+          videoFileUrl: finalVideoFileUrl || MEDIA_FALLBACK_URLS.video,
           embedUrl,
           category,
         };
@@ -211,6 +259,44 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
         if (form.ownerUserId) payload.ownerUserId = form.ownerUserId;
         const res = await callApi('ADMIN_VIDEO_CREATE', { payload });
         if (res.type !== 'success') throw new Error(res.error?.message ?? 'Create failed');
+        const createdId =
+          (res.data as { video?: { _id?: string }; _id?: string } | undefined)?.video?._id ??
+          (res.data as { _id?: string } | undefined)?._id;
+        if (createdId) {
+          if (pendingThumbnail) {
+            const upload = await thumbnailUpload.uploadFile({
+              file: pendingThumbnail,
+              entityId: createdId,
+            });
+            if (upload?.url) finalThumbnail = upload.url;
+          }
+          if (pendingVideoFile) {
+            const upload = await videoFileUpload.uploadFile({
+              file: pendingVideoFile,
+              entityId: createdId,
+            });
+            if (upload?.url) finalVideoFileUrl = upload.url;
+          }
+          if (pendingLegacyVideo) {
+            const upload = await legacyVideoUpload.uploadFile({
+              file: pendingLegacyVideo,
+              entityId: createdId,
+            });
+            if (upload?.url) finalVideoUrl = upload.url;
+          }
+          if (pendingThumbnail || pendingVideoFile || pendingLegacyVideo) {
+            const patchRes = await callApi('ADMIN_VIDEO_UPDATE', {
+              query: `/${createdId}` as `/${string}`,
+              payload: {
+                thumbnail: finalThumbnail,
+                videoFileUrl: finalVideoFileUrl,
+                videoUrl: finalVideoUrl,
+              },
+            });
+            if (patchRes.type !== 'success')
+              throw new Error(patchRes.error?.message ?? 'Post-create media update failed');
+          }
+        }
       }
       setForm(defaultForm);
       onOpenChange(false);
@@ -292,25 +378,44 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
               placeholder="Enter description"
               rows={3}
             />
-            <RegularInput
+            <MediaUrlOrUploadField
               label="Thumbnail URL"
               value={form.thumbnail ?? ''}
-              onChange={e => setForm(f => ({ ...f, thumbnail: e.target.value }))}
+              onChange={value => setForm(f => ({ ...f, thumbnail: value }))}
+              entityType="resource"
+              entityId={editId}
+              fallbackEntityIdPrefix="video-thumbnail"
+              intent="image"
+              accept="image/*"
+              defaultMode="upload"
+              onPendingFileChange={setPendingThumbnail}
             />
-            <RegularInput
+            <MediaUrlOrUploadField
               label="Video file URL"
               value={form.videoFileUrl ?? ''}
-              onChange={e => setForm(f => ({ ...f, videoFileUrl: e.target.value }))}
+              onChange={value => setForm(f => ({ ...f, videoFileUrl: value }))}
+              entityType="resource"
+              entityId={editId}
+              fallbackEntityIdPrefix="video-file"
+              intent="other"
+              accept="video/*"
+              onPendingFileChange={setPendingVideoFile}
             />
             <RegularInput
               label="Embed URL (YouTube)"
               value={form.embedUrl ?? ''}
               onChange={e => setForm(f => ({ ...f, embedUrl: e.target.value }))}
             />
-            <RegularInput
+            <MediaUrlOrUploadField
               label="Legacy videoUrl"
               value={form.videoUrl ?? ''}
-              onChange={e => setForm(f => ({ ...f, videoUrl: e.target.value }))}
+              onChange={value => setForm(f => ({ ...f, videoUrl: value }))}
+              entityType="resource"
+              entityId={editId}
+              fallbackEntityIdPrefix="video-legacy"
+              intent="other"
+              accept="video/*"
+              onPendingFileChange={setPendingLegacyVideo}
             />
             {isEdit &&
               (ownerMeta.ownerLocked || ownerMeta.hasArtist ? (

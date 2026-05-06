@@ -18,10 +18,13 @@ import { callApi } from '@/lib/services/callApi';
 import { DEVOTIONAL_TYPES } from '@/lib/types/community';
 import type { DevotionalListItem } from '@/lib/types/community';
 import { AdminUserAccountPicker } from '@/components/section/admin/shared/AdminUserAccountPicker';
+import { MediaUrlOrUploadField } from '@/components/general/MediaUrlOrUploadField';
 import {
   ensureSelectContainsSlug,
   loadAdminContentCategorySelectOptions,
 } from '@/lib/utils/adminContentCategorySelect';
+import { useFileUpload } from '@/lib/hooks/use-file-upload';
+import { MEDIA_FALLBACK_URLS } from '@/lib/constants/mediaFallbackUrls';
 
 interface CreateDevotionalModalProps {
   open: boolean;
@@ -77,8 +80,14 @@ export function CreateDevotionalModal({
     hasArtist: boolean;
   }>({ ownerLocked: false, ownerUserId: '', hasArtist: false });
   const [editListRow, setEditListRow] = useState<DevotionalListItem | null>(null);
+  const [pendingCoverImage, setPendingCoverImage] = useState<File | null>(null);
 
   const isEdit = Boolean(editId);
+  const coverUpload = useFileUpload({
+    entityType: 'devotional',
+    entityId: editId ?? 'devotional-pending',
+    intent: 'image',
+  });
 
   useEffect(() => {
     if (!open) return;
@@ -156,6 +165,11 @@ export function CreateDevotionalModal({
         type: form.type,
         status: form.status,
       };
+      if (editId && pendingCoverImage) {
+        const upload = await coverUpload.uploadFile({ file: pendingCoverImage, entityId: editId });
+        if (!upload?.url) throw new Error('Cover image upload failed');
+        payload.coverImage = upload.url;
+      }
       if (!isEdit && form.ownerUserId) payload.ownerUserId = form.ownerUserId;
       if (isEdit) {
         const canAssignOwner = !ownerMeta.ownerLocked && !ownerMeta.hasArtist;
@@ -171,8 +185,27 @@ export function CreateDevotionalModal({
         });
         if (res.type !== 'success') throw new Error(res.error?.message ?? 'Update failed');
       } else {
+        if (pendingCoverImage && !payload.coverImage) {
+          payload.coverImage = MEDIA_FALLBACK_URLS.image;
+        }
         const res = await callApi('ADMIN_DEVOTIONAL_CREATE', { payload });
         if (res.type !== 'success') throw new Error(res.error?.message ?? 'Create failed');
+        const createdId =
+          (res.data as { devotional?: { _id?: string }; _id?: string } | undefined)?.devotional
+            ?._id ?? (res.data as { _id?: string } | undefined)?._id;
+        if (createdId && pendingCoverImage) {
+          const upload = await coverUpload.uploadFile({
+            file: pendingCoverImage,
+            entityId: createdId,
+          });
+          if (!upload?.url) throw new Error('Cover image upload failed');
+          const patch = await callApi('ADMIN_DEVOTIONAL_UPDATE', {
+            query: `/${createdId}` as `/${string}`,
+            payload: { coverImage: upload.url },
+          });
+          if (patch.type !== 'success')
+            throw new Error(patch.error?.message ?? 'Post-create media update failed');
+        }
       }
       setForm(defaultForm);
       onOpenChange(false);
@@ -243,11 +276,18 @@ export function CreateDevotionalModal({
               options={categorySelectOptions}
               loading={categoriesLoading}
             />
-            <RegularInput
+            <MediaUrlOrUploadField
               label="Cover image URL"
               value={form.coverImage}
-              onChange={e => setForm(f => ({ ...f, coverImage: e.target.value }))}
+              onChange={value => setForm(f => ({ ...f, coverImage: value }))}
               placeholder="Featured image URL"
+              entityType="devotional"
+              entityId={editId}
+              fallbackEntityIdPrefix="devotional-cover"
+              intent="image"
+              accept="image/*"
+              defaultMode="upload"
+              onPendingFileChange={setPendingCoverImage}
             />
             <RegularTextarea
               label="Excerpt"

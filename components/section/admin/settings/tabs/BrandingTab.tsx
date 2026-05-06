@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { z } from 'zod';
 import { ClientSiteSettings } from '@/lib/constants/endpoints';
 import { useSiteSettingsStore } from '@/lib/store/useSiteSettingsStore';
@@ -12,6 +12,8 @@ import { callApi } from '@/lib/services/callApi';
 import { toast } from 'sonner';
 import { Save } from 'lucide-react';
 import { Label } from '@/components/ui/label';
+import { MediaUrlOrUploadField } from '@/components/general/MediaUrlOrUploadField';
+import { useFileUpload } from '@/lib/hooks/use-file-upload';
 
 const brandingSchema = z.object({
   faviconUrl: z.string().url('Invalid URL').or(z.literal('')),
@@ -32,6 +34,13 @@ interface BrandingTabProps {
 }
 
 export const BrandingTab = ({ settings }: BrandingTabProps) => {
+  const [pendingFaviconFile, setPendingFaviconFile] = useState<File | null>(null);
+  const faviconUpload = useFileUpload({
+    entityType: 'admin',
+    entityId: 'settings',
+    intent: 'image',
+  });
+
   const {
     actions: { updateSettings },
   } = useSiteSettingsStore(state => state);
@@ -56,9 +65,16 @@ export const BrandingTab = ({ settings }: BrandingTabProps) => {
     noFocusOnFirstField: true,
     onSubmit: async (values: BrandingFormValues) => {
       try {
+        let finalFaviconUrl = values.faviconUrl;
+        if (pendingFaviconFile) {
+          const upload = await faviconUpload.uploadFile({ file: pendingFaviconFile });
+          if (!upload?.url) throw new Error('Favicon upload failed');
+          finalFaviconUrl = upload.url;
+        }
+        const brandingValue = { ...values, faviconUrl: finalFaviconUrl };
         const { data, error } = await callApi('ADMIN_UPDATE_SITE_SETTINGS', {
           payload: {
-            settingsPayload: [{ name: 'branding', value: values }],
+            settingsPayload: [{ name: 'branding', value: brandingValue }],
           },
         });
 
@@ -67,7 +83,7 @@ export const BrandingTab = ({ settings }: BrandingTabProps) => {
           return false;
         }
 
-        updateSettings({ branding: values });
+        updateSettings({ branding: brandingValue });
         toast.success('Branding updated successfully');
         return true;
       } catch {
@@ -105,13 +121,17 @@ export const BrandingTab = ({ settings }: BrandingTabProps) => {
           </div>
         )}
 
-        <RegularInput
+        <MediaUrlOrUploadField
           label="Favicon URL"
-          name="faviconUrl"
           value={formValues.faviconUrl}
-          onChange={handleInputChange}
-          placeholder="https://..."
-          errors={errorsVisible ? formErrors.faviconUrl : []}
+          onChange={value => onChange('faviconUrl', value)}
+          entityType="admin"
+          entityId="settings"
+          fallbackEntityIdPrefix="branding-favicon"
+          intent="image"
+          accept="image/*"
+          defaultMode="upload"
+          onPendingFileChange={setPendingFaviconFile}
         />
 
         <div className="grid gap-6 sm:grid-cols-2">

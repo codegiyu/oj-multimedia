@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { z } from 'zod';
 import { DashboardPageWrapper } from '@/components/general/DashboardPageWrapper';
@@ -16,6 +16,8 @@ import { useForm } from '@/lib/hooks/use-form';
 import { useAuthStore } from '@/lib/store/useAuthStore';
 import { callApi } from '@/lib/services/callApi';
 import type { ClientAdmin } from '@/lib/constants/endpoints';
+import { MediaUrlOrUploadField } from '@/components/general/MediaUrlOrUploadField';
+import { useFileUpload } from '@/lib/hooks/use-file-upload';
 
 const profileSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),
@@ -48,6 +50,13 @@ export function AdminProfilePageClient({
 }: AdminProfilePageClientProps) {
   const router = useRouter();
   const setUser = useAuthStore(state => state.actions.setUser);
+  const [pendingAvatarFile, setPendingAvatarFile] = useState<File | null>(null);
+
+  const avatarUpload = useFileUpload({
+    entityType: 'admin',
+    entityId: initialUser?._id ?? 'admin-profile-pending',
+    intent: 'avatar',
+  });
 
   const profileDefaults: ProfileFormValues = {
     firstName: initialUser?.firstName ?? '',
@@ -70,12 +79,24 @@ export function AdminProfilePageClient({
     formSchema: profileSchema,
     defaultFormValues: profileDefaults,
     async onSubmit(values: ProfileFormValues) {
+      let avatar = values.avatar || undefined;
+      if (pendingAvatarFile && initialUser?._id) {
+        const upload = await avatarUpload.uploadFile({
+          file: pendingAvatarFile,
+          entityId: initialUser._id,
+        });
+        if (!upload?.url) {
+          toast.error('Avatar upload failed.');
+          return false;
+        }
+        avatar = upload.url;
+      }
       const { data, error, message } = await callApi('ADMIN_UPDATE_ME', {
         payload: {
           firstName: values.firstName,
           lastName: values.lastName,
           email: values.email || undefined,
-          avatar: values.avatar || undefined,
+          avatar,
         },
       });
       if (error || !data) {
@@ -218,14 +239,25 @@ export function AdminProfilePageClient({
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="avatar">Avatar URL (optional)</Label>
-                    <RegularInput
-                      id="avatar"
-                      name="avatar"
+                    <MediaUrlOrUploadField
+                      label="Avatar URL (optional)"
                       value={profileValues.avatar ?? ''}
-                      onChange={handleProfileInputChange}
-                      errors={profileErrorsVisible ? (profileErrors.avatar ?? []) : []}
+                      onChange={value =>
+                        setProfileFormValues(prev => ({
+                          ...prev,
+                          avatar: value,
+                        }))
+                      }
+                      entityType="admin"
+                      entityId={initialUser?._id ?? null}
+                      fallbackEntityIdPrefix="admin-avatar"
+                      intent="avatar"
+                      accept="image/*"
+                      onPendingFileChange={setPendingAvatarFile}
                     />
+                    {profileErrorsVisible && profileErrors.avatar?.length ? (
+                      <p className="text-sm text-destructive">{profileErrors.avatar[0]}</p>
+                    ) : null}
                   </div>
                   <RegularBtn
                     type="submit"

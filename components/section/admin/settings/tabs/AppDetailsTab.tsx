@@ -9,11 +9,11 @@ import { useForm } from '@/lib/hooks/use-form';
 import { RegularInput } from '@/components/atoms/RegularInput';
 import { RegularTextarea } from '@/components/atoms/RegularTextarea';
 import { RegularBtn } from '@/components/atoms/RegularBtn';
-import { ImageUpload } from '@/components/atoms/ImageUpload';
 import { callApi } from '@/lib/services/callApi';
 import { toast } from 'sonner';
 import { Save } from 'lucide-react';
 import { useFileUpload } from '@/lib/hooks/use-file-upload';
+import { MediaUrlOrUploadField } from '@/components/general/MediaUrlOrUploadField';
 
 const appDetailsSchema = z.object({
   appName: z.string().min(1, 'App name is required'),
@@ -51,9 +51,16 @@ export const AppDetailsTab = ({ settings }: AppDetailsTabProps) => {
     noFocusOnFirstField: true,
     onSubmit: async (values: AppDetailsFormValues) => {
       try {
+        let finalLogo = values.logo;
+        if (pendingLogoFile) {
+          const upload = await logoUpload.uploadFile({ file: pendingLogoFile });
+          if (!upload?.url) throw new Error('Logo upload failed');
+          finalLogo = upload.url;
+        }
+        const appDetailsValue = { ...values, logo: finalLogo };
         const { data, error } = await callApi('ADMIN_UPDATE_SITE_SETTINGS', {
           payload: {
-            settingsPayload: [{ name: 'appDetails', value: values }],
+            settingsPayload: [{ name: 'appDetails', value: appDetailsValue }],
           },
         });
 
@@ -62,7 +69,7 @@ export const AppDetailsTab = ({ settings }: AppDetailsTabProps) => {
           return false;
         }
 
-        updateSettings({ appDetails: values });
+        updateSettings({ appDetails: appDetailsValue });
         toast.success('App details updated successfully');
         return true;
       } catch {
@@ -72,39 +79,14 @@ export const AppDetailsTab = ({ settings }: AppDetailsTabProps) => {
     },
   });
 
-  const [logoUploading, setLogoUploading] = useState(false);
+  const [pendingLogoFile, setPendingLogoFile] = useState<File | null>(null);
 
   // Use file upload hook for logo
   const logoUpload = useFileUpload({
     entityType: 'admin',
     entityId: 'settings', // Generic ID for settings
     intent: 'logo',
-    onUploadComplete: url => {
-      setFormValues(prev => ({ ...prev, logo: url }));
-      setLogoUploading(false);
-      toast.success('Logo uploaded successfully');
-    },
   });
-
-  // Handle logo file selection
-  const handleLogoFileSelect = (file: File | null) => {
-    if (file) {
-      logoUpload.handleFileSelect(file);
-      setLogoUploading(true);
-      logoUpload.uploadFile({ file }).catch(() => {
-        setLogoUploading(false);
-      });
-    } else {
-      logoUpload.clearFile();
-      setFormValues(prev => ({ ...prev, logo: '' }));
-    }
-  };
-
-  // Handle logo clear
-  const handleLogoClear = () => {
-    logoUpload.clearFile();
-    setFormValues(prev => ({ ...prev, logo: '' }));
-  };
 
   // Update form when settings change
   useEffect(() => {
@@ -134,18 +116,17 @@ export const AppDetailsTab = ({ settings }: AppDetailsTabProps) => {
           </div>
         )}
 
-        <ImageUpload
-          label="Logo"
+        <MediaUrlOrUploadField
+          label="Logo URL"
           value={formValues.logo}
-          previewUrl={logoUpload.previewUrl || undefined}
-          onFileSelect={handleLogoFileSelect}
-          onClear={handleLogoClear}
-          uploading={logoUploading || logoUpload.loading}
-          progress={logoUpload.progress}
-          errors={errorsVisible ? formErrors.logo : []}
-          aspectRatio="1/1"
-          wrapClassName="w-[400px]"
-          placeholder="Upload your app logo"
+          onChange={value => setFormValues(prev => ({ ...prev, logo: value }))}
+          entityType="admin"
+          entityId="settings"
+          fallbackEntityIdPrefix="app-details-logo"
+          intent="logo"
+          accept="image/*"
+          defaultMode="upload"
+          onPendingFileChange={setPendingLogoFile}
         />
 
         <RegularInput

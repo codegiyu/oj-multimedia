@@ -13,6 +13,9 @@ import { RegularBtn } from '@/components/atoms/RegularBtn';
 import { RegularInput } from '@/components/atoms/RegularInput';
 import { RegularTextarea } from '@/components/atoms/RegularTextarea';
 import { RegularSelect } from '@/components/atoms/RegularSelect';
+import { MediaUrlOrUploadField } from '@/components/general/MediaUrlOrUploadField';
+import { useFileUpload } from '@/lib/hooks/use-file-upload';
+import { MEDIA_FALLBACK_URLS } from '@/lib/constants/mediaFallbackUrls';
 import type { SelectOption } from '@/lib/types/general';
 import { callApi } from '@/lib/services/callApi';
 import { toast } from 'sonner';
@@ -65,8 +68,26 @@ export function CreateNewsModal({ open, onOpenChange, editId, onSuccess }: Creat
     { text: 'None', value: '' },
   ]);
   const [categoriesLoading, setCategoriesLoading] = useState(false);
+  const [pendingCoverImage, setPendingCoverImage] = useState<File | null>(null);
+  const [pendingAudio, setPendingAudio] = useState<File | null>(null);
+  const [pendingVideoFile, setPendingVideoFile] = useState<File | null>(null);
 
   const isEdit = Boolean(editId);
+  const coverUpload = useFileUpload({
+    entityType: 'news-article',
+    entityId: editId ?? 'news-pending',
+    intent: 'image',
+  });
+  const audioUpload = useFileUpload({
+    entityType: 'news-article',
+    entityId: editId ?? 'news-pending',
+    intent: 'other',
+  });
+  const videoUpload = useFileUpload({
+    entityType: 'news-article',
+    entityId: editId ?? 'news-pending',
+    intent: 'other',
+  });
 
   useEffect(() => {
     if (!open) return;
@@ -132,8 +153,30 @@ export function CreateNewsModal({ open, onOpenChange, editId, onSuccess }: Creat
       const videoFileUrl = normalizeOptionalHttpUrl(form.videoFileUrl, 'Video file URL');
       const embedUrl = normalizeOptionalHttpUrl(form.embedUrl, 'Embed URL');
       const downloadUrl = normalizeOptionalHttpUrl(form.downloadUrl, 'Download URL');
+      let finalCoverImage = coverImage;
+      let finalAudioUrl = audioUrl;
+      let finalVideoFileUrl = videoFileUrl;
+      const finalDownloadUrl = downloadUrl;
 
       if (editId) {
+        if (pendingCoverImage) {
+          const upload = await coverUpload.uploadFile({
+            file: pendingCoverImage,
+            entityId: editId,
+          });
+          if (!upload?.url) throw new Error('Cover image upload failed');
+          finalCoverImage = upload.url;
+        }
+        if (pendingAudio) {
+          const upload = await audioUpload.uploadFile({ file: pendingAudio, entityId: editId });
+          if (!upload?.url) throw new Error('Audio upload failed');
+          finalAudioUrl = upload.url;
+        }
+        if (pendingVideoFile) {
+          const upload = await videoUpload.uploadFile({ file: pendingVideoFile, entityId: editId });
+          if (!upload?.url) throw new Error('Video upload failed');
+          finalVideoFileUrl = upload.url;
+        }
         const res = await callApi('ADMIN_NEWS_UPDATE', {
           query: `/${editId}` as `/${string}`,
           payload: {
@@ -142,34 +185,78 @@ export function CreateNewsModal({ open, onOpenChange, editId, onSuccess }: Creat
             excerpt,
             author,
             category,
-            coverImage,
-            audioUrl,
-            videoFileUrl,
+            coverImage: finalCoverImage,
+            audioUrl: finalAudioUrl,
+            videoFileUrl: finalVideoFileUrl,
             embedUrl,
-            downloadUrl,
+            downloadUrl: finalDownloadUrl,
             status: form.status,
             isFeatured: form.isFeatured,
           },
         });
         if (res.type !== 'success') throw new Error(res.error?.message ?? 'Update failed');
       } else {
-        const { error } = await callApi('ADMIN_NEWS_CREATE', {
+        const createRes = await callApi('ADMIN_NEWS_CREATE', {
           payload: {
             title,
             content,
             excerpt: excerpt ?? '',
             author,
             category,
-            coverImage,
-            audioUrl,
-            videoFileUrl,
+            coverImage: finalCoverImage || MEDIA_FALLBACK_URLS.image,
+            audioUrl: finalAudioUrl || MEDIA_FALLBACK_URLS.audio,
+            videoFileUrl: finalVideoFileUrl || MEDIA_FALLBACK_URLS.video,
             embedUrl,
-            downloadUrl,
+            downloadUrl: finalDownloadUrl,
             isFeatured: form.isFeatured,
             status: form.status,
           },
         });
-        if (error) throw new Error(error.message);
+        if (createRes.type !== 'success')
+          throw new Error(createRes.error?.message ?? 'Create failed');
+        const createdId =
+          (
+            createRes.data as
+              | { news?: { _id?: string }; article?: { _id?: string }; _id?: string }
+              | undefined
+          )?.news?._id ??
+          (createRes.data as { article?: { _id?: string } } | undefined)?.article?._id ??
+          (createRes.data as { _id?: string } | undefined)?._id;
+        if (createdId) {
+          if (pendingCoverImage) {
+            const upload = await coverUpload.uploadFile({
+              file: pendingCoverImage,
+              entityId: createdId,
+            });
+            if (upload?.url) finalCoverImage = upload.url;
+          }
+          if (pendingAudio) {
+            const upload = await audioUpload.uploadFile({
+              file: pendingAudio,
+              entityId: createdId,
+            });
+            if (upload?.url) finalAudioUrl = upload.url;
+          }
+          if (pendingVideoFile) {
+            const upload = await videoUpload.uploadFile({
+              file: pendingVideoFile,
+              entityId: createdId,
+            });
+            if (upload?.url) finalVideoFileUrl = upload.url;
+          }
+          if (pendingCoverImage || pendingAudio || pendingVideoFile) {
+            const patchRes = await callApi('ADMIN_NEWS_UPDATE', {
+              query: `/${createdId}` as `/${string}`,
+              payload: {
+                coverImage: finalCoverImage,
+                audioUrl: finalAudioUrl,
+                videoFileUrl: finalVideoFileUrl,
+              },
+            });
+            if (patchRes.type !== 'success')
+              throw new Error(patchRes.error?.message ?? 'Post-create media update failed');
+          }
+        }
       }
       setForm(defaultForm);
       onOpenChange(false);
@@ -233,10 +320,17 @@ export function CreateNewsModal({ open, onOpenChange, editId, onSuccess }: Creat
               options={categorySelectOptions}
               loading={categoriesLoading}
             />
-            <RegularInput
+            <MediaUrlOrUploadField
               label="Cover image URL"
               value={form.coverImage}
-              onChange={e => setForm(f => ({ ...f, coverImage: e.target.value }))}
+              onChange={value => setForm(f => ({ ...f, coverImage: value }))}
+              entityType="news-article"
+              entityId={editId}
+              fallbackEntityIdPrefix="news-cover"
+              intent="image"
+              accept="image/*"
+              defaultMode="upload"
+              onPendingFileChange={setPendingCoverImage}
             />
             <RegularSelect
               label="Featured"
@@ -261,15 +355,27 @@ export function CreateNewsModal({ open, onOpenChange, editId, onSuccess }: Creat
               placeholder="Enter content"
               rows={4}
             />
-            <RegularInput
+            <MediaUrlOrUploadField
               label="Audio URL"
               value={form.audioUrl}
-              onChange={e => setForm(f => ({ ...f, audioUrl: e.target.value }))}
+              onChange={value => setForm(f => ({ ...f, audioUrl: value }))}
+              entityType="news-article"
+              entityId={editId}
+              fallbackEntityIdPrefix="news-audio"
+              intent="other"
+              accept="audio/*"
+              onPendingFileChange={setPendingAudio}
             />
-            <RegularInput
+            <MediaUrlOrUploadField
               label="Video file URL"
               value={form.videoFileUrl}
-              onChange={e => setForm(f => ({ ...f, videoFileUrl: e.target.value }))}
+              onChange={value => setForm(f => ({ ...f, videoFileUrl: value }))}
+              entityType="news-article"
+              entityId={editId}
+              fallbackEntityIdPrefix="news-video"
+              intent="other"
+              accept="video/*"
+              onPendingFileChange={setPendingVideoFile}
             />
             <RegularInput
               label="Embed URL"

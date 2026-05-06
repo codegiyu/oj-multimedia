@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { z } from 'zod';
 import { ClientSiteSettings } from '@/lib/constants/endpoints';
 import { useSiteSettingsStore } from '@/lib/store/useSiteSettingsStore';
@@ -14,6 +14,8 @@ import { toast } from 'sonner';
 import { Save } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
+import { MediaUrlOrUploadField } from '@/components/general/MediaUrlOrUploadField';
+import { useFileUpload } from '@/lib/hooks/use-file-upload';
 
 const seoSchema = z.object({
   metaTitleTemplate: z.string(),
@@ -33,6 +35,19 @@ interface SEOTabProps {
 }
 
 export const SEOTab = ({ settings }: SEOTabProps) => {
+  const [pendingOgImageFile, setPendingOgImageFile] = useState<File | null>(null);
+  const [pendingFaviconFile, setPendingFaviconFile] = useState<File | null>(null);
+  const ogImageUpload = useFileUpload({
+    entityType: 'admin',
+    entityId: 'settings',
+    intent: 'image',
+  });
+  const faviconUpload = useFileUpload({
+    entityType: 'admin',
+    entityId: 'settings',
+    intent: 'image',
+  });
+
   const {
     actions: { updateSettings },
   } = useSiteSettingsStore(state => state);
@@ -62,8 +77,22 @@ export const SEOTab = ({ settings }: SEOTabProps) => {
     noFocusOnFirstField: true,
     onSubmit: async (values: SEOFormValues) => {
       try {
+        let finalOgImageUrl = values.ogImageUrl;
+        let finalFaviconUrl = values.faviconUrl;
+        if (pendingOgImageFile) {
+          const upload = await ogImageUpload.uploadFile({ file: pendingOgImageFile });
+          if (!upload?.url) throw new Error('OG image upload failed');
+          finalOgImageUrl = upload.url;
+        }
+        if (pendingFaviconFile) {
+          const upload = await faviconUpload.uploadFile({ file: pendingFaviconFile });
+          if (!upload?.url) throw new Error('Favicon upload failed');
+          finalFaviconUrl = upload.url;
+        }
         const seoValue = {
           ...values,
+          ogImageUrl: finalOgImageUrl,
+          faviconUrl: finalFaviconUrl,
           keywords: values.keywords
             .split(',')
             .map(k => k.trim())
@@ -161,22 +190,30 @@ export const SEOTab = ({ settings }: SEOTabProps) => {
         />
 
         <div className="grid gap-4 sm:grid-cols-2">
-          <RegularInput
+          <MediaUrlOrUploadField
             label="OG Image URL"
-            name="ogImageUrl"
             value={formValues.ogImageUrl}
-            onChange={handleInputChange}
-            placeholder="https://..."
-            errors={errorsVisible ? formErrors.ogImageUrl : []}
+            onChange={value => onChange('ogImageUrl', value)}
+            entityType="admin"
+            entityId="settings"
+            fallbackEntityIdPrefix="settings-og-image"
+            intent="image"
+            accept="image/*"
+            defaultMode="upload"
+            onPendingFileChange={setPendingOgImageFile}
           />
 
-          <RegularInput
+          <MediaUrlOrUploadField
             label="Favicon URL"
-            name="faviconUrl"
             value={formValues.faviconUrl}
-            onChange={handleInputChange}
-            placeholder="https://..."
-            errors={errorsVisible ? formErrors.faviconUrl : []}
+            onChange={value => onChange('faviconUrl', value)}
+            entityType="admin"
+            entityId="settings"
+            fallbackEntityIdPrefix="settings-favicon"
+            intent="image"
+            accept="image/*"
+            defaultMode="upload"
+            onPendingFileChange={setPendingFaviconFile}
           />
         </div>
 
