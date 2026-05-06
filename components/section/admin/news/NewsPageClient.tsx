@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useQueryState, parseAsInteger, parseAsString } from 'nuqs';
 import { AdminDashboardListLayout } from '@/components/section/admin/AdminDashboardListLayout';
@@ -13,13 +13,9 @@ import { ApprovalModal } from '@/components/section/admin/shared';
 import { callApi } from '@/lib/services/callApi';
 import { RegularBtn } from '@/components/atoms/RegularBtn';
 import { Plus } from 'lucide-react';
-
-const statusOptions = [
-  { text: 'All', value: 'all' },
-  { text: 'Draft', value: 'draft' },
-  { text: 'Published', value: 'published' },
-  { text: 'Archived', value: 'archived' },
-];
+import { PUBLISHABLE_STATUS_FILTER_SELECT_OPTIONS } from '@/lib/constants/adminSelectOptions';
+import type { SelectOption } from '@/lib/types/general';
+import { loadAdminContentCategorySelectOptions } from '@/lib/utils/adminContentCategorySelect';
 
 export interface NewsPageClientProps {
   pageTitle: string;
@@ -41,6 +37,19 @@ export function NewsPageClient({
   // const [pageSize] = useQueryState('pagesize', parseAsInteger.withDefault(DEFAULT_PAGE_SIZE));
   const [searchQuery, setSearchQuery] = useQueryState('search', parseAsString.withDefault(''));
   const [filterStatus, setFilterStatus] = useQueryState('status', parseAsString.withDefault('all'));
+  const [filterCategory, setFilterCategory] = useQueryState(
+    'category',
+    parseAsString.withDefault('all')
+  );
+  const [categoryOptions, setCategoryOptions] = useState<SelectOption[]>([
+    { text: 'All', value: 'all' },
+  ]);
+
+  useEffect(() => {
+    void loadAdminContentCategorySelectOptions('news').then(options => {
+      setCategoryOptions([{ text: 'All', value: 'all' }, ...options.filter(o => o.value)]);
+    });
+  }, []);
 
   const [clickedRowDetails, setClickedRowDetails] = useState<
     ClickedRowDetails<PublicNewsListItem, string> | undefined
@@ -105,9 +114,18 @@ export function NewsPageClient({
           {
             label: 'Status',
             value: filterStatus,
-            options: statusOptions,
+            options: [...PUBLISHABLE_STATUS_FILTER_SELECT_OPTIONS],
             onChange: v => {
               setFilterStatus(v);
+              setPage(1);
+            },
+          },
+          {
+            label: 'Category',
+            value: filterCategory,
+            options: categoryOptions,
+            onChange: v => {
+              setFilterCategory(v);
               setPage(1);
             },
           },

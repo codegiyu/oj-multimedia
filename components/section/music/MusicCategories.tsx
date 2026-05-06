@@ -2,26 +2,32 @@
 
 import { motion } from 'framer-motion';
 import { useQueryState, parseAsString } from 'nuqs';
+import { ALL_CATEGORY_ID, MUSIC_CATEGORIES } from '@/lib/constants/contentTaxonomy';
 
-const genres = [
-  { id: 'all', label: 'All Genres', emoji: '🎵' },
-  { id: 'afrobeats', label: 'Afrobeats', emoji: '🌍' },
-  { id: 'hiphop', label: 'Hip-Hop', emoji: '🎤' },
-  { id: 'pop', label: 'Pop', emoji: '✨' },
-  { id: 'rnb', label: 'R&B', emoji: '💜' },
-  { id: 'gospel', label: 'Gospel', emoji: '🙌' },
-  { id: 'instrumental', label: 'Instrumental', emoji: '🎹' },
-  { id: 'acoustic', label: 'Acoustic', emoji: '🎸' },
-  { id: 'worship', label: 'Worship', emoji: '🎶' },
-  { id: 'spoken', label: 'Spoken Word', emoji: '📖' },
-  { id: 'sermon', label: 'Sermon', emoji: '📿' },
-];
+const genres = [{ id: ALL_CATEGORY_ID, label: 'All Genres' }, ...MUSIC_CATEGORIES];
+
+const genreEmojiById: Record<string, string> = {
+  [ALL_CATEGORY_ID]: '🎵',
+  afrobeats: '🌍',
+  hiphop: '🎤',
+  pop: '✨',
+  rnb: '💜',
+  gospel: '🙌',
+  instrumental: '🎹',
+  acoustic: '🎸',
+  worship: '🎶',
+  spoken: '📖',
+  sermon: '📿',
+};
 
 export const MusicCategories = () => {
-  const [activeGenre, setActiveGenre] = useQueryState('category', parseAsString.withDefault('all'));
+  const [activeGenre, setActiveGenre] = useQueryState(
+    'category',
+    parseAsString.withDefault(ALL_CATEGORY_ID)
+  );
 
   const handleCategoryChange = (categoryId: string) => {
-    setActiveGenre(categoryId === 'all' ? null : categoryId);
+    setActiveGenre(categoryId === ALL_CATEGORY_ID ? null : categoryId);
   };
 
   return (
@@ -46,7 +52,7 @@ export const MusicCategories = () => {
                       : 'bg-muted hover:bg-muted/80 text-foreground'
                   }
                 `}>
-                <span>{genre.emoji}</span>
+                <span>{genreEmojiById[genre.id] ?? '🎵'}</span>
                 <span>{genre.label}</span>
               </motion.button>
             );

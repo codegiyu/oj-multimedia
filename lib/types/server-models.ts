@@ -329,6 +329,19 @@ export type UserActivityAction = (typeof USER_ACTIVITY_ACTIONS)[keyof typeof USE
 
 export type ActivitySource = 'self' | 'admin' | 'system';
 
+export const CONTENT_CATEGORY_SCOPES = [
+  'music',
+  'video',
+  'news',
+  'devotional',
+  'resource',
+  'testimony',
+  'prayer-request',
+  'poll',
+  'question',
+] as const;
+export type ContentCategoryScope = (typeof CONTENT_CATEGORY_SCOPES)[number];
+
 export interface IGospelVerse {
   _id: string;
   verse: string;

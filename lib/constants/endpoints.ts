@@ -10,6 +10,7 @@ import {
   IVideo,
   INewsArticle,
   IGospelVerse,
+  ContentCategoryScope,
 } from '@/lib/types/server-models';
 import type {
   CommunityHubData,
@@ -388,7 +389,7 @@ export interface IContentCategoryItem {
   _id: string;
   name: string;
   slug: string;
-  scope: 'music' | 'video' | 'news' | 'devotional';
+  scope: ContentCategoryScope;
   displayOrder?: number;
   isActive?: boolean;
   createdAt?: string;
@@ -410,6 +411,18 @@ export type IContentCategoriesListRes = GetListRes<IContentCategoryItem, 'catego
 export type IHomeAdvertsListRes = GetListRes<IHomeAdvertItem, 'adverts'>;
 export interface IContentCategoryMutationRes {
   category: IContentCategoryItem;
+}
+export interface IAdminContentCategoryCreatePayload {
+  name: string;
+  scope: ContentCategoryScope;
+  displayOrder?: number;
+  isActive?: boolean;
+}
+export interface IAdminContentCategoryUpdatePayload {
+  name?: string;
+  scope?: ContentCategoryScope;
+  displayOrder?: number;
+  isActive?: boolean;
 }
 export interface IHomeAdvertMutationRes {
   advert: IHomeAdvertItem;
@@ -944,12 +957,12 @@ export interface AllEndpoints {
     `?${string}`
   >;
   ADMIN_CONTENT_CATEGORIES_CREATE: EndpointDefinition<
-    Record<string, unknown>,
+    IAdminContentCategoryCreatePayload,
     IContentCategoryMutationRes,
     undefined
   >;
   ADMIN_CONTENT_CATEGORIES_UPDATE: EndpointDefinition<
-    Record<string, unknown>,
+    IAdminContentCategoryUpdatePayload,
     IContentCategoryMutationRes,
     `/${string}`
   >;

@@ -10,6 +10,7 @@ import { SectionContainer } from '@/components/general/SectionContainer';
 import { DataLoadError } from '@/components/general/DataLoadError';
 import { HandHeart } from 'lucide-react';
 import type { Pagination } from '@/lib/types/community';
+import { PRAYER_CATEGORY_DISPLAY_VALUES } from '@/lib/constants/communityCategorySelectOptions';
 
 export interface PrayerRequest {
   _id: string;
@@ -37,16 +38,6 @@ export interface PrayerCategory {
   name: string;
   count: number;
 }
-
-// Static category definitions - hardcoded on the client side
-const categoryDefinitions: Omit<PrayerCategory, 'count'>[] = [
-  { name: 'Healing' },
-  { name: 'Finance' },
-  { name: 'Family' },
-  { name: 'Career' },
-  { name: 'Spiritual' },
-  { name: 'Protection' },
-];
 
 interface PrayerRequestsPageClientProps {
   activeRequests: PrayerRequest[];
@@ -80,9 +71,9 @@ export const PrayerRequestsPageClient = ({
   }
 
   // Merge static category definitions with dynamic counts from server
-  const categories: PrayerCategory[] = categoryDefinitions.map(def => ({
-    name: def.name,
-    count: categoryCounts[def.name] ?? 0,
+  const categories: PrayerCategory[] = PRAYER_CATEGORY_DISPLAY_VALUES.map(name => ({
+    name,
+    count: categoryCounts[name] ?? 0,
   }));
 
   return (

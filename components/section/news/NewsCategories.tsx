@@ -3,25 +3,27 @@
 import { motion } from 'framer-motion';
 import { useQueryState, parseAsString } from 'nuqs';
 import { Sparkles, Lightbulb, GraduationCap, Briefcase, Film, Church, Star } from 'lucide-react';
+import { ALL_CATEGORY_ID, NEWS_CATEGORIES } from '@/lib/constants/contentTaxonomy';
 
-const categories = [
-  { id: 'all', label: 'All Stories', icon: Sparkles },
-  { id: 'christian-celebrity-news', label: 'Christian Celebrity News', icon: Star },
-  { id: 'church-announcements', label: 'Church & Ministry Announcements', icon: Church },
-  { id: 'inspirational-stories', label: 'Inspirational Stories', icon: Lightbulb },
-  { id: 'scholarship-alerts', label: 'Scholarship Alerts', icon: GraduationCap },
-  { id: 'jobs-ngo', label: 'Jobs (NGO / Faith-based)', icon: Briefcase },
-  { id: 'christian-movie-reviews', label: 'Christian Movie Reviews', icon: Film },
-];
+const categories = [{ id: ALL_CATEGORY_ID, label: 'All Stories' }, ...NEWS_CATEGORIES];
+const categoryIconById = {
+  [ALL_CATEGORY_ID]: Sparkles,
+  'christian-celebrity-news': Star,
+  'church-announcements': Church,
+  'inspirational-stories': Lightbulb,
+  'scholarship-alerts': GraduationCap,
+  'jobs-ngo': Briefcase,
+  'christian-movie-reviews': Film,
+};
 
 export const NewsCategories = () => {
   const [activeCategory, setActiveCategory] = useQueryState(
     'category',
-    parseAsString.withDefault('all')
+    parseAsString.withDefault(ALL_CATEGORY_ID)
   );
 
   const handleCategoryChange = (categoryId: string) => {
-    setActiveCategory(categoryId === 'all' ? null : categoryId);
+    setActiveCategory(categoryId === ALL_CATEGORY_ID ? null : categoryId);
   };
 
   return (
@@ -29,7 +31,7 @@ export const NewsCategories = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-hide">
           {categories.map(category => {
-            const Icon = category.icon;
+            const Icon = categoryIconById[category.id as keyof typeof categoryIconById] ?? Sparkles;
             const isActive = activeCategory === category.id;
 
             return (

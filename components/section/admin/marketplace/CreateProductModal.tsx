@@ -15,6 +15,7 @@ import { RegularSelect } from '@/components/atoms/RegularSelect';
 import type { SelectOption } from '@/lib/types/general';
 import type { IMarketplaceVendor } from '@/lib/constants/endpoints';
 import { callApi } from '@/lib/services/callApi';
+import { PUBLISHABLE_STATUS_SELECT_OPTIONS } from '@/lib/constants/adminSelectOptions';
 
 interface CreateProductModalProps {
   open: boolean;
@@ -22,12 +23,6 @@ interface CreateProductModalProps {
   onSuccess: () => void;
   vendors: IMarketplaceVendor[];
 }
-
-const statusOptions: SelectOption[] = [
-  { text: 'Draft', value: 'draft' },
-  { text: 'Published', value: 'published' },
-  { text: 'Archived', value: 'archived' },
-];
 
 const defaultForm = {
   name: '',
@@ -136,7 +131,7 @@ export function CreateProductModal({
             label="Status"
             value={form.status}
             onSelectChange={v => setForm(f => ({ ...f, status: v as typeof form.status }))}
-            options={statusOptions}
+            options={[...PUBLISHABLE_STATUS_SELECT_OPTIONS] as SelectOption[]}
           />
           <DialogFooter>
             <RegularBtn

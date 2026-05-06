@@ -8,12 +8,7 @@ import type { IGospelVerse } from '@/lib/types/server-models';
 import type { ClickedRowDetails } from '@/components/general/TableRowDetailsDrawer';
 import { GospelVerseDetailsDrawer } from './GospelVerseDetailsDrawer';
 import { GospelVersesTableContent } from './GospelVersesTableContent';
-
-const statusOptions = [
-  { text: 'All', value: 'all' },
-  { text: 'Active', value: 'active' },
-  { text: 'Inactive', value: 'inactive' },
-];
+import { GOSPEL_VERSE_STATUS_FILTER_SELECT_OPTIONS } from '@/lib/constants/adminSelectOptions';
 
 export interface GospelVersesPageClientProps {
   pageTitle: string;
@@ -60,7 +55,7 @@ export function GospelVersesPageClient({
           {
             label: 'Status',
             value: filterStatus,
-            options: statusOptions,
+            options: [...GOSPEL_VERSE_STATUS_FILTER_SELECT_OPTIONS],
             onChange: v => {
               setFilterStatus(v);
               setPage(1);

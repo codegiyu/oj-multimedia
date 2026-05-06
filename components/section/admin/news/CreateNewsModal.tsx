@@ -16,6 +16,10 @@ import { RegularSelect } from '@/components/atoms/RegularSelect';
 import { MediaUrlOrUploadField } from '@/components/general/MediaUrlOrUploadField';
 import { useFileUpload } from '@/lib/hooks/use-file-upload';
 import { MEDIA_FALLBACK_URLS } from '@/lib/constants/mediaFallbackUrls';
+import {
+  PUBLISHABLE_STATUS_SELECT_OPTIONS,
+  PUBLISHABLE_STATUS_VALUES,
+} from '@/lib/constants/adminSelectOptions';
 import type { SelectOption } from '@/lib/types/general';
 import { callApi } from '@/lib/services/callApi';
 import { toast } from 'sonner';
@@ -52,13 +56,6 @@ const defaultForm = {
   isFeatured: false,
   status: 'draft' as 'draft' | 'published' | 'archived',
 };
-
-const statusOptions: SelectOption[] = [
-  { text: 'Draft', value: 'draft' },
-  { text: 'Published', value: 'published' },
-  { text: 'Archived', value: 'archived' },
-];
-const STATUS_VALUES = ['draft', 'published', 'archived'] as const;
 
 export function CreateNewsModal({ open, onOpenChange, editId, onSuccess }: CreateNewsModalProps) {
   const [form, setForm] = useState(defaultForm);
@@ -127,7 +124,7 @@ export function CreateNewsModal({ open, onOpenChange, editId, onSuccess }: Creat
           videoFileUrl: n.videoFileUrl ?? '',
           embedUrl: n.embedUrl ?? '',
           downloadUrl: n.downloadUrl ?? '',
-          status: normalizeEnumValue(n.status, STATUS_VALUES, 'draft'),
+          status: normalizeEnumValue(n.status, PUBLISHABLE_STATUS_VALUES, 'draft'),
           isFeatured: n.isFeatured ?? false,
         });
       } finally {
@@ -303,10 +300,10 @@ export function CreateNewsModal({ open, onOpenChange, editId, onSuccess }: Creat
               onSelectChange={v =>
                 setForm(f => ({
                   ...f,
-                  status: normalizeEnumValue(v, STATUS_VALUES, 'draft'),
+                  status: normalizeEnumValue(v, PUBLISHABLE_STATUS_VALUES, 'draft'),
                 }))
               }
-              options={statusOptions}
+              options={[...PUBLISHABLE_STATUS_SELECT_OPTIONS] as SelectOption[]}
             />
             <RegularInput
               label="Author"

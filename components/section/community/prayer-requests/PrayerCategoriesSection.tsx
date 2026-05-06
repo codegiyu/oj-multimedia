@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { SectionComp } from '@/components/general/SectionComp';
 import type { PrayerCategory } from './PrayerRequestsPageClient';
+import { mapPrayerCategoryTextToValue } from '@/lib/constants/communityCategorySelectOptions';
 
 interface PrayerCategoriesSectionProps {
   categories: PrayerCategory[];
@@ -56,7 +57,7 @@ export const PrayerCategoriesSection = ({ categories }: PrayerCategoriesSectionP
               whileHover={{ scale: 1.05, y: -4 }}
               className="bg-card rounded-2xl overflow-hidden shadow-sm border border-border/50 hover:shadow-md transition-all cursor-pointer group p-0">
               <Link
-                href={`/community/prayer-requests/active?category=${encodeURIComponent(category.name.toLowerCase())}`}>
+                href={`/community/prayer-requests/active?category=${encodeURIComponent(mapPrayerCategoryTextToValue(category.name))}`}>
                 <div className="px-6 py-8 text-center relative">
                   <div
                     className={`absolute inset-0 bg-gradient-to-br ${colorClass} opacity-0 group-hover:opacity-10 transition-opacity`}

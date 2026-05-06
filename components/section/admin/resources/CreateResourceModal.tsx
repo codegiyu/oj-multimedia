@@ -18,6 +18,14 @@ import { callApi } from '@/lib/services/callApi';
 import { toast } from 'sonner';
 import { RESOURCE_TYPES } from '@/lib/types/community';
 import {
+  PUBLISHABLE_STATUS_SELECT_OPTIONS,
+  PUBLISHABLE_STATUS_VALUES,
+} from '@/lib/constants/adminSelectOptions';
+import {
+  ensureSelectContainsSlug,
+  loadAdminContentCategorySelectOptions,
+} from '@/lib/utils/adminContentCategorySelect';
+import {
   normalizeEnumValue,
   normalizeOptionalText,
   requireText,
@@ -38,13 +46,6 @@ const defaultForm = {
   status: 'draft' as 'draft' | 'published' | 'archived',
 };
 
-const statusOptions: SelectOption[] = [
-  { text: 'Draft', value: 'draft' },
-  { text: 'Published', value: 'published' },
-  { text: 'Archived', value: 'archived' },
-];
-const STATUS_VALUES = ['draft', 'published', 'archived'] as const;
-
 const typeOptions: SelectOption[] = RESOURCE_TYPES.map(t => ({ text: t, value: t }));
 
 export function CreateResourceModal({
@@ -56,8 +57,20 @@ export function CreateResourceModal({
   const [form, setForm] = useState(defaultForm);
   const [loading, setLoading] = useState(false);
   const [detailLoading, setDetailLoading] = useState(false);
+  const [categoryOptions, setCategoryOptions] = useState<SelectOption[]>([
+    { text: 'None', value: '' },
+  ]);
+  const [categoriesLoading, setCategoriesLoading] = useState(false);
 
   const isEdit = Boolean(editId);
+
+  useEffect(() => {
+    if (!open) return;
+    setCategoriesLoading(true);
+    void loadAdminContentCategorySelectOptions('resource')
+      .then(opts => setCategoryOptions(opts))
+      .finally(() => setCategoriesLoading(false));
+  }, [open]);
 
   useEffect(() => {
     if (!open) {
@@ -83,8 +96,9 @@ export function CreateResourceModal({
           description: r.description ?? '',
           type: normalizeEnumValue(r.type, RESOURCE_TYPES, 'ebook'),
           category: r.category ?? '',
-          status: normalizeEnumValue(st, STATUS_VALUES, 'draft'),
+          status: normalizeEnumValue(st, PUBLISHABLE_STATUS_VALUES, 'draft'),
         });
+        setCategoryOptions(prev => ensureSelectContainsSlug(prev, r.category ?? undefined));
       } finally {
         if (!cancelled) setDetailLoading(false);
       }
@@ -143,6 +157,8 @@ export function CreateResourceModal({
     onOpenChange(val);
   };
 
+  const categorySelectOptions = ensureSelectContainsSlug(categoryOptions, form.category);
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-w-4xl" showCloseButton={!loading}>
@@ -175,15 +191,19 @@ export function CreateResourceModal({
               label="Status"
               value={form.status}
               onSelectChange={v =>
-                setForm(f => ({ ...f, status: normalizeEnumValue(v, STATUS_VALUES, 'draft') }))
+                setForm(f => ({
+                  ...f,
+                  status: normalizeEnumValue(v, PUBLISHABLE_STATUS_VALUES, 'draft'),
+                }))
               }
-              options={statusOptions}
+              options={[...PUBLISHABLE_STATUS_SELECT_OPTIONS] as SelectOption[]}
             />
-            <RegularInput
+            <RegularSelect
               label="Category"
               value={form.category}
-              onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
-              placeholder="Enter category"
+              onSelectChange={v => setForm(f => ({ ...f, category: v }))}
+              options={categorySelectOptions}
+              loading={categoriesLoading}
             />
             <RegularTextarea
               label="Description"

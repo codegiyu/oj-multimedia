@@ -13,12 +13,7 @@ import { ApprovalModal } from '@/components/section/admin/shared';
 import { callApi } from '@/lib/services/callApi';
 import { RegularBtn } from '@/components/atoms/RegularBtn';
 import { Plus } from 'lucide-react';
-
-const statusOptions = [
-  { text: 'All', value: 'all' },
-  { text: 'Active', value: 'active' },
-  { text: 'Closed', value: 'closed' },
-];
+import { POLL_STATUS_FILTER_SELECT_OPTIONS } from '@/lib/constants/adminSelectOptions';
 
 export interface PollsPageClientProps {
   pageTitle: string;
@@ -142,7 +137,7 @@ export function PollsPageClient({
           {
             label: 'Status',
             value: filterStatus,
-            options: statusOptions,
+            options: [...POLL_STATUS_FILTER_SELECT_OPTIONS],
             onChange: v => {
               setFilterStatus(v);
               setPage(1);

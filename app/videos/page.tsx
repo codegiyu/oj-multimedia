@@ -10,6 +10,11 @@ import type { RecentVideoUpload } from '@/components/section/video/RecentVideoUp
 import type { ShortFormVideo } from '@/components/section/video/ShortFormVideos';
 import type { FeaturedCreator } from '@/components/section/video/CreatorSpotlight';
 import { callPublicServerApi } from '@/lib/services/serverApi';
+import {
+  VIDEO_CATEGORIES,
+  VIDEO_TYPES,
+  normalizeCategoryId,
+} from '@/lib/constants/contentTaxonomy';
 import { filterByCategory } from '@/lib/utils/videos';
 import {
   mapPublicVideoToTrendingVideo,
@@ -31,10 +36,16 @@ async function fetchVideoSections(category: string) {
   const baseQuery = `?limit=12&page=1&status=published${categoryParam}` as const;
 
   const [trendingRes, featuredRes, recentRes, shortRes, artistsRes] = await Promise.all([
-    callPublicServerApi('PUBLIC_GET_VIDEOS', { query: `${baseQuery}&type=trending` }),
-    callPublicServerApi('PUBLIC_GET_VIDEOS', { query: `${baseQuery}&type=featured` }),
-    callPublicServerApi('PUBLIC_GET_VIDEOS', { query: `${baseQuery}&type=recent` }),
-    callPublicServerApi('PUBLIC_GET_VIDEOS', { query: `${baseQuery}&type=short-form` }),
+    callPublicServerApi('PUBLIC_GET_VIDEOS', {
+      query: `${baseQuery}&type=${VIDEO_TYPES.trending}`,
+    }),
+    callPublicServerApi('PUBLIC_GET_VIDEOS', {
+      query: `${baseQuery}&type=${VIDEO_TYPES.featured}`,
+    }),
+    callPublicServerApi('PUBLIC_GET_VIDEOS', { query: `${baseQuery}&type=${VIDEO_TYPES.recent}` }),
+    callPublicServerApi('PUBLIC_GET_VIDEOS', {
+      query: `${baseQuery}&type=${VIDEO_TYPES.shortForm}`,
+    }),
     callPublicServerApi('PUBLIC_GET_ARTISTS', { query: '?page=1&limit=6' as `?${string}` }),
   ]);
 
@@ -87,7 +98,7 @@ interface VideosPageProps {
 
 export default async function VideosPage({ searchParams }: VideosPageProps) {
   const params = await searchParams;
-  const category = params.category ?? 'all';
+  const category = normalizeCategoryId(params.category, VIDEO_CATEGORIES);
 
   return (
     <MainLayout>

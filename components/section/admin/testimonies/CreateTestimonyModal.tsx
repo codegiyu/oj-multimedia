@@ -17,6 +17,10 @@ import type { SelectOption } from '@/lib/types/general';
 import { callApi } from '@/lib/services/callApi';
 import { toast } from 'sonner';
 import { TESTIMONY_CATEGORY_SELECT_OPTIONS } from '@/lib/constants/communityCategorySelectOptions';
+import {
+  PUBLISHABLE_STATUS_SELECT_OPTIONS,
+  PUBLISHABLE_STATUS_VALUES,
+} from '@/lib/constants/adminSelectOptions';
 import { ensureSelectContainsSlug } from '@/lib/utils/adminContentCategorySelect';
 import {
   normalizeEnumValue,
@@ -37,13 +41,6 @@ const defaultForm = {
   category: '',
   status: 'draft' as 'draft' | 'published' | 'archived',
 };
-
-const statusOptions: SelectOption[] = [
-  { text: 'Draft', value: 'draft' },
-  { text: 'Published', value: 'published' },
-  { text: 'Archived', value: 'archived' },
-];
-const STATUS_VALUES = ['draft', 'published', 'archived'] as const;
 
 const baseCategoryOptions: SelectOption[] = [
   { text: 'None', value: '' },
@@ -89,7 +86,7 @@ export function CreateTestimonyModal({
           author: t.author ?? '',
           content: t.content ?? '',
           category: t.category ?? '',
-          status: normalizeEnumValue(st, STATUS_VALUES, 'draft'),
+          status: normalizeEnumValue(st, PUBLISHABLE_STATUS_VALUES, 'draft'),
         });
       } finally {
         if (!cancelled) setDetailLoading(false);
@@ -173,9 +170,12 @@ export function CreateTestimonyModal({
               label="Status"
               value={form.status}
               onSelectChange={v =>
-                setForm(f => ({ ...f, status: normalizeEnumValue(v, STATUS_VALUES, 'draft') }))
+                setForm(f => ({
+                  ...f,
+                  status: normalizeEnumValue(v, PUBLISHABLE_STATUS_VALUES, 'draft'),
+                }))
               }
-              options={statusOptions}
+              options={[...PUBLISHABLE_STATUS_SELECT_OPTIONS] as SelectOption[]}
             />
             <RegularSelect
               label="Category"

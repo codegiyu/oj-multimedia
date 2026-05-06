@@ -8,6 +8,12 @@ import type { ChartSong } from '@/components/section/music/TopMusicCharts';
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import { filterByCategory } from '@/lib/utils/music';
 import { mapPublicMusicToChartSong } from '@/lib/utils/publicApiMappers';
+import {
+  CHART_PERIOD_VALUES,
+  MUSIC_TYPES,
+  MUSIC_CATEGORIES,
+  normalizeCategoryId,
+} from '@/lib/constants/contentTaxonomy';
 
 export const metadata: Metadata = {
   title: 'Top Charts - Music Rankings',
@@ -19,7 +25,7 @@ async function fetchChartSongs(category: string, period: string) {
   const categoryParam =
     category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';
   const query =
-    `?limit=100&page=1&status=published&type=charts&period=${encodeURIComponent(period)}${categoryParam}` as const;
+    `?limit=100&page=1&status=published&type=${MUSIC_TYPES.charts}&period=${encodeURIComponent(period)}${categoryParam}` as const;
   const res = await callPublicServerApi('PUBLIC_GET_MUSIC', { query });
   if (res.type === 'error') {
     return {
@@ -42,8 +48,12 @@ interface TopChartsPageProps {
 
 export default async function TopChartsPage({ searchParams }: TopChartsPageProps) {
   const params = await searchParams;
-  const category = params.category ?? 'all';
-  const period = params.period ?? 'weekly';
+  const category = normalizeCategoryId(params.category, MUSIC_CATEGORIES);
+  const period = CHART_PERIOD_VALUES.includes(
+    (params.period ?? 'weekly') as (typeof CHART_PERIOD_VALUES)[number]
+  )
+    ? (params.period ?? 'weekly')
+    : 'weekly';
 
   return (
     <MainLayout>

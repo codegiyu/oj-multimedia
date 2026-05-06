@@ -12,12 +12,7 @@ import { AnswerPrayerRequestModal } from './AnswerPrayerRequestModal';
 import { PrayerRequestEditModal } from './PrayerRequestEditModal';
 import { ApprovalModal } from '@/components/section/admin/shared';
 import { callApi } from '@/lib/services/callApi';
-
-const statusOptions = [
-  { text: 'All', value: 'all' },
-  { text: 'Active', value: 'active' },
-  { text: 'Answered', value: 'answered' },
-];
+import { PRAYER_REQUEST_STATUS_FILTER_SELECT_OPTIONS } from '@/lib/constants/adminSelectOptions';
 
 export interface PrayerRequestsPageClientProps {
   pageTitle: string;
@@ -94,7 +89,7 @@ export function PrayerRequestsPageClient({
           {
             label: 'Status',
             value: filterStatus,
-            options: statusOptions,
+            options: [...PRAYER_REQUEST_STATUS_FILTER_SELECT_OPTIONS],
             onChange: v => {
               setFilterStatus(v);
               setPage(1);

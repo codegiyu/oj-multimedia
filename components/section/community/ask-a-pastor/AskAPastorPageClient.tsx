@@ -10,6 +10,7 @@ import { CommunityCTA } from '../../shared';
 import { SectionContainer } from '@/components/general/SectionContainer';
 import { DataLoadError } from '@/components/general/DataLoadError';
 import { HelpCircle } from 'lucide-react';
+import { ASK_A_PASTOR_CATEGORY_DISPLAY_VALUES } from '@/lib/constants/communityCategorySelectOptions';
 
 export interface Question {
   _id: string;
@@ -48,16 +49,6 @@ export interface QuestionCategory {
   count: number;
 }
 
-// Static category definitions - hardcoded on the client side
-const categoryDefinitions: Omit<QuestionCategory, 'count'>[] = [
-  { name: 'Faith' },
-  { name: 'Relationships' },
-  { name: 'Spiritual Growth' },
-  { name: 'Finance' },
-  { name: 'Bible Study' },
-  { name: 'Prayer' },
-];
-
 interface AskAPastorPageClientProps {
   activeQuestions: Question[];
   answeredQuestions: AnsweredQuestion[];
@@ -91,9 +82,9 @@ export const AskAPastorPageClient = ({
   }
 
   // Merge static category definitions with dynamic counts from server
-  const categories: QuestionCategory[] = categoryDefinitions.map(def => ({
-    name: def.name,
-    count: categoryCounts[def.name] ?? 0,
+  const categories: QuestionCategory[] = ASK_A_PASTOR_CATEGORY_DISPLAY_VALUES.map(name => ({
+    name,
+    count: categoryCounts[name] ?? 0,
   }));
 
   return (

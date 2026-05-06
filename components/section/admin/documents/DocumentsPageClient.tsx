@@ -7,6 +7,7 @@ import { AdminDashboardListLayout } from '@/components/section/admin/AdminDashbo
 import type { ClickedRowDetails } from '@/components/general/TableRowDetailsDrawer';
 import { DocumentsTableContent } from './DocumentsTableContent';
 import { DocumentsDetailsDrawer } from './DocumentsDetailsDrawer';
+import { DOCUMENT_STATUS_FILTER_SELECT_OPTIONS } from '@/lib/constants/adminSelectOptions';
 
 export interface AdminDocument {
   _id: string;
@@ -50,13 +51,6 @@ export function DocumentsPageClient({
     setClickedRowDetails({ data: row, index, tab: undefined });
   };
 
-  const statusOptions = [
-    { text: 'All', value: 'all' },
-    { text: 'Pending', value: 'pending' },
-    { text: 'Verified', value: 'verified' },
-    { text: 'Rejected', value: 'rejected' },
-  ];
-
   return (
     <AdminDashboardListLayout
       title={pageTitle}
@@ -69,7 +63,7 @@ export function DocumentsPageClient({
           {
             label: 'Status',
             value: filterStatus,
-            options: statusOptions,
+            options: [...DOCUMENT_STATUS_FILTER_SELECT_OPTIONS],
             onChange: v => {
               setFilterStatus(v);
               setPage(1);

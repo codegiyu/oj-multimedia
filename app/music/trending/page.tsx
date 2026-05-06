@@ -8,6 +8,11 @@ import type { TrendingSong } from '@/components/section/music/TrendingSongs';
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import { filterByCategory } from '@/lib/utils/music';
 import { mapPublicMusicToTrendingSong } from '@/lib/utils/publicApiMappers';
+import {
+  MUSIC_CATEGORIES,
+  MUSIC_TYPES,
+  normalizeCategoryId,
+} from '@/lib/constants/contentTaxonomy';
 
 export const metadata: Metadata = {
   title: 'Trending Songs - Latest Music',
@@ -18,7 +23,8 @@ export const metadata: Metadata = {
 async function fetchTrendingSongs(category: string) {
   const categoryParam =
     category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';
-  const query = `?limit=50&page=1&status=published&type=trending${categoryParam}` as const;
+  const query =
+    `?limit=50&page=1&status=published&type=${MUSIC_TYPES.trending}${categoryParam}` as const;
   const res = await callPublicServerApi('PUBLIC_GET_MUSIC', { query });
   if (res.type === 'error') {
     return {
@@ -41,7 +47,7 @@ interface TrendingSongsPageProps {
 
 export default async function TrendingSongsPage({ searchParams }: TrendingSongsPageProps) {
   const params = await searchParams;
-  const category = params.category ?? 'all';
+  const category = normalizeCategoryId(params.category, MUSIC_CATEGORIES);
 
   return (
     <MainLayout>

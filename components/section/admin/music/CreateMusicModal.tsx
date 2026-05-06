@@ -36,6 +36,10 @@ import {
 } from '@/lib/utils/adminFormValidation';
 import { useFileUpload } from '@/lib/hooks/use-file-upload';
 import { MEDIA_FALLBACK_URLS } from '@/lib/constants/mediaFallbackUrls';
+import {
+  PUBLISHABLE_STATUS_SELECT_OPTIONS,
+  PUBLISHABLE_STATUS_VALUES,
+} from '@/lib/constants/adminSelectOptions';
 
 interface CreateMusicModalProps {
   open: boolean;
@@ -57,13 +61,6 @@ const defaultForm: IArtistCreateMusicPayload & { artistId: string; ownerUserId: 
   artistId: '',
   ownerUserId: '',
 };
-
-const statusOptions: SelectOption[] = [
-  { text: 'Draft', value: 'draft' },
-  { text: 'Published', value: 'published' },
-  { text: 'Archived', value: 'archived' },
-];
-const STATUS_VALUES = ['draft', 'published', 'archived'] as const;
 
 function artistName(artist: ArtistMusicListItem['artist']): string {
   if (!artist) return '—';
@@ -173,7 +170,7 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
           artistId: '',
           ownerUserId: '',
         });
-        setEditStatus(normalizeEnumValue(m.status, STATUS_VALUES, 'draft'));
+        setEditStatus(normalizeEnumValue(m.status, PUBLISHABLE_STATUS_VALUES, 'draft'));
         const hasArtist = Boolean(m.artist);
         setOwnerMeta({
           ownerLocked: Boolean(m.ownerLocked ?? hasArtist),
@@ -365,8 +362,10 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
               <RegularSelect
                 label="Status"
                 value={editStatus}
-                onSelectChange={v => setEditStatus(normalizeEnumValue(v, STATUS_VALUES, 'draft'))}
-                options={statusOptions}
+                onSelectChange={v =>
+                  setEditStatus(normalizeEnumValue(v, PUBLISHABLE_STATUS_VALUES, 'draft'))
+                }
+                options={[...PUBLISHABLE_STATUS_SELECT_OPTIONS] as SelectOption[]}
               />
             )}
             <RegularSelect

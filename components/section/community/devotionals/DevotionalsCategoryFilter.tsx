@@ -3,15 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useQueryState, parseAsString } from 'nuqs';
 import { BookOpen } from 'lucide-react';
-
-const CATEGORIES = [
-  { id: 'all', label: 'All' },
-  { id: 'faith', label: 'Faith' },
-  { id: 'peace', label: 'Peace & Rest' },
-  { id: 'growth', label: 'Growth' },
-  { id: 'purpose', label: 'Purpose' },
-  { id: 'prayer', label: 'Prayer' },
-];
+import { DEVOTIONAL_CATEGORY_FILTER_OPTIONS } from '@/lib/constants/communityCategorySelectOptions';
 
 export const DevotionalsCategoryFilter = () => {
   const router = useRouter();
@@ -28,17 +20,17 @@ export const DevotionalsCategoryFilter = () => {
         <BookOpen className="w-4 h-4" />
         Category:
       </span>
-      {CATEGORIES.map(cat => (
+      {DEVOTIONAL_CATEGORY_FILTER_OPTIONS.map(cat => (
         <button
-          key={cat.id}
+          key={cat.value}
           type="button"
-          onClick={() => void handleChange(cat.id)}
+          onClick={() => void handleChange(cat.value)}
           className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-            category === cat.id
+            category === cat.value
               ? 'bg-primary text-primary-foreground'
               : 'bg-muted hover:bg-muted/80 text-foreground'
           }`}>
-          {cat.label}
+          {cat.text}
         </button>
       ))}
     </div>

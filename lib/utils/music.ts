@@ -1,4 +1,9 @@
 import { ARTIST_PROFILES } from '@/lib/constants/community/artists';
+import {
+  ALL_CATEGORY_ID,
+  MUSIC_CATEGORIES,
+  normalizeCategoryId,
+} from '@/lib/constants/contentTaxonomy';
 import { populateArtist } from '@/lib/utils/community/artists';
 import type { ArtistProfile } from '@/lib/types/artist';
 import { MUSIC_ITEMS, type MusicItem } from '@/lib/constants/music';
@@ -132,24 +137,11 @@ export function getRelatedMusicItems(
  * Maps category IDs from the URL query parameter to actual category values in the data
  */
 export const mapCategoryIdToValue = (categoryId: string | null | undefined): string | null => {
-  if (!categoryId || categoryId === 'all') {
+  const normalizedCategory = normalizeCategoryId(categoryId, MUSIC_CATEGORIES);
+  if (normalizedCategory === ALL_CATEGORY_ID) {
     return null; // null means show all
   }
-
-  const categoryMap: Record<string, string> = {
-    afrobeats: 'afrobeats',
-    hiphop: 'hiphop',
-    pop: 'pop',
-    rnb: 'rnb',
-    gospel: 'gospel',
-    instrumental: 'instrumental',
-    acoustic: 'acoustic',
-    worship: 'worship',
-    spoken: 'spoken',
-    sermon: 'sermon',
-  };
-
-  return categoryMap[categoryId] || null;
+  return normalizedCategory;
 };
 
 /**

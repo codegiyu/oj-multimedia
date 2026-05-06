@@ -8,6 +8,7 @@ import { NewsPageSkeleton } from '@/components/section/news/NewsPageSkeleton';
 import type { VideoNewsItem } from '@/components/section/news/VideoNews';
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import { mapPublicNewsToVideoNewsItem } from '@/lib/utils/publicApiMappers';
+import { NEWS_CATEGORIES, NEWS_TYPES, normalizeCategoryId } from '@/lib/constants/contentTaxonomy';
 
 export const metadata: Metadata = {
   title: 'Video Stories - News & Lifestyle Updates',
@@ -18,7 +19,8 @@ export const metadata: Metadata = {
 async function fetchVideoNews(category: string) {
   const categoryParam =
     category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';
-  const query = `?limit=50&page=1&status=published&type=video${categoryParam}` as const;
+  const query =
+    `?limit=50&page=1&status=published&type=${NEWS_TYPES.video}${categoryParam}` as const;
   const res = await callPublicServerApi('PUBLIC_GET_NEWS', { query });
 
   if (res.type === 'error') {
@@ -39,7 +41,7 @@ interface VideoNewsPageProps {
 
 export default async function VideoNewsPage({ searchParams }: VideoNewsPageProps) {
   const params = await searchParams;
-  const category = params.category ?? 'all';
+  const category = normalizeCategoryId(params.category, NEWS_CATEGORIES);
 
   return (
     <MainLayout>
