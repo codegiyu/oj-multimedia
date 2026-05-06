@@ -29,7 +29,7 @@ async function fetchMarketplaceLandingData(): Promise<{
     const [categoriesRes, featuredRes, hotRes, vendorsRes] = await Promise.all([
       callPublicServerApi('MARKETPLACE_GET_CATEGORIES', {}),
       callPublicServerApi('MARKETPLACE_GET_PRODUCTS', {
-        query: `?featured=1&limit=${DEFAULT_PAGE_SIZE}&status=published` as `?${string}`,
+        query: `?featured=true&limit=${DEFAULT_PAGE_SIZE}&status=published` as `?${string}`,
       }),
       callPublicServerApi('MARKETPLACE_GET_PRODUCTS', {
         query: `?sort=recent&limit=${DEFAULT_PAGE_SIZE}&status=published` as `?${string}`,
