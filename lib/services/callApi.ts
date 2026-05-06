@@ -8,7 +8,14 @@ import { useInitAuthStore } from '../store/useAuthStore';
 
 // Base URL for API routes - using relative path since we're using Next.js API routes
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://api.ojmultimedia.com';
-const TOKEN_COOKIE_KEYS = ['token', 'accessToken', 'authToken', 'jwt', 'authorization'] as const;
+const TOKEN_COOKIE_KEYS = [
+  'oj-acc-token',
+  'token',
+  'accessToken',
+  'authToken',
+  'jwt',
+  'authorization',
+] as const;
 
 function readTokenFromCookieHeader(cookieHeader: string): string | undefined {
   for (const pair of cookieHeader.split(';')) {
@@ -85,7 +92,7 @@ export const callApi = async <T extends keyof AllEndpoints>(
     };
 
     const authToken = resolveClientAuthToken();
-
+    console.log('authToken', authToken);
     if (authToken) {
       requestConfig.headers = {
         ...(requestConfig.headers ?? {}),
