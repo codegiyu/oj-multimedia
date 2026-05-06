@@ -149,6 +149,7 @@ export function ArtistsPastorsTableContent(props: ArtistsPastorsTableContentProp
       columns={columns}
       loading={loading}
       onRefresh={onRefresh}
+      showRefreshButton={false}
       emptyStateWord={isArtists ? 'artists' : 'pastors'}
       pagination={{
         currentPage: page,

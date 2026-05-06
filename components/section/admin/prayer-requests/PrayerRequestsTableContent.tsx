@@ -103,6 +103,7 @@ export function PrayerRequestsTableContent({
       columns={columns}
       loading={loading}
       onRefresh={onRefresh}
+      showRefreshButton={false}
       emptyStateWord="prayer requests"
       pagination={{
         currentPage: page,

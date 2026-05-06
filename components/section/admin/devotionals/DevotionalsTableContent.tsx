@@ -112,6 +112,7 @@ export function DevotionalsTableContent({
       columns={columns}
       loading={loading}
       onRefresh={onRefresh}
+      showRefreshButton={false}
       emptyStateWord="devotionals"
       pagination={{
         currentPage: page,

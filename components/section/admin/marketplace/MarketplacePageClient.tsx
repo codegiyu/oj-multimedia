@@ -210,6 +210,7 @@ export function MarketplacePageClient({
     <AdminDashboardListLayout
       title={pageTitle}
       description={pageDescription}
+      onRefresh={handleRefresh}
       pageHeaderActions={
         showCreateButton ? (
           <RegularBtn

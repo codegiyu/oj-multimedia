@@ -1,13 +1,14 @@
 'use client';
 
-import { type ReactNode } from 'react';
-import { AlertCircle } from 'lucide-react';
+import { type ReactNode, useTransition } from 'react';
+import { AlertCircle, RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { PageHeader, type PageHeaderProps } from '@/components/general/PageHeader';
 import {
   FilterableDataPage,
   type FilterableDataPageProps,
 } from '@/components/general/FilterableDataPage';
+import { GhostBtn } from '@/components/atoms/GhostBtn';
 
 export type { FilterableDataPageProps };
 
@@ -19,6 +20,7 @@ type PageHeaderPick = Pick<
 export interface AdminDashboardListLayoutProps extends PageHeaderPick {
   /** Rendered in the PageHeader actions area (e.g. primary CTA). */
   pageHeaderActions?: ReactNode;
+  onRefresh?: () => void;
   listError?: string | null;
   /**
    * Custom toolbar: tabs, filters, or anything above the main region.
@@ -44,6 +46,7 @@ export function AdminDashboardListLayout({
   backHref,
   onBack,
   pageHeaderActions,
+  onRefresh,
   listError,
   toolbar,
   toolbarBeforeFilters,
@@ -53,6 +56,7 @@ export function AdminDashboardListLayout({
   mainClassName,
   className,
 }: AdminDashboardListLayoutProps) {
+  const [isRefreshing, startRefreshTransition] = useTransition();
   const showDefaultToolbar =
     toolbar === undefined && (toolbarBeforeFilters != null || filterableDataPageProps != null);
 
@@ -64,7 +68,19 @@ export function AdminDashboardListLayout({
         showBack={showBack}
         backHref={backHref}
         onBack={onBack}>
-        {pageHeaderActions}
+        {(pageHeaderActions || onRefresh) && (
+          <div className="flex items-center gap-2">
+            {pageHeaderActions}
+            {onRefresh ? (
+              <GhostBtn
+                LucideIcon={RefreshCw}
+                onClick={() => startRefreshTransition(onRefresh)}
+                disabled={isRefreshing}
+                className={cn(isRefreshing && 'animate-spin')}
+              />
+            ) : null}
+          </div>
+        )}
       </PageHeader>
 
       {listError ? (

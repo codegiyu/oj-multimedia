@@ -141,6 +141,7 @@ export function HomeAdvertsPageClient({
     <AdminDashboardListLayout
       title={pageTitle}
       description={pageDescription}
+      onRefresh={handleRefresh}
       pageHeaderActions={<RegularBtn LeftIcon={Plus} text="New advert" onClick={openCreate} />}
       listError={listError}
       filterableDataPageProps={{

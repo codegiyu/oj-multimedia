@@ -49,6 +49,7 @@ export function GospelVersesPageClient({
     <AdminDashboardListLayout
       title={pageTitle}
       description={pageDescription}
+      onRefresh={handleRefresh}
       listError={listError}
       filterableDataPageProps={{
         searchPlaceholder: 'Search by reference or verse text...',

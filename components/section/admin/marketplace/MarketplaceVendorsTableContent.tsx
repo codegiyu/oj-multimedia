@@ -130,6 +130,7 @@ export function MarketplaceVendorsTableContent({
       columns={columns}
       loading={loading}
       onRefresh={onRefresh}
+      showRefreshButton={false}
       emptyStateWord="vendors"
       pagination={{
         currentPage: page,

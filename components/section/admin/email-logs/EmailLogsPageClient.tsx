@@ -51,6 +51,7 @@ export function EmailLogsPageClient({
     <AdminDashboardListLayout
       title={pageTitle}
       description={pageDescription}
+      onRefresh={handleRefresh}
       listError={listError}
       filterableDataPageProps={{
         searchPlaceholder: 'Search email logs...',

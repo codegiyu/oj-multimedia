@@ -93,6 +93,7 @@ export function GospelVersesTableContent({
       columns={columns}
       loading={loading}
       onRefresh={onRefresh}
+      showRefreshButton={false}
       emptyStateWord="gospel verses"
       pagination={{
         currentPage: page,

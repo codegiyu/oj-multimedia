@@ -43,6 +43,7 @@ export function ContactSubmissionsPageClient({
     <AdminDashboardListLayout
       title={pageTitle}
       description={pageDescription}
+      onRefresh={handleRefresh}
       listError={listError}
       filterableDataPageProps={{
         searchPlaceholder: 'Search contact submissions...',

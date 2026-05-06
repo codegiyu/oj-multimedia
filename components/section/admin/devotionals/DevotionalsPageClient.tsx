@@ -121,6 +121,7 @@ export function DevotionalsPageClient({
     <AdminDashboardListLayout
       title={pageTitle}
       description={pageDescription}
+      onRefresh={handleRefresh}
       pageHeaderActions={
         <RegularBtn
           LeftIcon={Plus}

@@ -61,6 +61,7 @@ export function DocumentsPageClient({
     <AdminDashboardListLayout
       title={pageTitle}
       description={pageDescription}
+      onRefresh={handleRefresh}
       listError={listError}
       filterableDataPageProps={{
         searchPlaceholder: 'Filter by entity type...',

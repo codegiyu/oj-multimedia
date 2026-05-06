@@ -83,6 +83,7 @@ export function PrayerRequestsPageClient({
     <AdminDashboardListLayout
       title={pageTitle}
       description={pageDescription}
+      onRefresh={handleRefresh}
       listError={listError}
       filterableDataPageProps={{
         searchPlaceholder: 'Search prayer requests...',

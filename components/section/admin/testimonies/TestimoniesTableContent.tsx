@@ -108,6 +108,7 @@ export function TestimoniesTableContent({
       columns={columns}
       loading={loading}
       onRefresh={onRefresh}
+      showRefreshButton={false}
       emptyStateWord="testimonies"
       pagination={{
         currentPage: page,

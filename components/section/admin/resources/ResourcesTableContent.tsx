@@ -108,6 +108,7 @@ export function ResourcesTableContent({
       columns={columns}
       loading={loading}
       onRefresh={onRefresh}
+      showRefreshButton={false}
       emptyStateWord="resources"
       pagination={{
         currentPage: page,
