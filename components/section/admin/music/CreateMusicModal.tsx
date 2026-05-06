@@ -243,7 +243,7 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto" showCloseButton={!loading}>
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto" showCloseButton={!loading}>
         <DialogHeader>
           <DialogTitle>{isEdit ? 'Edit music' : 'Create music'}</DialogTitle>
           <DialogDescription>

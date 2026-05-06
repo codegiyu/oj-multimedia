@@ -117,7 +117,7 @@ export function CreatePastorModal({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-w-xl" showCloseButton={!loading}>
+      <DialogContent className="max-w-4xl" showCloseButton={!loading}>
         <DialogHeader>
           <DialogTitle>{isEdit ? 'Edit pastor' : 'Create pastor'}</DialogTitle>
           <DialogDescription>
