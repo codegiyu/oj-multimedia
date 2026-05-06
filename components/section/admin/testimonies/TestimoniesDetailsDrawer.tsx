@@ -47,6 +47,7 @@ function DetailsContent({
           icon={FileText}
           label="Content"
           value={testimony.content}
+          preserveParagraphs
           className="[&_.line-clamp-1]:line-clamp-none"
         />
         <InfoCard icon={Hash} label="ID" value={testimony._id} hasCopy copyValue={testimony._id} />

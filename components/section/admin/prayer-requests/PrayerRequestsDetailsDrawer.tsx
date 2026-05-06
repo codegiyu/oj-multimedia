@@ -48,6 +48,7 @@ function DetailsContent({
           icon={FileText}
           label="Content"
           value={pr.content}
+          preserveParagraphs
           className="[&_.line-clamp-1]:line-clamp-none"
         />
         <InfoCard icon={Hash} label="ID" value={pr._id} hasCopy copyValue={pr._id} />

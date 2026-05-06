@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { toast } from '@/components/atoms/Toast';
 import type { TestimonyItem } from '@/lib/constants/community/testimonies';
+import { MultilineText } from '@/components/general/MultilineText';
 
 interface TestimonyDetailPageClientProps {
   testimony: TestimonyItem;
@@ -113,9 +114,10 @@ export const TestimonyDetailPageClient = ({
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
             className="prose prose-lg max-w-none">
-            <p className="text-lg text-foreground leading-relaxed whitespace-pre-line">
-              {testimony.fullContent || testimony.content}
-            </p>
+            <MultilineText
+              text={testimony.fullContent || testimony.content}
+              paragraphClassName="text-lg text-foreground leading-relaxed"
+            />
           </motion.div>
 
           <motion.div

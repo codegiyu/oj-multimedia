@@ -60,12 +60,18 @@ function DetailsReadOnly({
           label="Excerpt"
           value={(music as { excerpt?: string }).excerpt ?? '—'}
         />
-        <InfoCard icon={FileText} label="Description" value={music.description ?? '—'} />
+        <InfoCard
+          icon={FileText}
+          label="Description"
+          value={music.description ?? '—'}
+          preserveParagraphs
+        />
         {music.lyrics && (
           <InfoCard
             icon={FileText}
             label="Lyrics"
             value={music.lyrics}
+            preserveParagraphs
             className="[&_.line-clamp-1]:line-clamp-none"
           />
         )}

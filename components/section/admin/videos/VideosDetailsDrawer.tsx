@@ -53,7 +53,12 @@ function DetailsReadOnly({
         <InfoCard icon={FileText} label="Downloads" value={String(video.downloads ?? 0)} />
         <InfoCard icon={FileText} label="Status" value={video.status ?? '—'} />
         <InfoCard icon={FileText} label="Category" value={video.category ?? '—'} />
-        <InfoCard icon={FileText} label="Description" value={video.description ?? '—'} />
+        <InfoCard
+          icon={FileText}
+          label="Description"
+          value={video.description ?? '—'}
+          preserveParagraphs
+        />
         <InfoCard icon={FileText} label="Thumbnail URL" value={video.thumbnail ?? '—'} />
         <InfoCard icon={FileText} label="Video file URL" value={vf ?? '—'} />
         <InfoCard icon={FileText} label="Embed URL" value={em ?? '—'} />

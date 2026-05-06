@@ -5,6 +5,7 @@ import { Copy, CheckCheck } from 'lucide-react';
 import { GhostBtn } from '@/components/atoms/GhostBtn';
 import { useClipboard } from '@/lib/hooks/use-clipboard';
 import { cn } from '@/lib/utils';
+import { MultilineText } from './MultilineText';
 
 export interface InfoCardProps {
   icon: React.ComponentType<{ className?: string }>;
@@ -15,6 +16,7 @@ export interface InfoCardProps {
   copyValue?: string;
   hideIfEmpty?: boolean;
   valueClassName?: string;
+  preserveParagraphs?: boolean;
   children?: React.ReactNode;
 }
 
@@ -27,6 +29,7 @@ export function InfoCard({
   copyValue,
   hideIfEmpty = false,
   valueClassName,
+  preserveParagraphs = false,
   children,
 }: InfoCardProps) {
   const { copiedValue, copy } = useClipboard();
@@ -71,6 +74,12 @@ export function InfoCard({
                       {text}
                     </div>
                   ))
+                ) : typeof value === 'string' && (preserveParagraphs || value.includes('\n')) ? (
+                  <MultilineText
+                    text={value}
+                    className={cn('space-y-2', valueClassName)}
+                    paragraphClassName="font-medium text-foreground wrap-break-word break-all flex-1"
+                  />
                 ) : (
                   <div
                     className={cn(

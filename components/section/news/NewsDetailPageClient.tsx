@@ -16,6 +16,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import type { NewsItem } from '@/lib/constants/news';
+import { MultilineText } from '@/components/general/MultilineText';
 
 interface NewsDetailPageClientProps {
   newsItem: NewsItem;
@@ -129,8 +130,11 @@ export const NewsDetailPageClient = ({ newsItem, relatedStories }: NewsDetailPag
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="text-xl text-muted-foreground font-medium mb-8 leading-relaxed">
-              {newsItem.excerpt}
+              className="mb-8">
+              <MultilineText
+                text={newsItem.excerpt}
+                paragraphClassName="text-xl text-muted-foreground font-medium leading-relaxed"
+              />
             </motion.div>
           )}
 
@@ -173,9 +177,11 @@ export const NewsDetailPageClient = ({ newsItem, relatedStories }: NewsDetailPag
               className="prose prose-lg max-w-none">
               {/* Introduction */}
               {newsItem.fullStory.introduction && (
-                <p className="text-lg text-foreground leading-relaxed mb-6">
-                  {newsItem.fullStory.introduction}
-                </p>
+                <MultilineText
+                  text={newsItem.fullStory.introduction}
+                  className="mb-6"
+                  paragraphClassName="text-lg text-foreground leading-relaxed"
+                />
               )}
 
               {/* Sections */}
@@ -187,18 +193,23 @@ export const NewsDetailPageClient = ({ newsItem, relatedStories }: NewsDetailPag
                     </h2>
                   )}
                   {section.paragraphs.map((paragraph, paraIndex) => (
-                    <p key={paraIndex} className="text-base text-foreground leading-relaxed mb-4">
-                      {paragraph}
-                    </p>
+                    <MultilineText
+                      key={paraIndex}
+                      text={paragraph}
+                      className="mb-4"
+                      paragraphClassName="text-base text-foreground leading-relaxed"
+                    />
                   ))}
                 </div>
               ))}
 
               {/* Conclusion */}
               {newsItem.fullStory.conclusion && (
-                <p className="text-lg text-foreground leading-relaxed mt-8 font-medium">
-                  {newsItem.fullStory.conclusion}
-                </p>
+                <MultilineText
+                  text={newsItem.fullStory.conclusion}
+                  className="mt-8"
+                  paragraphClassName="text-lg text-foreground leading-relaxed font-medium"
+                />
               )}
             </motion.div>
           )}

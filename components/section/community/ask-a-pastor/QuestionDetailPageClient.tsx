@@ -9,6 +9,7 @@ import { toast } from '@/components/atoms/Toast';
 import type { QuestionItem } from '@/lib/constants/community/questions';
 import { getPastorById } from '@/lib/utils/community/pastors';
 import { ShareButton } from '@/lib/hooks/use-copy';
+import { MultilineText } from '@/components/general/MultilineText';
 
 interface QuestionDetailPageClientProps {
   question: QuestionItem;
@@ -82,9 +83,10 @@ export const QuestionDetailPageClient = ({
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
               className="prose prose-lg max-w-none mb-8">
-              <p className="text-lg text-foreground leading-relaxed whitespace-pre-line">
-                {question.fullQuestion}
-              </p>
+              <MultilineText
+                text={question.fullQuestion}
+                paragraphClassName="text-lg text-foreground leading-relaxed"
+              />
             </motion.div>
           )}
 
@@ -109,9 +111,11 @@ export const QuestionDetailPageClient = ({
                   </span>
                 )}
               </div>
-              <p className="text-foreground leading-relaxed whitespace-pre-line mb-4">
-                {question.answer}
-              </p>
+              <MultilineText
+                text={question.answer}
+                className="mb-4"
+                paragraphClassName="text-foreground leading-relaxed"
+              />
               <Button variant="outline" size="sm" onClick={handleHelpful} className="gap-2">
                 <ThumbsUp className="w-4 h-4" />
                 Helpful ({helpful})

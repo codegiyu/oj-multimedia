@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { toast } from '@/components/atoms/Toast';
 import type { PrayerRequestItem } from '@/lib/constants/community/prayer-requests';
+import { MultilineText } from '@/components/general/MultilineText';
 
 interface PrayerRequestDetailPageClientProps {
   request: PrayerRequestItem;
@@ -108,9 +109,10 @@ export const PrayerRequestDetailPageClient = ({
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
             className="prose prose-lg max-w-none">
-            <p className="text-lg text-foreground leading-relaxed whitespace-pre-line">
-              {request.fullContent || request.content}
-            </p>
+            <MultilineText
+              text={request.fullContent || request.content}
+              paragraphClassName="text-lg text-foreground leading-relaxed"
+            />
           </motion.div>
 
           {request.isAnswered && request.testimony && (
@@ -120,7 +122,10 @@ export const PrayerRequestDetailPageClient = ({
               transition={{ duration: 0.5, delay: 0.1 }}
               className="mt-8 p-6 bg-green-500/10 border border-green-500/20 rounded-lg">
               <h3 className="text-xl font-display font-bold mb-4 text-green-600">Praise Report!</h3>
-              <p className="text-foreground leading-relaxed">{request.testimony}</p>
+              <MultilineText
+                text={request.testimony}
+                paragraphClassName="text-foreground leading-relaxed"
+              />
               {request.answeredDate && (
                 <p className="text-sm text-muted-foreground mt-4">
                   Answered on {new Date(request.answeredDate).toLocaleDateString()}

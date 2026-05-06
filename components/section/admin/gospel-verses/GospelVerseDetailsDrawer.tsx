@@ -35,7 +35,7 @@ function DetailsContent({ rowDetails }: { rowDetails: ClickedRowDetails<IGospelV
   return (
     <div className="grid gap-4 p-4">
       <div className="grid gap-3">
-        <InfoCard icon={BookOpen} label="Verse text" value={verse.verse} />
+        <InfoCard icon={BookOpen} label="Verse text" value={verse.verse} preserveParagraphs />
         <InfoCard
           icon={Calendar}
           label="Verse date"

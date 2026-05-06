@@ -55,7 +55,12 @@ function DetailsReadOnly({
         <InfoCard icon={FileText} label="Views" value={String(devotional.views ?? 0)} />
         <InfoCard icon={FileText} label="Plays" value={String(devotional.plays ?? 0)} />
         <InfoCard icon={FileText} label="Status" value={status ?? '—'} />
-        <InfoCard icon={FileText} label="Excerpt" value={devotional.excerpt ?? '—'} />
+        <InfoCard
+          icon={FileText}
+          label="Excerpt"
+          value={devotional.excerpt ?? '—'}
+          preserveParagraphs
+        />
         <InfoCard icon={FileText} label="Category" value={devotional.category ?? '—'} />
         <InfoCard
           icon={FileText}
