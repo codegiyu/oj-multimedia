@@ -112,11 +112,10 @@ export const callApi = async <T extends keyof AllEndpoints>(
         }
 
         const redirectQueryValue = getQueryParam('redirectTo');
-        const loginRoute = '/admin/auth/login';
-        const currentPath =
-          typeof window !== 'undefined' && window.location?.pathname?.startsWith('/admin')
-            ? window.location.pathname
-            : '';
+        const isAdminSurface =
+          typeof window !== 'undefined' && window.location?.pathname?.startsWith('/admin');
+        const loginRoute = isAdminSurface ? '/admin/auth/login' : '/auth/login';
+        const currentPath = typeof window !== 'undefined' ? (window.location?.pathname ?? '') : '';
         const redirectToValue =
           redirectQueryValue || (currentPath ? base64UrlEncode(currentPath) : '');
         redirectPath = redirectToValue

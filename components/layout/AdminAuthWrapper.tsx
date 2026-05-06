@@ -7,6 +7,7 @@ import { useAuthStore } from '@/lib/store/useAuthStore';
 import { unprotectedRoutes } from '@/lib/constants/routing';
 import { Loader2 } from 'lucide-react';
 import { base64UrlDecode, base64UrlEncode } from '@/lib/services/storage';
+import { sanitizeInternalRedirect } from '@/lib/utils/redirect';
 
 interface AdminAuthWrapperProps {
   children: React.ReactNode;
@@ -68,8 +69,10 @@ export const AdminAuthWrapper = ({ children }: AdminAuthWrapperProps) => {
       let destination = '/admin/dashboard/home';
       if (redirectTo) {
         try {
-          destination = base64UrlDecode(redirectTo);
-          if (!destination.startsWith('/')) destination = '/admin/dashboard/home';
+          destination = sanitizeInternalRedirect(
+            base64UrlDecode(redirectTo),
+            '/admin/dashboard/home'
+          );
         } catch {
           destination = '/admin/dashboard/home';
         }
