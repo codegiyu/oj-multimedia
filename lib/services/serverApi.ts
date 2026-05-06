@@ -19,7 +19,14 @@ type UpstreamAuthHeaders = {
   cookie?: string;
   authorization?: string;
 };
-const TOKEN_COOKIE_KEYS = ['token', 'accessToken', 'authToken', 'jwt', 'authorization'] as const;
+const TOKEN_COOKIE_KEYS = [
+  'oj-acc-token',
+  'token',
+  'accessToken',
+  'authToken',
+  'jwt',
+  'authorization',
+] as const;
 
 function ensureBearerAuthorization(value: string | undefined): string | undefined {
   if (!value) return undefined;
@@ -179,6 +186,7 @@ export const callServerApi = async <T extends keyof AllEndpoints>(
   const headerList = await headers();
   const upstreamAuth = await getUpstreamAuthHeaders(headerList);
 
+  console.log('upstreamAuth', upstreamAuth);
   if (
     !upstreamAuth.cookie &&
     !upstreamAuth.authorization &&
