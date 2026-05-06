@@ -20,6 +20,9 @@ import { RegularSelect } from '@/components/atoms/RegularSelect';
 import type { SelectOption } from '@/lib/types/general';
 import { Badge } from '@/components/ui/badge';
 import { ApprovalModal } from '@/components/section/admin/shared';
+import { MediaUrlOrUploadField } from '@/components/general/MediaUrlOrUploadField';
+import { useFileUpload } from '@/lib/hooks/use-file-upload';
+import { MEDIA_FALLBACK_URLS } from '@/lib/constants/mediaFallbackUrls';
 
 const slotFilterOptions: SelectOption[] = [
   { text: 'All slots', value: 'all' },
@@ -57,8 +60,14 @@ export function HomeAdvertsPageClient({
   const [formLink, setFormLink] = useState('');
   const [formOrder, setFormOrder] = useState('0');
   const [formActive, setFormActive] = useState('yes');
+  const [pendingImageFile, setPendingImageFile] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const advertImageUpload = useFileUpload({
+    entityType: 'resource',
+    entityId: editTarget?._id ?? 'home-advert-pending',
+    intent: 'image',
+  });
 
   const handleRefresh = () => router.refresh();
 
@@ -69,6 +78,7 @@ export function HomeAdvertsPageClient({
     setFormLink('');
     setFormOrder('0');
     setFormActive('yes');
+    setPendingImageFile(null);
     setDialogOpen(true);
   };
 
@@ -79,6 +89,7 @@ export function HomeAdvertsPageClient({
     setFormLink(a.linkUrl ?? '');
     setFormOrder(String(a.displayOrder ?? 0));
     setFormActive(a.isActive === false ? 'no' : 'yes');
+    setPendingImageFile(null);
     setDialogOpen(true);
   };
 
@@ -87,11 +98,20 @@ export function HomeAdvertsPageClient({
     setSaving(true);
     try {
       if (editTarget) {
+        let finalImageUrl = formImage.trim();
+        if (pendingImageFile) {
+          const upload = await advertImageUpload.uploadFile({
+            file: pendingImageFile,
+            entityId: editTarget._id,
+          });
+          if (!upload?.url) throw new Error('Image upload failed');
+          finalImageUrl = upload.url;
+        }
         const res = await callApi('ADMIN_HOME_ADVERTS_UPDATE', {
           query: `/${editTarget._id}` as `/${string}`,
           payload: {
             slot: formSlot,
-            imageUrl: formImage.trim(),
+            imageUrl: finalImageUrl,
             linkUrl: formLink.trim() || undefined,
             displayOrder: Number(formOrder) || 0,
             isActive: formActive === 'yes',
@@ -102,13 +122,29 @@ export function HomeAdvertsPageClient({
         const res = await callApi('ADMIN_HOME_ADVERTS_CREATE', {
           payload: {
             slot: formSlot,
-            imageUrl: formImage.trim(),
+            imageUrl: formImage.trim() || MEDIA_FALLBACK_URLS.image,
             linkUrl: formLink.trim() || undefined,
             displayOrder: Number(formOrder) || 0,
             isActive: formActive === 'yes',
           },
         });
         if (res.type !== 'success') throw new Error(res.error?.message ?? 'Failed');
+        const createdId =
+          (res.data as { advert?: { _id?: string }; _id?: string } | undefined)?.advert?._id ??
+          (res.data as { _id?: string } | undefined)?._id;
+        if (createdId && pendingImageFile) {
+          const upload = await advertImageUpload.uploadFile({
+            file: pendingImageFile,
+            entityId: createdId,
+          });
+          if (!upload?.url) throw new Error('Image upload failed');
+          const patch = await callApi('ADMIN_HOME_ADVERTS_UPDATE', {
+            query: `/${createdId}` as `/${string}`,
+            payload: { imageUrl: upload.url },
+          });
+          if (patch.type !== 'success')
+            throw new Error(patch.error?.message ?? 'Failed to update image');
+        }
       }
       setDialogOpen(false);
       setEditTarget(null);
@@ -175,11 +211,18 @@ export function HomeAdvertsPageClient({
                   onSelectChange={v => setFormSlot(v as IHomeAdvertItem['slot'])}
                   options={slotFormOptions}
                 />
-                <RegularInput
+                <MediaUrlOrUploadField
                   label="Image URL"
                   value={formImage}
-                  onChange={e => setFormImage(e.target.value)}
+                  onChange={setFormImage}
+                  entityType="resource"
+                  entityId={editTarget?._id ?? null}
+                  fallbackEntityIdPrefix="home-advert-image"
+                  intent="image"
+                  accept="image/*"
+                  defaultMode="upload"
                   required
+                  onPendingFileChange={setPendingImageFile}
                 />
                 <RegularInput
                   label="Link URL (optional)"
