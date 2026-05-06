@@ -163,7 +163,7 @@ export function HomeAdvertsPageClient({
           <Dialog
             open={dialogOpen}
             onOpenChange={v => !v && (setDialogOpen(false), setEditTarget(null))}>
-            <DialogContent className="max-w-md">
+            <DialogContent className="max-w-xl">
               <DialogHeader>
                 <DialogTitle>{editTarget ? 'Edit home advert' : 'New home advert'}</DialogTitle>
               </DialogHeader>

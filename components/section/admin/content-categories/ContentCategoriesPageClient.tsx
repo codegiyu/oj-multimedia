@@ -165,7 +165,7 @@ export function ContentCategoriesPageClient({
           <Dialog
             open={createOpen}
             onOpenChange={v => !v && (setCreateOpen(false), setEditTarget(null))}>
-            <DialogContent className="max-w-md">
+            <DialogContent className="max-w-xl">
               <DialogHeader>
                 <DialogTitle>{editTarget ? 'Edit category' : 'New content category'}</DialogTitle>
               </DialogHeader>

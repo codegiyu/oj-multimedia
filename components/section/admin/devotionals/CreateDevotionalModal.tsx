@@ -193,7 +193,7 @@ export function CreateDevotionalModal({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto" showCloseButton={!loading}>
+      <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto" showCloseButton={!loading}>
         <DialogHeader>
           <DialogTitle>{isEdit ? 'Edit devotional' : 'Create devotional'}</DialogTitle>
           <DialogDescription>

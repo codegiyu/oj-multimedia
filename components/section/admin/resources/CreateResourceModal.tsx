@@ -134,7 +134,7 @@ export function CreateResourceModal({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-w-md" showCloseButton={!loading}>
+      <DialogContent className="max-w-xl" showCloseButton={!loading}>
         <DialogHeader>
           <DialogTitle>{isEdit ? 'Edit resource' : 'Create resource'}</DialogTitle>
           <DialogDescription>
