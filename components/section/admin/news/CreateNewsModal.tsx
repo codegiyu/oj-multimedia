@@ -15,7 +15,6 @@ import { RegularTextarea } from '@/components/atoms/RegularTextarea';
 import { RegularSelect } from '@/components/atoms/RegularSelect';
 import { MediaUrlOrUploadField } from '@/components/general/MediaUrlOrUploadField';
 import { useFileUpload } from '@/lib/hooks/use-file-upload';
-import { MEDIA_FALLBACK_URLS } from '@/lib/constants/mediaFallbackUrls';
 import {
   PUBLISHABLE_STATUS_SELECT_OPTIONS,
   PUBLISHABLE_STATUS_VALUES,
@@ -200,9 +199,9 @@ export function CreateNewsModal({ open, onOpenChange, editId, onSuccess }: Creat
             excerpt: excerpt ?? '',
             author,
             category,
-            coverImage: finalCoverImage || MEDIA_FALLBACK_URLS.image,
-            audioUrl: finalAudioUrl || MEDIA_FALLBACK_URLS.audio,
-            videoFileUrl: finalVideoFileUrl || MEDIA_FALLBACK_URLS.video,
+            coverImage: finalCoverImage || '',
+            audioUrl: finalAudioUrl || '',
+            videoFileUrl: finalVideoFileUrl || '',
             embedUrl,
             downloadUrl: finalDownloadUrl,
             isFeatured: form.isFeatured,

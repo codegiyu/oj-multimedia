@@ -24,7 +24,6 @@ import {
   loadAdminContentCategorySelectOptions,
 } from '@/lib/utils/adminContentCategorySelect';
 import { useFileUpload } from '@/lib/hooks/use-file-upload';
-import { MEDIA_FALLBACK_URLS } from '@/lib/constants/mediaFallbackUrls';
 import { PUBLISHABLE_STATUS_SELECT_OPTIONS } from '@/lib/constants/adminSelectOptions';
 
 interface CreateDevotionalModalProps {
@@ -181,7 +180,7 @@ export function CreateDevotionalModal({
         if (res.type !== 'success') throw new Error(res.error?.message ?? 'Update failed');
       } else {
         if (pendingCoverImage && !payload.coverImage) {
-          payload.coverImage = MEDIA_FALLBACK_URLS.image;
+          payload.coverImage = '';
         }
         const res = await callApi('ADMIN_DEVOTIONAL_CREATE', { payload });
         if (res.type !== 'success') throw new Error(res.error?.message ?? 'Create failed');

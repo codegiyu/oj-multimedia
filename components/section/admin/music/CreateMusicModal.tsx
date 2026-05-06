@@ -35,7 +35,6 @@ import {
   requireText,
 } from '@/lib/utils/adminFormValidation';
 import { useFileUpload } from '@/lib/hooks/use-file-upload';
-import { MEDIA_FALLBACK_URLS } from '@/lib/constants/mediaFallbackUrls';
 import {
   PUBLISHABLE_STATUS_SELECT_OPTIONS,
   PUBLISHABLE_STATUS_VALUES,
@@ -200,9 +199,11 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
       const audioUrl = normalizeOptionalHttpUrl(form.audioUrl ?? '', 'Audio URL');
       const videoUrl = normalizeOptionalHttpUrl(form.videoUrl ?? '', 'Video URL');
       const downloadUrl = normalizeOptionalHttpUrl(form.downloadUrl ?? '', 'Download URL');
+
       let finalCoverImage = coverImage;
       let finalAudioUrl = audioUrl;
       let finalVideoUrl = videoUrl;
+
       const finalDownloadUrl = downloadUrl;
 
       if (editId) {
@@ -211,16 +212,19 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
           if (!upload?.url) throw new Error('Cover upload failed');
           finalCoverImage = upload.url;
         }
+
         if (pendingAudio) {
           const upload = await audioUpload.uploadFile({ file: pendingAudio, entityId: editId });
           if (!upload?.url) throw new Error('Audio upload failed');
           finalAudioUrl = upload.url;
         }
+
         if (pendingVideo) {
           const upload = await videoUpload.uploadFile({ file: pendingVideo, entityId: editId });
           if (!upload?.url) throw new Error('Video upload failed');
           finalVideoUrl = upload.url;
         }
+
         const payload: IAdminUpdateMusicPayload = {
           title,
           description: description || undefined,
@@ -233,14 +237,18 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
           downloadUrl: finalDownloadUrl,
           status: editStatus,
         };
+
         const canAssignOwner = !ownerMeta.ownerLocked && !ownerMeta.hasArtist;
+
         if (canAssignOwner && assignOwnerUserId) {
           payload.ownerUserId = assignOwnerUserId;
         }
+
         const res = await callApi('ADMIN_MUSIC_UPDATE', {
           query: `/${editId}` as `/${string}`,
           payload,
         });
+
         if (res.type !== 'success') throw new Error(res.error?.message ?? 'Update failed');
       } else {
         const payload: IAdminCreateMusicPayload = {
@@ -249,40 +257,52 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
           lyrics,
           excerpt,
           category,
-          coverImage: finalCoverImage || MEDIA_FALLBACK_URLS.image,
-          audioUrl: finalAudioUrl || MEDIA_FALLBACK_URLS.audio,
-          videoUrl: finalVideoUrl || MEDIA_FALLBACK_URLS.video,
-          downloadUrl: finalDownloadUrl || MEDIA_FALLBACK_URLS.file,
+          coverImage: finalCoverImage || undefined,
+          audioUrl: finalAudioUrl || undefined,
+          videoUrl: finalVideoUrl || undefined,
+          downloadUrl: finalDownloadUrl || undefined,
         };
+
         if (form.artistId) payload.artistId = form.artistId;
+
         if (form.ownerUserId) payload.ownerUserId = form.ownerUserId;
+
         const res = await callApi('ADMIN_MUSIC_CREATE', { payload });
+
         if (res.type !== 'success') throw new Error(res.error?.message ?? 'Create failed');
+
         const createdId =
           (res.data as { music?: { _id?: string }; _id?: string } | undefined)?.music?._id ??
           (res.data as { _id?: string } | undefined)?._id;
+
         if (createdId) {
           if (pendingCover) {
             const upload = await coverUpload.uploadFile({
               file: pendingCover,
               entityId: createdId,
             });
+
             if (upload?.url) finalCoverImage = upload.url;
           }
+
           if (pendingAudio) {
             const upload = await audioUpload.uploadFile({
               file: pendingAudio,
               entityId: createdId,
             });
+
             if (upload?.url) finalAudioUrl = upload.url;
           }
+
           if (pendingVideo) {
             const upload = await videoUpload.uploadFile({
               file: pendingVideo,
               entityId: createdId,
             });
+
             if (upload?.url) finalVideoUrl = upload.url;
           }
+
           if (pendingCover || pendingAudio || pendingVideo) {
             const patchRes = await callApi('ADMIN_MUSIC_UPDATE', {
               query: `/${createdId}` as `/${string}`,
@@ -292,14 +312,17 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
                 videoUrl: finalVideoUrl,
               },
             });
+
             if (patchRes.type !== 'success')
               throw new Error(patchRes.error?.message ?? 'Post-create media update failed');
           }
         }
       }
+
       setForm(defaultForm);
       onOpenChange(false);
       onSuccess();
+
       toast.success(isEdit ? 'Music track updated.' : 'Music track created.');
     } catch (err) {
       console.error(isEdit ? 'Update music failed:' : 'Create music failed:', err);

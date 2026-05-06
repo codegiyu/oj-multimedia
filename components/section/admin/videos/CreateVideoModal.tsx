@@ -35,7 +35,6 @@ import {
   requireText,
 } from '@/lib/utils/adminFormValidation';
 import { useFileUpload } from '@/lib/hooks/use-file-upload';
-import { MEDIA_FALLBACK_URLS } from '@/lib/constants/mediaFallbackUrls';
 import {
   PUBLISHABLE_STATUS_SELECT_OPTIONS,
   PUBLISHABLE_STATUS_VALUES,
@@ -246,9 +245,9 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
         const payload: IAdminCreateVideoPayload = {
           title,
           description,
-          thumbnail: finalThumbnail || MEDIA_FALLBACK_URLS.image,
-          videoUrl: finalVideoUrl || MEDIA_FALLBACK_URLS.video,
-          videoFileUrl: finalVideoFileUrl || MEDIA_FALLBACK_URLS.video,
+          thumbnail: finalThumbnail || '',
+          videoUrl: finalVideoUrl || '',
+          videoFileUrl: finalVideoFileUrl || '',
           embedUrl,
           category,
         };
