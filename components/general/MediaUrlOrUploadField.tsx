@@ -83,8 +83,10 @@ export function MediaUrlOrUploadField({
   const acceptedTypesText = useMemo(() => humanizeAccept(accept), [accept]);
   const fileSizeText = fileSizeLabel || (maxFileSizeBytes ? formatBytes(maxFileSizeBytes) : null);
   const previewKind = getPreviewKind(selectedFile, accept);
+  const valuePreviewKind = getPreviewKindFromUrl(value, accept);
   const fileName = selectedFile?.name ?? '';
   const fileSize = selectedFile?.size ? formatBytes(selectedFile.size) : '';
+  const existingFileName = extractFileNameFromUrl(value);
 
   const selectFile = async (file: File | null) => {
     setLocalError(null);
@@ -159,6 +161,24 @@ export function MediaUrlOrUploadField({
                   fileSize={fileSize}
                 />
               </>
+            ) : value ? (
+              <>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="secondary"
+                  className="absolute right-2 top-2 z-10"
+                  disabled={loading}
+                  onClick={() => fileInputRef.current?.click()}>
+                  Change file
+                </Button>
+                <PreviewContent
+                  kind={valuePreviewKind}
+                  previewUrl={value}
+                  fileName={existingFileName || label}
+                  fileSize=""
+                />
+              </>
             ) : (
               <div className="h-full min-h-28 flex flex-col items-center justify-center text-center gap-2">
                 <Upload className="h-6 w-6 text-muted-foreground" />
@@ -205,22 +225,20 @@ export function MediaUrlOrUploadField({
       )}
 
       <div className="pt-1">
-        <p className="text-xs text-muted-foreground mb-2">Source</p>
-        <div className="flex flex-wrap gap-2">
-          <Button
-            type="button"
-            size="sm"
-            variant={mode === 'url' ? 'default' : 'outline'}
-            onClick={() => setMode('url')}>
-            Use URL
-          </Button>
-          <Button
-            type="button"
-            size="sm"
-            variant={mode === 'upload' ? 'default' : 'outline'}
-            onClick={() => setMode('upload')}>
-            Upload file
-          </Button>
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <p className="text-xs text-muted-foreground">Source</p>
+            <p className="text-xs font-medium">{mode === 'upload' ? 'Upload file' : 'Use URL'}</p>
+          </div>
+          <label className="inline-flex items-center gap-2 text-xs cursor-pointer">
+            <span className="text-muted-foreground">Use upload</span>
+            <input
+              type="checkbox"
+              className="h-4 w-4 accent-primary"
+              checked={mode === 'upload'}
+              onChange={e => setMode(e.target.checked ? 'upload' : 'url')}
+            />
+          </label>
         </div>
       </div>
     </div>
@@ -303,6 +321,32 @@ function getPreviewKind(file: File | null, accept: string): 'image' | 'video' | 
   if (file.type.startsWith('video/')) return 'video';
   if (file.type.startsWith('audio/')) return 'audio';
   return 'file';
+}
+
+function getPreviewKindFromUrl(url: string, accept: string): 'image' | 'video' | 'audio' | 'file' {
+  const normalized = url.toLowerCase();
+  if (normalized.match(/\.(png|jpe?g|gif|webp|svg)(\?|#|$)/) || accept.includes('image/')) {
+    return 'image';
+  }
+  if (normalized.match(/\.(mp4|webm|mov|m4v)(\?|#|$)/) || accept.includes('video/')) {
+    return 'video';
+  }
+  if (normalized.match(/\.(mp3|wav|ogg|m4a|aac|flac)(\?|#|$)/) || accept.includes('audio/')) {
+    return 'audio';
+  }
+  return 'file';
+}
+
+function extractFileNameFromUrl(url: string): string {
+  try {
+    const parsed = new URL(url);
+    const fromPath = parsed.pathname.split('/').filter(Boolean).pop();
+    if (fromPath) return decodeURIComponent(fromPath);
+  } catch {
+    // Keep fallback behavior for invalid/relative values.
+  }
+  const cleaned = url.split('?')[0].split('#')[0];
+  return cleaned.split('/').filter(Boolean).pop() ?? '';
 }
 
 function getFileExtensionIcon(fileName: string): React.ReactNode {

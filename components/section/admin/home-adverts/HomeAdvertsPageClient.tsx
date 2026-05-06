@@ -22,7 +22,6 @@ import { Badge } from '@/components/ui/badge';
 import { ApprovalModal } from '@/components/section/admin/shared';
 import { MediaUrlOrUploadField } from '@/components/general/MediaUrlOrUploadField';
 import { useFileUpload } from '@/lib/hooks/use-file-upload';
-import { MEDIA_FALLBACK_URLS } from '@/lib/constants/mediaFallbackUrls';
 
 const slotFilterOptions: SelectOption[] = [
   { text: 'All slots', value: 'all' },
@@ -122,7 +121,7 @@ export function HomeAdvertsPageClient({
         const res = await callApi('ADMIN_HOME_ADVERTS_CREATE', {
           payload: {
             slot: formSlot,
-            imageUrl: formImage.trim() || MEDIA_FALLBACK_URLS.image,
+            imageUrl: formImage.trim() || '',
             linkUrl: formLink.trim() || undefined,
             displayOrder: Number(formOrder) || 0,
             isActive: formActive === 'yes',

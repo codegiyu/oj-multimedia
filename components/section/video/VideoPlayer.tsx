@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
 /**
@@ -70,7 +71,7 @@ export const VideoPlayer = ({
     };
     el.addEventListener('play', onPlay);
     return () => el.removeEventListener('play', onPlay);
-  }, [videoUrl, onFirstPlay]);
+  }, [videoUrl]);
 
   return (
     <div
