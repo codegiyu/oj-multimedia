@@ -15,10 +15,17 @@ import { RegularTextarea } from '@/components/atoms/RegularTextarea';
 import { RegularSelect } from '@/components/atoms/RegularSelect';
 import type { SelectOption } from '@/lib/types/general';
 import { callApi } from '@/lib/services/callApi';
+import { toast } from 'sonner';
 import {
   ensureSelectContainsSlug,
   loadAdminContentCategorySelectOptions,
 } from '@/lib/utils/adminContentCategorySelect';
+import {
+  normalizeEnumValue,
+  normalizeOptionalHttpUrl,
+  normalizeOptionalText,
+  requireText,
+} from '@/lib/utils/adminFormValidation';
 
 interface CreateNewsModalProps {
   open: boolean;
@@ -48,6 +55,7 @@ const statusOptions: SelectOption[] = [
   { text: 'Published', value: 'published' },
   { text: 'Archived', value: 'archived' },
 ];
+const STATUS_VALUES = ['draft', 'published', 'archived'] as const;
 
 export function CreateNewsModal({ open, onOpenChange, editId, onSuccess }: CreateNewsModalProps) {
   const [form, setForm] = useState(defaultForm);
@@ -98,7 +106,7 @@ export function CreateNewsModal({ open, onOpenChange, editId, onSuccess }: Creat
           videoFileUrl: n.videoFileUrl ?? '',
           embedUrl: n.embedUrl ?? '',
           downloadUrl: n.downloadUrl ?? '',
-          status: n.status ?? 'draft',
+          status: normalizeEnumValue(n.status, STATUS_VALUES, 'draft'),
           isFeatured: n.isFeatured ?? false,
         });
       } finally {
@@ -112,23 +120,33 @@ export function CreateNewsModal({ open, onOpenChange, editId, onSuccess }: Creat
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.title.trim()) return;
     setLoading(true);
     try {
+      const title = requireText(form.title, 'Title');
+      const content = form.content.trim();
+      const excerpt = normalizeOptionalText(form.excerpt);
+      const author = normalizeOptionalText(form.author);
+      const category = normalizeOptionalText(form.category);
+      const coverImage = normalizeOptionalHttpUrl(form.coverImage, 'Cover image URL');
+      const audioUrl = normalizeOptionalHttpUrl(form.audioUrl, 'Audio URL');
+      const videoFileUrl = normalizeOptionalHttpUrl(form.videoFileUrl, 'Video file URL');
+      const embedUrl = normalizeOptionalHttpUrl(form.embedUrl, 'Embed URL');
+      const downloadUrl = normalizeOptionalHttpUrl(form.downloadUrl, 'Download URL');
+
       if (editId) {
         const res = await callApi('ADMIN_NEWS_UPDATE', {
           query: `/${editId}` as `/${string}`,
           payload: {
-            title: form.title.trim(),
-            content: form.content,
-            excerpt: form.excerpt || undefined,
-            author: form.author || undefined,
-            category: form.category?.trim() || undefined,
-            coverImage: form.coverImage?.trim() || undefined,
-            audioUrl: form.audioUrl?.trim() || undefined,
-            videoFileUrl: form.videoFileUrl?.trim() || undefined,
-            embedUrl: form.embedUrl?.trim() || undefined,
-            downloadUrl: form.downloadUrl?.trim() || undefined,
+            title,
+            content,
+            excerpt,
+            author,
+            category,
+            coverImage,
+            audioUrl,
+            videoFileUrl,
+            embedUrl,
+            downloadUrl,
             status: form.status,
             isFeatured: form.isFeatured,
           },
@@ -137,16 +155,16 @@ export function CreateNewsModal({ open, onOpenChange, editId, onSuccess }: Creat
       } else {
         const { error } = await callApi('ADMIN_NEWS_CREATE', {
           payload: {
-            title: form.title.trim(),
-            content: form.content?.trim() ?? '',
-            excerpt: form.excerpt?.trim() ?? '',
-            author: form.author?.trim() || undefined,
-            category: form.category?.trim() || undefined,
-            coverImage: form.coverImage?.trim() || undefined,
-            audioUrl: form.audioUrl?.trim() || undefined,
-            videoFileUrl: form.videoFileUrl?.trim() || undefined,
-            embedUrl: form.embedUrl?.trim() || undefined,
-            downloadUrl: form.downloadUrl?.trim() || undefined,
+            title,
+            content,
+            excerpt: excerpt ?? '',
+            author,
+            category,
+            coverImage,
+            audioUrl,
+            videoFileUrl,
+            embedUrl,
+            downloadUrl,
             isFeatured: form.isFeatured,
             status: form.status,
           },
@@ -156,8 +174,10 @@ export function CreateNewsModal({ open, onOpenChange, editId, onSuccess }: Creat
       setForm(defaultForm);
       onOpenChange(false);
       onSuccess();
+      toast.success(isEdit ? 'News article updated.' : 'News article created.');
     } catch (err) {
       console.error(isEdit ? 'Update news failed:' : 'Create news failed:', err);
+      toast.error(err instanceof Error ? err.message : 'Unable to save news article.');
     } finally {
       setLoading(false);
     }
@@ -193,7 +213,12 @@ export function CreateNewsModal({ open, onOpenChange, editId, onSuccess }: Creat
             <RegularSelect
               label="Status"
               value={form.status}
-              onSelectChange={v => setForm(f => ({ ...f, status: v as typeof form.status }))}
+              onSelectChange={v =>
+                setForm(f => ({
+                  ...f,
+                  status: normalizeEnumValue(v, STATUS_VALUES, 'draft'),
+                }))
+              }
               options={statusOptions}
             />
             <RegularInput

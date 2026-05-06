@@ -15,6 +15,7 @@ import { RegularTextarea } from '@/components/atoms/RegularTextarea';
 import { RegularSelect } from '@/components/atoms/RegularSelect';
 import type { SelectOption } from '@/lib/types/general';
 import { callApi } from '@/lib/services/callApi';
+import { toast } from 'sonner';
 import type {
   IArtistCreateMusicPayload,
   IAdminCreateMusicPayload,
@@ -26,6 +27,12 @@ import {
   ensureSelectContainsSlug,
   loadAdminContentCategorySelectOptions,
 } from '@/lib/utils/adminContentCategorySelect';
+import {
+  normalizeEnumValue,
+  normalizeOptionalHttpUrl,
+  normalizeOptionalText,
+  requireText,
+} from '@/lib/utils/adminFormValidation';
 
 interface CreateMusicModalProps {
   open: boolean;
@@ -53,6 +60,7 @@ const statusOptions: SelectOption[] = [
   { text: 'Published', value: 'published' },
   { text: 'Archived', value: 'archived' },
 ];
+const STATUS_VALUES = ['draft', 'published', 'archived'] as const;
 
 function artistName(artist: ArtistMusicListItem['artist']): string {
   if (!artist) return '—';
@@ -144,7 +152,7 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
           artistId: '',
           ownerUserId: '',
         });
-        setEditStatus(m.status ?? 'draft');
+        setEditStatus(normalizeEnumValue(m.status, STATUS_VALUES, 'draft'));
         const hasArtist = Boolean(m.artist);
         setOwnerMeta({
           ownerLocked: Boolean(m.ownerLocked ?? hasArtist),
@@ -163,20 +171,29 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.title.trim()) return;
     setLoading(true);
     try {
+      const title = requireText(form.title, 'Title');
+      const description = normalizeOptionalText(form.description ?? '');
+      const lyrics = normalizeOptionalText(form.lyrics ?? '');
+      const excerpt = normalizeOptionalText(form.excerpt ?? '');
+      const category = normalizeOptionalText(form.category ?? '');
+      const coverImage = normalizeOptionalHttpUrl(form.coverImage ?? '', 'Cover image URL');
+      const audioUrl = normalizeOptionalHttpUrl(form.audioUrl ?? '', 'Audio URL');
+      const videoUrl = normalizeOptionalHttpUrl(form.videoUrl ?? '', 'Video URL');
+      const downloadUrl = normalizeOptionalHttpUrl(form.downloadUrl ?? '', 'Download URL');
+
       if (editId) {
         const payload: IAdminUpdateMusicPayload = {
-          title: form.title.trim(),
-          description: form.description?.trim() || undefined,
-          lyrics: form.lyrics?.trim() || undefined,
-          excerpt: form.excerpt?.trim() || undefined,
-          category: form.category?.trim() || undefined,
-          coverImage: form.coverImage?.trim() || undefined,
-          audioUrl: form.audioUrl?.trim() || undefined,
-          videoUrl: form.videoUrl?.trim() || undefined,
-          downloadUrl: form.downloadUrl?.trim() || undefined,
+          title,
+          description: description || undefined,
+          lyrics: lyrics || undefined,
+          excerpt,
+          category,
+          coverImage,
+          audioUrl,
+          videoUrl,
+          downloadUrl,
           status: editStatus,
         };
         const canAssignOwner = !ownerMeta.ownerLocked && !ownerMeta.hasArtist;
@@ -190,15 +207,15 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
         if (res.type !== 'success') throw new Error(res.error?.message ?? 'Update failed');
       } else {
         const payload: IAdminCreateMusicPayload = {
-          title: form.title.trim(),
-          description: form.description?.trim() ?? '',
-          lyrics: form.lyrics?.trim() ?? '',
-          excerpt: form.excerpt?.trim() || undefined,
-          category: form.category?.trim() || undefined,
-          coverImage: form.coverImage?.trim() || undefined,
-          audioUrl: form.audioUrl?.trim() || undefined,
-          videoUrl: form.videoUrl?.trim() || undefined,
-          downloadUrl: form.downloadUrl?.trim() || undefined,
+          title,
+          description,
+          lyrics,
+          excerpt,
+          category,
+          coverImage,
+          audioUrl,
+          videoUrl,
+          downloadUrl,
         };
         if (form.artistId) payload.artistId = form.artistId;
         if (form.ownerUserId) payload.ownerUserId = form.ownerUserId;
@@ -208,8 +225,10 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
       setForm(defaultForm);
       onOpenChange(false);
       onSuccess();
+      toast.success(isEdit ? 'Music track updated.' : 'Music track created.');
     } catch (err) {
       console.error(isEdit ? 'Update music failed:' : 'Create music failed:', err);
+      toast.error(err instanceof Error ? err.message : 'Unable to save music track.');
     } finally {
       setLoading(false);
     }
@@ -268,7 +287,7 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
               <RegularSelect
                 label="Status"
                 value={editStatus}
-                onSelectChange={v => setEditStatus(v as 'draft' | 'published' | 'archived')}
+                onSelectChange={v => setEditStatus(normalizeEnumValue(v, STATUS_VALUES, 'draft'))}
                 options={statusOptions}
               />
             )}

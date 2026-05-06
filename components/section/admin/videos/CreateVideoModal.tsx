@@ -15,6 +15,7 @@ import { RegularTextarea } from '@/components/atoms/RegularTextarea';
 import { RegularSelect } from '@/components/atoms/RegularSelect';
 import type { SelectOption } from '@/lib/types/general';
 import { callApi } from '@/lib/services/callApi';
+import { toast } from 'sonner';
 import type {
   IArtistCreateVideoPayload,
   IAdminCreateVideoPayload,
@@ -26,6 +27,12 @@ import {
   ensureSelectContainsSlug,
   loadAdminContentCategorySelectOptions,
 } from '@/lib/utils/adminContentCategorySelect';
+import {
+  normalizeEnumValue,
+  normalizeOptionalHttpUrl,
+  normalizeOptionalText,
+  requireText,
+} from '@/lib/utils/adminFormValidation';
 
 interface CreateVideoModalProps {
   open: boolean;
@@ -51,6 +58,7 @@ const statusOptions: SelectOption[] = [
   { text: 'Published', value: 'published' },
   { text: 'Archived', value: 'archived' },
 ];
+const STATUS_VALUES = ['draft', 'published', 'archived'] as const;
 
 function artistName(artist: ArtistVideoListItem['artist']): string {
   if (!artist) return '—';
@@ -140,7 +148,7 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
           artistId: '',
           ownerUserId: '',
         });
-        setEditStatus(v.status ?? 'draft');
+        setEditStatus(normalizeEnumValue(v.status, STATUS_VALUES, 'draft'));
         const hasArtist = Boolean(v.artist);
         setOwnerMeta({
           ownerLocked: Boolean(v.ownerLocked ?? hasArtist),
@@ -159,18 +167,25 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.title.trim()) return;
     setLoading(true);
     try {
+      const title = requireText(form.title, 'Title');
+      const description = normalizeOptionalText(form.description ?? '');
+      const thumbnail = normalizeOptionalHttpUrl(form.thumbnail ?? '', 'Thumbnail URL');
+      const videoUrl = normalizeOptionalHttpUrl(form.videoUrl ?? '', 'Legacy video URL');
+      const videoFileUrl = normalizeOptionalHttpUrl(form.videoFileUrl ?? '', 'Video file URL');
+      const embedUrl = normalizeOptionalHttpUrl(form.embedUrl ?? '', 'Embed URL');
+      const category = normalizeOptionalText(form.category ?? '');
+
       if (editId) {
         const payload: IAdminUpdateVideoPayload = {
-          title: form.title.trim(),
-          description: form.description?.trim() || undefined,
-          thumbnail: form.thumbnail?.trim() || undefined,
-          videoUrl: form.videoUrl?.trim() || undefined,
-          videoFileUrl: form.videoFileUrl?.trim() || undefined,
-          embedUrl: form.embedUrl?.trim() || undefined,
-          category: form.category?.trim() || undefined,
+          title,
+          description: description || undefined,
+          thumbnail,
+          videoUrl,
+          videoFileUrl,
+          embedUrl,
+          category,
           status: editStatus,
         };
         const canAssignOwner = !ownerMeta.ownerLocked && !ownerMeta.hasArtist;
@@ -184,13 +199,13 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
         if (res.type !== 'success') throw new Error(res.error?.message ?? 'Update failed');
       } else {
         const payload: IAdminCreateVideoPayload = {
-          title: form.title.trim(),
-          description: form.description?.trim() ?? '',
-          thumbnail: form.thumbnail?.trim() || undefined,
-          videoUrl: form.videoUrl?.trim() || undefined,
-          videoFileUrl: form.videoFileUrl?.trim() || undefined,
-          embedUrl: form.embedUrl?.trim() || undefined,
-          category: form.category?.trim() || undefined,
+          title,
+          description,
+          thumbnail,
+          videoUrl,
+          videoFileUrl,
+          embedUrl,
+          category,
         };
         if (form.artistId) payload.artistId = form.artistId;
         if (form.ownerUserId) payload.ownerUserId = form.ownerUserId;
@@ -200,8 +215,10 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
       setForm(defaultForm);
       onOpenChange(false);
       onSuccess();
+      toast.success(isEdit ? 'Video updated.' : 'Video created.');
     } catch (err) {
       console.error(isEdit ? 'Update video failed:' : 'Create video failed:', err);
+      toast.error(err instanceof Error ? err.message : 'Unable to save video.');
     } finally {
       setLoading(false);
     }
@@ -257,7 +274,7 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
               <RegularSelect
                 label="Status"
                 value={editStatus}
-                onSelectChange={v => setEditStatus(v as 'draft' | 'published' | 'archived')}
+                onSelectChange={v => setEditStatus(normalizeEnumValue(v, STATUS_VALUES, 'draft'))}
                 options={statusOptions}
               />
             )}

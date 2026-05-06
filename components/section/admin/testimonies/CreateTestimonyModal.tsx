@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -16,8 +15,14 @@ import { RegularTextarea } from '@/components/atoms/RegularTextarea';
 import { RegularSelect } from '@/components/atoms/RegularSelect';
 import type { SelectOption } from '@/lib/types/general';
 import { callApi } from '@/lib/services/callApi';
+import { toast } from 'sonner';
 import { TESTIMONY_CATEGORY_SELECT_OPTIONS } from '@/lib/constants/communityCategorySelectOptions';
 import { ensureSelectContainsSlug } from '@/lib/utils/adminContentCategorySelect';
+import {
+  normalizeEnumValue,
+  normalizeOptionalText,
+  requireText,
+} from '@/lib/utils/adminFormValidation';
 
 interface CreateTestimonyModalProps {
   open: boolean;
@@ -38,6 +43,7 @@ const statusOptions: SelectOption[] = [
   { text: 'Published', value: 'published' },
   { text: 'Archived', value: 'archived' },
 ];
+const STATUS_VALUES = ['draft', 'published', 'archived'] as const;
 
 const baseCategoryOptions: SelectOption[] = [
   { text: 'None', value: '' },
@@ -83,7 +89,7 @@ export function CreateTestimonyModal({
           author: t.author ?? '',
           content: t.content ?? '',
           category: t.category ?? '',
-          status: (st as typeof form.status) ?? 'draft',
+          status: normalizeEnumValue(st, STATUS_VALUES, 'draft'),
         });
       } finally {
         if (!cancelled) setDetailLoading(false);
@@ -96,16 +102,19 @@ export function CreateTestimonyModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.author.trim() || !form.content.trim()) return;
     setLoading(true);
     try {
+      const author = requireText(form.author, 'Author');
+      const content = requireText(form.content, 'Content');
+      const category = normalizeOptionalText(form.category);
+
       if (editId) {
         const res = await callApi('ADMIN_TESTIMONY_UPDATE', {
           query: `/${editId}` as `/${string}`,
           payload: {
-            author: form.author.trim(),
-            content: form.content.trim(),
-            category: form.category?.trim() || undefined,
+            author,
+            content,
+            category,
             status: form.status,
           },
         });
@@ -113,9 +122,9 @@ export function CreateTestimonyModal({
       } else {
         const { error } = await callApi('ADMIN_TESTIMONY_CREATE', {
           payload: {
-            author: form.author.trim(),
-            content: form.content.trim(),
-            category: form.category?.trim() || undefined,
+            author,
+            content,
+            category,
             status: form.status,
           },
         });
@@ -124,8 +133,10 @@ export function CreateTestimonyModal({
       setForm(defaultForm);
       onOpenChange(false);
       onSuccess();
+      toast.success(isEdit ? 'Testimony updated.' : 'Testimony created.');
     } catch (err) {
       console.error(isEdit ? 'Update testimony failed:' : 'Create testimony failed:', err);
+      toast.error(err instanceof Error ? err.message : 'Unable to save testimony.');
     } finally {
       setLoading(false);
     }
@@ -161,7 +172,9 @@ export function CreateTestimonyModal({
             <RegularSelect
               label="Status"
               value={form.status}
-              onSelectChange={v => setForm(f => ({ ...f, status: v as typeof form.status }))}
+              onSelectChange={v =>
+                setForm(f => ({ ...f, status: normalizeEnumValue(v, STATUS_VALUES, 'draft') }))
+              }
               options={statusOptions}
             />
             <RegularSelect
