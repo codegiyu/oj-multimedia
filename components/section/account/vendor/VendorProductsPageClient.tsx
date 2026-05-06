@@ -84,7 +84,11 @@ function VendorProductsList({
                   className="gap-0 overflow-hidden border-border/80 py-0 shadow-sm transition-shadow hover:shadow-md">
                   <div className="relative aspect-square bg-muted">
                     {product.images?.[0] ? (
-                      <img src={product.images[0]} alt="" className="h-full w-full object-cover" />
+                      <img
+                        src={product.images[0]}
+                        alt={`${product.name} product image`}
+                        className="h-full w-full object-cover"
+                      />
                     ) : (
                       <div className="flex h-full items-center justify-center">
                         <Package className="h-12 w-12 text-muted-foreground" />

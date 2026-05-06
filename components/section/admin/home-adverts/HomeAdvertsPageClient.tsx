@@ -257,7 +257,11 @@ export function HomeAdvertsPageClient({
                     <td className="p-3">
                       <div className="w-16 h-10 rounded overflow-hidden bg-muted">
                         {a.imageUrl ? (
-                          <img src={a.imageUrl} alt="" className="w-full h-full object-cover" />
+                          <img
+                            src={a.imageUrl}
+                            alt={`Home advert preview (${a.slot})`}
+                            className="w-full h-full object-cover"
+                          />
                         ) : null}
                       </div>
                     </td>
