@@ -31,7 +31,12 @@ function DetailsContent({ rowDetails }: { rowDetails: ClickedRowDetails<PollList
     <div className="grid gap-4 p-4">
       <div className="grid gap-3">
         <InfoCard icon={FileText} label="Question" value={poll.question} />
-        <InfoCard icon={FileText} label="Description" value={poll.description ?? '—'} />
+        <InfoCard
+          icon={FileText}
+          label="Description"
+          value={poll.description ?? '—'}
+          preserveParagraphs
+        />
         <InfoCard icon={FileText} label="Status" value={poll.status} />
         <InfoCard icon={FileText} label="Total Votes" value={String(poll.totalVotes)} />
         <InfoCard

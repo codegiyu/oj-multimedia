@@ -38,7 +38,12 @@ function VendorDetails({ data }: { data: IMarketplaceVendor }) {
         <InfoCard icon={Store} label="Store Name" value={data.storeName} />
         <InfoCard icon={FileText} label="Name" value={data.name} />
         <InfoCard icon={FileText} label="Status" value={data.status} />
-        <InfoCard icon={FileText} label="Store Description" value={data.storeDescription ?? '—'} />
+        <InfoCard
+          icon={FileText}
+          label="Store Description"
+          value={data.storeDescription ?? '—'}
+          preserveParagraphs
+        />
         <InfoCard icon={FileText} label="WhatsApp" value={data.whatsapp ?? '—'} />
         <InfoCard icon={FileText} label="Address" value={data.address ?? '—'} />
         <InfoCard icon={FileText} label="Created" value={formatDate(data.createdAt)} />
@@ -56,7 +61,12 @@ function ProductDetails({ data }: { data: IMarketplaceProduct }) {
         <InfoCard icon={FileText} label="Vendor" value={data.vendorName ?? String(data.vendor)} />
         <InfoCard icon={FileText} label="Status" value={data.status} />
         <InfoCard icon={FileText} label="Price" value={formatPrice(data.price)} />
-        <InfoCard icon={FileText} label="Description" value={data.description ?? '—'} />
+        <InfoCard
+          icon={FileText}
+          label="Description"
+          value={data.description ?? '—'}
+          preserveParagraphs
+        />
         <InfoCard icon={FileText} label="In Stock" value={data.inStock ? 'Yes' : 'No'} />
         <InfoCard icon={FileText} label="Created" value={formatDate(data.createdAt)} />
         <InfoCard icon={Hash} label="ID" value={data._id} hasCopy copyValue={data._id} />

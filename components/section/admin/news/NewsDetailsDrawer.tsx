@@ -48,6 +48,7 @@ function DetailsReadOnly({
           icon={FileText}
           label="Content"
           value={n.content ?? '—'}
+          preserveParagraphs
           className="[&_.line-clamp-1]:line-clamp-none"
         />
         <InfoCard icon={FileText} label="Cover URL" value={n.coverImage ?? '—'} />

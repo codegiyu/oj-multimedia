@@ -11,6 +11,7 @@ import { AudioPlayer } from './AudioPlayer';
 import { DownloadButton } from './DownloadButton';
 import { MusicCard } from '@/components/cards/MusicCard';
 import { sendContentAnalyticsEvent } from '@/lib/services/contentAnalytics';
+import { MultilineText } from '@/components/general/MultilineText';
 
 interface MusicDetailPageClientProps {
   musicItem: MusicItemWithArtist;
@@ -164,9 +165,10 @@ export const MusicDetailPageClient = ({ musicItem, relatedSongs }: MusicDetailPa
               transition={{ duration: 0.5, delay: 0.2 }}
               className="mb-8">
               <h2 className="text-2xl font-display font-bold mb-4">About</h2>
-              <p className="text-base text-foreground leading-relaxed whitespace-pre-line">
-                {musicItem.description}
-              </p>
+              <MultilineText
+                text={musicItem.description}
+                paragraphClassName="text-base text-foreground leading-relaxed"
+              />
             </motion.div>
           )}
 
@@ -182,9 +184,10 @@ export const MusicDetailPageClient = ({ musicItem, relatedSongs }: MusicDetailPa
                 <h2 className="text-2xl font-display font-bold">Lyrics</h2>
               </div>
               <div className="bg-muted/50 rounded-xl p-6">
-                <p className="text-base text-foreground leading-relaxed whitespace-pre-line">
-                  {musicItem.lyrics}
-                </p>
+                <MultilineText
+                  text={musicItem.lyrics}
+                  paragraphClassName="text-base text-foreground leading-relaxed"
+                />
               </div>
             </motion.div>
           )}

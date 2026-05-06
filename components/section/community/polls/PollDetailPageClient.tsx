@@ -10,6 +10,7 @@ import { callApi } from '@/lib/services/callApi';
 import { getErrorMessage } from '@/lib/utils/general';
 import { mapToPoll } from '@/lib/utils/communityApiMappers';
 import type { PollItem } from '@/lib/constants/community/polls';
+import { MultilineText } from '@/components/general/MultilineText';
 
 interface PollDetailPageClientProps {
   poll: PollItem;
@@ -147,7 +148,11 @@ export const PollDetailPageClient = ({ poll }: PollDetailPageClientProps) => {
                   {poll.question}
                 </h1>
                 {poll.description && (
-                  <p className="text-lg text-muted-foreground mb-6">{poll.description}</p>
+                  <MultilineText
+                    text={poll.description}
+                    className="mb-6"
+                    paragraphClassName="text-lg text-muted-foreground"
+                  />
                 )}
                 <div className="flex items-center gap-4 text-sm text-muted-foreground">
                   {poll.date && (

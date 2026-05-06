@@ -8,6 +8,7 @@ import Link from 'next/link';
 import type { MarketplaceProduct } from '@/lib/utils/marketplace';
 import { formatPrice } from '@/lib/utils/marketplace';
 import { useCartStore } from '@/lib/store/cartStore';
+import { MultilineText } from '@/components/general/MultilineText';
 import {
   getProductCategoryName,
   getProductCategorySlug,
@@ -176,9 +177,11 @@ function ProductDetailContent({ product }: ProductDetailContentProps) {
                 <p className="text-sm font-medium text-destructive mb-4">Out of stock</p>
               )}
               {product.description && (
-                <p className="text-muted-foreground mb-8 whitespace-pre-wrap">
-                  {product.description}
-                </p>
+                <MultilineText
+                  text={product.description}
+                  className="mb-8"
+                  paragraphClassName="text-muted-foreground"
+                />
               )}
 
               {variationOptions.length > 0 && (

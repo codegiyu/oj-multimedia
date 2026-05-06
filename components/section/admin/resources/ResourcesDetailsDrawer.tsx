@@ -43,7 +43,12 @@ function DetailsContent({
         <InfoCard icon={FileText} label="Title" value={resource.title} />
         <InfoCard icon={FileText} label="Type" value={resource.type} />
         <InfoCard icon={FileText} label="Status" value={status ?? '—'} />
-        <InfoCard icon={FileText} label="Description" value={resource.description ?? '—'} />
+        <InfoCard
+          icon={FileText}
+          label="Description"
+          value={resource.description ?? '—'}
+          preserveParagraphs
+        />
         <InfoCard icon={FileText} label="Category" value={resource.category ?? '—'} />
         <InfoCard icon={FileText} label="Downloads" value={String(resource.downloads ?? 0)} />
         <InfoCard icon={Hash} label="ID" value={resource._id} hasCopy copyValue={resource._id} />

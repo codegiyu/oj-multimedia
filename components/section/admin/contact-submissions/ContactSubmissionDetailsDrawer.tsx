@@ -61,6 +61,7 @@ function DetailsContent({
           icon={FileText}
           label="Message"
           value={submission.message}
+          preserveParagraphs
           className="[&_.line-clamp-1]:line-clamp-none"
         />
         <InfoCard

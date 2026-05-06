@@ -20,6 +20,7 @@ import { VideoPlayer } from './VideoPlayer';
 import { VideoDownloadButton } from './VideoDownloadButton';
 import { VideoCard } from '@/components/cards/VideoCard';
 import { sendContentAnalyticsEvent } from '@/lib/services/contentAnalytics';
+import { MultilineText } from '@/components/general/MultilineText';
 
 interface VideoDetailPageClientProps {
   videoItem: VideoItemWithCreator;
@@ -233,9 +234,10 @@ export const VideoDetailPageClient = ({ videoItem, relatedVideos }: VideoDetailP
               transition={{ duration: 0.5, delay: 0.2 }}
               className="mb-8">
               <h2 className="text-2xl font-display font-bold mb-4">About</h2>
-              <p className="text-base text-foreground leading-relaxed whitespace-pre-line">
-                {videoItem.description}
-              </p>
+              <MultilineText
+                text={videoItem.description}
+                paragraphClassName="text-base text-foreground leading-relaxed"
+              />
             </motion.div>
           )}
 
