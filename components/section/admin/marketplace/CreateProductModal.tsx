@@ -100,7 +100,7 @@ export function CreateProductModal({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-w-xl" showCloseButton={!loading}>
+      <DialogContent className="max-w-4xl" showCloseButton={!loading}>
         <DialogHeader>
           <DialogTitle>Create Product</DialogTitle>
           <DialogDescription>Add a new product</DialogDescription>
