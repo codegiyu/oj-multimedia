@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -16,7 +15,13 @@ import { RegularTextarea } from '@/components/atoms/RegularTextarea';
 import { RegularSelect } from '@/components/atoms/RegularSelect';
 import type { SelectOption } from '@/lib/types/general';
 import { callApi } from '@/lib/services/callApi';
+import { toast } from 'sonner';
 import { RESOURCE_TYPES } from '@/lib/types/community';
+import {
+  normalizeEnumValue,
+  normalizeOptionalText,
+  requireText,
+} from '@/lib/utils/adminFormValidation';
 
 interface CreateResourceModalProps {
   open: boolean;
@@ -38,6 +43,7 @@ const statusOptions: SelectOption[] = [
   { text: 'Published', value: 'published' },
   { text: 'Archived', value: 'archived' },
 ];
+const STATUS_VALUES = ['draft', 'published', 'archived'] as const;
 
 const typeOptions: SelectOption[] = RESOURCE_TYPES.map(t => ({ text: t, value: t }));
 
@@ -75,9 +81,9 @@ export function CreateResourceModal({
         setForm({
           title: r.title ?? '',
           description: r.description ?? '',
-          type: (r.type as (typeof RESOURCE_TYPES)[number]) ?? 'ebook',
+          type: normalizeEnumValue(r.type, RESOURCE_TYPES, 'ebook'),
           category: r.category ?? '',
-          status: (st as typeof form.status) ?? 'draft',
+          status: normalizeEnumValue(st, STATUS_VALUES, 'draft'),
         });
       } finally {
         if (!cancelled) setDetailLoading(false);
@@ -90,17 +96,20 @@ export function CreateResourceModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.title.trim()) return;
     setLoading(true);
     try {
+      const title = requireText(form.title, 'Title');
+      const description = form.description.trim();
+      const category = normalizeOptionalText(form.category);
+
       if (editId) {
         const res = await callApi('ADMIN_RESOURCE_UPDATE', {
           query: `/${editId}` as `/${string}`,
           payload: {
-            title: form.title.trim(),
-            description: form.description?.trim() ?? '',
+            title,
+            description,
             type: form.type,
-            category: form.category?.trim() || undefined,
+            category,
             status: form.status,
           },
         });
@@ -108,10 +117,10 @@ export function CreateResourceModal({
       } else {
         const { error } = await callApi('ADMIN_RESOURCE_CREATE', {
           payload: {
-            title: form.title.trim(),
-            description: form.description?.trim() ?? '',
+            title,
+            description,
             type: form.type,
-            category: form.category?.trim() || undefined,
+            category,
             status: form.status,
           },
         });
@@ -120,8 +129,10 @@ export function CreateResourceModal({
       setForm(defaultForm);
       onOpenChange(false);
       onSuccess();
+      toast.success(isEdit ? 'Resource updated.' : 'Resource created.');
     } catch (err) {
       console.error(isEdit ? 'Update resource failed:' : 'Create resource failed:', err);
+      toast.error(err instanceof Error ? err.message : 'Unable to save resource.');
     } finally {
       setLoading(false);
     }
@@ -155,13 +166,17 @@ export function CreateResourceModal({
             <RegularSelect
               label="Type"
               value={form.type}
-              onSelectChange={v => setForm(f => ({ ...f, type: v as typeof form.type }))}
+              onSelectChange={v =>
+                setForm(f => ({ ...f, type: normalizeEnumValue(v, RESOURCE_TYPES, 'ebook') }))
+              }
               options={typeOptions}
             />
             <RegularSelect
               label="Status"
               value={form.status}
-              onSelectChange={v => setForm(f => ({ ...f, status: v as typeof form.status }))}
+              onSelectChange={v =>
+                setForm(f => ({ ...f, status: normalizeEnumValue(v, STATUS_VALUES, 'draft') }))
+              }
               options={statusOptions}
             />
             <RegularInput
