@@ -50,10 +50,19 @@ export const SectionCard = ({
       onClick={onClick}>
       {children}
     </GhostBtn>
-  ) : (
-    <div className={cn(cardClasses, wrapClassName)} onClick={onClick}>
+  ) : onClick ? (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        cardClasses,
+        wrapClassName,
+        'bg-transparent border-0 p-0 cursor-pointer text-left w-full'
+      )}>
       {children}
-    </div>
+    </button>
+  ) : (
+    <div className={cn(cardClasses, wrapClassName)}>{children}</div>
   );
 
   // Wrap the entire card in motion.div if wrapKey is provided for animation re-triggering

@@ -102,7 +102,11 @@ export function AccountWishlistPageClient({
               )}>
               <div className="relative aspect-square bg-muted">
                 {imageUrl ? (
-                  <img src={imageUrl} alt="" className="h-full w-full object-cover" />
+                  <img
+                    src={imageUrl}
+                    alt={`${item.product.name} preview`}
+                    className="h-full w-full object-cover"
+                  />
                 ) : (
                   <div className="flex h-full items-center justify-center text-muted-foreground">
                     <Heart className="h-10 w-10" />
