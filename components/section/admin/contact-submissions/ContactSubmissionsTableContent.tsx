@@ -99,6 +99,7 @@ export function ContactSubmissionsTableContent({
       columns={columns}
       loading={loading}
       onRefresh={onRefresh}
+      showRefreshButton={false}
       emptyStateWord="contact submissions"
       pagination={{
         currentPage: page,

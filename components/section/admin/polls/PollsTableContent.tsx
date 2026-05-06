@@ -111,6 +111,7 @@ export function PollsTableContent({
       columns={columns}
       loading={loading}
       onRefresh={onRefresh}
+      showRefreshButton={false}
       emptyStateWord="polls"
       pagination={{
         currentPage: page,

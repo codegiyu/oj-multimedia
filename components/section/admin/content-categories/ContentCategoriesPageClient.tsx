@@ -139,6 +139,7 @@ export function ContentCategoriesPageClient({
     <AdminDashboardListLayout
       title={pageTitle}
       description={pageDescription}
+      onRefresh={handleRefresh}
       pageHeaderActions={<RegularBtn LeftIcon={Plus} text="New category" onClick={openCreate} />}
       listError={listError}
       filterableDataPageProps={{

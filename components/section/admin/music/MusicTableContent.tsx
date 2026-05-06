@@ -135,6 +135,7 @@ export function MusicTableContent({
       columns={columns}
       loading={loading}
       onRefresh={onRefresh}
+      showRefreshButton={false}
       emptyStateWord="music tracks"
       pagination={{
         currentPage: page,

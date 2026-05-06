@@ -58,6 +58,7 @@ export interface DataTableProps<TData> {
   emptyStateWord?: string;
   loading?: boolean;
   onRefresh?: () => void;
+  showRefreshButton?: boolean;
   headerActions?: ReactNode;
   onRowClick?: (row: TData, index: number) => void;
   pagination?: {
@@ -88,6 +89,7 @@ export function DataTable<TData>({
   emptyStateWord = 'records',
   loading = false,
   onRefresh,
+  showRefreshButton = true,
   headerActions,
   onRowClick,
   pagination,
@@ -100,10 +102,14 @@ export function DataTable<TData>({
     <Card
       className={cn(
         'w-full h-full bg-sidebar/75 border-0 pb-2 overflow-hidden',
-        `grid ${(tabs && tabs.length > 0) || title || description || onRefresh || headerActions ? 'grid-rows-[auto_1fr]' : ''}`,
+        `grid ${(tabs && tabs.length > 0) || title || description || (onRefresh && showRefreshButton) || headerActions ? 'grid-rows-[auto_1fr]' : ''}`,
         className
       )}>
-      {(tabs && tabs.length > 0) || title || description || onRefresh || headerActions ? (
+      {(tabs && tabs.length > 0) ||
+      title ||
+      description ||
+      (onRefresh && showRefreshButton) ||
+      headerActions ? (
         <CardHeader className="px-3">
           {tabs && tabs.length > 0 ? (
             <div className="flex items-center justify-between gap-4">
@@ -120,7 +126,7 @@ export function DataTable<TData>({
               </Tabs>
               <div className="flex items-center gap-2">
                 {headerActions}
-                {onRefresh && (
+                {onRefresh && showRefreshButton && (
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <div>
@@ -147,7 +153,7 @@ export function DataTable<TData>({
               </div>
               <div className="flex items-center gap-2">
                 {headerActions}
-                {onRefresh && (
+                {onRefresh && showRefreshButton && (
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <div>

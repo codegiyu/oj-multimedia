@@ -90,6 +90,7 @@ export function NewsTableContent({
       columns={columns}
       loading={loading}
       onRefresh={onRefresh}
+      showRefreshButton={false}
       emptyStateWord="news articles"
       pagination={{
         currentPage: page,

@@ -85,6 +85,7 @@ export function DocumentsTableContent({
       columns={columns}
       loading={loading}
       onRefresh={onRefresh}
+      showRefreshButton={false}
       emptyStateWord="documents"
       pagination={{
         currentPage: page,

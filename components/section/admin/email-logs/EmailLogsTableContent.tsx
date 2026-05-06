@@ -165,6 +165,7 @@ export function EmailLogsTableContent({
       columns={columns}
       loading={false}
       onRefresh={onRefresh}
+      showRefreshButton={false}
       emptyStateWord="email logs"
       pagination={{
         currentPage: page,

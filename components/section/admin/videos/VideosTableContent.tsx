@@ -117,6 +117,7 @@ export function VideosTableContent({
       columns={columns}
       loading={loading}
       onRefresh={onRefresh}
+      showRefreshButton={false}
       emptyStateWord="videos"
       pagination={{
         currentPage: page,
