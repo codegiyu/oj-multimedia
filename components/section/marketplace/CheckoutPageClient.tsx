@@ -92,7 +92,7 @@ export function CheckoutPageClient() {
         toast.error(message ?? 'Failed to place order. Please try again.');
         return;
       }
-      actions.clearCart();
+      actions.clearCartAfterOrder();
       const orderData = data as IMarketplacePlaceOrderRes | undefined;
 
       const links: string[] = [];

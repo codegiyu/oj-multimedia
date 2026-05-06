@@ -34,11 +34,13 @@ function itemsMatch(
 
 interface CartStore {
   items: CartItem[];
+  mutationSeq: number;
   actions: {
     addItem: (item: Omit<CartItem, 'quantity'> & { quantity?: number }) => void;
     removeItem: (productId: string, sku?: string) => void;
     updateQuantity: (productId: string, quantity: number, sku?: string) => void;
     clearCart: () => void;
+    clearCartAfterOrder: () => void;
     replaceItems: (items: CartItem[]) => void;
     syncFromBackend: (cart: ICartRes) => void;
     getTotal: () => number;
@@ -72,10 +74,13 @@ export const useInitCartStore = create<CartStore>()(
   persist(
     (set, get) => ({
       items: [],
+      mutationSeq: 0,
       actions: {
         addItem: item => {
           const qty = item.quantity ?? 1;
           const previousItems = get().items;
+          const opSeq = get().mutationSeq + 1;
+          set({ mutationSeq: opSeq });
 
           set(state => {
             const existing = state.items.find(i => itemsMatch(i, item));
@@ -100,15 +105,21 @@ export const useInitCartStore = create<CartStore>()(
           void (async () => {
             const res = await callApi('USER_CART_ADD', { payload });
             if (res.type !== 'success' || !res.data) {
-              set({ items: previousItems });
+              if (get().mutationSeq === opSeq) {
+                set({ items: previousItems });
+              }
               toast.error(res.message || 'Could not update your cart. Please try again.');
               return;
             }
-            get().actions.syncFromBackend(res.data);
+            if (get().mutationSeq === opSeq) {
+              get().actions.syncFromBackend(res.data);
+            }
           })();
         },
         removeItem: (productId, sku) => {
           const previousItems = get().items;
+          const opSeq = get().mutationSeq + 1;
+          set({ mutationSeq: opSeq });
 
           set(state => ({
             items: state.items.filter(i => !itemsMatch(i, { productId, sku })),
@@ -121,7 +132,9 @@ export const useInitCartStore = create<CartStore>()(
           void (async () => {
             const res = await callApi('USER_CART_REMOVE', { query: suffix as `/${string}` });
             if (res.type !== 'success') {
-              set({ items: previousItems });
+              if (get().mutationSeq === opSeq) {
+                set({ items: previousItems });
+              }
               toast.error(res.message || 'Could not remove item from cart.');
             }
           })();
@@ -132,6 +145,8 @@ export const useInitCartStore = create<CartStore>()(
             return;
           }
           const previousItems = get().items;
+          const opSeq = get().mutationSeq + 1;
+          set({ mutationSeq: opSeq });
 
           set(state => ({
             items: state.items.map(i =>
@@ -150,15 +165,21 @@ export const useInitCartStore = create<CartStore>()(
           void (async () => {
             const res = await callApi('USER_CART_UPDATE', { payload });
             if (res.type !== 'success' || !res.data) {
-              set({ items: previousItems });
+              if (get().mutationSeq === opSeq) {
+                set({ items: previousItems });
+              }
               toast.error(res.message || 'Could not update cart quantity.');
               return;
             }
-            get().actions.syncFromBackend(res.data);
+            if (get().mutationSeq === opSeq) {
+              get().actions.syncFromBackend(res.data);
+            }
           })();
         },
         clearCart: () => {
           const previousItems = get().items;
+          const opSeq = get().mutationSeq + 1;
+          set({ mutationSeq: opSeq });
           set({ items: [] });
 
           if (!shouldSyncWithBackend()) return;
@@ -166,8 +187,30 @@ export const useInitCartStore = create<CartStore>()(
           void (async () => {
             const res = await callApi('USER_CART_CLEAR', {});
             if (res.type !== 'success') {
-              set({ items: previousItems });
+              if (get().mutationSeq === opSeq) {
+                set({ items: previousItems });
+              }
               toast.error(res.message || 'Could not clear your cart.');
+            }
+          })();
+        },
+        clearCartAfterOrder: () => {
+          const opSeq = get().mutationSeq + 1;
+          set({ mutationSeq: opSeq });
+          set({ items: [] });
+
+          if (!shouldSyncWithBackend()) return;
+
+          void (async () => {
+            const res = await callApi('USER_CART_CLEAR', {});
+            if (res.type !== 'success') {
+              // After an order is placed we intentionally avoid restoring stale cart items.
+              toast.warning(res.message || 'Order placed, but we could not fully clear your cart.');
+            } else {
+              const d = res.data as unknown;
+              if (get().mutationSeq === opSeq && d && typeof d === 'object' && 'items' in d) {
+                get().actions.syncFromBackend(d as ICartRes);
+              }
             }
           })();
         },

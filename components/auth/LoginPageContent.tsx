@@ -3,6 +3,7 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useGoogleLogin } from '@/lib/hooks/use-google-login';
 import { base64UrlDecode } from '@/lib/services/storage';
+import { sanitizeInternalRedirect } from '@/lib/utils/redirect';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { GoogleIcon } from './GoogleIcon';
@@ -11,7 +12,7 @@ const DEFAULT_REDIRECT = '/account';
 function getRedirectDestination(redirectTo: string): string {
   if (!redirectTo) return DEFAULT_REDIRECT;
   try {
-    return base64UrlDecode(redirectTo);
+    return sanitizeInternalRedirect(base64UrlDecode(redirectTo), DEFAULT_REDIRECT);
   } catch {
     return DEFAULT_REDIRECT;
   }
