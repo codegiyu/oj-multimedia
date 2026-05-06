@@ -19,6 +19,29 @@ type UpstreamAuthHeaders = {
   cookie?: string;
   authorization?: string;
 };
+const TOKEN_COOKIE_KEYS = ['token', 'accessToken', 'authToken', 'jwt', 'authorization'] as const;
+
+function ensureBearerAuthorization(value: string | undefined): string | undefined {
+  if (!value) return undefined;
+  const token = value.replace(/^Bearer\s+/i, '').trim();
+  return token ? `Bearer ${token}` : undefined;
+}
+
+function readTokenFromCookieHeader(cookieHeader: string | undefined): string | undefined {
+  if (!cookieHeader) return undefined;
+
+  for (const pair of cookieHeader.split(';')) {
+    const [rawName, ...rest] = pair.trim().split('=');
+    if (!rawName || rest.length === 0) continue;
+
+    if (TOKEN_COOKIE_KEYS.includes(rawName as (typeof TOKEN_COOKIE_KEYS)[number])) {
+      const token = decodeURIComponent(rest.join('=')).trim();
+      if (token) return token;
+    }
+  }
+
+  return undefined;
+}
 
 /**
  * Headers to forward to the upstream API so it can resolve auth the same way as Fastify:
@@ -26,7 +49,7 @@ type UpstreamAuthHeaders = {
  * Prefer the raw `Cookie` header (what the browser sent to Next), then `cookies().getAll()`.
  */
 async function getUpstreamAuthHeaders(headerList: Headers): Promise<UpstreamAuthHeaders> {
-  const authorization = headerList.get('authorization')?.trim() || undefined;
+  const upstreamAuthorization = headerList.get('authorization')?.trim() || undefined;
 
   let cookie = headerList.get('cookie')?.trim() || undefined;
   if (!cookie) {
@@ -38,6 +61,9 @@ async function getUpstreamAuthHeaders(headerList: Headers): Promise<UpstreamAuth
         .join('; ')
         .trim() || undefined;
   }
+
+  const cookieToken = readTokenFromCookieHeader(cookie);
+  const authorization = ensureBearerAuthorization(upstreamAuthorization || cookieToken);
 
   const out: UpstreamAuthHeaders = {};
   if (cookie) out.cookie = cookie;
