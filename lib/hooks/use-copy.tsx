@@ -73,7 +73,6 @@ export function useCopy(options: UseCopyOptions): UseCopyReturn {
     const textToCopy = text || (typeof window !== 'undefined' ? window.location.href : '');
 
     if (!textToCopy) {
-      console.warn('No text provided to copy');
       return;
     }
 
@@ -104,7 +103,6 @@ export function useCopy(options: UseCopyOptions): UseCopyReturn {
     } catch (error) {
       // User cancelled share or error occurred
       if (error instanceof Error && error.name !== 'AbortError') {
-        console.error('Failed to copy:', error);
         // Try fallback to clipboard if share failed
         try {
           await navigator.clipboard.writeText(textToCopy);
@@ -114,8 +112,7 @@ export function useCopy(options: UseCopyOptions): UseCopyReturn {
             variant: 'success',
           });
           setIsCopied(true);
-        } catch (clipboardError) {
-          console.error('Clipboard fallback failed:', clipboardError);
+        } catch {
         }
       }
     }
@@ -159,7 +156,6 @@ export function useCopy(options: UseCopyOptions): UseCopyReturn {
       }
     } catch (error) {
       if (error instanceof Error && error.name !== 'AbortError') {
-        console.error('Failed to copy:', error);
         try {
           await navigator.clipboard.writeText(overrideText);
           toast({
@@ -168,8 +164,7 @@ export function useCopy(options: UseCopyOptions): UseCopyReturn {
             variant: 'success',
           });
           setIsCopied(true);
-        } catch (clipboardError) {
-          console.error('Clipboard fallback failed:', clipboardError);
+        } catch {
         }
       }
     }

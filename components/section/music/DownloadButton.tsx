@@ -49,8 +49,7 @@ export const DownloadButton = ({ musicItem }: DownloadButtonProps) => {
 
       setIsDownloaded(true);
       setTimeout(() => setIsDownloaded(false), 3000);
-    } catch (error) {
-      console.error('Download failed:', error);
+    } catch {
     } finally {
       setIsDownloading(false);
     }

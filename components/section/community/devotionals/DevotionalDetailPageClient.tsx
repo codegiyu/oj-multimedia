@@ -44,9 +44,8 @@ export const DevotionalDetailPageClient = ({
           variant: 'success',
         });
       }
-    } catch (error) {
+    } catch {
       // User cancelled share
-      console.error(error);
     }
   };
 

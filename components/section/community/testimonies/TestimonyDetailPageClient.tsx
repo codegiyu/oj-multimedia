@@ -46,9 +46,8 @@ export const TestimonyDetailPageClient = ({
           variant: 'success',
         });
       }
-    } catch (error) {
+    } catch {
       // User cancelled share
-      console.error(error);
     }
   };
 

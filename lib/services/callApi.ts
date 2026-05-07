@@ -105,7 +105,6 @@ export const callApi = async <T extends keyof AllEndpoints>(
     let apiError: ApiErrorResponse | undefined;
 
     if (axios.isCancel(error)) {
-      console.info('Request cancelled', error.message);
       apiError = {
         message: error.message || 'Request cancelled',
         error: {},
@@ -116,7 +115,6 @@ export const callApi = async <T extends keyof AllEndpoints>(
 
     if (axios.isAxiosError(error) && error.response) {
       await syncClientAuthTokensFromHeaders(error.response.headers);
-      console.log({ errRes: error.response.data });
       apiError = error.response.data as ApiErrorResponse;
 
       if (error.response.status === 401) {
@@ -124,9 +122,8 @@ export const callApi = async <T extends keyof AllEndpoints>(
         try {
           useInitAuthStore.getState().actions.clearSession();
           clearClientAuthTokens();
-        } catch (e) {
+        } catch {
           // Auth store not available, continue
-          console.error('Auth store not available', e);
         }
 
         const redirectQueryValue = getQueryParam('redirectTo');
@@ -142,19 +139,7 @@ export const callApi = async <T extends keyof AllEndpoints>(
       }
       if (error.response.status === 429) {
         // Rate limit exceeded - could be handled by a modal/store
-        console.warn('Rate limit exceeded');
       }
-      if (error.response.status === 403) {
-        console.error({ _403Err: error.message });
-      }
-      if (error.response.status === 500) {
-        const errMessage = error.response.data.message;
-        console.error({ err: errMessage });
-      }
-      if (error.response.status == null) {
-        console.log('null status');
-      }
-
       apiError = error.response.data;
     } else if (error instanceof Error) {
       apiError = {

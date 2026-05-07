@@ -60,7 +60,7 @@ const storageService = (type: 'session' | 'local') => {
       return shouldBeParsed ? JSON.parse(item) : item;
     } catch (error) {
       remove(name);
-      console.error({ error });
+      void error;
       return null;
     }
   };

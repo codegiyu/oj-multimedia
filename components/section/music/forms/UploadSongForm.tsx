@@ -143,15 +143,7 @@ export const UploadSongForm = () => {
     setIsSubmitting(true);
     try {
       // TODO: Implement actual upload logic
-      const data = {
-        ...result.data,
-        downloadPrice: result?.data?.downloadPrice
-          ? parseFloat(result.data.downloadPrice)
-          : undefined,
-      };
-      console.log('Form data:', data);
-      console.log('Cover file:', coverFile);
-      console.log('Audio file:', audioFile);
+      void result.data;
 
       // Simulate upload
       await new Promise(resolve => setTimeout(resolve, 2000));
@@ -159,8 +151,7 @@ export const UploadSongForm = () => {
       alert('Song uploaded successfully!');
       // Reset form
       window.location.reload();
-    } catch (error) {
-      console.error('Upload failed:', error);
+    } catch {
       alert('Upload failed. Please try again.');
     } finally {
       setIsSubmitting(false);

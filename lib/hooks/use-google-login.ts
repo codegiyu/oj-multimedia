@@ -86,19 +86,18 @@ export function useGoogleLogin(options: UseGoogleLoginOptions = {}) {
               toast.error(result.error || 'Login failed');
             }
           } catch (error) {
-            console.error('Login error:', error);
             toast.error('An error occurred during login');
           }
         },
         error_callback: (error: unknown) => {
-          console.error('Google OAuth error:', error);
+          void error;
           toast.error('Google sign-in was cancelled or failed');
         },
       });
 
       client.requestCode();
     } catch (error) {
-      console.error('Error initializing Google OAuth:', error);
+      void error;
       toast.error('Failed to initialize Google Sign-In');
     }
   }, [isGoogleScriptLoaded, actions, onSuccess]);

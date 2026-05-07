@@ -47,10 +47,9 @@ export function UserMenu() {
     setIsOpen(false);
     try {
       await actions.logout();
-    } catch (error) {
+    } catch {
       // If logout fails, still clear session locally
       actions.clearSession();
-      console.error('Logout failed:', error);
       router.push('/');
     }
   };
@@ -180,10 +179,9 @@ export function UserMobileMenu({ onMenuClose }: { onMenuClose: () => void }) {
     onMenuClose();
     try {
       await actions.logout();
-    } catch (error) {
+    } catch {
       // If logout fails, still clear session locally
       actions.clearSession();
-      console.error('Logout failed:', error);
       router.push('/');
     }
   };

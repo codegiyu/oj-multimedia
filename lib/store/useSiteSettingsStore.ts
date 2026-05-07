@@ -65,13 +65,11 @@ export const useInitSiteSettingsStore = create<SiteSettingsStore>()((set, get) =
 
       // Return early if cache is valid and slice is already loaded
       if (!force && isCacheValid(lastFetched) && loadedSlices.has(slice)) {
-        console.log('cache is valid and slice is already loaded', slice);
         return;
       }
 
       // Prevent duplicate requests
       if (isLoading) {
-        console.log('is loading, returning');
         return;
       }
 
@@ -82,20 +80,12 @@ export const useInitSiteSettingsStore = create<SiteSettingsStore>()((set, get) =
           query: `/${slice}`,
         });
 
-        console.log('data', data);
-        console.log('error', error);
-
         if (error || !data) {
           const errorMessage = error?.message || 'Failed to fetch site settings';
           console.error('Failed to fetch site settings:', errorMessage);
           set({ fetchError: errorMessage });
           return;
         }
-
-        console.log('settings', settings);
-        console.log({
-          newSettings: { ...settings, ...(slice === 'all' ? data : { [slice]: data }) },
-        });
 
         set(state => ({
           settings: {

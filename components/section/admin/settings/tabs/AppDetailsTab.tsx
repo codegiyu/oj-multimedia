@@ -90,7 +90,6 @@ export const AppDetailsTab = ({ settings }: AppDetailsTabProps) => {
 
   // Update form when settings change
   useEffect(() => {
-    console.log('settings', settings);
     if (settings.appDetails) {
       setFormValues({
         appName: settings.appDetails.appName || '',

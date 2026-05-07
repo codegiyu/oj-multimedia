@@ -365,10 +365,6 @@ export const getDataFromRequest = <T extends keyof AllEndpoints>(
 ): ResponseMessage<T> => {
   if (!response.data) {
     const errorMessage = response.error?.message ?? '';
-    if (errorMessage) {
-      console.error({ error: errorMessage });
-    }
-
     return {
       message: errorMessage,
       type: 'error',
