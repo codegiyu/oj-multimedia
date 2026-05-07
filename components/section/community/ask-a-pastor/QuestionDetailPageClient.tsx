@@ -10,6 +10,8 @@ import type { QuestionItem } from '@/lib/constants/community/questions';
 import { getPastorById } from '@/lib/utils/community/pastors';
 import { ShareButton } from '@/lib/hooks/use-copy';
 import { MultilineText } from '@/components/general/MultilineText';
+import { LoginModal } from '@/components/auth/LoginModal';
+import { useAuthStore } from '@/lib/store/useAuthStore';
 
 interface QuestionDetailPageClientProps {
   question: QuestionItem;
@@ -20,10 +22,17 @@ export const QuestionDetailPageClient = ({
   question,
   relatedQuestions,
 }: QuestionDetailPageClientProps) => {
+  const user = useAuthStore(state => state.user);
   const [helpful, setHelpful] = useState(question.helpful || 0);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const pastor = question.pastor_id ? getPastorById(question.pastor_id) : null;
 
   const handleHelpful = () => {
+    if (!user) {
+      setIsLoginModalOpen(true);
+      return;
+    }
+
     setHelpful(prev => prev + 1);
     toast({
       title: 'Thank you!',
@@ -188,6 +197,7 @@ export const QuestionDetailPageClient = ({
           </div>
         </section>
       )}
+      <LoginModal open={isLoginModalOpen} onOpenChange={setIsLoginModalOpen} />
     </article>
   );
 };
