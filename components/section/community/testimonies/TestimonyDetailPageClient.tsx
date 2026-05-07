@@ -9,6 +9,8 @@ import { useState } from 'react';
 import { toast } from '@/components/atoms/Toast';
 import type { TestimonyItem } from '@/lib/constants/community/testimonies';
 import { MultilineText } from '@/components/general/MultilineText';
+import { LoginModal } from '@/components/auth/LoginModal';
+import { useAuthStore } from '@/lib/store/useAuthStore';
 
 interface TestimonyDetailPageClientProps {
   testimony: TestimonyItem;
@@ -19,7 +21,9 @@ export const TestimonyDetailPageClient = ({
   testimony,
   relatedTestimonies,
 }: TestimonyDetailPageClientProps) => {
+  const user = useAuthStore(state => state.user);
   const [likes, setLikes] = useState(testimony.likes);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   const handleShare = async () => {
     try {
@@ -49,6 +53,11 @@ export const TestimonyDetailPageClient = ({
   };
 
   const handleLike = () => {
+    if (!user) {
+      setIsLoginModalOpen(true);
+      return;
+    }
+
     setLikes(prev => prev + 1);
     toast({
       title: 'Liked!',
@@ -178,6 +187,7 @@ export const TestimonyDetailPageClient = ({
           </div>
         </section>
       )}
+      <LoginModal open={isLoginModalOpen} onOpenChange={setIsLoginModalOpen} />
     </article>
   );
 };

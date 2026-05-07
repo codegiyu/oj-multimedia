@@ -13,16 +13,25 @@ import { RegularSelect } from '@/components/atoms/RegularSelect';
 import { RegularTextarea } from '@/components/atoms/RegularTextarea';
 import { toast } from '@/components/atoms/Toast';
 import { TESTIMONY_CATEGORY_SELECT_OPTIONS } from '@/lib/constants/communityCategorySelectOptions';
+import { LoginModal } from '@/components/auth/LoginModal';
+import { useAuthStore } from '@/lib/store/useAuthStore';
 
 export const ShareTestimony = () => {
   const router = useRouter();
+  const user = useAuthStore(state => state.user);
   const [name, setName] = useState('');
   const [category, setCategory] = useState('');
   const [content, setContent] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!user) {
+      setIsLoginModalOpen(true);
+      return;
+    }
 
     if (!content.trim()) {
       toast({
@@ -153,6 +162,7 @@ export const ShareTestimony = () => {
           </Card>
         </motion.div>
       </div>
+      <LoginModal open={isLoginModalOpen} onOpenChange={setIsLoginModalOpen} />
     </section>
   );
 };

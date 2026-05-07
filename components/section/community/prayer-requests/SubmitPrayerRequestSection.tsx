@@ -13,11 +13,14 @@ import { RegularTextarea } from '@/components/atoms/RegularTextarea';
 import { Card, CardContent } from '@/components/ui/card';
 import { PRAYER_CATEGORY_SELECT_OPTIONS } from '@/lib/constants/communityCategorySelectOptions';
 import { toast } from '@/components/atoms/Toast';
+import { LoginModal } from '@/components/auth/LoginModal';
+import { useAuthStore } from '@/lib/store/useAuthStore';
 
 import { SectionComp } from '@/components/general/SectionComp';
 
 export const SubmitPrayerRequestSection = () => {
   const router = useRouter();
+  const user = useAuthStore(state => state.user);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [category, setCategory] = useState('');
@@ -25,9 +28,15 @@ export const SubmitPrayerRequestSection = () => {
   const [content, setContent] = useState('');
   const [urgent, setUrgent] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!user) {
+      setIsLoginModalOpen(true);
+      return;
+    }
 
     if (!title.trim() || !content.trim()) {
       toast({
@@ -212,6 +221,7 @@ export const SubmitPrayerRequestSection = () => {
           </div>
         </motion.div>
       </div>
+      <LoginModal open={isLoginModalOpen} onOpenChange={setIsLoginModalOpen} />
     </SectionComp>
   );
 };

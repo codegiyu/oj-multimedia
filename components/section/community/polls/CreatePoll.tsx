@@ -13,16 +13,20 @@ import { RegularSelect } from '@/components/atoms/RegularSelect';
 import { RegularTextarea } from '@/components/atoms/RegularTextarea';
 import { toast } from '@/components/atoms/Toast';
 import { POLL_CATEGORY_SELECT_OPTIONS } from '@/lib/constants/communityCategorySelectOptions';
+import { LoginModal } from '@/components/auth/LoginModal';
+import { useAuthStore } from '@/lib/store/useAuthStore';
 
 const POLL_CATEGORY_OPTIONS = POLL_CATEGORY_SELECT_OPTIONS;
 
 export const CreatePoll = () => {
   const router = useRouter();
+  const user = useAuthStore(state => state.user);
   const [question, setQuestion] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('');
   const [options, setOptions] = useState<string[]>(['', '']);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   const addOption = () => {
     if (options.length < 6) {
@@ -44,6 +48,11 @@ export const CreatePoll = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!user) {
+      setIsLoginModalOpen(true);
+      return;
+    }
 
     if (!question.trim()) {
       toast({
@@ -188,6 +197,7 @@ export const CreatePoll = () => {
           </Card>
         </motion.div>
       </div>
+      <LoginModal open={isLoginModalOpen} onOpenChange={setIsLoginModalOpen} />
     </section>
   );
 };

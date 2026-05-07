@@ -8,6 +8,8 @@ import { useState } from 'react';
 import { toast } from '@/components/atoms/Toast';
 import type { PrayerRequestItem } from '@/lib/constants/community/prayer-requests';
 import { MultilineText } from '@/components/general/MultilineText';
+import { LoginModal } from '@/components/auth/LoginModal';
+import { useAuthStore } from '@/lib/store/useAuthStore';
 
 interface PrayerRequestDetailPageClientProps {
   request: PrayerRequestItem;
@@ -18,7 +20,9 @@ export const PrayerRequestDetailPageClient = ({
   request,
   relatedRequests,
 }: PrayerRequestDetailPageClientProps) => {
+  const user = useAuthStore(state => state.user);
   const [prayers, setPrayers] = useState(request.prayers);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   const handleShare = async () => {
     try {
@@ -48,6 +52,11 @@ export const PrayerRequestDetailPageClient = ({
   };
 
   const handlePray = () => {
+    if (!user) {
+      setIsLoginModalOpen(true);
+      return;
+    }
+
     setPrayers(prev => prev + 1);
     toast({
       title: 'Praying!',
@@ -184,6 +193,7 @@ export const PrayerRequestDetailPageClient = ({
           </div>
         </section>
       )}
+      <LoginModal open={isLoginModalOpen} onOpenChange={setIsLoginModalOpen} />
     </article>
   );
 };

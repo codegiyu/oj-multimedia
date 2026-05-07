@@ -23,16 +23,25 @@ const QUESTION_CATEGORY_OPTIONS = [
 ];
 import { toast } from '@/components/atoms/Toast';
 import { SectionComp } from '@/components/general/SectionComp';
+import { LoginModal } from '@/components/auth/LoginModal';
+import { useAuthStore } from '@/lib/store/useAuthStore';
 
 export const SubmitQuestionSection = () => {
   const router = useRouter();
+  const user = useAuthStore(state => state.user);
   const [name, setName] = useState('');
   const [category, setCategory] = useState('');
   const [question, setQuestion] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!user) {
+      setIsLoginModalOpen(true);
+      return;
+    }
 
     if (!question.trim()) {
       toast({
@@ -178,6 +187,7 @@ export const SubmitQuestionSection = () => {
           </div>
         </motion.div>
       </div>
+      <LoginModal open={isLoginModalOpen} onOpenChange={setIsLoginModalOpen} />
     </SectionComp>
   );
 };

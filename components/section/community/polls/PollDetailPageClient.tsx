@@ -11,16 +11,20 @@ import { getErrorMessage } from '@/lib/utils/general';
 import { mapToPoll } from '@/lib/utils/communityApiMappers';
 import type { PollItem } from '@/lib/constants/community/polls';
 import { MultilineText } from '@/components/general/MultilineText';
+import { LoginModal } from '@/components/auth/LoginModal';
+import { useAuthStore } from '@/lib/store/useAuthStore';
 
 interface PollDetailPageClientProps {
   poll: PollItem;
 }
 
 export const PollDetailPageClient = ({ poll }: PollDetailPageClientProps) => {
+  const user = useAuthStore(state => state.user);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [hasVoted, setHasVoted] = useState(false);
   const [isVoting, setIsVoting] = useState(false);
   const [localPoll, setLocalPoll] = useState(poll);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   const handleShare = async () => {
     try {
@@ -58,6 +62,11 @@ export const PollDetailPageClient = ({ poll }: PollDetailPageClientProps) => {
           variant: 'error',
         });
       }
+      return;
+    }
+
+    if (!user) {
+      setIsLoginModalOpen(true);
       return;
     }
 
@@ -250,6 +259,7 @@ export const PollDetailPageClient = ({ poll }: PollDetailPageClientProps) => {
           </motion.div>
         </div>
       </section>
+      <LoginModal open={isLoginModalOpen} onOpenChange={setIsLoginModalOpen} />
     </article>
   );
 };
