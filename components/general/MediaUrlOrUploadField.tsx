@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
+import { Switch } from '@/components/ui/switch';
 import { RegularInput } from '@/components/atoms/RegularInput';
 import { useFileUpload } from '@/lib/hooks/use-file-upload';
 import type { EntityType, UploadIntent } from '@/lib/types/server-models';
@@ -230,15 +231,16 @@ export function MediaUrlOrUploadField({
             <p className="text-xs text-muted-foreground">Source</p>
             <p className="text-xs font-medium">{mode === 'upload' ? 'Upload file' : 'Use URL'}</p>
           </div>
-          <label className="inline-flex items-center gap-2 text-xs cursor-pointer">
-            <span className="text-muted-foreground">Use upload</span>
-            <input
-              type="checkbox"
-              className="h-4 w-4 accent-primary"
+          <div className="inline-flex items-center gap-2 text-xs">
+            <span id="media-source-upload-label" className="text-muted-foreground">
+              Use upload
+            </span>
+            <Switch
               checked={mode === 'upload'}
-              onChange={e => setMode(e.target.checked ? 'upload' : 'url')}
+              onCheckedChange={checked => setMode(checked ? 'upload' : 'url')}
+              aria-labelledby="media-source-upload-label"
             />
-          </label>
+          </div>
         </div>
       </div>
     </div>
