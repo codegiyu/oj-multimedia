@@ -200,7 +200,6 @@ export const callServerApi = async <T extends keyof AllEndpoints>(
   const headerList = await headers();
   const upstreamAuth = await getUpstreamAuthHeaders(headerList);
 
-  console.log('callServerApi upstreamAuth: ', upstreamAuth);
   if (
     !upstreamAuth.cookie &&
     !upstreamAuth.authorization &&

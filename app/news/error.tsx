@@ -1,18 +1,11 @@
 'use client';
 
-import { useEffect } from 'react';
-
 export default function NewsError({
-  error,
   reset,
 }: {
-  error: Error & { digest?: string };
+  error: Error;
   reset: () => void;
 }) {
-  useEffect(() => {
-    console.error(error);
-  }, [error]);
-
   return (
     <div className="container mx-auto px-4 py-16 md:py-20">
       <div className="mx-auto max-w-2xl rounded-lg border border-destructive/30 bg-destructive/5 p-6 text-center">

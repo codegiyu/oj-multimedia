@@ -35,12 +35,10 @@ export const MusicCardOptions = ({ musicItem }: MusicCardOptionsProps) => {
 
   const handleAddToPlaylist = () => {
     // TODO: Implement playlist functionality
-    console.log('Add to playlist:', musicItem._id);
   };
 
   const handleAddToFavorites = () => {
     // TODO: Implement favorites functionality
-    console.log('Add to favorites:', musicItem._id);
   };
 
   const handleDownload = () => {
@@ -60,7 +58,6 @@ export const MusicCardOptions = ({ musicItem }: MusicCardOptionsProps) => {
 
   const handleReport = () => {
     // TODO: Implement report functionality
-    console.log('Report:', musicItem._id);
   };
 
   return (

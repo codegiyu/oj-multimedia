@@ -170,22 +170,13 @@ export const SubmitBeatsForm = () => {
     setIsSubmitting(true);
     try {
       // TODO: Implement actual upload logic
-      const data = {
-        ...result.data,
-      };
-      console.log('Form data:', data);
-      console.log('Cover file:', coverFile);
-      console.log('Beat file:', beatFile);
-      console.log('Instrumental file:', instrumentalFile);
-
       // Simulate upload
       await new Promise(resolve => setTimeout(resolve, 2000));
 
       alert('Beat submitted successfully!');
       // Reset form
       window.location.reload();
-    } catch (error) {
-      console.error('Submission failed:', error);
+    } catch {
       alert('Submission failed. Please try again.');
     } finally {
       setIsSubmitting(false);

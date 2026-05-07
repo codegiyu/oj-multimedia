@@ -168,7 +168,6 @@ export const CommunityPageClient = ({
           {categories.map((category, index) => {
             const IconComponent = iconMap[category.icon];
             if (!IconComponent) {
-              console.warn(`Icon "${category.icon}" not found in iconMap`);
               return null;
             }
             return (

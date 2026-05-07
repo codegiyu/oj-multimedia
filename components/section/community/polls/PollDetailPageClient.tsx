@@ -47,9 +47,8 @@ export const PollDetailPageClient = ({ poll }: PollDetailPageClientProps) => {
           variant: 'success',
         });
       }
-    } catch (error) {
+    } catch {
       // User cancelled share
-      console.error(error);
     }
   };
 
