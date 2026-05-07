@@ -144,8 +144,11 @@ export function CreateDevotionalModal({
     };
   }, [open, editId]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (
+    e?: React.FormEvent<HTMLFormElement>,
+    createStatus: 'draft' | 'published' = 'draft'
+  ) => {
+    e?.preventDefault();
     if (!form.title.trim()) return;
     setLoading(true);
     try {
@@ -157,7 +160,7 @@ export function CreateDevotionalModal({
         author: form.author?.trim() || undefined,
         coverImage: form.coverImage?.trim() || undefined,
         type: form.type,
-        status: form.status,
+        status: isEdit ? form.status : createStatus,
       };
       if (editId && pendingCoverImage) {
         const upload = await coverUpload.uploadFile({ file: pendingCoverImage, entityId: editId });
@@ -230,7 +233,7 @@ export function CreateDevotionalModal({
         {detailLoading ? (
           <p className="text-sm text-muted-foreground py-4">Loading…</p>
         ) : (
-          <form onSubmit={handleSubmit} className="grid gap-4">
+          <form onSubmit={e => void handleSubmit(e)} className="grid gap-4">
             {!isEdit && (
               <AdminUserAccountPicker
                 value={form.ownerUserId}
@@ -251,12 +254,14 @@ export function CreateDevotionalModal({
               onSelectChange={v => setForm(f => ({ ...f, type: v as typeof form.type }))}
               options={typeOptions}
             />
-            <RegularSelect
-              label="Status"
-              value={form.status}
-              onSelectChange={v => setForm(f => ({ ...f, status: v as typeof form.status }))}
-              options={[...PUBLISHABLE_STATUS_SELECT_OPTIONS] as SelectOption[]}
-            />
+            {isEdit ? (
+              <RegularSelect
+                label="Status"
+                value={form.status}
+                onSelectChange={v => setForm(f => ({ ...f, status: v as typeof form.status }))}
+                options={[...PUBLISHABLE_STATUS_SELECT_OPTIONS] as SelectOption[]}
+              />
+            ) : null}
             <RegularInput
               label="Author"
               value={form.author}
@@ -329,12 +334,31 @@ export function CreateDevotionalModal({
                 onClick={() => handleOpenChange(false)}
                 disabled={loading}
               />
-              <RegularBtn
-                type="submit"
-                text={isEdit ? 'Save' : 'Create'}
-                loading={loading}
-                disabled={!form.title.trim()}
-              />
+              {isEdit ? (
+                <RegularBtn
+                  type="submit"
+                  text="Save"
+                  loading={loading}
+                  disabled={!form.title.trim()}
+                />
+              ) : (
+                <>
+                  <RegularBtn
+                    type="button"
+                    text="Create as draft"
+                    loading={loading}
+                    onClick={() => void handleSubmit(undefined, 'draft')}
+                    disabled={!form.title.trim() || loading}
+                  />
+                  <RegularBtn
+                    type="button"
+                    text="Create & publish"
+                    loading={loading}
+                    onClick={() => void handleSubmit(undefined, 'published')}
+                    disabled={!form.title.trim() || loading}
+                  />
+                </>
+              )}
             </DialogFooter>
           </form>
         )}
