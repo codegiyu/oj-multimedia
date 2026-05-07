@@ -2,45 +2,19 @@ import axios, { type AxiosRequestConfig, type AxiosResponse } from 'axios';
 import type { ApiErrorResponse, ApiSuccessResponse, ResponseMessage } from '../types/http';
 import { getDataFromRequest, getQueryParam } from '../utils/general';
 import { base64UrlEncode } from './storage';
-import { type AllEndpoints, ENDPOINTS } from '../constants/endpoints';
+import { AUTH_TOKEN_HEADERS, type AllEndpoints, ENDPOINTS } from '../constants/endpoints';
 import { getRouter } from '../utils/navigation';
 import { useInitAuthStore } from '../store/useAuthStore';
+import {
+  clearClientAuthTokens,
+  getClientAuthTokens,
+  syncClientAuthTokensFromHeaders,
+} from './clientAuthTokens';
 
 // Base URL for API routes - using relative path since we're using Next.js API routes
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://api.ojmultimedia.com';
-const TOKEN_COOKIE_KEYS = [
-  'oj-acc-token',
-  'token',
-  'accessToken',
-  'authToken',
-  'jwt',
-  'authorization',
-] as const;
-
-function readTokenFromCookieHeader(cookieHeader: string): string | undefined {
-  for (const pair of cookieHeader.split(';')) {
-    const [rawName, ...rest] = pair.trim().split('=');
-    if (!rawName || rest.length === 0) continue;
-
-    if (TOKEN_COOKIE_KEYS.includes(rawName as (typeof TOKEN_COOKIE_KEYS)[number])) {
-      return decodeURIComponent(rest.join('=')).trim();
-    }
-  }
-
-  return undefined;
-}
-
-function resolveClientAuthToken(): string | undefined {
-  if (typeof window === 'undefined') return undefined;
-
-  const existingAuthHeader = api.defaults.headers.common.Authorization;
-  if (typeof existingAuthHeader === 'string' && existingAuthHeader.trim()) {
-    return existingAuthHeader.replace(/^Bearer\s+/i, '').trim();
-  }
-
-  const cookieToken = readTokenFromCookieHeader(document.cookie);
-  return cookieToken && cookieToken.trim() ? cookieToken.trim() : undefined;
-}
+const ACCESS_HEADER = AUTH_TOKEN_HEADERS.access;
+const REFRESH_HEADER = AUTH_TOKEN_HEADERS.refresh;
 
 export const api = axios.create({
   baseURL: BASE_URL,
@@ -91,20 +65,19 @@ export const callApi = async <T extends keyof AllEndpoints>(
       headers: {},
     };
 
-    const authToken = resolveClientAuthToken();
-    console.log('authToken', authToken);
-    if (authToken) {
-      requestConfig.headers = {
-        ...(requestConfig.headers ?? {}),
-        Authorization: `Bearer ${authToken}`,
-      };
-    }
+    const tokens = getClientAuthTokens();
+    requestConfig.headers = {
+      ...(requestConfig.headers ?? {}),
+      [ACCESS_HEADER]: tokens.access,
+      [REFRESH_HEADER]: tokens.refresh,
+    };
 
     if (options.payload) {
       requestConfig.data = options.payload;
     }
 
     const response: AxiosResponse<unknown> = await api.request(requestConfig);
+    await syncClientAuthTokensFromHeaders(response.headers);
 
     const normalized = normalizeAxiosSuccessBody(response.data) as ApiSuccessResponse<T>;
 
@@ -142,6 +115,7 @@ export const callApi = async <T extends keyof AllEndpoints>(
     }
 
     if (axios.isAxiosError(error) && error.response) {
+      await syncClientAuthTokensFromHeaders(error.response.headers);
       console.log({ errRes: error.response.data });
       apiError = error.response.data as ApiErrorResponse;
 
@@ -149,6 +123,7 @@ export const callApi = async <T extends keyof AllEndpoints>(
         // Clear session on 401
         try {
           useInitAuthStore.getState().actions.clearSession();
+          clearClientAuthTokens();
         } catch (e) {
           // Auth store not available, continue
           console.error('Auth store not available', e);

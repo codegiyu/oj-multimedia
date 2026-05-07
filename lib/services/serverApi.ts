@@ -3,7 +3,12 @@ import { connection } from 'next/server';
 import { cookies, headers } from 'next/headers';
 import type { ApiErrorResponse, CallApiResponse, ResponseMessage } from '../types/http';
 import { getDataFromRequest } from '../utils/general';
-import { ENDPOINTS, type AllEndpoints } from '../constants/endpoints';
+import {
+  AUTH_CLIENT_COOKIES,
+  AUTH_TOKEN_HEADERS,
+  ENDPOINTS,
+  type AllEndpoints,
+} from '../constants/endpoints';
 
 const SERVER_BASE_URL =
   process.env.NEXT_SERVER_BASE_URL ||
@@ -17,16 +22,14 @@ type ServerFetchMode = 'public-cacheable' | 'private-auth';
 
 type UpstreamAuthHeaders = {
   cookie?: string;
+  accessHeader?: string;
+  refreshHeader?: string;
   authorization?: string;
 };
-const TOKEN_COOKIE_KEYS = [
-  'oj-acc-token',
-  'token',
-  'accessToken',
-  'authToken',
-  'jwt',
-  'authorization',
-] as const;
+const ACCESS_HEADER = AUTH_TOKEN_HEADERS.access;
+const REFRESH_HEADER = AUTH_TOKEN_HEADERS.refresh;
+const ACCESS_CLIENT_COOKIE = AUTH_CLIENT_COOKIES.access;
+const REFRESH_CLIENT_COOKIE = AUTH_CLIENT_COOKIES.refresh;
 
 function ensureBearerAuthorization(value: string | undefined): string | undefined {
   if (!value) return undefined;
@@ -34,14 +37,14 @@ function ensureBearerAuthorization(value: string | undefined): string | undefine
   return token ? `Bearer ${token}` : undefined;
 }
 
-function readTokenFromCookieHeader(cookieHeader: string | undefined): string | undefined {
+function readCookieValue(cookieHeader: string | undefined, name: string): string | undefined {
   if (!cookieHeader) return undefined;
 
   for (const pair of cookieHeader.split(';')) {
     const [rawName, ...rest] = pair.trim().split('=');
     if (!rawName || rest.length === 0) continue;
 
-    if (TOKEN_COOKIE_KEYS.includes(rawName as (typeof TOKEN_COOKIE_KEYS)[number])) {
+    if (rawName === name) {
       const token = decodeURIComponent(rest.join('=')).trim();
       if (token) return token;
     }
@@ -57,6 +60,8 @@ function readTokenFromCookieHeader(cookieHeader: string | undefined): string | u
  */
 async function getUpstreamAuthHeaders(headerList: Headers): Promise<UpstreamAuthHeaders> {
   const upstreamAuthorization = headerList.get('authorization')?.trim() || undefined;
+  const upstreamAccessHeader = headerList.get(ACCESS_HEADER)?.trim() || undefined;
+  const upstreamRefreshHeader = headerList.get(REFRESH_HEADER)?.trim() || undefined;
 
   let cookie = headerList.get('cookie')?.trim() || undefined;
   if (!cookie) {
@@ -69,11 +74,18 @@ async function getUpstreamAuthHeaders(headerList: Headers): Promise<UpstreamAuth
         .trim() || undefined;
   }
 
-  const cookieToken = readTokenFromCookieHeader(cookie);
-  const authorization = ensureBearerAuthorization(upstreamAuthorization || cookieToken);
+  const cookieAccess =
+    readCookieValue(cookie, ACCESS_CLIENT_COOKIE) ?? readCookieValue(cookie, ACCESS_HEADER);
+  const cookieRefresh =
+    readCookieValue(cookie, REFRESH_CLIENT_COOKIE) ?? readCookieValue(cookie, REFRESH_HEADER);
+  const accessHeader = upstreamAccessHeader || cookieAccess || '';
+  const refreshHeader = upstreamRefreshHeader || cookieRefresh || '';
+  const authorization = ensureBearerAuthorization(upstreamAuthorization || accessHeader);
 
   const out: UpstreamAuthHeaders = {};
   if (cookie) out.cookie = cookie;
+  if (accessHeader) out.accessHeader = accessHeader;
+  if (refreshHeader) out.refreshHeader = refreshHeader;
   if (authorization) out.authorization = authorization;
   return out;
 }
@@ -111,6 +123,8 @@ async function runServerFetch<T extends keyof AllEndpoints>(
       headers: {
         'Content-Type': 'application/json',
         ...(upstreamAuth?.cookie ? { Cookie: upstreamAuth.cookie } : {}),
+        ...(upstreamAuth?.accessHeader ? { [ACCESS_HEADER]: upstreamAuth.accessHeader } : {}),
+        ...(upstreamAuth?.refreshHeader ? { [REFRESH_HEADER]: upstreamAuth.refreshHeader } : {}),
         ...(upstreamAuth?.authorization ? { Authorization: upstreamAuth.authorization } : {}),
       },
       body: options.payload ? JSON.stringify(options.payload) : undefined,
@@ -186,7 +200,7 @@ export const callServerApi = async <T extends keyof AllEndpoints>(
   const headerList = await headers();
   const upstreamAuth = await getUpstreamAuthHeaders(headerList);
 
-  console.log('upstreamAuth', upstreamAuth);
+  console.log('callServerApi upstreamAuth: ', upstreamAuth);
   if (
     !upstreamAuth.cookie &&
     !upstreamAuth.authorization &&

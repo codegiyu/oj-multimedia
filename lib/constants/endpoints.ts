@@ -45,6 +45,18 @@ import type {
 
 export type HttpMethods = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
+/** Auth header names expected by backend middleware (header-first auth flow). */
+export const AUTH_TOKEN_HEADERS = {
+  access: 'oj-acc-token',
+  refresh: 'oj-ref-token',
+} as const;
+
+/** Frontend-owned httpOnly cookies (set by Next route handlers for server-side forwarding). */
+export const AUTH_CLIENT_COOKIES = {
+  access: 'oj-acc-client',
+  refresh: 'oj-ref-client',
+} as const;
+
 /**
  * Utility type that converts backend-oriented types to client-friendly types.
  * Converts:
