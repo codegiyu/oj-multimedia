@@ -97,8 +97,11 @@ export function CreateTestimonyModal({
     };
   }, [open, editId]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (
+    e?: React.FormEvent<HTMLFormElement>,
+    createStatus: 'draft' | 'published' = 'draft'
+  ) => {
+    e?.preventDefault();
     setLoading(true);
     try {
       const author = requireText(form.author, 'Author');
@@ -122,7 +125,7 @@ export function CreateTestimonyModal({
             author,
             content,
             category,
-            status: form.status,
+            status: createStatus,
           },
         });
         if (error) throw new Error(error.message);
@@ -158,7 +161,7 @@ export function CreateTestimonyModal({
         {detailLoading ? (
           <p className="text-sm text-muted-foreground py-4">Loading…</p>
         ) : (
-          <form onSubmit={handleSubmit} className="grid gap-4">
+          <form onSubmit={e => void handleSubmit(e)} className="grid gap-4">
             <RegularInput
               label="Author"
               value={form.author}
@@ -166,17 +169,19 @@ export function CreateTestimonyModal({
               placeholder="Enter author name"
               required
             />
-            <RegularSelect
-              label="Status"
-              value={form.status}
-              onSelectChange={v =>
-                setForm(f => ({
-                  ...f,
-                  status: normalizeEnumValue(v, PUBLISHABLE_STATUS_VALUES, 'draft'),
-                }))
-              }
-              options={[...PUBLISHABLE_STATUS_SELECT_OPTIONS] as SelectOption[]}
-            />
+            {isEdit ? (
+              <RegularSelect
+                label="Status"
+                value={form.status}
+                onSelectChange={v =>
+                  setForm(f => ({
+                    ...f,
+                    status: normalizeEnumValue(v, PUBLISHABLE_STATUS_VALUES, 'draft'),
+                  }))
+                }
+                options={[...PUBLISHABLE_STATUS_SELECT_OPTIONS] as SelectOption[]}
+              />
+            ) : null}
             <RegularSelect
               label="Category"
               value={form.category}
@@ -199,12 +204,31 @@ export function CreateTestimonyModal({
                 onClick={() => handleOpenChange(false)}
                 disabled={loading}
               />
-              <RegularBtn
-                type="submit"
-                text={isEdit ? 'Save' : 'Create'}
-                loading={loading}
-                disabled={!form.author.trim() || !form.content.trim()}
-              />
+              {isEdit ? (
+                <RegularBtn
+                  type="submit"
+                  text="Save"
+                  loading={loading}
+                  disabled={!form.author.trim() || !form.content.trim()}
+                />
+              ) : (
+                <>
+                  <RegularBtn
+                    type="button"
+                    text="Create as draft"
+                    loading={loading}
+                    onClick={() => void handleSubmit(undefined, 'draft')}
+                    disabled={!form.author.trim() || !form.content.trim() || loading}
+                  />
+                  <RegularBtn
+                    type="button"
+                    text="Create & publish"
+                    loading={loading}
+                    onClick={() => void handleSubmit(undefined, 'published')}
+                    disabled={!form.author.trim() || !form.content.trim() || loading}
+                  />
+                </>
+              )}
             </DialogFooter>
           </form>
         )}

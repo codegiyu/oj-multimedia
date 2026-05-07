@@ -186,8 +186,11 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
     };
   }, [open, editId]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (
+    e?: React.FormEvent<HTMLFormElement>,
+    createStatus: 'draft' | 'published' = 'draft'
+  ) => {
+    e?.preventDefault();
     setLoading(true);
     try {
       const title = requireText(form.title, 'Title');
@@ -261,6 +264,7 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
           audioUrl: finalAudioUrl || undefined,
           videoUrl: finalVideoUrl || undefined,
           downloadUrl: finalDownloadUrl || undefined,
+          status: createStatus,
         };
 
         if (form.artistId) payload.artistId = form.artistId;
@@ -351,7 +355,7 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
         {detailLoading ? (
           <p className="text-sm text-muted-foreground py-4">Loading…</p>
         ) : (
-          <form onSubmit={handleSubmit} className="grid gap-4">
+          <form onSubmit={e => void handleSubmit(e)} className="grid gap-4">
             {!isEdit && (
               <>
                 <RegularSelect
@@ -488,12 +492,31 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
                 onClick={() => handleOpenChange(false)}
                 disabled={loading}
               />
-              <RegularBtn
-                type="submit"
-                text={isEdit ? 'Save' : 'Create'}
-                loading={loading}
-                disabled={!form.title.trim()}
-              />
+              {isEdit ? (
+                <RegularBtn
+                  type="submit"
+                  text="Save"
+                  loading={loading}
+                  disabled={!form.title.trim()}
+                />
+              ) : (
+                <>
+                  <RegularBtn
+                    type="button"
+                    text="Create as draft"
+                    loading={loading}
+                    onClick={() => void handleSubmit(undefined, 'draft')}
+                    disabled={!form.title.trim() || loading}
+                  />
+                  <RegularBtn
+                    type="button"
+                    text="Create & publish"
+                    loading={loading}
+                    onClick={() => void handleSubmit(undefined, 'published')}
+                    disabled={!form.title.trim() || loading}
+                  />
+                </>
+              )}
             </DialogFooter>
           </form>
         )}

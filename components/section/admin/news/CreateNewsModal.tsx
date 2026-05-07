@@ -135,8 +135,11 @@ export function CreateNewsModal({ open, onOpenChange, editId, onSuccess }: Creat
     };
   }, [open, editId]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (
+    e?: React.FormEvent<HTMLFormElement>,
+    createStatus: 'draft' | 'published' = 'draft'
+  ) => {
+    e?.preventDefault();
     setLoading(true);
     try {
       const title = requireText(form.title, 'Title');
@@ -205,7 +208,7 @@ export function CreateNewsModal({ open, onOpenChange, editId, onSuccess }: Creat
             embedUrl,
             downloadUrl: finalDownloadUrl,
             isFeatured: form.isFeatured,
-            status: form.status,
+            status: createStatus,
           },
         });
         if (createRes.type !== 'success')
@@ -285,7 +288,7 @@ export function CreateNewsModal({ open, onOpenChange, editId, onSuccess }: Creat
         {detailLoading ? (
           <p className="text-sm text-muted-foreground py-4">Loading article…</p>
         ) : (
-          <form onSubmit={handleSubmit} className="grid gap-4">
+          <form onSubmit={e => void handleSubmit(e)} className="grid gap-4">
             <RegularInput
               label="Title"
               value={form.title}
@@ -293,17 +296,19 @@ export function CreateNewsModal({ open, onOpenChange, editId, onSuccess }: Creat
               placeholder="Enter title"
               required
             />
-            <RegularSelect
-              label="Status"
-              value={form.status}
-              onSelectChange={v =>
-                setForm(f => ({
-                  ...f,
-                  status: normalizeEnumValue(v, PUBLISHABLE_STATUS_VALUES, 'draft'),
-                }))
-              }
-              options={[...PUBLISHABLE_STATUS_SELECT_OPTIONS] as SelectOption[]}
-            />
+            {isEdit ? (
+              <RegularSelect
+                label="Status"
+                value={form.status}
+                onSelectChange={v =>
+                  setForm(f => ({
+                    ...f,
+                    status: normalizeEnumValue(v, PUBLISHABLE_STATUS_VALUES, 'draft'),
+                  }))
+                }
+                options={[...PUBLISHABLE_STATUS_SELECT_OPTIONS] as SelectOption[]}
+              />
+            ) : null}
             <RegularInput
               label="Author"
               value={form.author}
@@ -391,12 +396,31 @@ export function CreateNewsModal({ open, onOpenChange, editId, onSuccess }: Creat
                 onClick={() => handleOpenChange(false)}
                 disabled={loading}
               />
-              <RegularBtn
-                type="submit"
-                text={isEdit ? 'Save' : 'Create'}
-                loading={loading}
-                disabled={!form.title.trim()}
-              />
+              {isEdit ? (
+                <RegularBtn
+                  type="submit"
+                  text="Save"
+                  loading={loading}
+                  disabled={!form.title.trim()}
+                />
+              ) : (
+                <>
+                  <RegularBtn
+                    type="button"
+                    text="Create as draft"
+                    loading={loading}
+                    onClick={() => void handleSubmit(undefined, 'draft')}
+                    disabled={!form.title.trim() || loading}
+                  />
+                  <RegularBtn
+                    type="button"
+                    text="Create & publish"
+                    loading={loading}
+                    onClick={() => void handleSubmit(undefined, 'published')}
+                    disabled={!form.title.trim() || loading}
+                  />
+                </>
+              )}
             </DialogFooter>
           </form>
         )}

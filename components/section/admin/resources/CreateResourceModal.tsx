@@ -108,8 +108,11 @@ export function CreateResourceModal({
     };
   }, [open, editId]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (
+    e?: React.FormEvent<HTMLFormElement>,
+    createStatus: 'draft' | 'published' = 'draft'
+  ) => {
+    e?.preventDefault();
     setLoading(true);
     try {
       const title = requireText(form.title, 'Title');
@@ -135,7 +138,7 @@ export function CreateResourceModal({
             description,
             type: form.type,
             category,
-            status: form.status,
+            status: createStatus,
           },
         });
         if (error) throw new Error(error.message);
@@ -171,7 +174,7 @@ export function CreateResourceModal({
         {detailLoading ? (
           <p className="text-sm text-muted-foreground py-4">Loading…</p>
         ) : (
-          <form onSubmit={handleSubmit} className="grid gap-4">
+          <form onSubmit={e => void handleSubmit(e)} className="grid gap-4">
             <RegularInput
               label="Title"
               value={form.title}
@@ -187,17 +190,19 @@ export function CreateResourceModal({
               }
               options={typeOptions}
             />
-            <RegularSelect
-              label="Status"
-              value={form.status}
-              onSelectChange={v =>
-                setForm(f => ({
-                  ...f,
-                  status: normalizeEnumValue(v, PUBLISHABLE_STATUS_VALUES, 'draft'),
-                }))
-              }
-              options={[...PUBLISHABLE_STATUS_SELECT_OPTIONS] as SelectOption[]}
-            />
+            {isEdit ? (
+              <RegularSelect
+                label="Status"
+                value={form.status}
+                onSelectChange={v =>
+                  setForm(f => ({
+                    ...f,
+                    status: normalizeEnumValue(v, PUBLISHABLE_STATUS_VALUES, 'draft'),
+                  }))
+                }
+                options={[...PUBLISHABLE_STATUS_SELECT_OPTIONS] as SelectOption[]}
+              />
+            ) : null}
             <RegularSelect
               label="Category"
               value={form.category}
@@ -220,12 +225,31 @@ export function CreateResourceModal({
                 onClick={() => handleOpenChange(false)}
                 disabled={loading}
               />
-              <RegularBtn
-                type="submit"
-                text={isEdit ? 'Save' : 'Create'}
-                loading={loading}
-                disabled={!form.title.trim()}
-              />
+              {isEdit ? (
+                <RegularBtn
+                  type="submit"
+                  text="Save"
+                  loading={loading}
+                  disabled={!form.title.trim()}
+                />
+              ) : (
+                <>
+                  <RegularBtn
+                    type="button"
+                    text="Create as draft"
+                    loading={loading}
+                    onClick={() => void handleSubmit(undefined, 'draft')}
+                    disabled={!form.title.trim() || loading}
+                  />
+                  <RegularBtn
+                    type="button"
+                    text="Create & publish"
+                    loading={loading}
+                    onClick={() => void handleSubmit(undefined, 'published')}
+                    disabled={!form.title.trim() || loading}
+                  />
+                </>
+              )}
             </DialogFooter>
           </form>
         )}

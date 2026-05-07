@@ -338,6 +338,7 @@ export interface IArtistCreateMusicPayload {
   downloadUrl?: string;
   category?: string;
   isMonetizable?: boolean;
+  status?: 'draft' | 'published' | 'archived';
 }
 
 export interface IArtistUpdateMusicPayload extends Partial<IArtistCreateMusicPayload> {
@@ -364,6 +365,7 @@ export interface IArtistCreateVideoPayload {
   embedUrl?: string;
   category?: string;
   isMonetizable?: boolean;
+  status?: 'draft' | 'published' | 'archived';
 }
 
 export interface IArtistUpdateVideoPayload extends Partial<IArtistCreateVideoPayload> {

@@ -15,7 +15,6 @@ import { RegularSelect } from '@/components/atoms/RegularSelect';
 import type { SelectOption } from '@/lib/types/general';
 import type { IMarketplaceVendor } from '@/lib/constants/endpoints';
 import { callApi } from '@/lib/services/callApi';
-import { PUBLISHABLE_STATUS_SELECT_OPTIONS } from '@/lib/constants/adminSelectOptions';
 
 interface CreateProductModalProps {
   open: boolean;
@@ -64,8 +63,11 @@ export function CreateProductModal({
       .finally(() => setVendorsLoading(false));
   }, [open, vendors]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (
+    e?: React.FormEvent<HTMLFormElement>,
+    createStatus: 'draft' | 'published' = 'draft'
+  ) => {
+    e?.preventDefault();
     if (!form.name.trim() || !form.vendorId) return;
     setLoading(true);
     try {
@@ -74,7 +76,7 @@ export function CreateProductModal({
           name: form.name.trim(),
           vendor: form.vendorId,
           price: Number(form.price) || 0,
-          status: form.status,
+          status: createStatus,
         },
       });
       if (error) throw new Error(error.message);
@@ -100,7 +102,7 @@ export function CreateProductModal({
           <DialogTitle>Create Product</DialogTitle>
           <DialogDescription>Add a new product</DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="grid gap-4">
+        <form onSubmit={e => void handleSubmit(e)} className="grid gap-4">
           <RegularInput
             label="Name"
             value={form.name}
@@ -127,12 +129,6 @@ export function CreateProductModal({
             placeholder="Enter price"
             required
           />
-          <RegularSelect
-            label="Status"
-            value={form.status}
-            onSelectChange={v => setForm(f => ({ ...f, status: v as typeof form.status }))}
-            options={[...PUBLISHABLE_STATUS_SELECT_OPTIONS] as SelectOption[]}
-          />
           <DialogFooter>
             <RegularBtn
               type="button"
@@ -142,10 +138,18 @@ export function CreateProductModal({
               disabled={loading}
             />
             <RegularBtn
-              type="submit"
-              text="Create"
+              type="button"
+              text="Create as draft"
               loading={loading}
-              disabled={!form.name.trim() || !form.vendorId}
+              onClick={() => void handleSubmit(undefined, 'draft')}
+              disabled={!form.name.trim() || !form.vendorId || loading}
+            />
+            <RegularBtn
+              type="button"
+              text="Create & publish"
+              loading={loading}
+              onClick={() => void handleSubmit(undefined, 'published')}
+              disabled={!form.name.trim() || !form.vendorId || loading}
             />
           </DialogFooter>
         </form>
