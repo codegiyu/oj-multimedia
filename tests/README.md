@@ -31,3 +31,11 @@ Phase 8 (observability & release readiness):
 
 - Optional Core Web Vitals console reporter (`NEXT_PUBLIC_ENABLE_WEB_VITALS=1`): `lib/observability/webVitals.ts`, `components/observability/WebVitalsReporter.tsx` (mounted in `Providers`).
 - Tests: `tests/unit/webVitals.test.ts`, `tests/phase/integration/phase8.contract.test.ts`.
+
+NFR batch (motion, dynamic imports, category SSR, performance budgets):
+
+- `motion/react` migration (ESLint blocks `framer-motion`); contract: `tests/integration/motion-imports.contract.test.ts`.
+- `next/dynamic` for `AudioPlayer`, `VideoPlayer`, `SearchModal`, admin create modals.
+- Server-fed category nav: `fetchPublicCategoryNav` + `categoryOptions` on music/video/news pages.
+- `npm run checks` ends with `checks:performance` (bundle budgets); optional `LIGHTHOUSE_URL=... npm run lighthouse:budget`; `npm run analyze` for bundle report.
+- Tests: `tests/phase/integration/nfr-performance.contract.test.ts`.

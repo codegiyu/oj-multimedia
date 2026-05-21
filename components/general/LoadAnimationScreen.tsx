@@ -7,7 +7,7 @@ import { useSiteStore } from '@/lib/store/siteStore';
 import BackgroundPaths from '@/components/kokonutui/background-paths';
 import Image from 'next/image';
 
-const BASE_LOAD_TIME = 2000; // ms
+const BASE_LOAD_TIME = 800; // ms — short gate so LCP is not blocked on repeat visits
 const TRANSITION_DURATION = 0.8; // s
 const TEXT_ANIMATION_DELAY = 0.5; // s - delay before text animates in
 

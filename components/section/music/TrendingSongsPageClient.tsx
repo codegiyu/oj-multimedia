@@ -2,12 +2,13 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { Flame, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { SectionContainer } from '@/components/general/SectionContainer';
 import { DataLoadError } from '@/components/general/DataLoadError';
 import { MusicCategories } from './MusicCategories';
+import type { CategoryNavItem } from '@/lib/utils/contentCategoryNav';
 import { MusicUploadCTA } from '../shared/MusicUploadCTA';
 import { EmptyState } from '../news/EmptyState';
 import { SectionComp } from '@/components/general/SectionComp';
@@ -16,11 +17,14 @@ import type { TrendingSong } from './TrendingSongs';
 import { Music } from 'lucide-react';
 
 interface TrendingSongsPageClientProps {
+  categoryOptions: CategoryNavItem[];
   trendingSongs: (TrendingSong & { category?: string })[];
   initialErrorMessage?: string | null;
 }
 
 export const TrendingSongsPageClient = ({
+  categoryOptions,
+
   trendingSongs,
   initialErrorMessage = null,
 }: TrendingSongsPageClientProps) => {
@@ -53,7 +57,7 @@ export const TrendingSongsPageClient = ({
 
   return (
     <>
-      <MusicCategories />
+      <MusicCategories categoryOptions={categoryOptions} />
       {initialErrorMessage && (
         <div className="container mx-auto px-4 mb-4">
           <div className="rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive flex items-center justify-between gap-4">

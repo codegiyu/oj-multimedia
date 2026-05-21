@@ -10,6 +10,8 @@ import { filterByCategory } from '@/lib/utils/videos';
 import { mapPublicVideoToShortForm } from '@/lib/utils/publicApiMappers';
 import { VIDEO_TYPES } from '@/lib/constants/contentTaxonomy';
 import { normalizePublicCategoryByScope } from '@/lib/utils/contentCategoriesServer';
+import { fetchPublicCategoryNav } from '@/lib/utils/contentCategoryNav';
+import { videoCategoryNavFallback } from '@/lib/constants/categoryNavFallbacks';
 
 export const metadata: Metadata = {
   title: 'Short Form Videos - Quick Clips',
@@ -63,6 +65,10 @@ export default async function ShortFormVideosPage({ searchParams }: ShortFormVid
 }
 
 async function ShortFormVideosServer({ category }: { category: string }) {
-  const data = await fetchShortFormVideos(category);
-  return <ShortFormVideosPageClient {...data} />;
+  const [data, categoryOptions] = await Promise.all([
+    fetchShortFormVideos(category),
+    fetchPublicCategoryNav('video', 'All Videos', videoCategoryNavFallback),
+  ]);
+
+  return <ShortFormVideosPageClient {...data} categoryOptions={categoryOptions} />;
 }

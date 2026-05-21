@@ -2,9 +2,10 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { Trophy, ArrowRight } from 'lucide-react';
 import { MusicCategories } from './MusicCategories';
+import type { CategoryNavItem } from '@/lib/utils/contentCategoryNav';
 import { MusicUploadCTA } from '../shared/MusicUploadCTA';
 import { EmptyState } from '../news/EmptyState';
 import { Button } from '@/components/ui/button';
@@ -17,12 +18,15 @@ import { DataLoadError } from '@/components/general/DataLoadError';
 import { Music } from 'lucide-react';
 
 interface TopChartsPageClientProps {
+  categoryOptions: CategoryNavItem[];
   chartSongs: (ChartSong & { category?: string })[];
   period: string;
   initialErrorMessage?: string | null;
 }
 
 export const TopChartsPageClient = ({
+  categoryOptions,
+
   chartSongs,
   period: initialPeriod,
   initialErrorMessage = null,
@@ -106,7 +110,7 @@ export const TopChartsPageClient = ({
 
   return (
     <>
-      <MusicCategories />
+      <MusicCategories categoryOptions={categoryOptions} />
       {initialErrorMessage && (
         <div className="container mx-auto px-4 mb-4">
           <div className="rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive flex items-center justify-between gap-4">

@@ -12,6 +12,7 @@ import { ShortFormVideos, type ShortFormVideo } from './ShortFormVideos';
 import { CreatorSpotlight, type FeaturedCreator } from './CreatorSpotlight';
 import { VideoUploadCTA } from './VideoUploadCTA';
 import { Video } from 'lucide-react';
+import type { CategoryNavItem } from '@/lib/utils/contentCategoryNav';
 
 interface VideoPageClientProps {
   trendingVideos: TrendingVideo[];
@@ -19,6 +20,7 @@ interface VideoPageClientProps {
   recentUploads: RecentVideoUpload[];
   shortFormVideos: ShortFormVideo[];
   featuredCreators: FeaturedCreator[];
+  categoryOptions: CategoryNavItem[];
   initialErrorMessage?: string | null;
 }
 
@@ -28,6 +30,7 @@ export const VideoPageClient = ({
   recentUploads,
   shortFormVideos,
   featuredCreators,
+  categoryOptions,
   initialErrorMessage = null,
 }: VideoPageClientProps) => {
   const router = useRouter();
@@ -53,7 +56,7 @@ export const VideoPageClient = ({
 
   return (
     <>
-      <VideoCategories />
+      <VideoCategories categoryOptions={categoryOptions} />
       {initialErrorMessage && (
         <div className="container mx-auto px-4 mb-4">
           <div className="rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive flex items-center justify-between gap-4">

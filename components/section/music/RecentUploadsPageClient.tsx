@@ -1,9 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { Sparkles, ArrowRight } from 'lucide-react';
 import { MusicCategories } from './MusicCategories';
+import type { CategoryNavItem } from '@/lib/utils/contentCategoryNav';
 import { MusicUploadCTA } from '../shared/MusicUploadCTA';
 import { EmptyState } from '../news/EmptyState';
 import { SectionComp } from '@/components/general/SectionComp';
@@ -11,10 +12,13 @@ import { MusicCard } from '@/components/cards/MusicCard';
 import type { RecentUpload } from './RecentUploads';
 
 interface RecentUploadsPageClientProps {
+  categoryOptions: CategoryNavItem[];
   recentUploads: (RecentUpload & { category: string })[];
 }
 
-export const RecentUploadsPageClient = ({ recentUploads }: RecentUploadsPageClientProps) => {
+export const RecentUploadsPageClient = ({
+  categoryOptions,
+ recentUploads }: RecentUploadsPageClientProps) => {
   const [displayedItems, setDisplayedItems] = useState(20);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -30,7 +34,7 @@ export const RecentUploadsPageClient = ({ recentUploads }: RecentUploadsPageClie
 
   return (
     <>
-      <MusicCategories />
+      <MusicCategories categoryOptions={categoryOptions} />
       <SectionComp
         icon={Sparkles}
         iconColor="secondary"

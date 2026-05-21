@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { Newspaper } from 'lucide-react';
 import { EmptyState } from './EmptyState';
 import { NewsCard } from '@/components/cards/NewsCard';

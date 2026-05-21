@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { Users, MessageSquare, BarChart3, Sparkles, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';

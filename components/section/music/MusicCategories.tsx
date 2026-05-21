@@ -1,11 +1,9 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { useQueryState, parseAsString } from 'nuqs';
-import { ALL_CATEGORY_ID, MUSIC_CATEGORIES } from '@/lib/constants/contentTaxonomy';
-import { useContentCategoryOptions } from '@/lib/hooks/useContentCategoryOptions';
-
-const fallbackGenres = [{ id: ALL_CATEGORY_ID, label: 'All Genres' }, ...MUSIC_CATEGORIES];
+import { ALL_CATEGORY_ID } from '@/lib/constants/contentTaxonomy';
+import type { CategoryNavItem } from '@/lib/utils/contentCategoryNav';
 
 const genreEmojiById: Record<string, string> = {
   [ALL_CATEGORY_ID]: '🎵',
@@ -21,13 +19,11 @@ const genreEmojiById: Record<string, string> = {
   sermon: '📿',
 };
 
-export const MusicCategories = () => {
-  const { options } = useContentCategoryOptions({
-    scope: 'music',
-    includeAllOption: true,
-    allValue: ALL_CATEGORY_ID,
-    allLabel: 'All Genres',
-  });
+export type MusicCategoriesProps = {
+  categoryOptions: CategoryNavItem[];
+};
+
+export const MusicCategories = ({ categoryOptions }: MusicCategoriesProps) => {
   const [activeGenre, setActiveGenre] = useQueryState(
     'category',
     parseAsString.withDefault(ALL_CATEGORY_ID)
@@ -41,10 +37,7 @@ export const MusicCategories = () => {
     <section className="py-6 border-b border-border/50">
       <div className="container mx-auto px-4">
         <div className="flex flex-wrap justify-center gap-2 pb-2">
-          {(options.length > 1
-            ? options.map(option => ({ id: option.value, label: option.text }))
-            : fallbackGenres
-          ).map(genre => {
+          {categoryOptions.map(genre => {
             const isActive = activeGenre === genre.id;
 
             return (

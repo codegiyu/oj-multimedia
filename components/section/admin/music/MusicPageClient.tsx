@@ -8,7 +8,7 @@ import type { ArtistMusicListItem } from '@/lib/constants/endpoints';
 import type { ClickedRowDetails } from '@/components/general/TableRowDetailsDrawer';
 import { MusicDetailsDrawer } from './MusicDetailsDrawer';
 import { MusicTableContent } from './MusicTableContent';
-import { CreateMusicModal } from './CreateMusicModal';
+import { CreateMusicModalDynamic } from './CreateMusicModalDynamic';
 import { ApprovalModal, RejectModal } from '@/components/section/admin/shared';
 import { callApi } from '@/lib/services/callApi';
 import { RegularBtn } from '@/components/atoms/RegularBtn';
@@ -190,7 +190,7 @@ export function MusicPageClient({
             setClickedRowDetails={setClickedRowDetails}
           />
 
-          <CreateMusicModal
+          <CreateMusicModalDynamic
             open={createOpen}
             onOpenChange={open => {
               if (!open) setEditMusicId(null);

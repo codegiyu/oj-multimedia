@@ -12,6 +12,8 @@ import { callPublicServerApi } from '@/lib/services/serverApi';
 import { CHART_PERIOD_VALUES, MUSIC_TYPES } from '@/lib/constants/contentTaxonomy';
 import { filterByCategory } from '@/lib/utils/music';
 import { normalizePublicCategoryByScope } from '@/lib/utils/contentCategoriesServer';
+import { fetchPublicCategoryNav } from '@/lib/utils/contentCategoryNav';
+import { musicCategoryNavFallback } from '@/lib/constants/categoryNavFallbacks';
 import {
   mapPublicMusicToTrendingSong,
   mapPublicMusicToChartSong,
@@ -107,6 +109,10 @@ export default async function MusicPage({ searchParams }: MusicPageProps) {
 }
 
 async function MusicPageServer({ category, period }: { category: string; period: string }) {
-  const data = await fetchMusicSections(category, period);
-  return <MusicPageClient {...data} />;
+  const [data, categoryOptions] = await Promise.all([
+    fetchMusicSections(category, period),
+    fetchPublicCategoryNav('music', 'All Genres', musicCategoryNavFallback),
+  ]);
+
+  return <MusicPageClient {...data} categoryOptions={categoryOptions} />;
 }

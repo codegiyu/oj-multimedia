@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { SectionContainer } from '@/components/general/SectionContainer';
 import { DataLoadError } from '@/components/general/DataLoadError';
 import { NewsCategories } from './NewsCategories';
+import type { CategoryNavItem } from '@/lib/utils/contentCategoryNav';
 import { FeaturedStories, type FeaturedStory } from './FeaturedStories';
 import { NewsFeed, type NewsItem } from './NewsFeed';
 import { TrendingSidebar, type TrendingStory } from './TrendingSidebar';
@@ -14,6 +15,7 @@ import { SectionComp } from '@/components/general/SectionComp';
 import { NewsletterCTA } from '../shared';
 
 interface NewsPageClientProps {
+  categoryOptions: CategoryNavItem[];
   featuredStories: FeaturedStory[];
   newsItems: NewsItem[];
   trendingStories: TrendingStory[];
@@ -22,6 +24,8 @@ interface NewsPageClientProps {
 }
 
 export const NewsPageClient = ({
+  categoryOptions,
+
   featuredStories,
   newsItems,
   trendingStories,
@@ -50,7 +54,7 @@ export const NewsPageClient = ({
 
   return (
     <>
-      <NewsCategories />
+      <NewsCategories categoryOptions={categoryOptions} />
       {initialErrorMessage && (
         <div className="container mx-auto px-4 mb-4">
           <div className="rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive flex items-center justify-between gap-4">

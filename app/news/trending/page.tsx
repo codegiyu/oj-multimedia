@@ -10,6 +10,8 @@ import { callPublicServerApi } from '@/lib/services/serverApi';
 import { mapPublicNewsToTrendingStory } from '@/lib/utils/publicApiMappers';
 import { NEWS_TYPES } from '@/lib/constants/contentTaxonomy';
 import { normalizePublicCategoryByScope } from '@/lib/utils/contentCategoriesServer';
+import { fetchPublicCategoryNav } from '@/lib/utils/contentCategoryNav';
+import { newsCategoryNavFallback } from '@/lib/constants/categoryNavFallbacks';
 
 export const metadata: Metadata = {
   title: 'Trending Stories - News & Lifestyle Updates',
@@ -67,6 +69,10 @@ export default async function TrendingStoriesPage({ searchParams }: TrendingStor
 }
 
 async function TrendingStoriesServer({ category }: { category: string }) {
-  const data = await fetchTrendingStories(category);
-  return <TrendingStoriesPageClient {...data} />;
+  const [data, categoryOptions] = await Promise.all([
+    fetchTrendingStories(category),
+    fetchPublicCategoryNav('news', 'All Stories', newsCategoryNavFallback),
+  ]);
+
+  return <TrendingStoriesPageClient {...data} categoryOptions={categoryOptions} />;
 }

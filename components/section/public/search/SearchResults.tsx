@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { Play, Clock, Video, Eye } from 'lucide-react';
 import type { SearchResultType } from '@/lib/constants/endpoints';
 import { getSearchResultDetailHref } from '@/lib/utils/searchResultRoutes';

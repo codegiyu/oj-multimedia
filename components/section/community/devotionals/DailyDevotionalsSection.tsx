@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { Calendar, Clock, Eye, Bookmark } from 'lucide-react';
 import Link from 'next/link';
 import { SectionComp } from '@/components/general/SectionComp';

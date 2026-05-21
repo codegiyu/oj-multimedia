@@ -2,24 +2,28 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { Play, Clock, ArrowRight, Newspaper } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { SectionContainer } from '@/components/general/SectionContainer';
 import { DataLoadError } from '@/components/general/DataLoadError';
 import { NewsCategories } from './NewsCategories';
+import type { CategoryNavItem } from '@/lib/utils/contentCategoryNav';
 import { NewsletterCTA } from '../shared';
 import { EmptyState } from './EmptyState';
 import { SectionComp } from '@/components/general/SectionComp';
 import type { VideoNewsItem } from './VideoNews';
 
 interface VideoNewsPageClientProps {
+  categoryOptions: CategoryNavItem[];
   videoNews: VideoNewsItem[];
   initialErrorMessage?: string | null;
 }
 
 export const VideoNewsPageClient = ({
+  categoryOptions,
+
   videoNews,
   initialErrorMessage = null,
 }: VideoNewsPageClientProps) => {
@@ -52,7 +56,7 @@ export const VideoNewsPageClient = ({
 
   return (
     <>
-      <NewsCategories />
+      <NewsCategories categoryOptions={categoryOptions} />
       {initialErrorMessage && (
         <div className="container mx-auto px-4 mb-4">
           <div className="rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive flex items-center justify-between gap-4">

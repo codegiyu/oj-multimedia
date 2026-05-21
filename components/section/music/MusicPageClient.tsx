@@ -11,12 +11,14 @@ import { RecentUploads, type RecentUpload } from './RecentUploads';
 import { FeaturedArtists, type FeaturedArtist } from './FeaturedArtists';
 import { MusicUploadCTA } from '../shared/MusicUploadCTA';
 import { Music } from 'lucide-react';
+import type { CategoryNavItem } from '@/lib/utils/contentCategoryNav';
 
 interface MusicPageClientProps {
   trendingSongs: TrendingSong[];
   chartSongs: ChartSong[];
   recentUploads: RecentUpload[];
   featuredArtists: FeaturedArtist[];
+  categoryOptions: CategoryNavItem[];
   initialErrorMessage?: string | null;
 }
 
@@ -25,6 +27,7 @@ export const MusicPageClient = ({
   chartSongs,
   recentUploads,
   featuredArtists,
+  categoryOptions,
   initialErrorMessage = null,
 }: MusicPageClientProps) => {
   const router = useRouter();
@@ -49,7 +52,7 @@ export const MusicPageClient = ({
 
   return (
     <>
-      <MusicCategories />
+      <MusicCategories categoryOptions={categoryOptions} />
       {initialErrorMessage && (
         <div className="container mx-auto px-4 mb-4">
           <div className="rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive flex items-center justify-between gap-4">

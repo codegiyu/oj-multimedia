@@ -10,6 +10,8 @@ import { filterByCategory } from '@/lib/utils/videos';
 import { mapPublicVideoToFeaturedVideo } from '@/lib/utils/publicApiMappers';
 import { VIDEO_TYPES } from '@/lib/constants/contentTaxonomy';
 import { normalizePublicCategoryByScope } from '@/lib/utils/contentCategoriesServer';
+import { fetchPublicCategoryNav } from '@/lib/utils/contentCategoryNav';
+import { videoCategoryNavFallback } from '@/lib/constants/categoryNavFallbacks';
 
 export const metadata: Metadata = {
   title: 'Featured Videos - Editor Picks',
@@ -63,6 +65,10 @@ export default async function FeaturedVideosPage({ searchParams }: FeaturedVideo
 }
 
 async function FeaturedVideosServer({ category }: { category: string }) {
-  const data = await fetchFeaturedVideos(category);
-  return <FeaturedVideosPageClient {...data} />;
+  const [data, categoryOptions] = await Promise.all([
+    fetchFeaturedVideos(category),
+    fetchPublicCategoryNav('video', 'All Videos', videoCategoryNavFallback),
+  ]);
+
+  return <FeaturedVideosPageClient {...data} categoryOptions={categoryOptions} />;
 }

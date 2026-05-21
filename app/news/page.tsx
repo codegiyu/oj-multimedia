@@ -12,6 +12,8 @@ import type { VideoNewsItem } from '@/components/section/news/VideoNews';
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import { NEWS_TYPES } from '@/lib/constants/contentTaxonomy';
 import { normalizePublicCategoryByScope } from '@/lib/utils/contentCategoriesServer';
+import { fetchPublicCategoryNav } from '@/lib/utils/contentCategoryNav';
+import { newsCategoryNavFallback } from '@/lib/constants/categoryNavFallbacks';
 import {
   mapPublicNewsToFeaturedStory,
   mapPublicNewsToFeedItem,
@@ -97,6 +99,10 @@ export default async function NewsPage({ searchParams }: NewsPageProps) {
 }
 
 async function NewsPageServer({ category }: { category: string }) {
-  const data = await fetchNewsSections(category);
-  return <NewsPageClient {...data} />;
+  const [data, categoryOptions] = await Promise.all([
+    fetchNewsSections(category),
+    fetchPublicCategoryNav('news', 'All Stories', newsCategoryNavFallback),
+  ]);
+
+  return <NewsPageClient {...data} categoryOptions={categoryOptions} />;
 }

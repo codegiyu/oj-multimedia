@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import {
   Menu,
   X,
@@ -18,7 +18,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { UserMenu, UserMobileMenu } from './UserMenu';
 import { Logo } from '@/components/atoms/Logo';
-import { SearchModal } from '../section/public/search/SearchModal';
+import { SearchModalDynamic } from '../section/public/search/SearchModalDynamic';
 import { useCartStore } from '@/lib/store/cartStore';
 
 const navItems = [
@@ -141,7 +141,7 @@ export const Header = () => {
       </AnimatePresence>
 
       {/* Search Modal */}
-      <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+      <SearchModalDynamic isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
     </header>
   );
 };

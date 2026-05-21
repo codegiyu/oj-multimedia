@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { Heart, MessageSquare, Quote } from 'lucide-react';
 import Link from 'next/link';
 import { SectionComp } from '@/components/general/SectionComp';

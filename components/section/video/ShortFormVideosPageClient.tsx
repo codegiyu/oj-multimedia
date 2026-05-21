@@ -2,12 +2,13 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { Zap, ArrowRight, Video } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { SectionContainer } from '@/components/general/SectionContainer';
 import { DataLoadError } from '@/components/general/DataLoadError';
 import { VideoCategories } from './VideoCategories';
+import type { CategoryNavItem } from '@/lib/utils/contentCategoryNav';
 import { VideoUploadCTA } from './VideoUploadCTA';
 import { EmptyState } from '../news/EmptyState';
 import { SectionComp } from '@/components/general/SectionComp';
@@ -15,11 +16,14 @@ import { VideoCard } from '@/components/cards/VideoCard';
 import type { ShortFormVideo } from './ShortFormVideos';
 
 interface ShortFormVideosPageClientProps {
+  categoryOptions: CategoryNavItem[];
   shortFormVideos: ShortFormVideo[];
   initialErrorMessage?: string | null;
 }
 
 export const ShortFormVideosPageClient = ({
+  categoryOptions,
+
   shortFormVideos,
   initialErrorMessage = null,
 }: ShortFormVideosPageClientProps) => {
@@ -52,7 +56,7 @@ export const ShortFormVideosPageClient = ({
 
   return (
     <>
-      <VideoCategories />
+      <VideoCategories categoryOptions={categoryOptions} />
       {initialErrorMessage && (
         <div className="container mx-auto px-4 mb-4">
           <div className="rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive flex items-center justify-between gap-4">

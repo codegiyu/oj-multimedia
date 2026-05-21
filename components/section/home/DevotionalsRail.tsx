@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { BookOpen } from 'lucide-react';
 import { SectionComp } from '@/components/general/SectionComp';
 import { EmptyState } from '@/components/section/news/EmptyState';

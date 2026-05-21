@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { HandHeart, Send, CheckCircle } from 'lucide-react';
 import { useState } from 'react';
 import { RegularBtn } from '@/components/atoms/RegularBtn';

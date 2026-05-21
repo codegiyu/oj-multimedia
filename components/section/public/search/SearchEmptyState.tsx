@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { Search as SearchIcon } from 'lucide-react';
 import { useQueryState, parseAsString } from 'nuqs';
 import { Button } from '@/components/ui/button';

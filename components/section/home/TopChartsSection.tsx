@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { Trophy, TrendingUp } from 'lucide-react';
 import { ArtistCard } from '@/components/cards/ArtistCard';
 import { ChartCard } from '@/components/cards/ChartCard';

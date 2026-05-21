@@ -10,6 +10,8 @@ import { filterByCategory } from '@/lib/utils/videos';
 import { mapPublicVideoToTrendingVideo } from '@/lib/utils/publicApiMappers';
 import { VIDEO_TYPES } from '@/lib/constants/contentTaxonomy';
 import { normalizePublicCategoryByScope } from '@/lib/utils/contentCategoriesServer';
+import { fetchPublicCategoryNav } from '@/lib/utils/contentCategoryNav';
+import { videoCategoryNavFallback } from '@/lib/constants/categoryNavFallbacks';
 
 export const metadata: Metadata = {
   title: 'Trending Videos - Latest Content',
@@ -63,6 +65,10 @@ export default async function TrendingVideosPage({ searchParams }: TrendingVideo
 }
 
 async function TrendingVideosServer({ category }: { category: string }) {
-  const data = await fetchTrendingVideos(category);
-  return <TrendingVideosPageClient {...data} />;
+  const [data, categoryOptions] = await Promise.all([
+    fetchTrendingVideos(category),
+    fetchPublicCategoryNav('video', 'All Videos', videoCategoryNavFallback),
+  ]);
+
+  return <TrendingVideosPageClient {...data} categoryOptions={categoryOptions} />;
 }
