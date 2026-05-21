@@ -9,6 +9,9 @@ import {
   ENDPOINTS,
   type AllEndpoints,
 } from '../constants/endpoints';
+import { buildUpstreamUrl } from './upstreamUrl';
+
+export { buildUpstreamUrl };
 
 const SERVER_BASE_URL =
   process.env.NEXT_SERVER_BASE_URL ||
@@ -118,7 +121,7 @@ async function runServerFetch<T extends keyof AllEndpoints>(
   const hasUpstreamCookie = Boolean(upstreamAuth?.cookie);
 
   try {
-    const response = await fetch(`${SERVER_BASE_URL}${path}${options.query || ''}`, {
+    const response = await fetch(buildUpstreamUrl(SERVER_BASE_URL, path, options.query || ''), {
       method,
       headers: {
         'Content-Type': 'application/json',
