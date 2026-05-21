@@ -245,9 +245,14 @@ next-16-template/
 Before deploy:
 
 - [ ] `npm run checks` (lint, format, unit tests, production build)
+- [ ] `npm run test:integration && npm run test:phase:integration`
 - [ ] `npm run audit:ci`
 - [ ] Environment variables set in hosting (no secrets in git)
 - [ ] `PLAYWRIGHT_USE_WEBSERVER=1 npm run test:e2e` when validating browser flows
+- [ ] Core Web Vitals budgets on key pages (LCP ≤ 2.5s, INP ≤ 200ms, CLS ≤ 0.1); optional `NEXT_PUBLIC_ENABLE_WEB_VITALS=1` in staging to log `[web-vitals]` payloads
+- [ ] WCAG 2.2 AA spot-check on sign-in, search, and admin list journeys
+- [ ] Backend `/ready` green and API error rate within budget
+- [ ] Backend runbooks linked from ops docs: `oj-backend/docs/runbooks`
 
 ## 🎨 Admin Panel
 

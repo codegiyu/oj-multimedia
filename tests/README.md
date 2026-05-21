@@ -26,3 +26,8 @@ Phase 7 (frontend quality gates):
 - `lib/constants/endpoints/` split (`auth.ts`, `admin.ts`, `public.ts`, `other.ts`, `types.ts`, `post.ts`) with barrel `endpoints/index.ts`; `endpoints.ts` re-exports the barrel.
 - Playwright e2e: `tests/e2e/home.spec.ts`, `search.spec.ts`, `sign-in.spec.ts`, `admin-list.spec.ts` (run with `PLAYWRIGHT_USE_WEBSERVER=1`).
 - Phase tests: `tests/integration/endpoints.split.contract.test.ts`, `tests/phase/e2e/phase7.contract.spec.ts`.
+
+Phase 8 (observability & release readiness):
+
+- Optional Core Web Vitals console reporter (`NEXT_PUBLIC_ENABLE_WEB_VITALS=1`): `lib/observability/webVitals.ts`, `components/observability/WebVitalsReporter.tsx` (mounted in `Providers`).
+- Tests: `tests/unit/webVitals.test.ts`, `tests/phase/integration/phase8.contract.test.ts`.
