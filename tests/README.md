@@ -19,3 +19,10 @@ Phase 3 adds `tests/integration/apiPaths.contract.test.ts` (all `ENDPOINTS` use 
 Phase 2 unit coverage: `lib/services/upstreamUrl.test.ts`, `lib/utils/authCookieDomain.test.ts`, `tests/unit/api/authTokens.route.test.ts`.
 
 `npm run checks` includes `test:unit`.
+
+Phase 7 (frontend quality gates):
+
+- ESLint: `eslint-config-next/core-web-vitals` + `eslint-plugin-jsx-a11y` in `eslint.config.mjs`.
+- `lib/constants/endpoints/` split (`auth.ts`, `admin.ts`, `public.ts`, `other.ts`, `types.ts`, `post.ts`) with barrel `endpoints/index.ts`; `endpoints.ts` re-exports the barrel.
+- Playwright e2e: `tests/e2e/home.spec.ts`, `search.spec.ts`, `sign-in.spec.ts`, `admin-list.spec.ts` (run with `PLAYWRIGHT_USE_WEBSERVER=1`).
+- Phase tests: `tests/integration/endpoints.split.contract.test.ts`, `tests/phase/e2e/phase7.contract.spec.ts`.
