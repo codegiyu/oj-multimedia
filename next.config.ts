@@ -1,4 +1,9 @@
 import type { NextConfig } from 'next';
+import bundleAnalyzer from '@next/bundle-analyzer';
+
+const withBundleAnalyzer = bundleAnalyzer({
+  enabled: process.env.ANALYZE === 'true',
+});
 
 const nextConfig: NextConfig = {
   images: {
@@ -9,11 +14,11 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  
+
   // Mark @react-email/render as external to prevent build-time analysis
   // This avoids React 19 compatibility issues during build
   serverExternalPackages: ['@react-email/render'],
-  
+
   webpack: (config, { isServer }) => {
     if (isServer) {
       // Externalize @react-email/render for server bundle to avoid React 19 compatibility issues
@@ -26,7 +31,7 @@ const nextConfig: NextConfig = {
     }
     return config;
   },
-  
+
   experimental: {
     // Ensure server components can use external packages
     serverActions: {
@@ -35,5 +40,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
-
+export default withBundleAnalyzer(nextConfig);

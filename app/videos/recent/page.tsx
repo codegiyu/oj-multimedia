@@ -10,6 +10,8 @@ import { filterByCategory } from '@/lib/utils/videos';
 import { mapPublicVideoToRecentUpload } from '@/lib/utils/publicApiMappers';
 import { VIDEO_TYPES } from '@/lib/constants/contentTaxonomy';
 import { normalizePublicCategoryByScope } from '@/lib/utils/contentCategoriesServer';
+import { fetchPublicCategoryNav } from '@/lib/utils/contentCategoryNav';
+import { videoCategoryNavFallback } from '@/lib/constants/categoryNavFallbacks';
 
 export const metadata: Metadata = {
   title: 'Recent Uploads - Fresh Videos',
@@ -63,6 +65,10 @@ export default async function RecentVideosPage({ searchParams }: RecentVideosPag
 }
 
 async function RecentVideosServer({ category }: { category: string }) {
-  const data = await fetchRecentVideos(category);
-  return <RecentVideosPageClient {...data} />;
+  const [data, categoryOptions] = await Promise.all([
+    fetchRecentVideos(category),
+    fetchPublicCategoryNav('video', 'All Videos', videoCategoryNavFallback),
+  ]);
+
+  return <RecentVideosPageClient {...data} categoryOptions={categoryOptions} />;
 }

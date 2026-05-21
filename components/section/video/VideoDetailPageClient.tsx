@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useCallback } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import {
   ArrowLeft,
   Clock,
@@ -16,7 +16,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import type { VideoItemWithCreator } from '@/lib/utils/videos';
-import { VideoPlayer } from './VideoPlayer';
+import { VideoPlayerDynamic } from './VideoPlayerDynamic';
 import { VideoDownloadButton } from './VideoDownloadButton';
 import { VideoCard } from '@/components/cards/VideoCard';
 import { sendContentAnalyticsEvent } from '@/lib/services/contentAnalytics';
@@ -175,7 +175,7 @@ export const VideoDetailPageClient = ({ videoItem, relatedVideos }: VideoDetailP
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
               className="mb-8">
-              <VideoPlayer
+              <VideoPlayerDynamic
                 videoUrl={videoItem.videoFileUrl}
                 poster={videoItem.thumbnail}
                 title={videoItem.title}
@@ -205,7 +205,7 @@ export const VideoDetailPageClient = ({ videoItem, relatedVideos }: VideoDetailP
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
               className="mb-8">
-              <VideoPlayer
+              <VideoPlayerDynamic
                 videoUrl={videoItem.videoUrl}
                 poster={videoItem.thumbnail}
                 title={videoItem.title}

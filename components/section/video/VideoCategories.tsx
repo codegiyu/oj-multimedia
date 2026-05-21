@@ -1,11 +1,9 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { useQueryState, parseAsString } from 'nuqs';
-import { ALL_CATEGORY_ID, VIDEO_CATEGORIES } from '@/lib/constants/contentTaxonomy';
-import { useContentCategoryOptions } from '@/lib/hooks/useContentCategoryOptions';
-
-const fallbackCategories = [{ id: ALL_CATEGORY_ID, label: 'All Videos' }, ...VIDEO_CATEGORIES];
+import { ALL_CATEGORY_ID } from '@/lib/constants/contentTaxonomy';
+import type { CategoryNavItem } from '@/lib/utils/contentCategoryNav';
 
 const categoryEmojiById: Record<string, string> = {
   [ALL_CATEGORY_ID]: '🎬',
@@ -19,13 +17,11 @@ const categoryEmojiById: Record<string, string> = {
   sermon: '📿',
 };
 
-export const VideoCategories = () => {
-  const { options } = useContentCategoryOptions({
-    scope: 'video',
-    includeAllOption: true,
-    allValue: ALL_CATEGORY_ID,
-    allLabel: 'All Videos',
-  });
+export type VideoCategoriesProps = {
+  categoryOptions: CategoryNavItem[];
+};
+
+export const VideoCategories = ({ categoryOptions }: VideoCategoriesProps) => {
   const [activeCategory, setActiveCategory] = useQueryState(
     'category',
     parseAsString.withDefault(ALL_CATEGORY_ID)
@@ -39,10 +35,7 @@ export const VideoCategories = () => {
     <section className="py-6 border-b border-border/50">
       <div className="container mx-auto px-4">
         <div className="flex flex-wrap justify-center gap-2 pb-2">
-          {(options.length > 1
-            ? options.map(option => ({ id: option.value, label: option.text }))
-            : fallbackCategories
-          ).map(category => (
+          {categoryOptions.map(category => (
             <motion.button
               key={category.id}
               onClick={() => handleCategoryChange(category.id)}

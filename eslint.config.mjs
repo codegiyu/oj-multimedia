@@ -61,6 +61,17 @@ const eslintConfig = [
         },
       ],
       '@typescript-eslint/no-explicit-any': 'warn',
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: 'framer-motion',
+              message: 'Use motion/react (package "motion") instead of framer-motion.',
+            },
+          ],
+        },
+      ],
     },
   },
 ];

@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { CheckCircle2, ThumbsUp, ArrowRight, BookOpen } from 'lucide-react';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';

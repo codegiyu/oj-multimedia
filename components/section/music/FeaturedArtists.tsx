@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { Users } from 'lucide-react';
 import { SectionComp } from '@/components/general/SectionComp';
 import { ArtistCard } from '@/components/cards/ArtistCard';

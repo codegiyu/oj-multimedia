@@ -8,7 +8,7 @@ import type { ArtistVideoListItem } from '@/lib/constants/endpoints';
 import type { ClickedRowDetails } from '@/components/general/TableRowDetailsDrawer';
 import { VideosDetailsDrawer } from './VideosDetailsDrawer';
 import { VideosTableContent } from './VideosTableContent';
-import { CreateVideoModal } from './CreateVideoModal';
+import { CreateVideoModalDynamic } from './CreateVideoModalDynamic';
 import { ApprovalModal, RejectModal } from '@/components/section/admin/shared';
 import { callApi } from '@/lib/services/callApi';
 import { RegularBtn } from '@/components/atoms/RegularBtn';
@@ -176,7 +176,7 @@ export function VideosPageClient({
             setClickedRowDetails={setClickedRowDetails}
           />
 
-          <CreateVideoModal
+          <CreateVideoModalDynamic
             open={createOpen}
             onOpenChange={open => {
               if (!open) setEditVideoId(null);

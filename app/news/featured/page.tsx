@@ -10,6 +10,8 @@ import { callPublicServerApi } from '@/lib/services/serverApi';
 import { mapPublicNewsToFeaturedStory } from '@/lib/utils/publicApiMappers';
 import { NEWS_TYPES } from '@/lib/constants/contentTaxonomy';
 import { normalizePublicCategoryByScope } from '@/lib/utils/contentCategoriesServer';
+import { fetchPublicCategoryNav } from '@/lib/utils/contentCategoryNav';
+import { newsCategoryNavFallback } from '@/lib/constants/categoryNavFallbacks';
 
 export const metadata: Metadata = {
   title: 'Featured Stories - News & Lifestyle Updates',
@@ -64,6 +66,10 @@ export default async function FeaturedStoriesPage({ searchParams }: FeaturedStor
 }
 
 async function FeaturedStoriesServer({ category }: { category: string }) {
-  const data = await fetchFeaturedStories(category);
-  return <FeaturedStoriesPageClient {...data} />;
+  const [data, categoryOptions] = await Promise.all([
+    fetchFeaturedStories(category),
+    fetchPublicCategoryNav('news', 'All Stories', newsCategoryNavFallback),
+  ]);
+
+  return <FeaturedStoriesPageClient {...data} categoryOptions={categoryOptions} />;
 }

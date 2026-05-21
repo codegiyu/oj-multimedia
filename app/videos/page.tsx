@@ -13,6 +13,8 @@ import { callPublicServerApi } from '@/lib/services/serverApi';
 import { VIDEO_TYPES } from '@/lib/constants/contentTaxonomy';
 import { filterByCategory } from '@/lib/utils/videos';
 import { normalizePublicCategoryByScope } from '@/lib/utils/contentCategoriesServer';
+import { fetchPublicCategoryNav } from '@/lib/utils/contentCategoryNav';
+import { videoCategoryNavFallback } from '@/lib/constants/categoryNavFallbacks';
 import {
   mapPublicVideoToTrendingVideo,
   mapPublicVideoToFeaturedVideo,
@@ -108,6 +110,10 @@ export default async function VideosPage({ searchParams }: VideosPageProps) {
 }
 
 async function VideosPageServer({ category }: { category: string }) {
-  const data = await fetchVideoSections(category);
-  return <VideoPageClient {...data} />;
+  const [data, categoryOptions] = await Promise.all([
+    fetchVideoSections(category),
+    fetchPublicCategoryNav('video', 'All Videos', videoCategoryNavFallback),
+  ]);
+
+  return <VideoPageClient {...data} categoryOptions={categoryOptions} />;
 }

@@ -10,6 +10,8 @@ import { filterByCategory } from '@/lib/utils/music';
 import { mapPublicMusicToChartSong } from '@/lib/utils/publicApiMappers';
 import { CHART_PERIOD_VALUES, MUSIC_TYPES } from '@/lib/constants/contentTaxonomy';
 import { normalizePublicCategoryByScope } from '@/lib/utils/contentCategoriesServer';
+import { fetchPublicCategoryNav } from '@/lib/utils/contentCategoryNav';
+import { musicCategoryNavFallback } from '@/lib/constants/categoryNavFallbacks';
 
 export const metadata: Metadata = {
   title: 'Top Charts - Music Rankings',
@@ -81,6 +83,10 @@ export default async function TopChartsPage({ searchParams }: TopChartsPageProps
 }
 
 async function TopChartsServer({ category, period }: { category: string; period: string }) {
-  const data = await fetchChartSongs(category, period);
-  return <TopChartsPageClient {...data} period={period} />;
+  const [data, categoryOptions] = await Promise.all([
+    fetchChartSongs(category, period),
+    fetchPublicCategoryNav('music', 'All Genres', musicCategoryNavFallback),
+  ]);
+
+  return <TopChartsPageClient {...data} categoryOptions={categoryOptions} period={period} />;
 }

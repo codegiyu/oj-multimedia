@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { Zap } from 'lucide-react';
 import { useRef } from 'react';
 import { SectionComp } from '@/components/general/SectionComp';

@@ -10,6 +10,8 @@ import { filterByCategory } from '@/lib/utils/music';
 import { mapPublicMusicToTrendingSong } from '@/lib/utils/publicApiMappers';
 import { MUSIC_TYPES } from '@/lib/constants/contentTaxonomy';
 import { normalizePublicCategoryByScope } from '@/lib/utils/contentCategoriesServer';
+import { fetchPublicCategoryNav } from '@/lib/utils/contentCategoryNav';
+import { musicCategoryNavFallback } from '@/lib/constants/categoryNavFallbacks';
 
 export const metadata: Metadata = {
   title: 'Trending Songs - Latest Music',
@@ -66,6 +68,10 @@ export default async function TrendingSongsPage({ searchParams }: TrendingSongsP
 }
 
 async function TrendingSongsServer({ category }: { category: string }) {
-  const data = await fetchTrendingSongs(category);
-  return <TrendingSongsPageClient {...data} />;
+  const [data, categoryOptions] = await Promise.all([
+    fetchTrendingSongs(category),
+    fetchPublicCategoryNav('music', 'All Genres', musicCategoryNavFallback),
+  ]);
+
+  return <TrendingSongsPageClient {...data} categoryOptions={categoryOptions} />;
 }

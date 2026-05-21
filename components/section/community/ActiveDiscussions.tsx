@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { MessageCircle, Users, TrendingUp, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { SectionComp } from '@/components/general/SectionComp';

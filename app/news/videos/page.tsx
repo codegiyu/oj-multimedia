@@ -10,6 +10,8 @@ import { callPublicServerApi } from '@/lib/services/serverApi';
 import { mapPublicNewsToVideoNewsItem } from '@/lib/utils/publicApiMappers';
 import { NEWS_TYPES } from '@/lib/constants/contentTaxonomy';
 import { normalizePublicCategoryByScope } from '@/lib/utils/contentCategoriesServer';
+import { fetchPublicCategoryNav } from '@/lib/utils/contentCategoryNav';
+import { newsCategoryNavFallback } from '@/lib/constants/categoryNavFallbacks';
 
 export const metadata: Metadata = {
   title: 'Video Stories - News & Lifestyle Updates',
@@ -64,6 +66,10 @@ export default async function VideoNewsPage({ searchParams }: VideoNewsPageProps
 }
 
 async function VideoNewsServer({ category }: { category: string }) {
-  const data = await fetchVideoNews(category);
-  return <VideoNewsPageClient {...data} />;
+  const [data, categoryOptions] = await Promise.all([
+    fetchVideoNews(category),
+    fetchPublicCategoryNav('news', 'All Stories', newsCategoryNavFallback),
+  ]);
+
+  return <VideoNewsPageClient {...data} categoryOptions={categoryOptions} />;
 }

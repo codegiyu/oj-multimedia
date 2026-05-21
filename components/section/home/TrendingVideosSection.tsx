@@ -8,7 +8,7 @@ import { VideoCard } from '@/components/cards/VideoCard';
 import { SectionComp } from '@/components/general/SectionComp';
 import { EmptyState } from '@/components/section/news/EmptyState';
 import { useQueryState, parseAsString } from 'nuqs';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 
 export interface TrendingVideoItem {
   _id: string;

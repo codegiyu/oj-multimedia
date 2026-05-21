@@ -1,7 +1,7 @@
 'use client';
 
 import { Upload, Music, Video, BookOpen } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { RegularBtn } from '@/components/atoms/RegularBtn';
 
 export const UploadCTA = () => {

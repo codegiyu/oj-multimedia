@@ -1,13 +1,13 @@
 'use client';
 
 import { useEffect, useCallback } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { ArrowLeft, Clock, Eye, Calendar, Share2, Bookmark, Music } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import type { MusicItemWithArtist } from '@/lib/utils/music';
-import { AudioPlayer } from './AudioPlayer';
+import { AudioPlayerDynamic } from './AudioPlayerDynamic';
 import { DownloadButton } from './DownloadButton';
 import { MusicCard } from '@/components/cards/MusicCard';
 import { sendContentAnalyticsEvent } from '@/lib/services/contentAnalytics';
@@ -136,7 +136,7 @@ export const MusicDetailPageClient = ({ musicItem, relatedSongs }: MusicDetailPa
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
               className="mb-8">
-              <AudioPlayer
+              <AudioPlayerDynamic
                 audioUrl={musicItem.audioUrl}
                 title={musicItem.title}
                 artist={

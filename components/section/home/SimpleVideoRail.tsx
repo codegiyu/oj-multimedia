@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { Clapperboard } from 'lucide-react';
 import { VideoCard } from '@/components/cards/VideoCard';
 import { SectionComp } from '@/components/general/SectionComp';

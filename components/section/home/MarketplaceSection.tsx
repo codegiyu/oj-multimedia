@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { ShoppingBag, Store, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';

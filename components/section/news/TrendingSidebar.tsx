@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { TrendingUp, Flame, Clock, User, Calendar } from 'lucide-react';
 import Link from 'next/link';
 
