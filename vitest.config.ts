@@ -1,16 +1,1 @@
-import { defineConfig } from 'vitest/config';
-import { fileURLToPath } from 'node:url';
-
-export default defineConfig({
-  test: {
-    environment: 'jsdom',
-    globals: true,
-    include: ['**/*.test.ts'],
-    clearMocks: true,
-  },
-  resolve: {
-    alias: {
-      '@': fileURLToPath(new URL('./', import.meta.url)),
-    },
-  },
-});
+export { default } from './vitest.unit.config';
