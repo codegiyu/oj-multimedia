@@ -239,6 +239,7 @@ next-16-template/
 - `npm run test:unit` / `test:integration` / `test:e2e` / `test:phase:*` - Test suites (see `tests/README.md`)
 - `npm run audit` - Dependency vulnerability report
 - `npm run audit:ci` - Fail on high or critical vulnerabilities
+- `npm run release:check` - Full pre-deploy gate (checks, integration tests, audit)
 
 ## Release checklist
 
@@ -256,6 +257,8 @@ Before deploy:
 - [ ] WCAG 2.2 AA spot-check on sign-in, search, and admin list journeys
 - [ ] Backend `/ready` green and API error rate within budget
 - [ ] Backend runbooks linked from ops docs: `oj-backend/docs/runbooks`
+- [ ] Optional `NEXT_PUBLIC_SENTRY_DSN` when error monitoring is wired (see `docs/OBSERVABILITY.md`)
+- [ ] Workspace [release guide](../docs/RELEASE.md) followed for coordinated deploy
 
 ## 🎨 Admin Panel
 
