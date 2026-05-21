@@ -3,8 +3,8 @@ import { buildUpstreamUrl } from './upstreamUrl';
 
 describe('buildUpstreamUrl', () => {
   it('joins base URL, path, and query', () => {
-    expect(buildUpstreamUrl('https://api.example.com', '/public/music', '?page=1')).toBe(
-      'https://api.example.com/public/music?page=1'
+    expect(buildUpstreamUrl('https://api.example.com', '/api/v1/public/music', '?page=1')).toBe(
+      'https://api.example.com/api/v1/public/music?page=1'
     );
   });
 
