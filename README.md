@@ -235,7 +235,19 @@ next-16-template/
 - `npm run lint:fix` - Fix ESLint errors automatically
 - `npm run format` - Format code with Prettier
 - `npm run format:check` - Check code formatting
-- `npm run checks` - Run lint, format check, and build
+- `npm run checks` - Run lint, format check, unit tests, and build
+- `npm run test:unit` / `test:integration` / `test:e2e` / `test:phase:*` - Test suites (see `tests/README.md`)
+- `npm run audit` - Dependency vulnerability report
+- `npm run audit:ci` - Fail on high or critical vulnerabilities
+
+## Release checklist
+
+Before deploy:
+
+- [ ] `npm run checks` (lint, format, unit tests, production build)
+- [ ] `npm run audit:ci`
+- [ ] Environment variables set in hosting (no secrets in git)
+- [ ] `PLAYWRIGHT_USE_WEBSERVER=1 npm run test:e2e` when validating browser flows
 
 ## 🎨 Admin Panel
 
