@@ -1,8 +1,10 @@
 'use client';
 
+import { useEffect } from 'react';
 import { Btns404Page } from '@/components/general/Btns404Page';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { SectionContainer } from '@/components/general/SectionContainer';
+import { reportClientError } from '@/lib/observability/clientErrorReporting';
 
 export default function Error({
   error,
@@ -11,6 +13,10 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  useEffect(() => {
+    void reportClientError(error, { digest: error.digest, boundary: 'app/error' });
+  }, [error]);
+
   return (
     <MainLayout>
       <div className="min-h-screen bg-background flex items-center justify-center px-4">

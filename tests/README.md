@@ -39,3 +39,9 @@ NFR batch (motion, dynamic imports, category SSR, performance budgets):
 - Server-fed category nav: `fetchPublicCategoryNav` + `categoryOptions` on music/video/news pages.
 - `npm run checks` ends with `checks:performance` (bundle budgets); optional `LIGHTHOUSE_URL=... npm run lighthouse:budget`; `npm run analyze` for bundle report.
 - Tests: `tests/phase/integration/nfr-performance.contract.test.ts`.
+
+Phase 9 (observability completion):
+
+- Client error hook: `lib/observability/clientErrorReporting.ts` + root `app/error.tsx` reporting.
+- Docs: `docs/OBSERVABILITY.md`; workspace `docs/RELEASE.md`; `npm run release:check`.
+- Tests: `tests/unit/clientErrorReporting.test.ts`, `tests/phase/integration/phase9.contract.test.ts`.
