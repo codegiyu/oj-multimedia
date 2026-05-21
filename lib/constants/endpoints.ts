@@ -557,7 +557,7 @@ export type SearchResultType =
   | 'artist';
 
 /**
- * Query params for GET /public/search.
+ * Query params for GET /api/v1/public/search.
  * Build query string as ?q=...&type=...&page=...&limit=...
  * - q: required for results; empty q returns empty results.
  * - type: optional; one of SearchResultType or 'community' (backend expands to all community types).
@@ -1201,487 +1201,514 @@ export interface AllEndpoints {
   >;
 }
 
+/** Backend REST prefix; every `ENDPOINTS` path includes this segment. */
+export const API_V1_PREFIX = '/api/v1' as const;
+
 export const ENDPOINTS: Record<keyof AllEndpoints, EndpointDetails> = {
   // Authentication
   AUTH_LOGIN: {
-    path: '/auth/login',
+    path: '/api/v1/auth/login',
     method: 'POST',
     isNotAuthenticated: true,
   },
   AUTH_GOOGLE_LOGIN: {
-    path: '/auth/google',
+    path: '/api/v1/auth/google',
     method: 'POST',
     isNotAuthenticated: true,
   },
   AUTH_LOGOUT: {
-    path: '/auth/logout',
+    path: '/api/v1/auth/logout',
     method: 'POST',
   },
   AUTH_SESSION: {
-    path: '/auth/session',
+    path: '/api/v1/auth/session',
     method: 'GET',
   },
   AUTH_REQUEST_OTP: {
-    path: '/auth/request-otp',
+    path: '/api/v1/auth/request-otp',
     method: 'POST',
     isNotAuthenticated: true,
   },
   AUTH_VERIFY_OTP: {
-    path: '/auth/verify-otp',
+    path: '/api/v1/auth/verify-otp',
     method: 'POST',
     isNotAuthenticated: true,
   },
   AUTH_REQUEST_PASSWORD_RESET: {
-    path: '/auth/request-password-reset',
+    path: '/api/v1/auth/request-password-reset',
     method: 'POST',
     isNotAuthenticated: true,
   },
   AUTH_RESET_PASSWORD: {
-    path: '/auth/reset-password',
+    path: '/api/v1/auth/reset-password',
     method: 'POST',
     isNotAuthenticated: true,
   },
   AUTH_CHANGE_PASSWORD: {
-    path: '/auth/change-password',
+    path: '/api/v1/auth/change-password',
     method: 'PATCH',
   },
 
   // User account (profile & wishlist)
   USER_GET_ME: {
-    path: '/user/me',
+    path: '/api/v1/user/me',
     method: 'GET',
   },
   USER_UPDATE_ME: {
-    path: '/user/me',
+    path: '/api/v1/user/me',
     method: 'PATCH',
   },
   USER_WISHLIST_LIST: {
-    path: '/user/wishlist',
+    path: '/api/v1/user/wishlist',
     method: 'GET',
   },
   USER_WISHLIST_ADD: {
-    path: '/user/wishlist',
+    path: '/api/v1/user/wishlist',
     method: 'POST',
   },
   USER_WISHLIST_REMOVE: {
-    path: '/user/wishlist', // /:productId
+    path: '/api/v1/user/wishlist', // /:productId
     method: 'DELETE',
   },
 
   // User cart (marketplace)
-  USER_CART_GET: { path: '/user/cart', method: 'GET' },
-  USER_CART_ADD: { path: '/user/cart', method: 'POST' },
-  USER_CART_UPDATE: { path: '/user/cart', method: 'PATCH' },
-  USER_CART_REMOVE: { path: '/user/cart', method: 'DELETE' }, // /:productId
-  USER_CART_CLEAR: { path: '/user/cart', method: 'DELETE' },
+  USER_CART_GET: { path: '/api/v1/user/cart', method: 'GET' },
+  USER_CART_ADD: { path: '/api/v1/user/cart', method: 'POST' },
+  USER_CART_UPDATE: { path: '/api/v1/user/cart', method: 'PATCH' },
+  USER_CART_REMOVE: { path: '/api/v1/user/cart', method: 'DELETE' }, // /:productId
+  USER_CART_CLEAR: { path: '/api/v1/user/cart', method: 'DELETE' },
 
   // File Upload (Public)
   GENERATE_PRESIGNED_URL: {
-    path: '/upload/presigned-url',
+    path: '/api/v1/upload/presigned-url',
     method: 'POST',
     isNotAuthenticated: true,
   },
 
   // File Upload (Admin)
   ADMIN_GENERATE_PRESIGNED_URL: {
-    path: '/admin/upload/presigned-url',
+    path: '/api/v1/admin/upload/presigned-url',
     method: 'POST',
   },
 
   // Site Settings (Public)
   GET_SITE_SETTINGS: {
-    path: '/site-settings', // /:slice
+    path: '/api/v1/site-settings', // /:slice
     method: 'GET',
     isNotAuthenticated: true,
   },
 
   // Site Settings (Admin)
   ADMIN_UPDATE_SITE_SETTINGS: {
-    path: '/admin/site-settings',
+    path: '/api/v1/admin/site-settings',
     method: 'PATCH',
   },
 
-  ADMIN_GET_ME: { path: '/admin/me', method: 'GET' },
-  ADMIN_UPDATE_ME: { path: '/admin/me', method: 'PATCH' },
+  ADMIN_GET_ME: { path: '/api/v1/admin/me', method: 'GET' },
+  ADMIN_UPDATE_ME: { path: '/api/v1/admin/me', method: 'PATCH' },
 
   // Notifications
-  NOTIFICATIONS_LIST: { path: '/notifications', method: 'GET' },
-  NOTIFICATIONS_CREATE: { path: '/notifications/create', method: 'POST' },
+  NOTIFICATIONS_LIST: { path: '/api/v1/notifications', method: 'GET' },
+  NOTIFICATIONS_CREATE: { path: '/api/v1/notifications/create', method: 'POST' },
   NOTIFICATIONS_READ_ONE: {
-    path: '/notifications/read', // /:notificationId
+    path: '/api/v1/notifications/read', // /:notificationId
     method: 'PATCH',
   },
-  NOTIFICATIONS_READ_ALL: { path: '/notifications/read-all', method: 'PATCH' },
-  NOTIFICATIONS_GET_PREFERENCES: { path: '/notifications/preferences', method: 'GET' },
-  NOTIFICATIONS_UPDATE_PREFERENCES: { path: '/notifications/preferences', method: 'PATCH' },
-  NOTIFICATIONS_UPDATE_PUSH_TOKEN: { path: '/notifications/push-token', method: 'PATCH' },
+  NOTIFICATIONS_READ_ALL: { path: '/api/v1/notifications/read-all', method: 'PATCH' },
+  NOTIFICATIONS_GET_PREFERENCES: { path: '/api/v1/notifications/preferences', method: 'GET' },
+  NOTIFICATIONS_UPDATE_PREFERENCES: { path: '/api/v1/notifications/preferences', method: 'PATCH' },
+  NOTIFICATIONS_UPDATE_PUSH_TOKEN: { path: '/api/v1/notifications/push-token', method: 'PATCH' },
 
   // Document verify
-  DOCUMENTS_VERIFY: { path: '/documents/verify', method: 'POST' },
+  DOCUMENTS_VERIFY: { path: '/api/v1/documents/verify', method: 'POST' },
 
   // Documents (Admin)
-  ADMIN_DOCUMENTS_LIST: { path: '/admin/documents', method: 'GET' },
+  ADMIN_DOCUMENTS_LIST: { path: '/api/v1/admin/documents', method: 'GET' },
   ADMIN_DOCUMENT_DETAILS: {
-    path: '/admin/documents', // /:documentId
+    path: '/api/v1/admin/documents', // /:documentId
     method: 'GET',
   },
   ADMIN_DOCUMENTS_VERIFY: {
-    path: '/admin/documents/verify', // /:documentId
+    path: '/api/v1/admin/documents/verify', // /:documentId
     method: 'POST',
   },
 
   // Email logs (Admin)
-  ADMIN_EMAIL_LOGS_LIST: { path: '/admin/email-logs', method: 'GET' },
+  ADMIN_EMAIL_LOGS_LIST: { path: '/api/v1/admin/email-logs', method: 'GET' },
   ADMIN_EMAIL_LOG_DETAILS: {
-    path: '/admin/email-logs', // /:emailLogId
+    path: '/api/v1/admin/email-logs', // /:emailLogId
     method: 'GET',
   },
   ADMIN_EMAIL_LOGS_RESEND: {
-    path: '/admin/email-logs/resend', // /:emailLogId
+    path: '/api/v1/admin/email-logs/resend', // /:emailLogId
     method: 'POST',
   },
 
-  ADMIN_CONTACT_SUBMISSIONS_LIST: { path: '/admin/contact-submissions', method: 'GET' },
+  ADMIN_CONTACT_SUBMISSIONS_LIST: { path: '/api/v1/admin/contact-submissions', method: 'GET' },
 
-  ADMIN_USERS_SEARCH: { path: '/admin/users', method: 'GET' },
+  ADMIN_USERS_SEARCH: { path: '/api/v1/admin/users', method: 'GET' },
 
-  ADMIN_MUSIC_LIST: { path: '/admin/music', method: 'GET' },
-  ADMIN_MUSIC_ITEM: { path: '/admin/music', method: 'GET' },
-  ADMIN_MUSIC_CREATE: { path: '/admin/music', method: 'POST' },
-  ADMIN_MUSIC_UPDATE: { path: '/admin/music', method: 'PATCH' },
-  ADMIN_MUSIC_DELETE: { path: '/admin/music', method: 'DELETE' },
-  ADMIN_MUSIC_APPROVE: { path: '/admin/music', method: 'POST' },
-  ADMIN_MUSIC_REJECT: { path: '/admin/music', method: 'POST' },
+  ADMIN_MUSIC_LIST: { path: '/api/v1/admin/music', method: 'GET' },
+  ADMIN_MUSIC_ITEM: { path: '/api/v1/admin/music', method: 'GET' },
+  ADMIN_MUSIC_CREATE: { path: '/api/v1/admin/music', method: 'POST' },
+  ADMIN_MUSIC_UPDATE: { path: '/api/v1/admin/music', method: 'PATCH' },
+  ADMIN_MUSIC_DELETE: { path: '/api/v1/admin/music', method: 'DELETE' },
+  ADMIN_MUSIC_APPROVE: { path: '/api/v1/admin/music', method: 'POST' },
+  ADMIN_MUSIC_REJECT: { path: '/api/v1/admin/music', method: 'POST' },
 
-  ADMIN_VIDEOS_LIST: { path: '/admin/videos', method: 'GET' },
-  ADMIN_VIDEO_ITEM: { path: '/admin/videos', method: 'GET' },
-  ADMIN_VIDEO_CREATE: { path: '/admin/videos', method: 'POST' },
-  ADMIN_VIDEO_UPDATE: { path: '/admin/videos', method: 'PATCH' },
-  ADMIN_VIDEO_DELETE: { path: '/admin/videos', method: 'DELETE' },
-  ADMIN_VIDEO_APPROVE: { path: '/admin/videos', method: 'POST' },
-  ADMIN_VIDEO_REJECT: { path: '/admin/videos', method: 'POST' },
+  ADMIN_VIDEOS_LIST: { path: '/api/v1/admin/videos', method: 'GET' },
+  ADMIN_VIDEO_ITEM: { path: '/api/v1/admin/videos', method: 'GET' },
+  ADMIN_VIDEO_CREATE: { path: '/api/v1/admin/videos', method: 'POST' },
+  ADMIN_VIDEO_UPDATE: { path: '/api/v1/admin/videos', method: 'PATCH' },
+  ADMIN_VIDEO_DELETE: { path: '/api/v1/admin/videos', method: 'DELETE' },
+  ADMIN_VIDEO_APPROVE: { path: '/api/v1/admin/videos', method: 'POST' },
+  ADMIN_VIDEO_REJECT: { path: '/api/v1/admin/videos', method: 'POST' },
 
-  ADMIN_NEWS_LIST: { path: '/admin/news', method: 'GET' },
-  ADMIN_NEWS_ITEM: { path: '/admin/news', method: 'GET' },
-  ADMIN_NEWS_CREATE: { path: '/admin/news', method: 'POST' },
-  ADMIN_NEWS_UPDATE: { path: '/admin/news', method: 'PATCH' },
-  ADMIN_NEWS_DELETE: { path: '/admin/news', method: 'DELETE' },
+  ADMIN_NEWS_LIST: { path: '/api/v1/admin/news', method: 'GET' },
+  ADMIN_NEWS_ITEM: { path: '/api/v1/admin/news', method: 'GET' },
+  ADMIN_NEWS_CREATE: { path: '/api/v1/admin/news', method: 'POST' },
+  ADMIN_NEWS_UPDATE: { path: '/api/v1/admin/news', method: 'PATCH' },
+  ADMIN_NEWS_DELETE: { path: '/api/v1/admin/news', method: 'DELETE' },
 
-  ADMIN_ARTISTS_LIST: { path: '/admin/artists', method: 'GET' },
-  ADMIN_ARTIST_ITEM: { path: '/admin/artists', method: 'GET' },
-  ADMIN_ARTIST_CREATE: { path: '/admin/artists', method: 'POST' },
-  ADMIN_ARTIST_UPDATE: { path: '/admin/artists', method: 'PATCH' },
-  ADMIN_ARTIST_DELETE: { path: '/admin/artists', method: 'DELETE' },
-  ADMIN_ARTIST_DASHBOARD_STATS: { path: '/admin/artists', method: 'GET' },
+  ADMIN_ARTISTS_LIST: { path: '/api/v1/admin/artists', method: 'GET' },
+  ADMIN_ARTIST_ITEM: { path: '/api/v1/admin/artists', method: 'GET' },
+  ADMIN_ARTIST_CREATE: { path: '/api/v1/admin/artists', method: 'POST' },
+  ADMIN_ARTIST_UPDATE: { path: '/api/v1/admin/artists', method: 'PATCH' },
+  ADMIN_ARTIST_DELETE: { path: '/api/v1/admin/artists', method: 'DELETE' },
+  ADMIN_ARTIST_DASHBOARD_STATS: { path: '/api/v1/admin/artists', method: 'GET' },
 
-  ADMIN_PASTORS_LIST: { path: '/admin/pastors', method: 'GET' },
-  ADMIN_PASTOR_ITEM: { path: '/admin/pastors', method: 'GET' },
-  ADMIN_PASTOR_CREATE: { path: '/admin/pastors', method: 'POST' },
-  ADMIN_PASTOR_UPDATE: { path: '/admin/pastors', method: 'PATCH' },
-  ADMIN_PASTOR_DELETE: { path: '/admin/pastors', method: 'DELETE' },
+  ADMIN_PASTORS_LIST: { path: '/api/v1/admin/pastors', method: 'GET' },
+  ADMIN_PASTOR_ITEM: { path: '/api/v1/admin/pastors', method: 'GET' },
+  ADMIN_PASTOR_CREATE: { path: '/api/v1/admin/pastors', method: 'POST' },
+  ADMIN_PASTOR_UPDATE: { path: '/api/v1/admin/pastors', method: 'PATCH' },
+  ADMIN_PASTOR_DELETE: { path: '/api/v1/admin/pastors', method: 'DELETE' },
 
-  ADMIN_DEVOTIONALS_LIST: { path: '/admin/devotionals', method: 'GET' },
-  ADMIN_DEVOTIONAL_ITEM: { path: '/admin/devotionals', method: 'GET' },
-  ADMIN_DEVOTIONAL_CREATE: { path: '/admin/devotionals', method: 'POST' },
-  ADMIN_DEVOTIONAL_UPDATE: { path: '/admin/devotionals', method: 'PATCH' },
-  ADMIN_DEVOTIONAL_DELETE: { path: '/admin/devotionals', method: 'DELETE' },
-  ADMIN_DEVOTIONAL_APPROVE: { path: '/admin/devotionals', method: 'POST' },
-  ADMIN_DEVOTIONAL_REJECT: { path: '/admin/devotionals', method: 'POST' },
+  ADMIN_DEVOTIONALS_LIST: { path: '/api/v1/admin/devotionals', method: 'GET' },
+  ADMIN_DEVOTIONAL_ITEM: { path: '/api/v1/admin/devotionals', method: 'GET' },
+  ADMIN_DEVOTIONAL_CREATE: { path: '/api/v1/admin/devotionals', method: 'POST' },
+  ADMIN_DEVOTIONAL_UPDATE: { path: '/api/v1/admin/devotionals', method: 'PATCH' },
+  ADMIN_DEVOTIONAL_DELETE: { path: '/api/v1/admin/devotionals', method: 'DELETE' },
+  ADMIN_DEVOTIONAL_APPROVE: { path: '/api/v1/admin/devotionals', method: 'POST' },
+  ADMIN_DEVOTIONAL_REJECT: { path: '/api/v1/admin/devotionals', method: 'POST' },
 
-  ADMIN_GOSPEL_VERSES_LIST: { path: '/admin/gospel-verses', method: 'GET' },
+  ADMIN_GOSPEL_VERSES_LIST: { path: '/api/v1/admin/gospel-verses', method: 'GET' },
 
-  ADMIN_TESTIMONIES_LIST: { path: '/admin/testimonies', method: 'GET' },
-  ADMIN_TESTIMONY_ITEM: { path: '/admin/testimonies', method: 'GET' },
-  ADMIN_TESTIMONY_CREATE: { path: '/admin/testimonies', method: 'POST' },
-  ADMIN_TESTIMONY_UPDATE: { path: '/admin/testimonies', method: 'PATCH' },
-  ADMIN_TESTIMONY_DELETE: { path: '/admin/testimonies', method: 'DELETE' },
-  ADMIN_TESTIMONY_APPROVE: { path: '/admin/testimonies', method: 'POST' },
-  ADMIN_TESTIMONY_REJECT: { path: '/admin/testimonies', method: 'POST' },
+  ADMIN_TESTIMONIES_LIST: { path: '/api/v1/admin/testimonies', method: 'GET' },
+  ADMIN_TESTIMONY_ITEM: { path: '/api/v1/admin/testimonies', method: 'GET' },
+  ADMIN_TESTIMONY_CREATE: { path: '/api/v1/admin/testimonies', method: 'POST' },
+  ADMIN_TESTIMONY_UPDATE: { path: '/api/v1/admin/testimonies', method: 'PATCH' },
+  ADMIN_TESTIMONY_DELETE: { path: '/api/v1/admin/testimonies', method: 'DELETE' },
+  ADMIN_TESTIMONY_APPROVE: { path: '/api/v1/admin/testimonies', method: 'POST' },
+  ADMIN_TESTIMONY_REJECT: { path: '/api/v1/admin/testimonies', method: 'POST' },
 
-  ADMIN_PRAYER_REQUESTS_LIST: { path: '/admin/prayer-requests', method: 'GET' },
-  ADMIN_PRAYER_REQUEST_ITEM: { path: '/admin/prayer-requests', method: 'GET' },
-  ADMIN_PRAYER_REQUEST_CREATE: { path: '/admin/prayer-requests', method: 'POST' },
-  ADMIN_PRAYER_REQUEST_UPDATE: { path: '/admin/prayer-requests', method: 'PATCH' },
-  ADMIN_PRAYER_REQUEST_DELETE: { path: '/admin/prayer-requests', method: 'DELETE' },
-  ADMIN_PRAYER_REQUEST_ANSWER: { path: '/admin/prayer-requests', method: 'POST' },
+  ADMIN_PRAYER_REQUESTS_LIST: { path: '/api/v1/admin/prayer-requests', method: 'GET' },
+  ADMIN_PRAYER_REQUEST_ITEM: { path: '/api/v1/admin/prayer-requests', method: 'GET' },
+  ADMIN_PRAYER_REQUEST_CREATE: { path: '/api/v1/admin/prayer-requests', method: 'POST' },
+  ADMIN_PRAYER_REQUEST_UPDATE: { path: '/api/v1/admin/prayer-requests', method: 'PATCH' },
+  ADMIN_PRAYER_REQUEST_DELETE: { path: '/api/v1/admin/prayer-requests', method: 'DELETE' },
+  ADMIN_PRAYER_REQUEST_ANSWER: { path: '/api/v1/admin/prayer-requests', method: 'POST' },
 
-  ADMIN_ASK_PASTOR_LIST: { path: '/admin/ask-a-pastor/questions', method: 'GET' },
-  ADMIN_ASK_PASTOR_ITEM: { path: '/admin/ask-a-pastor/questions', method: 'GET' },
-  ADMIN_ASK_PASTOR_UPDATE: { path: '/admin/ask-a-pastor/questions', method: 'PATCH' },
-  ADMIN_ASK_PASTOR_DELETE: { path: '/admin/ask-a-pastor/questions', method: 'DELETE' },
-  ADMIN_ASK_PASTOR_ASSIGN_PASTOR: { path: '/admin/ask-a-pastor/questions', method: 'POST' },
-  ADMIN_ASK_PASTOR_REJECT: { path: '/admin/ask-a-pastor/questions', method: 'POST' },
+  ADMIN_ASK_PASTOR_LIST: { path: '/api/v1/admin/ask-a-pastor/questions', method: 'GET' },
+  ADMIN_ASK_PASTOR_ITEM: { path: '/api/v1/admin/ask-a-pastor/questions', method: 'GET' },
+  ADMIN_ASK_PASTOR_UPDATE: { path: '/api/v1/admin/ask-a-pastor/questions', method: 'PATCH' },
+  ADMIN_ASK_PASTOR_DELETE: { path: '/api/v1/admin/ask-a-pastor/questions', method: 'DELETE' },
+  ADMIN_ASK_PASTOR_ASSIGN_PASTOR: { path: '/api/v1/admin/ask-a-pastor/questions', method: 'POST' },
+  ADMIN_ASK_PASTOR_REJECT: { path: '/api/v1/admin/ask-a-pastor/questions', method: 'POST' },
 
-  ADMIN_POLLS_LIST: { path: '/admin/polls', method: 'GET' },
-  ADMIN_POLL_ITEM: { path: '/admin/polls', method: 'GET' },
-  ADMIN_POLL_CREATE: { path: '/admin/polls', method: 'POST' },
-  ADMIN_POLL_UPDATE: { path: '/admin/polls', method: 'PATCH' },
-  ADMIN_POLL_DELETE: { path: '/admin/polls', method: 'DELETE' },
-  ADMIN_POLL_OPEN: { path: '/admin/polls', method: 'POST' },
-  ADMIN_POLL_CLOSE: { path: '/admin/polls', method: 'POST' },
+  ADMIN_POLLS_LIST: { path: '/api/v1/admin/polls', method: 'GET' },
+  ADMIN_POLL_ITEM: { path: '/api/v1/admin/polls', method: 'GET' },
+  ADMIN_POLL_CREATE: { path: '/api/v1/admin/polls', method: 'POST' },
+  ADMIN_POLL_UPDATE: { path: '/api/v1/admin/polls', method: 'PATCH' },
+  ADMIN_POLL_DELETE: { path: '/api/v1/admin/polls', method: 'DELETE' },
+  ADMIN_POLL_OPEN: { path: '/api/v1/admin/polls', method: 'POST' },
+  ADMIN_POLL_CLOSE: { path: '/api/v1/admin/polls', method: 'POST' },
 
-  ADMIN_RESOURCES_LIST: { path: '/admin/resources', method: 'GET' },
-  ADMIN_RESOURCE_ITEM: { path: '/admin/resources', method: 'GET' },
-  ADMIN_RESOURCE_CREATE: { path: '/admin/resources', method: 'POST' },
-  ADMIN_RESOURCE_UPDATE: { path: '/admin/resources', method: 'PATCH' },
-  ADMIN_RESOURCE_DELETE: { path: '/admin/resources', method: 'DELETE' },
-  ADMIN_RESOURCE_APPROVE: { path: '/admin/resources', method: 'POST' },
-  ADMIN_RESOURCE_REJECT: { path: '/admin/resources', method: 'POST' },
+  ADMIN_RESOURCES_LIST: { path: '/api/v1/admin/resources', method: 'GET' },
+  ADMIN_RESOURCE_ITEM: { path: '/api/v1/admin/resources', method: 'GET' },
+  ADMIN_RESOURCE_CREATE: { path: '/api/v1/admin/resources', method: 'POST' },
+  ADMIN_RESOURCE_UPDATE: { path: '/api/v1/admin/resources', method: 'PATCH' },
+  ADMIN_RESOURCE_DELETE: { path: '/api/v1/admin/resources', method: 'DELETE' },
+  ADMIN_RESOURCE_APPROVE: { path: '/api/v1/admin/resources', method: 'POST' },
+  ADMIN_RESOURCE_REJECT: { path: '/api/v1/admin/resources', method: 'POST' },
 
-  ADMIN_VENDORS_LIST: { path: '/admin/vendors', method: 'GET' },
-  ADMIN_VENDOR_ITEM: { path: '/admin/vendors', method: 'GET' },
-  ADMIN_VENDOR_CREATE: { path: '/admin/vendors', method: 'POST' },
-  ADMIN_VENDOR_UPDATE: { path: '/admin/vendors', method: 'PATCH' },
-  ADMIN_VENDOR_APPROVE: { path: '/admin/vendors', method: 'POST' },
-  ADMIN_VENDOR_REJECT: { path: '/admin/vendors', method: 'POST' },
+  ADMIN_VENDORS_LIST: { path: '/api/v1/admin/vendors', method: 'GET' },
+  ADMIN_VENDOR_ITEM: { path: '/api/v1/admin/vendors', method: 'GET' },
+  ADMIN_VENDOR_CREATE: { path: '/api/v1/admin/vendors', method: 'POST' },
+  ADMIN_VENDOR_UPDATE: { path: '/api/v1/admin/vendors', method: 'PATCH' },
+  ADMIN_VENDOR_APPROVE: { path: '/api/v1/admin/vendors', method: 'POST' },
+  ADMIN_VENDOR_REJECT: { path: '/api/v1/admin/vendors', method: 'POST' },
 
-  ADMIN_PRODUCTS_LIST: { path: '/admin/products', method: 'GET' },
-  ADMIN_PRODUCT_ITEM: { path: '/admin/products', method: 'GET' },
-  ADMIN_PRODUCT_CREATE: { path: '/admin/products', method: 'POST' },
-  ADMIN_PRODUCT_UPDATE: { path: '/admin/products', method: 'PATCH' },
-  ADMIN_PRODUCT_DELETE: { path: '/admin/products', method: 'DELETE' },
-  ADMIN_PRODUCT_APPROVE: { path: '/admin/products', method: 'POST' },
-  ADMIN_PRODUCT_REJECT: { path: '/admin/products', method: 'POST' },
+  ADMIN_PRODUCTS_LIST: { path: '/api/v1/admin/products', method: 'GET' },
+  ADMIN_PRODUCT_ITEM: { path: '/api/v1/admin/products', method: 'GET' },
+  ADMIN_PRODUCT_CREATE: { path: '/api/v1/admin/products', method: 'POST' },
+  ADMIN_PRODUCT_UPDATE: { path: '/api/v1/admin/products', method: 'PATCH' },
+  ADMIN_PRODUCT_DELETE: { path: '/api/v1/admin/products', method: 'DELETE' },
+  ADMIN_PRODUCT_APPROVE: { path: '/api/v1/admin/products', method: 'POST' },
+  ADMIN_PRODUCT_REJECT: { path: '/api/v1/admin/products', method: 'POST' },
 
-  ADMIN_CONTENT_CATEGORIES_LIST: { path: '/admin/content-categories', method: 'GET' },
-  ADMIN_CONTENT_CATEGORIES_CREATE: { path: '/admin/content-categories', method: 'POST' },
-  ADMIN_CONTENT_CATEGORIES_UPDATE: { path: '/admin/content-categories', method: 'PATCH' },
-  ADMIN_CONTENT_CATEGORIES_DELETE: { path: '/admin/content-categories', method: 'DELETE' },
+  ADMIN_CONTENT_CATEGORIES_LIST: { path: '/api/v1/admin/content-categories', method: 'GET' },
+  ADMIN_CONTENT_CATEGORIES_CREATE: { path: '/api/v1/admin/content-categories', method: 'POST' },
+  ADMIN_CONTENT_CATEGORIES_UPDATE: { path: '/api/v1/admin/content-categories', method: 'PATCH' },
+  ADMIN_CONTENT_CATEGORIES_DELETE: { path: '/api/v1/admin/content-categories', method: 'DELETE' },
 
-  ADMIN_HOME_ADVERTS_LIST: { path: '/admin/home-adverts', method: 'GET' },
-  ADMIN_HOME_ADVERTS_CREATE: { path: '/admin/home-adverts', method: 'POST' },
-  ADMIN_HOME_ADVERTS_UPDATE: { path: '/admin/home-adverts', method: 'PATCH' },
-  ADMIN_HOME_ADVERTS_DELETE: { path: '/admin/home-adverts', method: 'DELETE' },
+  ADMIN_HOME_ADVERTS_LIST: { path: '/api/v1/admin/home-adverts', method: 'GET' },
+  ADMIN_HOME_ADVERTS_CREATE: { path: '/api/v1/admin/home-adverts', method: 'POST' },
+  ADMIN_HOME_ADVERTS_UPDATE: { path: '/api/v1/admin/home-adverts', method: 'PATCH' },
+  ADMIN_HOME_ADVERTS_DELETE: { path: '/api/v1/admin/home-adverts', method: 'DELETE' },
 
-  ADMIN_ORDERS_LIST: { path: '/admin/orders', method: 'GET' },
-  ADMIN_ORDER_ITEM: { path: '/admin/orders', method: 'GET' },
+  ADMIN_ORDERS_LIST: { path: '/api/v1/admin/orders', method: 'GET' },
+  ADMIN_ORDER_ITEM: { path: '/api/v1/admin/orders', method: 'GET' },
 
   // Marketplace
   MARKETPLACE_GET_CATEGORIES: {
-    path: '/marketplace/categories',
+    path: '/api/v1/marketplace/categories',
     method: 'GET',
     isNotAuthenticated: true,
   },
   MARKETPLACE_GET_SUBCATEGORIES: {
-    path: '/marketplace/subcategories',
+    path: '/api/v1/marketplace/subcategories',
     method: 'GET',
     isNotAuthenticated: true,
   },
   MARKETPLACE_GET_VENDORS: {
-    path: '/marketplace/vendors',
+    path: '/api/v1/marketplace/vendors',
     method: 'GET',
     isNotAuthenticated: true,
   },
   MARKETPLACE_GET_VENDOR_BY_SLUG: {
-    path: '/marketplace/vendors', // /:slug
+    path: '/api/v1/marketplace/vendors', // /:slug
     method: 'GET',
     isNotAuthenticated: true,
   },
   MARKETPLACE_GET_PRODUCTS: {
-    path: '/marketplace/products',
+    path: '/api/v1/marketplace/products',
     method: 'GET',
     isNotAuthenticated: true,
   },
   MARKETPLACE_GET_PRODUCT_BY_SLUG: {
-    path: '/marketplace/products', // /:slug
+    path: '/api/v1/marketplace/products', // /:slug
     method: 'GET',
     isNotAuthenticated: true,
   },
   MARKETPLACE_BECOME_VENDOR: {
-    path: '/marketplace/become-vendor',
+    path: '/api/v1/marketplace/become-vendor',
     method: 'POST',
     isNotAuthenticated: true,
   },
   MARKETPLACE_PLACE_ORDER: {
-    path: '/marketplace/orders',
+    path: '/api/v1/marketplace/orders',
     method: 'POST',
     isNotAuthenticated: true,
   },
-  MARKETPLACE_GET_MY_ORDERS: { path: '/marketplace/orders', method: 'GET' },
+  MARKETPLACE_GET_MY_ORDERS: { path: '/api/v1/marketplace/orders', method: 'GET' },
   MARKETPLACE_ORDER_WHATSAPP_LINK: {
-    path: '/marketplace/orders',
+    path: '/api/v1/marketplace/orders',
     method: 'GET',
   }, // /:orderId/whatsapp-link
 
   // Artist dashboard
   ARTIST_GET_ME: {
-    path: '/artist/me',
+    path: '/api/v1/artist/me',
     method: 'GET',
   },
   ARTIST_CREATE_ME: {
-    path: '/artist/me',
+    path: '/api/v1/artist/me',
     method: 'POST',
   },
   ARTIST_UPDATE_ME: {
-    path: '/artist/me',
+    path: '/api/v1/artist/me',
     method: 'PATCH',
   },
   ARTIST_GET_DASHBOARD_STATS: {
-    path: '/artist/dashboard-stats',
+    path: '/api/v1/artist/dashboard-stats',
     method: 'GET',
   },
   ARTIST_GET_MUSIC: {
-    path: '/artist/music',
+    path: '/api/v1/artist/music',
     method: 'GET',
   },
   ARTIST_GET_MUSIC_ITEM: {
-    path: '/artist/music', // /:id - musicId
+    path: '/api/v1/artist/music', // /:id - musicId
     method: 'GET',
   },
   ARTIST_CREATE_MUSIC: {
-    path: '/artist/music',
+    path: '/api/v1/artist/music',
     method: 'POST',
   },
   ARTIST_UPDATE_MUSIC: {
-    path: '/artist/music', // /:id - musicId
+    path: '/api/v1/artist/music', // /:id - musicId
     method: 'PATCH',
   },
   ARTIST_DELETE_MUSIC: {
-    path: '/artist/music', // /:id - musicId
+    path: '/api/v1/artist/music', // /:id - musicId
     method: 'DELETE',
   },
   ARTIST_GET_VIDEOS: {
-    path: '/artist/videos',
+    path: '/api/v1/artist/videos',
     method: 'GET',
   },
   ARTIST_GET_VIDEO_ITEM: {
-    path: '/artist/videos', // /:id - videoId
+    path: '/api/v1/artist/videos', // /:id - videoId
     method: 'GET',
   },
   ARTIST_CREATE_VIDEO: {
-    path: '/artist/videos',
+    path: '/api/v1/artist/videos',
     method: 'POST',
   },
   ARTIST_UPDATE_VIDEO: {
-    path: '/artist/videos', // /:id - videoId
+    path: '/api/v1/artist/videos', // /:id - videoId
     method: 'PATCH',
   },
   ARTIST_DELETE_VIDEO: {
-    path: '/artist/videos', // /:id - videoId
+    path: '/api/v1/artist/videos', // /:id - videoId
     method: 'DELETE',
   },
 
   // Vendor dashboard
-  VENDOR_GET_ME: { path: '/vendor/me', method: 'GET' },
-  VENDOR_GET_PRODUCTS: { path: '/vendor/products', method: 'GET' },
-  VENDOR_CREATE_PRODUCT: { path: '/vendor/products', method: 'POST' },
+  VENDOR_GET_ME: { path: '/api/v1/vendor/me', method: 'GET' },
+  VENDOR_GET_PRODUCTS: { path: '/api/v1/vendor/products', method: 'GET' },
+  VENDOR_CREATE_PRODUCT: { path: '/api/v1/vendor/products', method: 'POST' },
   VENDOR_UPDATE_PRODUCT: {
-    path: '/vendor/products', // /:id - productId
+    path: '/api/v1/vendor/products', // /:id - productId
     method: 'PATCH',
   },
-  VENDOR_GET_ORDERS: { path: '/vendor/orders', method: 'GET' },
-  VENDOR_UPDATE_SETTINGS: { path: '/vendor/settings', method: 'PATCH' },
-  VENDOR_GET_DASHBOARD_STATS: { path: '/vendor/dashboard-stats', method: 'GET' },
+  VENDOR_GET_ORDERS: { path: '/api/v1/vendor/orders', method: 'GET' },
+  VENDOR_UPDATE_SETTINGS: { path: '/api/v1/vendor/settings', method: 'PATCH' },
+  VENDOR_GET_DASHBOARD_STATS: { path: '/api/v1/vendor/dashboard-stats', method: 'GET' },
 
   // Public (music, videos, news)
-  PUBLIC_GET_MUSIC: { path: '/public/music', method: 'GET', isNotAuthenticated: true },
-  PUBLIC_GET_MUSIC_ITEM: { path: '/public/music', method: 'GET', isNotAuthenticated: true }, // /:idOrSlug
-  PUBLIC_GET_VIDEOS: { path: '/public/videos', method: 'GET', isNotAuthenticated: true },
-  PUBLIC_GET_VIDEO_ITEM: { path: '/public/videos', method: 'GET', isNotAuthenticated: true }, // /:idOrSlug
-  PUBLIC_GET_NEWS: { path: '/public/news', method: 'GET', isNotAuthenticated: true },
-  PUBLIC_GET_NEWS_ITEM: { path: '/public/news', method: 'GET', isNotAuthenticated: true }, // /:idOrSlug
+  PUBLIC_GET_MUSIC: { path: '/api/v1/public/music', method: 'GET', isNotAuthenticated: true },
+  PUBLIC_GET_MUSIC_ITEM: { path: '/api/v1/public/music', method: 'GET', isNotAuthenticated: true }, // /:idOrSlug
+  PUBLIC_GET_VIDEOS: { path: '/api/v1/public/videos', method: 'GET', isNotAuthenticated: true },
+  PUBLIC_GET_VIDEO_ITEM: { path: '/api/v1/public/videos', method: 'GET', isNotAuthenticated: true }, // /:idOrSlug
+  PUBLIC_GET_NEWS: { path: '/api/v1/public/news', method: 'GET', isNotAuthenticated: true },
+  PUBLIC_GET_NEWS_ITEM: { path: '/api/v1/public/news', method: 'GET', isNotAuthenticated: true }, // /:idOrSlug
   PUBLIC_GET_CONTENT_CATEGORIES: {
-    path: '/public/content-categories',
+    path: '/api/v1/public/content-categories',
     method: 'GET',
     isNotAuthenticated: true,
   },
   PUBLIC_GET_HOME_ADVERTS: {
-    path: '/public/home-adverts',
+    path: '/api/v1/public/home-adverts',
     method: 'GET',
     isNotAuthenticated: true,
   },
 
   // Public community (read)
-  PUBLIC_GET_COMMUNITY: { path: '/public/community', method: 'GET', isNotAuthenticated: true },
-  PUBLIC_GET_DEVOTIONALS: { path: '/public/devotionals', method: 'GET', isNotAuthenticated: true },
+  PUBLIC_GET_COMMUNITY: {
+    path: '/api/v1/public/community',
+    method: 'GET',
+    isNotAuthenticated: true,
+  },
+  PUBLIC_GET_DEVOTIONALS: {
+    path: '/api/v1/public/devotionals',
+    method: 'GET',
+    isNotAuthenticated: true,
+  },
   PUBLIC_GET_DEVOTIONAL_ITEM: {
-    path: '/public/devotionals',
+    path: '/api/v1/public/devotionals',
     method: 'GET',
     isNotAuthenticated: true,
   }, // /:idOrSlug
-  PUBLIC_GET_TESTIMONIES: { path: '/public/testimonies', method: 'GET', isNotAuthenticated: true },
+  PUBLIC_GET_TESTIMONIES: {
+    path: '/api/v1/public/testimonies',
+    method: 'GET',
+    isNotAuthenticated: true,
+  },
   PUBLIC_GET_TESTIMONY_ITEM: {
-    path: '/public/testimonies',
+    path: '/api/v1/public/testimonies',
     method: 'GET',
     isNotAuthenticated: true,
   }, // /:idOrSlug
   PUBLIC_GET_PRAYER_REQUESTS: {
-    path: '/public/prayer-requests',
+    path: '/api/v1/public/prayer-requests',
     method: 'GET',
     isNotAuthenticated: true,
   },
   PUBLIC_GET_PRAYER_REQUEST_ITEM: {
-    path: '/public/prayer-requests',
+    path: '/api/v1/public/prayer-requests',
     method: 'GET',
     isNotAuthenticated: true,
   }, // /:idOrSlug
   PUBLIC_GET_ASK_A_PASTOR_QUESTIONS: {
-    path: '/public/ask-a-pastor/questions',
+    path: '/api/v1/public/ask-a-pastor/questions',
     method: 'GET',
     isNotAuthenticated: true,
   },
   PUBLIC_GET_ASK_A_PASTOR_QUESTION_ITEM: {
-    path: '/public/ask-a-pastor/questions',
+    path: '/api/v1/public/ask-a-pastor/questions',
     method: 'GET',
     isNotAuthenticated: true,
   }, // /:idOrSlug
   PUBLIC_GET_ASK_A_PASTOR_PASTORS: {
-    path: '/public/ask-a-pastor/pastors',
+    path: '/api/v1/public/ask-a-pastor/pastors',
     method: 'GET',
     isNotAuthenticated: true,
   },
-  PUBLIC_GET_POLLS: { path: '/public/polls', method: 'GET', isNotAuthenticated: true },
-  PUBLIC_GET_POLL_ITEM: { path: '/public/polls', method: 'GET', isNotAuthenticated: true }, // /:idOrSlug
-  PUBLIC_GET_ARTISTS: { path: '/public/artists', method: 'GET', isNotAuthenticated: true },
-  PUBLIC_GET_ARTIST_ITEM: { path: '/public/artists', method: 'GET', isNotAuthenticated: true }, // /:idOrSlug
-  PUBLIC_GET_RESOURCES: { path: '/public/resources', method: 'GET', isNotAuthenticated: true },
+  PUBLIC_GET_POLLS: { path: '/api/v1/public/polls', method: 'GET', isNotAuthenticated: true },
+  PUBLIC_GET_POLL_ITEM: { path: '/api/v1/public/polls', method: 'GET', isNotAuthenticated: true }, // /:idOrSlug
+  PUBLIC_GET_ARTISTS: { path: '/api/v1/public/artists', method: 'GET', isNotAuthenticated: true },
+  PUBLIC_GET_ARTIST_ITEM: {
+    path: '/api/v1/public/artists',
+    method: 'GET',
+    isNotAuthenticated: true,
+  }, // /:idOrSlug
+  PUBLIC_GET_RESOURCES: {
+    path: '/api/v1/public/resources',
+    method: 'GET',
+    isNotAuthenticated: true,
+  },
 
   // Promotion content (public)
   PUBLIC_GET_FEATURED_OPTIONS: {
-    path: '/public/featured-options',
+    path: '/api/v1/public/featured-options',
     method: 'GET',
     isNotAuthenticated: true,
   },
   PUBLIC_GET_PROMOTION_PRICING_OPTIONS: {
-    path: '/public/promotion-pricing-options',
+    path: '/api/v1/public/promotion-pricing-options',
     method: 'GET',
     isNotAuthenticated: true,
   },
   PUBLIC_GET_RESOURCE_DOWNLOAD_CATEGORIES: {
-    path: '/public/resource-download-categories',
+    path: '/api/v1/public/resource-download-categories',
     method: 'GET',
     isNotAuthenticated: true,
   },
   PUBLIC_GET_PROMOTION_CONTACT: {
-    path: '/public/promotion-contact',
+    path: '/api/v1/public/promotion-contact',
     method: 'GET',
     isNotAuthenticated: true,
   },
 
   // Public community (write)
   PUBLIC_SUBMIT_PRAYER_REQUEST: {
-    path: '/public/prayer-requests',
+    path: '/api/v1/public/prayer-requests',
     method: 'POST',
     isNotAuthenticated: true,
   },
   PUBLIC_SUBMIT_QUESTION: {
-    path: '/public/ask-a-pastor/questions',
+    path: '/api/v1/public/ask-a-pastor/questions',
     method: 'POST',
     isNotAuthenticated: true,
   },
   PUBLIC_SUBMIT_TESTIMONY: {
-    path: '/public/testimonies',
+    path: '/api/v1/public/testimonies',
     method: 'POST',
     isNotAuthenticated: true,
   },
-  PUBLIC_POLL_VOTE: { path: '/public/polls', method: 'POST', isNotAuthenticated: true }, // /:idOrSlug/vote
-  PUBLIC_CREATE_POLL: { path: '/public/polls', method: 'POST', isNotAuthenticated: true },
+  PUBLIC_POLL_VOTE: { path: '/api/v1/public/polls', method: 'POST', isNotAuthenticated: true }, // /:idOrSlug/vote
+  PUBLIC_CREATE_POLL: { path: '/api/v1/public/polls', method: 'POST', isNotAuthenticated: true },
 
   // Contact & Search (public)
-  PUBLIC_SUBMIT_CONTACT: { path: '/public/contact', method: 'POST', isNotAuthenticated: true },
-  PUBLIC_SEARCH: { path: '/public/search', method: 'GET', isNotAuthenticated: true },
+  PUBLIC_SUBMIT_CONTACT: {
+    path: '/api/v1/public/contact',
+    method: 'POST',
+    isNotAuthenticated: true,
+  },
+  PUBLIC_SEARCH: { path: '/api/v1/public/search', method: 'GET', isNotAuthenticated: true },
   PUBLIC_CONTENT_ANALYTICS_EVENT: {
-    path: '/public/analytics/content-event',
+    path: '/api/v1/public/analytics/content-event',
     method: 'POST',
     isNotAuthenticated: true,
   },
