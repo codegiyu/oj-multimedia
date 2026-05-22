@@ -2,13 +2,39 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { PrayerRequestDetailPageClient } from '@/components/section/community/prayer-requests/PrayerRequestDetailPageClient';
-import { getPrayerRequestById, getRelatedRequests } from '@/lib/utils/community/prayer-requests';
+import { callPublicServerApi } from '@/lib/services/serverApi';
+import { mapToPrayerRequestDetail } from '@/lib/utils/communityApiMappers';
+import { buildCommunityListQuery } from '@/lib/utils/communityListQuery';
+import type { PrayerRequestItem } from '@/lib/constants/community/prayer-requests';
 
 interface PrayerRequestDetailPageProps {
   params: Promise<{ id: string }>;
 }
 
-// Generate metadata for the prayer request detail page
+async function fetchPrayerRequestDetail(id: string) {
+  return callPublicServerApi('PUBLIC_GET_PRAYER_REQUEST_ITEM', {
+    query: `/${encodeURIComponent(id)}`,
+  });
+}
+
+async function fetchRelatedPrayerRequests(
+  id: string,
+  category: string
+): Promise<PrayerRequestItem[]> {
+  const res = await callPublicServerApi('PUBLIC_GET_PRAYER_REQUESTS', {
+    query: buildCommunityListQuery({ status: 'active', limit: 12, category }),
+  });
+
+  if (res.type === 'error') return [];
+
+  const rawList = (res.data?.prayerRequests ?? []) as unknown[];
+
+  return rawList
+    .map(i => mapToPrayerRequestDetail(i as Record<string, unknown>))
+    .filter(r => r._id !== id)
+    .slice(0, 3);
+}
+
 export async function generateMetadata({
   params,
 }: PrayerRequestDetailPageProps): Promise<Metadata> {
@@ -22,14 +48,17 @@ export async function generateMetadata({
     };
   }
 
-  const request = getPrayerRequestById(id);
+  const res = await fetchPrayerRequestDetail(id);
 
-  if (!request) {
+  if (res.type === 'error') {
     return {
       title: 'Prayer Request Not Found',
       description: 'The requested prayer request could not be found.',
     };
   }
+
+  const raw = res.data.prayerRequest as unknown as Record<string, unknown>;
+  const request = mapToPrayerRequestDetail(raw);
 
   return {
     title: `${request.title} - Prayer Requests`,
@@ -41,21 +70,15 @@ export default async function PrayerRequestDetailPage({ params }: PrayerRequestD
   const resolvedParams = await params;
   const id = resolvedParams.id;
 
-  // Validate ID
-  if (!id) {
-    notFound();
-  }
+  if (!id) notFound();
 
-  // Get prayer request item
-  const request = getPrayerRequestById(id);
+  const res = await fetchPrayerRequestDetail(id);
 
-  // Return 404 if not found
-  if (!request) {
-    notFound();
-  }
+  if (res.type === 'error') notFound();
 
-  // Get related requests
-  const relatedRequests = getRelatedRequests(id, request.category, 3);
+  const raw = res.data.prayerRequest as unknown as Record<string, unknown>;
+  const request = mapToPrayerRequestDetail(raw);
+  const relatedRequests = await fetchRelatedPrayerRequests(id, request.category);
 
   return (
     <MainLayout>

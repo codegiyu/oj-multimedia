@@ -4,8 +4,12 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { SubPageHero } from '@/components/general/SubPageHero';
 import { PrayerRequestsPageSkeleton } from '@/components/section/community/prayer-requests/PrayerRequestsPageSkeleton';
 import { ActivePrayerRequestsSection } from '@/components/section/community/prayer-requests/ActivePrayerRequestsSection';
+import { DataLoadErrorWithRetry } from '@/components/general/DataLoadErrorWithRetry';
+import { HandHeart } from 'lucide-react';
 import { filterByCategory } from '@/lib/utils/community/prayer-requests';
-import { PRAYER_REQUESTS_ITEMS } from '@/lib/constants/community/prayer-requests';
+import { callPublicServerApi } from '@/lib/services/serverApi';
+import { mapToPrayerRequest } from '@/lib/utils/communityApiMappers';
+import { buildCommunityListQuery } from '@/lib/utils/communityListQuery';
 import type { PrayerRequest } from '@/components/section/community/prayer-requests/PrayerRequestsPageClient';
 
 export const metadata: Metadata = {
@@ -14,25 +18,29 @@ export const metadata: Metadata = {
     'Browse active prayer requests from our community. Join us in praying for these needs and see how God is moving.',
 };
 
-async function generateActivePrayerRequestsData() {
-  await new Promise(resolve => setTimeout(resolve, 1500));
+async function fetchActivePrayerRequests(category: string): Promise<{
+  activeRequests: PrayerRequest[];
+  initialErrorMessage: string | null;
+}> {
+  const res = await callPublicServerApi('PUBLIC_GET_PRAYER_REQUESTS', {
+    query: buildCommunityListQuery({ status: 'active', limit: 50, category }),
+  });
 
-  const activeRequests: PrayerRequest[] = PRAYER_REQUESTS_ITEMS.filter(item => item.isActive).map(
-    item => ({
-      _id: item._id,
-      title: item.title,
-      content: item.content,
-      author: item.author,
-      category: item.category,
-      prayers: item.prayers,
-      comments: item.comments,
-      timeAgo: item.timeAgo,
-      urgent: item.urgent,
-    })
-  );
+  if (res.type === 'error') {
+    return {
+      activeRequests: [],
+      initialErrorMessage: res.error?.message ?? 'Failed to load prayer requests',
+    };
+  }
+
+  const rawList = (res.data?.prayerRequests ?? []) as unknown[];
+  const list = rawList.map(i =>
+    mapToPrayerRequest(i as Record<string, unknown>)
+  ) as PrayerRequest[];
 
   return {
-    activeRequests,
+    activeRequests: filterByCategory(list, category),
+    initialErrorMessage: null,
   };
 }
 
@@ -44,12 +52,8 @@ export default async function ActivePrayerRequestsPage({
   searchParams,
 }: ActivePrayerRequestsPageProps) {
   const params = await searchParams;
-  const category = params.category || 'all';
-  const data = await generateActivePrayerRequestsData();
-
-  const filteredData = {
-    activeRequests: filterByCategory(data.activeRequests, category),
-  };
+  const category = params.category ?? 'all';
+  const { activeRequests, initialErrorMessage } = await fetchActivePrayerRequests(category);
 
   return (
     <MainLayout>
@@ -65,7 +69,15 @@ export default async function ActivePrayerRequestsPage({
       />
       <Suspense fallback={<PrayerRequestsPageSkeleton />}>
         <div className="container mx-auto px-4 pb-16">
-          <ActivePrayerRequestsSection requests={filteredData.activeRequests} />
+          {initialErrorMessage && activeRequests.length === 0 ? (
+            <DataLoadErrorWithRetry
+              title="Unable to load prayer requests"
+              message={initialErrorMessage}
+              icon={<HandHeart className="w-8 h-8 text-destructive" />}
+            />
+          ) : (
+            <ActivePrayerRequestsSection requests={activeRequests} />
+          )}
         </div>
       </Suspense>
     </MainLayout>

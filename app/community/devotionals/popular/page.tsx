@@ -5,7 +5,9 @@ import { SubPageHero } from '@/components/general/SubPageHero';
 import { DevotionalsPageSkeleton } from '@/components/section/community/devotionals/DevotionalsPageSkeleton';
 import { DailyDevotionalsSection } from '@/components/section/community/devotionals/DailyDevotionalsSection';
 import { filterByCategory } from '@/lib/utils/community/devotionals';
-import { DEVOTIONALS_ITEMS } from '@/lib/constants/community/devotionals';
+import { callPublicServerApi } from '@/lib/services/serverApi';
+import { mapToDailyDevotional } from '@/lib/utils/communityApiMappers';
+import { buildCommunityListQuery } from '@/lib/utils/communityListQuery';
 import type { DailyDevotional } from '@/components/section/community/devotionals/DevotionalsPageClient';
 
 export const metadata: Metadata = {
@@ -13,30 +15,29 @@ export const metadata: Metadata = {
   description: 'Discover the most popular and widely read devotionals in our community.',
 };
 
-async function generatePopularDevotionalsData() {
-  await new Promise(resolve => setTimeout(resolve, 1500));
+async function fetchPopularDevotionals(category: string): Promise<{
+  popularDevotionals: DailyDevotional[];
+  initialErrorMessage: string | null;
+}> {
+  const res = await callPublicServerApi('PUBLIC_GET_DEVOTIONALS', {
+    query: buildCommunityListQuery({ type: 'popular', publishedOnly: true, category }),
+  });
 
-  const popularDevotionals: DailyDevotional[] = DEVOTIONALS_ITEMS.filter(
-    item =>
-      item.isDaily &&
-      (item.isPopular || item.isTrending) &&
-      item.verse !== undefined &&
-      item.date !== undefined
-  )
-    .sort((a, b) => (b.views || 0) - (a.views || 0))
-    .map(item => ({
-      _id: item._id,
-      title: item.title,
-      verse: item.verse!,
-      date: item.date!,
-      readingTime: item.readingTime || '5 min',
-      category: item.category,
-      excerpt: item.excerpt || '',
-      views: item.views || 0,
-    }));
+  if (res.type === 'error') {
+    return {
+      popularDevotionals: [],
+      initialErrorMessage: res.error?.message ?? 'Failed to load devotionals',
+    };
+  }
+
+  const rawList = (res.data?.devotionals ?? []) as unknown[];
+  const list = rawList.map(i =>
+    mapToDailyDevotional(i as Record<string, unknown>)
+  ) as DailyDevotional[];
 
   return {
-    popularDevotionals,
+    popularDevotionals: filterByCategory(list, category),
+    initialErrorMessage: null,
   };
 }
 
@@ -48,12 +49,8 @@ export default async function PopularDevotionalsPage({
   searchParams,
 }: PopularDevotionalsPageProps) {
   const params = await searchParams;
-  const category = params.category || 'all';
-  const data = await generatePopularDevotionalsData();
-
-  const filteredData = {
-    popularDevotionals: filterByCategory(data.popularDevotionals, category),
-  };
+  const category = params.category ?? 'all';
+  const { popularDevotionals, initialErrorMessage } = await fetchPopularDevotionals(category);
 
   return (
     <MainLayout>
@@ -69,7 +66,10 @@ export default async function PopularDevotionalsPage({
       />
       <Suspense fallback={<DevotionalsPageSkeleton />}>
         <div className="container mx-auto px-4 pb-16">
-          <DailyDevotionalsSection devotionals={filteredData.popularDevotionals} />
+          <DailyDevotionalsSection
+            devotionals={popularDevotionals}
+            initialErrorMessage={initialErrorMessage}
+          />
         </div>
       </Suspense>
     </MainLayout>

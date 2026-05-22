@@ -18,7 +18,8 @@ interface RecentUploadsPageClientProps {
 
 export const RecentUploadsPageClient = ({
   categoryOptions,
- recentUploads }: RecentUploadsPageClientProps) => {
+  recentUploads,
+}: RecentUploadsPageClientProps) => {
   const [displayedItems, setDisplayedItems] = useState(20);
   const [isLoading, setIsLoading] = useState(false);
 

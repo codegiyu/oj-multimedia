@@ -4,7 +4,11 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { SubPageHero } from '@/components/general/SubPageHero';
 import { TestimoniesPageSkeleton } from '@/components/section/community/testimonies/TestimoniesPageSkeleton';
 import { AllTestimonies } from '@/components/section/community/testimonies/AllTestimonies';
-import { TESTIMONIES_ITEMS } from '@/lib/constants/community/testimonies';
+import { DataLoadErrorWithRetry } from '@/components/general/DataLoadErrorWithRetry';
+import { Clock } from 'lucide-react';
+import { callPublicServerApi } from '@/lib/services/serverApi';
+import { mapToTestimony } from '@/lib/utils/communityApiMappers';
+import { buildCommunityListQuery } from '@/lib/utils/communityListQuery';
 import type { Testimony } from '@/components/section/community/testimonies/TestimoniesPageClient';
 
 export const metadata: Metadata = {
@@ -12,33 +16,33 @@ export const metadata: Metadata = {
   description: 'Read the most recent testimonies shared by our community members.',
 };
 
-async function generateLatestTestimoniesData() {
-  await new Promise(resolve => setTimeout(resolve, 1500));
+async function fetchLatestTestimonies(): Promise<{
+  latestTestimonies: Testimony[];
+  initialErrorMessage: string | null;
+}> {
+  const res = await callPublicServerApi('PUBLIC_GET_TESTIMONIES', {
+    query: buildCommunityListQuery({ type: 'latest', limit: 50 }),
+  });
 
-  const latestTestimonies: Testimony[] = TESTIMONIES_ITEMS.filter(item => item.isLatest)
-    .sort((a, b) => {
-      const timeA = a.timeAgo || '';
-      const timeB = b.timeAgo || '';
-      return timeA.localeCompare(timeB);
-    })
-    .map(item => ({
-      _id: item._id,
-      author: item.author,
-      avatar: item.avatar,
-      content: item.content,
-      likes: item.likes,
-      comments: item.comments,
-      timeAgo: item.timeAgo,
-      category: item.category,
-    }));
+  if (res.type === 'error') {
+    return {
+      latestTestimonies: [],
+      initialErrorMessage: res.error?.message ?? 'Failed to load testimonies',
+    };
+  }
+
+  const rawList = (res.data?.testimonies ?? []) as unknown[];
 
   return {
-    latestTestimonies,
+    latestTestimonies: rawList.map(i =>
+      mapToTestimony(i as Record<string, unknown>)
+    ) as Testimony[],
+    initialErrorMessage: null,
   };
 }
 
 export default async function LatestTestimoniesPage() {
-  const data = await generateLatestTestimoniesData();
+  const { latestTestimonies, initialErrorMessage } = await fetchLatestTestimonies();
 
   return (
     <MainLayout>
@@ -54,7 +58,15 @@ export default async function LatestTestimoniesPage() {
       />
       <Suspense fallback={<TestimoniesPageSkeleton />}>
         <div className="container mx-auto px-4 pb-16">
-          <AllTestimonies testimonies={data.latestTestimonies} />
+          {initialErrorMessage && latestTestimonies.length === 0 ? (
+            <DataLoadErrorWithRetry
+              title="Unable to load testimonies"
+              message={initialErrorMessage}
+              icon={<Clock className="w-8 h-8 text-destructive" />}
+            />
+          ) : (
+            <AllTestimonies testimonies={latestTestimonies} />
+          )}
         </div>
       </Suspense>
     </MainLayout>
