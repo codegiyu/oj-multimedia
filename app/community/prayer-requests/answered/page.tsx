@@ -4,7 +4,11 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { SubPageHero } from '@/components/general/SubPageHero';
 import { PrayerRequestsPageSkeleton } from '@/components/section/community/prayer-requests/PrayerRequestsPageSkeleton';
 import { AnsweredPrayersSection } from '@/components/section/community/prayer-requests/AnsweredPrayersSection';
-import { PRAYER_REQUESTS_ITEMS } from '@/lib/constants/community/prayer-requests';
+import { DataLoadErrorWithRetry } from '@/components/general/DataLoadErrorWithRetry';
+import { CheckCircle } from 'lucide-react';
+import { callPublicServerApi } from '@/lib/services/serverApi';
+import { mapToAnsweredPrayer } from '@/lib/utils/communityApiMappers';
+import { buildCommunityListQuery } from '@/lib/utils/communityListQuery';
 import type { AnsweredPrayer } from '@/components/section/community/prayer-requests/PrayerRequestsPageClient';
 
 export const metadata: Metadata = {
@@ -13,32 +17,33 @@ export const metadata: Metadata = {
     "Read testimonies of answered prayers. See how God has moved in response to our community's prayers.",
 };
 
-async function generateAnsweredPrayersData() {
-  await new Promise(resolve => setTimeout(resolve, 1500));
+async function fetchAnsweredPrayers(): Promise<{
+  answeredPrayers: AnsweredPrayer[];
+  initialErrorMessage: string | null;
+}> {
+  const res = await callPublicServerApi('PUBLIC_GET_PRAYER_REQUESTS', {
+    query: buildCommunityListQuery({ status: 'answered', limit: 50 }),
+  });
 
-  const answeredPrayers: AnsweredPrayer[] = PRAYER_REQUESTS_ITEMS.filter(item => item.isAnswered)
-    .sort((a, b) => {
-      const dateA = a.answeredDate || a.timeAgo;
-      const dateB = b.answeredDate || b.timeAgo;
-      return dateB.localeCompare(dateA);
-    })
-    .map(item => ({
-      _id: item._id,
-      title: item.title,
-      originalRequest: item.originalRequest || item.content,
-      testimony: item.testimony || item.content,
-      author: item.author,
-      answeredDate: item.answeredDate || item.timeAgo,
-      prayers: item.prayers,
-    }));
+  if (res.type === 'error') {
+    return {
+      answeredPrayers: [],
+      initialErrorMessage: res.error?.message ?? 'Failed to load answered prayers',
+    };
+  }
+
+  const rawList = (res.data?.prayerRequests ?? []) as unknown[];
 
   return {
-    answeredPrayers,
+    answeredPrayers: rawList.map(i =>
+      mapToAnsweredPrayer(i as Record<string, unknown>)
+    ) as AnsweredPrayer[],
+    initialErrorMessage: null,
   };
 }
 
 export default async function AnsweredPrayersPage() {
-  const data = await generateAnsweredPrayersData();
+  const { answeredPrayers, initialErrorMessage } = await fetchAnsweredPrayers();
 
   return (
     <MainLayout>
@@ -54,7 +59,15 @@ export default async function AnsweredPrayersPage() {
       />
       <Suspense fallback={<PrayerRequestsPageSkeleton />}>
         <div className="container mx-auto px-4 pb-16">
-          <AnsweredPrayersSection prayers={data.answeredPrayers} />
+          {initialErrorMessage && answeredPrayers.length === 0 ? (
+            <DataLoadErrorWithRetry
+              title="Unable to load answered prayers"
+              message={initialErrorMessage}
+              icon={<CheckCircle className="w-8 h-8 text-destructive" />}
+            />
+          ) : (
+            <AnsweredPrayersSection prayers={answeredPrayers} />
+          )}
         </div>
       </Suspense>
     </MainLayout>

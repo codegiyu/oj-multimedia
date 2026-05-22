@@ -2,13 +2,36 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { TestimonyDetailPageClient } from '@/components/section/community/testimonies/TestimonyDetailPageClient';
-import { getTestimonyById, getRelatedTestimonies } from '@/lib/utils/community/testimonies';
+import { callPublicServerApi } from '@/lib/services/serverApi';
+import { mapToTestimony, mapToTestimonyDetail } from '@/lib/utils/communityApiMappers';
+import { buildCommunityListQuery } from '@/lib/utils/communityListQuery';
+import type { TestimonyItem } from '@/lib/constants/community/testimonies';
 
 interface TestimonyDetailPageProps {
   params: Promise<{ id: string }>;
 }
 
-// Generate metadata for the testimony detail page
+async function fetchTestimonyDetail(id: string) {
+  return callPublicServerApi('PUBLIC_GET_TESTIMONY_ITEM', {
+    query: `/${encodeURIComponent(id)}`,
+  });
+}
+
+async function fetchRelatedTestimonies(id: string, category?: string): Promise<TestimonyItem[]> {
+  const res = await callPublicServerApi('PUBLIC_GET_TESTIMONIES', {
+    query: buildCommunityListQuery({ type: 'all', limit: 12, category }),
+  });
+
+  if (res.type === 'error') return [];
+
+  const rawList = (res.data?.testimonies ?? []) as unknown[];
+
+  return rawList
+    .map(i => mapToTestimony(i as Record<string, unknown>) as TestimonyItem)
+    .filter(t => t._id !== id)
+    .slice(0, 3);
+}
+
 export async function generateMetadata({ params }: TestimonyDetailPageProps): Promise<Metadata> {
   const resolvedParams = await params;
   const id = resolvedParams.id;
@@ -20,14 +43,17 @@ export async function generateMetadata({ params }: TestimonyDetailPageProps): Pr
     };
   }
 
-  const testimony = getTestimonyById(id);
+  const res = await fetchTestimonyDetail(id);
 
-  if (!testimony) {
+  if (res.type === 'error') {
     return {
       title: 'Testimony Not Found',
       description: 'The requested testimony could not be found.',
     };
   }
+
+  const raw = res.data.testimony as unknown as Record<string, unknown>;
+  const testimony = mapToTestimonyDetail(raw);
 
   return {
     title: `${testimony.title || 'Testimony'} by ${testimony.author} - Testimonies`,
@@ -39,21 +65,15 @@ export default async function TestimonyDetailPage({ params }: TestimonyDetailPag
   const resolvedParams = await params;
   const id = resolvedParams.id;
 
-  // Validate ID
-  if (!id) {
-    notFound();
-  }
+  if (!id) notFound();
 
-  // Get testimony item
-  const testimony = getTestimonyById(id);
+  const res = await fetchTestimonyDetail(id);
 
-  // Return 404 if not found
-  if (!testimony) {
-    notFound();
-  }
+  if (res.type === 'error') notFound();
 
-  // Get related testimonies
-  const relatedTestimonies = getRelatedTestimonies(id, testimony.category || '', 3);
+  const raw = res.data.testimony as unknown as Record<string, unknown>;
+  const testimony = mapToTestimonyDetail(raw);
+  const relatedTestimonies = await fetchRelatedTestimonies(id, testimony.category);
 
   return (
     <MainLayout>

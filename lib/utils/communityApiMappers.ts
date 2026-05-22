@@ -3,6 +3,10 @@
  * API may use different field names; these normalize to UI types.
  */
 
+import type { TestimonyItem } from '@/lib/constants/community/testimonies';
+import type { PrayerRequestItem } from '@/lib/constants/community/prayer-requests';
+import type { QuestionItem } from '@/lib/constants/community/questions';
+
 function str(v: unknown): string {
   if (v == null) return '';
   return String(v);
@@ -21,6 +25,22 @@ function formatReadingTime(v: unknown): string {
   if (v == null) return '5 min';
   if (typeof v === 'number') return `${v} min`;
   return str(v);
+}
+
+/** Map API testimony detail to TestimonyDetailPageClient props */
+export function mapToTestimonyDetail(item: Record<string, unknown>): TestimonyItem {
+  const base = mapToTestimony(item);
+
+  return {
+    ...base,
+    fullContent: str(item.fullContent ?? item.content),
+    title: item.title != null ? str(item.title) : undefined,
+    date: str(item.date ?? item.createdAt),
+    tags: Array.isArray(item.tags) ? item.tags.map((t: unknown) => str(t)) : undefined,
+    relatedScriptures: Array.isArray(item.relatedScriptures)
+      ? item.relatedScriptures.map((s: unknown) => str(s))
+      : undefined,
+  };
 }
 
 /** Map API testimony item to FeaturedTestimonies / TestimoniesPageClient Testimony */
@@ -93,6 +113,21 @@ export function mapToDiscussion(item: Record<string, unknown>): {
   };
 }
 
+/** Map API prayer request detail to PrayerRequestDetailPageClient props */
+export function mapToPrayerRequestDetail(item: Record<string, unknown>): PrayerRequestItem {
+  const base = mapToPrayerRequest(item);
+
+  return {
+    ...base,
+    fullContent: str(item.fullContent ?? item.content),
+    date: str(item.date ?? item.createdAt),
+    testimony: item.testimony != null ? str(item.testimony) : undefined,
+    originalRequest: str(item.originalRequest ?? item.content),
+    answeredDate: str(item.answeredDate ?? item.answeredAt),
+    timeAgo: str(item.timeAgo ?? item.createdAt),
+  };
+}
+
 /** Map API prayer request to PrayerRequestsPageClient PrayerRequest */
 export function mapToPrayerRequest(item: Record<string, unknown>): {
   _id: string;
@@ -136,6 +171,26 @@ export function mapToAnsweredPrayer(item: Record<string, unknown>): {
     author: str(item.author ?? item.name),
     answeredDate: str(item.answeredDate ?? item.updatedAt ?? item.createdAt),
     prayers: num(item.prayers),
+  };
+}
+
+/** Map API question detail to QuestionDetailPageClient props */
+export function mapToQuestionDetail(item: Record<string, unknown>): QuestionItem {
+  const base = mapToQuestion(item);
+  const pastor = item.pastor as Record<string, unknown> | undefined;
+  const pastorName =
+    pastor && typeof pastor === 'object' && 'name' in pastor ? str(pastor.name) : str(item.pastor);
+
+  return {
+    ...base,
+    fullQuestion: str(item.fullQuestion ?? item.question),
+    date: str(item.date ?? item.createdAt),
+    answer: item.answer != null ? str(item.answer) : undefined,
+    pastor: pastorName || undefined,
+    pastor_id: pastor?._id != null ? str(pastor._id) : undefined,
+    answeredDate: str(item.answeredDate ?? item.answeredAt),
+    helpful: num(item.helpful),
+    answers: item.answer ? Math.max(1, num(item.answers)) : num(item.answers),
   };
 }
 

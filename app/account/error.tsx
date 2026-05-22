@@ -1,11 +1,6 @@
 'use client';
 
-export default function AccountError({
-  reset,
-}: {
-  error: Error;
-  reset: () => void;
-}) {
+export default function AccountError({ reset }: { error: Error; reset: () => void }) {
   return (
     <div className="container mx-auto px-4 py-16 md:py-20">
       <div className="mx-auto max-w-2xl rounded-lg border border-destructive/30 bg-destructive/5 p-6 text-center">

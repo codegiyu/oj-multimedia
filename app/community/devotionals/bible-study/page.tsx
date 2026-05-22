@@ -4,7 +4,11 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { SubPageHero } from '@/components/general/SubPageHero';
 import { DevotionalsPageSkeleton } from '@/components/section/community/devotionals/DevotionalsPageSkeleton';
 import { BibleStudySeriesSection } from '@/components/section/community/devotionals/BibleStudySeriesSection';
-import { DEVOTIONALS_ITEMS } from '@/lib/constants/community/devotionals';
+import { DataLoadErrorWithRetry } from '@/components/general/DataLoadErrorWithRetry';
+import { BookOpen } from 'lucide-react';
+import { callPublicServerApi } from '@/lib/services/serverApi';
+import { mapToBibleStudy } from '@/lib/utils/communityApiMappers';
+import { buildCommunityListQuery } from '@/lib/utils/communityListQuery';
 import type { BibleStudy } from '@/components/section/community/devotionals/DevotionalsPageClient';
 
 export const metadata: Metadata = {
@@ -13,34 +17,33 @@ export const metadata: Metadata = {
     "Explore comprehensive Bible study series designed to deepen your understanding of God's Word.",
 };
 
-async function generateBibleStudyData() {
-  await new Promise(resolve => setTimeout(resolve, 1500));
+async function fetchBibleStudySeries(): Promise<{
+  bibleStudySeries: BibleStudy[];
+  initialErrorMessage: string | null;
+}> {
+  const res = await callPublicServerApi('PUBLIC_GET_DEVOTIONALS', {
+    query: buildCommunityListQuery({ type: 'bible-study', publishedOnly: true }),
+  });
 
-  const bibleStudySeries: BibleStudy[] = DEVOTIONALS_ITEMS.filter(
-    item =>
-      item.isBibleStudy &&
-      item.description !== undefined &&
-      item.lessons !== undefined &&
-      item.duration !== undefined &&
-      item.participants !== undefined &&
-      item.status !== undefined
-  ).map(item => ({
-    _id: item._id,
-    title: item.title,
-    description: item.description!,
-    lessons: item.lessons!,
-    duration: item.duration!,
-    participants: item.participants!,
-    status: item.status!,
-  }));
+  if (res.type === 'error') {
+    return {
+      bibleStudySeries: [],
+      initialErrorMessage: res.error?.message ?? 'Failed to load bible study series',
+    };
+  }
+
+  const rawList = (res.data?.devotionals ?? []) as unknown[];
 
   return {
-    bibleStudySeries,
+    bibleStudySeries: rawList.map(i =>
+      mapToBibleStudy(i as Record<string, unknown>)
+    ) as BibleStudy[],
+    initialErrorMessage: null,
   };
 }
 
 export default async function BibleStudyPage() {
-  const data = await generateBibleStudyData();
+  const { bibleStudySeries, initialErrorMessage } = await fetchBibleStudySeries();
 
   return (
     <MainLayout>
@@ -56,7 +59,15 @@ export default async function BibleStudyPage() {
       />
       <Suspense fallback={<DevotionalsPageSkeleton />}>
         <div className="container mx-auto px-4 pb-16">
-          <BibleStudySeriesSection series={data.bibleStudySeries} />
+          {initialErrorMessage && bibleStudySeries.length === 0 ? (
+            <DataLoadErrorWithRetry
+              title="Unable to load bible study series"
+              message={initialErrorMessage}
+              icon={<BookOpen className="w-8 h-8 text-destructive" />}
+            />
+          ) : (
+            <BibleStudySeriesSection series={bibleStudySeries} />
+          )}
         </div>
       </Suspense>
     </MainLayout>

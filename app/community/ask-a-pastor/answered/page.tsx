@@ -4,8 +4,12 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { SubPageHero } from '@/components/general/SubPageHero';
 import { AskAPastorPageSkeleton } from '@/components/section/community/ask-a-pastor/AskAPastorPageSkeleton';
 import { AnsweredQuestionsSection } from '@/components/section/community/ask-a-pastor/AnsweredQuestionsSection';
+import { DataLoadErrorWithRetry } from '@/components/general/DataLoadErrorWithRetry';
+import { HelpCircle } from 'lucide-react';
 import { filterByCategory } from '@/lib/utils/community/questions';
-import { QUESTIONS_ITEMS } from '@/lib/constants/community/questions';
+import { callPublicServerApi } from '@/lib/services/serverApi';
+import { mapToAnsweredQuestion } from '@/lib/utils/communityApiMappers';
+import { buildCommunityListQuery } from '@/lib/utils/communityListQuery';
 import type { AnsweredQuestion } from '@/components/section/community/ask-a-pastor/AskAPastorPageClient';
 
 export const metadata: Metadata = {
@@ -14,23 +18,29 @@ export const metadata: Metadata = {
     'Browse answered questions from our pastors. Get biblical guidance on faith, life, and spiritual matters.',
 };
 
-async function generateAnsweredQuestionsData() {
-  await new Promise(resolve => setTimeout(resolve, 1500));
+async function fetchAnsweredQuestions(category: string): Promise<{
+  answeredQuestions: AnsweredQuestion[];
+  initialErrorMessage: string | null;
+}> {
+  const res = await callPublicServerApi('PUBLIC_GET_ASK_A_PASTOR_QUESTIONS', {
+    query: buildCommunityListQuery({ status: 'answered', limit: 50, category }),
+  });
 
-  const answeredQuestions: AnsweredQuestion[] = QUESTIONS_ITEMS.filter(
-    item => item.isAnswered && item.answer !== undefined && item.pastor !== undefined
-  ).map(item => ({
-    _id: item._id,
-    question: item.question,
-    answer: item.answer!,
-    pastor: item.pastor!,
-    category: item.category,
-    answeredDate: item.answeredDate || '',
-    helpful: item.helpful || 0,
-  }));
+  if (res.type === 'error') {
+    return {
+      answeredQuestions: [],
+      initialErrorMessage: res.error?.message ?? 'Failed to load questions',
+    };
+  }
+
+  const rawList = (res.data?.questions ?? []) as unknown[];
+  const list = rawList.map(i =>
+    mapToAnsweredQuestion(i as Record<string, unknown>)
+  ) as AnsweredQuestion[];
 
   return {
-    answeredQuestions,
+    answeredQuestions: filterByCategory(list, category),
+    initialErrorMessage: null,
   };
 }
 
@@ -40,12 +50,8 @@ interface AnsweredQuestionsPageProps {
 
 export default async function AnsweredQuestionsPage({ searchParams }: AnsweredQuestionsPageProps) {
   const params = await searchParams;
-  const category = params.category || 'all';
-  const data = await generateAnsweredQuestionsData();
-
-  const filteredData = {
-    answeredQuestions: filterByCategory(data.answeredQuestions, category),
-  };
+  const category = params.category ?? 'all';
+  const { answeredQuestions, initialErrorMessage } = await fetchAnsweredQuestions(category);
 
   return (
     <MainLayout>
@@ -61,7 +67,15 @@ export default async function AnsweredQuestionsPage({ searchParams }: AnsweredQu
       />
       <Suspense fallback={<AskAPastorPageSkeleton />}>
         <div className="container mx-auto px-4 pb-16">
-          <AnsweredQuestionsSection questions={filteredData.answeredQuestions} />
+          {initialErrorMessage && answeredQuestions.length === 0 ? (
+            <DataLoadErrorWithRetry
+              title="Unable to load questions"
+              message={initialErrorMessage}
+              icon={<HelpCircle className="w-8 h-8 text-destructive" />}
+            />
+          ) : (
+            <AnsweredQuestionsSection questions={answeredQuestions} />
+          )}
         </div>
       </Suspense>
     </MainLayout>
