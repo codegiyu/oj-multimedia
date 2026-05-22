@@ -1,4 +1,5 @@
 import type { EntityType, UploadIntent } from '@/lib/types/server-models';
+import { API_V1_PREFIX } from './types';
 import type {
   Analytics,
   AppDetails,
@@ -605,20 +606,20 @@ export interface IVendorDashboardStatsRes {
   totalPaidRevenue: number;
 }
 
-/** Public GET /public/music/:idOrSlug/download — increments download count and redirects to file URL. */
-export function getPublicMusicDownloadUrl(idOrSlug: string): string {
-  const base = (process.env.NEXT_PUBLIC_BASE_URL || 'https://api.ojmultimedia.com').replace(
-    /\/$/,
-    ''
-  );
-  return `${base}/public/music/${encodeURIComponent(idOrSlug)}/download`;
+function apiBaseUrl(): string {
+  return (process.env.NEXT_PUBLIC_BASE_URL || 'https://api.ojmultimedia.com').replace(/\/$/, '');
 }
 
-/** Public GET /public/videos/:idOrSlug/download — same pattern as music when API supports it. */
+/** Public GET /api/v1/public/music/:idOrSlug/download — increments download count and redirects to file URL. */
+export function getPublicMusicDownloadUrl(idOrSlug: string): string {
+  const encoded = encodeURIComponent(idOrSlug);
+
+  return `${apiBaseUrl()}${API_V1_PREFIX}/public/music/${encoded}/download`;
+}
+
+/** Public GET /api/v1/public/videos/:idOrSlug/download — same pattern as music. */
 export function getPublicVideoDownloadUrl(idOrSlug: string): string {
-  const base = (process.env.NEXT_PUBLIC_BASE_URL || 'https://api.ojmultimedia.com').replace(
-    /\/$/,
-    ''
-  );
-  return `${base}/public/videos/${encodeURIComponent(idOrSlug)}/download`;
+  const encoded = encodeURIComponent(idOrSlug);
+
+  return `${apiBaseUrl()}${API_V1_PREFIX}/public/videos/${encoded}/download`;
 }

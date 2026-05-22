@@ -1,7 +1,8 @@
 import { api } from '@/lib/services/callApi';
-import type {
-  IPublicContentAnalyticsEventPayload,
-  PublicContentEntityType,
+import {
+  ENDPOINTS,
+  type IPublicContentAnalyticsEventPayload,
+  type PublicContentEntityType,
 } from '@/lib/constants/endpoints';
 
 const SESSION_KEY = 'oj_content_analytics_sid';
@@ -64,7 +65,7 @@ export function sendContentAnalyticsEvent(
 
   void api
     .request({
-      url: '/public/analytics/content-event',
+      url: ENDPOINTS.PUBLIC_CONTENT_ANALYTICS_EVENT.path,
       method: 'POST',
       data: payload,
       headers: { 'Idempotency-Key': idempotencyKey },
