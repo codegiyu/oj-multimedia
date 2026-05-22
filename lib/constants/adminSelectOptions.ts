@@ -31,6 +31,10 @@ export const PRAYER_REQUEST_STATUS_FILTER_SELECT_OPTIONS: ReadonlyArray<SelectOp
   ...PRAYER_REQUEST_STATUS_SELECT_OPTIONS,
 ];
 
+/** Ask-a-pastor admin list uses the same active/answered statuses as public community. */
+export const ASK_A_PASTOR_STATUS_FILTER_SELECT_OPTIONS: ReadonlyArray<SelectOption> =
+  PRAYER_REQUEST_STATUS_FILTER_SELECT_OPTIONS;
+
 export const GOSPEL_VERSE_STATUS_FILTER_SELECT_OPTIONS: ReadonlyArray<SelectOption> = [
   { text: 'All', value: 'all' },
   { text: 'Active', value: 'active' },

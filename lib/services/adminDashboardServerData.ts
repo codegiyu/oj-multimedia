@@ -18,6 +18,7 @@ import type {
   ResourceListItem,
   TestimonyListItem,
   PrayerRequestListItem,
+  QuestionListItem,
   ArtistListItem,
 } from '@/lib/types/community';
 import type { PastorListItem } from '@/lib/types/community';
@@ -212,6 +213,23 @@ export async function serverFetchAdminPrayerRequestsList(
   }
   return {
     items: res.data.prayerRequests ?? [],
+    totalPages: res.data.pagination?.totalPages ?? 1,
+    listError: null,
+  };
+}
+
+export async function serverFetchAdminAskAPastorList(
+  p: AdminStandardListParams
+): Promise<AdminListPayload<QuestionListItem>> {
+  const params = standardQueryParams(p, '-createdAt');
+  const res = await callServerApi('ADMIN_ASK_PASTOR_LIST', {
+    query: `?${params.toString()}` as `?${string}`,
+  });
+  if (res.type === 'error') {
+    return { items: [], totalPages: 1, listError: res.message ?? 'Failed to load questions' };
+  }
+  return {
+    items: res.data.questions ?? [],
     totalPages: res.data.pagination?.totalPages ?? 1,
     listError: null,
   };

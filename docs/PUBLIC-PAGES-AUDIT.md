@@ -86,3 +86,14 @@ All list/detail keys and query usage match `PUBLIC-PAGES-ENDPOINTS.md`.
 4. **Optional:** Add `slug` to artist/creator in mappers and use it in links; optional slug-based detail routes.
 5. **Optional:** Document or enforce backend response wrapper `{ success, message, responseCode, data }` in the endpoint spec.
 6. **Optional:** Add `type=featured` music section on main music page if product needs it; otherwise document current behavior.
+
+---
+
+## Phase 4 contract gaps (deferred)
+
+| Item | Status |
+|------|--------|
+| Admin Ask-a-Pastor dashboard | **Done** — `/admin/dashboard/ask-a-pastor` wired to admin list/update/assign/reject APIs |
+| Admin accept-invite create-password | **Done** — `/admin/auth/accept-invite/create-password` reuses reset-password flow with invite copy |
+| Artist portal delete actions | **Done** — delete buttons removed; updates via upload/WhatsApp only (backend DELETE returns 403) |
+| Notifications / newsletter admin | **Deferred** — no backend routes yet; keep out of admin nav until API exists |
