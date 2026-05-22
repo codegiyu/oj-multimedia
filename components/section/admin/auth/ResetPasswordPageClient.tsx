@@ -36,7 +36,51 @@ const resetPasswordFormSchema = z
 
 type ResetPasswordFormValues = z.infer<typeof resetPasswordFormSchema>;
 
-export function ResetPasswordPageClient() {
+export type AdminPasswordSetupVariant = 'reset' | 'invite';
+
+const COPY: Record<
+  AdminPasswordSetupVariant,
+  {
+    cardTitle: string;
+    cardDescription: string;
+    submitLabel: string;
+    loadingLabel: string;
+    invalidTitle: string;
+    invalidDescription: string;
+    successTitle: string;
+    successDescription: string;
+  }
+> = {
+  reset: {
+    cardTitle: 'Reset Your Password',
+    cardDescription: 'Enter your new password to complete the reset process',
+    submitLabel: 'Reset Password',
+    loadingLabel: 'Resetting password...',
+    invalidTitle: 'Invalid Reset Link',
+    invalidDescription:
+      "The password reset link you're using is missing required information. Please ensure you're using the complete link from the email that was sent to you.",
+    successTitle: 'Password reset successful!',
+    successDescription: 'Your password has been reset successfully. You are now logged in.',
+  },
+  invite: {
+    cardTitle: 'Create Your Password',
+    cardDescription: 'Set a password to activate your admin account',
+    submitLabel: 'Create Password',
+    loadingLabel: 'Creating password...',
+    invalidTitle: 'Invalid Invite Link',
+    invalidDescription:
+      'This invite link is missing required information. Open the full link from your invitation email or ask an administrator to resend the invite.',
+    successTitle: 'Account ready!',
+    successDescription: 'Your password is set. You are now logged in to the admin console.',
+  },
+};
+
+export function ResetPasswordPageClient({
+  variant = 'reset',
+}: {
+  variant?: AdminPasswordSetupVariant;
+}) {
+  const copy = COPY[variant];
   const router = useRouter();
   const {
     actions: { setUser },
@@ -98,8 +142,8 @@ export function ResetPasswordPageClient() {
     });
 
     toast({
-      title: 'Password reset successful!',
-      description: 'Your password has been reset successfully. You are now logged in.',
+      title: copy.successTitle,
+      description: copy.successDescription,
       variant: 'success',
     });
 
@@ -121,11 +165,8 @@ export function ResetPasswordPageClient() {
           onInteractOutside={e => e.preventDefault()}
           onEscapeKeyDown={e => e.preventDefault()}>
           <DialogHeader>
-            <DialogTitle>Invalid Reset Link</DialogTitle>
-            <DialogDescription>
-              The password reset link you&apos;re using is missing required information. Please
-              ensure you&apos;re using the complete link from the email that was sent to you.
-            </DialogDescription>
+            <DialogTitle>{copy.invalidTitle}</DialogTitle>
+            <DialogDescription>{copy.invalidDescription}</DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <RegularBtn
@@ -140,8 +181,8 @@ export function ResetPasswordPageClient() {
       {!isMissingParams && (
         <Card>
           <CardHeader className="space-y-0 border-b border-foreground/20 pt-6 pb-6">
-            <CardTitle className="text-2xl">Reset Your Password</CardTitle>
-            <CardDescription>Enter your new password to complete the reset process</CardDescription>
+            <CardTitle className="text-2xl">{copy.cardTitle}</CardTitle>
+            <CardDescription>{copy.cardDescription}</CardDescription>
           </CardHeader>
           <CardContent className="pt-2 pb-6">
             <form onSubmit={formHandleSubmit} className="space-y-10">
@@ -176,7 +217,7 @@ export function ResetPasswordPageClient() {
               <div className="space-y-2 mt-8">
                 <RegularBtn
                   type="submit"
-                  text={loading ? 'Resetting password...' : 'Reset Password'}
+                  text={loading ? copy.loadingLabel : copy.submitLabel}
                   className="w-full"
                   disabled={loading || !isValid}
                   loading={loading}

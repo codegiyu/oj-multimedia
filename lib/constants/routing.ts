@@ -10,6 +10,7 @@ import {
   LogOut,
   ShoppingCart,
   Heart,
+  HelpCircle,
   MessageSquare,
   TrendingUp,
   Mail,
@@ -80,6 +81,11 @@ export const sidebarLinksData: ISidebarLinkGroup[] = [
         LucideIcon: Heart,
         page: 'Prayer Requests',
         path: { prefix: '/admin', suffix: '/dashboard/prayer-requests' },
+      },
+      {
+        LucideIcon: HelpCircle,
+        page: 'Ask a Pastor',
+        path: { prefix: '/admin', suffix: '/dashboard/ask-a-pastor' },
       },
       {
         LucideIcon: MessageSquare,

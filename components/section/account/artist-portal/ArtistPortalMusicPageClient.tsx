@@ -9,8 +9,7 @@ import Link from 'next/link';
 import { callApi } from '@/lib/services/callApi';
 import type { ArtistMusicListItem } from '@/lib/constants/endpoints';
 import type { ApiErrorResponse } from '@/lib/types/http';
-import { Trash2, Loader2, MessageCircle } from 'lucide-react';
-import { toast } from '@/components/atoms/Toast';
+import { Loader2, MessageCircle } from 'lucide-react';
 
 const STATUS_FILTERS: Array<{ value: '' | 'draft' | 'published' | 'archived'; label: string }> = [
   { value: '', label: 'All' },
@@ -38,21 +37,7 @@ export function ArtistPortalMusicPageClient({
   const [status, setStatus] = useQueryState('status', parseAsString.withDefault(''));
   const [totalPages, setTotalPages] = useState(initialTotalPages);
   const [reloadIndex, setReloadIndex] = useState(0);
-  const [deletingId, setDeletingId] = useState<string | null>(null);
   const didMountRef = useRef(false);
-
-  const handleDelete = async (item: ArtistMusicListItem) => {
-    if (!window.confirm(`Delete "${item.title}"? This cannot be undone.`)) return;
-    setDeletingId(item._id);
-    const { error, message } = await callApi('ARTIST_DELETE_MUSIC', { query: `/${item._id}` });
-    setDeletingId(null);
-    if (error) {
-      toast({ title: message || 'Failed to delete track.', variant: 'error' });
-      return;
-    }
-    toast({ title: 'Track deleted.', variant: 'success' });
-    setReloadIndex(prev => prev + 1);
-  };
 
   useEffect(() => {
     if (!didMountRef.current) {
@@ -192,14 +177,6 @@ export function ArtistPortalMusicPageClient({
                 </span>
                 <Button asChild size="sm" variant="outline">
                   <Link href="/account/artist-portal/upload">Request updates</Link>
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="border-destructive text-destructive hover:bg-destructive/10"
-                  disabled={deletingId === item._id}
-                  onClick={() => handleDelete(item)}>
-                  {deletingId === item._id ? 'Deleting…' : <Trash2 className="w-4 h-4" />}
                 </Button>
               </div>
             </Card>
