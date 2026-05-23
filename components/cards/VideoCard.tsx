@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { FillImage } from '@/components/general/FillImage';
 import { ShareIconButton } from '@/components/content/ShareIconButton';
-import { ContentFavoriteStubButton } from '@/components/content/ContentFavoriteStubButton';
+import { FavoriteButton } from '@/components/content/FavoriteButton';
 
 interface VideoCardProps {
   _id?: string;
@@ -104,7 +104,11 @@ export const VideoCard = ({
           </div>
         )}
         {detailHref && (
-          <ContentFavoriteStubButton className="shrink-0 self-center opacity-0 group-hover:opacity-100 transition-opacity" />
+          <FavoriteButton
+            entityType="video"
+            entityId={_id!}
+            className="shrink-0 self-center opacity-0 group-hover:opacity-100 transition-opacity"
+          />
         )}
       </motion.div>
     );
@@ -175,7 +179,9 @@ export const VideoCard = ({
 
         {isShortFormVariant && detailHref && (
           <div className="absolute bottom-2 left-2 z-10 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-            <ContentFavoriteStubButton
+            <FavoriteButton
+              entityType="video"
+              entityId={_id!}
               className="bg-card/80 backdrop-blur-sm hover:bg-card h-7 w-7"
               iconClassName="w-3 h-3"
             />

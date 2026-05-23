@@ -136,6 +136,13 @@ export function UserMenu() {
                 <span>Wishlist</span>
               </Link>
               <Link
+                href="/account/favorites"
+                className="flex items-center gap-3 px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors"
+                onClick={() => setIsOpen(false)}>
+                <Heart className="w-4 h-4 text-primary fill-primary" />
+                <span>Favorites</span>
+              </Link>
+              <Link
                 href="/account/settings"
                 className="flex items-center gap-3 px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors"
                 onClick={() => setIsOpen(false)}>
@@ -264,6 +271,16 @@ export function UserMobileMenu({ onMenuClose }: { onMenuClose: () => void }) {
             }}>
             <Heart className="w-4 h-4" />
             <span>Wishlist</span>
+          </Link>
+          <Link
+            href="/account/favorites"
+            className="flex items-center gap-3 px-3 py-2 text-sm text-foreground hover:bg-muted rounded-md transition-colors"
+            onClick={() => {
+              setIsUserMenuOpen(false);
+              onMenuClose();
+            }}>
+            <Heart className="w-4 h-4 text-primary fill-primary" />
+            <span>Favorites</span>
           </Link>
           <Link
             href="/account/settings"

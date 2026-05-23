@@ -14,7 +14,7 @@ import type { MusicItemWithArtist } from '@/lib/utils/music';
 import { executeMusicDownload, getMusicDownloadStrategy } from '@/lib/services/musicDownload';
 import { toMusicDownloadInputFromItem } from '@/lib/utils/musicDownloadMappers';
 import { shareContent } from '@/lib/utils/shareContent';
-import { useContentFavoriteStub } from '@/lib/hooks/useContentFavoriteStub';
+import { useFavoriteToggle } from '@/lib/hooks/useFavoriteToggle';
 import { LoginModal } from '@/components/auth/LoginModal';
 
 interface MusicCardOptionsProps {
@@ -23,7 +23,10 @@ interface MusicCardOptionsProps {
 
 export const MusicCardOptions = ({ musicItem }: MusicCardOptionsProps) => {
   const router = useRouter();
-  const { requestFavorite, isLoginModalOpen, setIsLoginModalOpen } = useContentFavoriteStub();
+  const { toggle, isLoginModalOpen, setIsLoginModalOpen } = useFavoriteToggle(
+    'music',
+    musicItem._id
+  );
   const artistName =
     typeof musicItem.artist === 'string' ? musicItem.artist : musicItem.artist.name;
   const downloadInput = toMusicDownloadInputFromItem(musicItem, 'detail');
@@ -70,7 +73,7 @@ export const MusicCardOptions = ({ musicItem }: MusicCardOptionsProps) => {
             <Plus className="w-4 h-4 mr-2" />
             Add to Playlist
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={requestFavorite}>
+          <DropdownMenuItem onClick={() => void toggle()}>
             <Heart className="w-4 h-4 mr-2" />
             Add to Favorites
           </DropdownMenuItem>
