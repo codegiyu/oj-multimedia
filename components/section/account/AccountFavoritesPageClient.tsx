@@ -6,7 +6,10 @@ import Link from 'next/link';
 import { DashboardPageHeader } from '@/components/layout/user-dashboard';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import type { ContentFavoriteEntityType, IUserContentFavoriteItem } from '@/lib/constants/endpoints';
+import type {
+  ContentFavoriteEntityType,
+  IUserContentFavoriteItem,
+} from '@/lib/constants/endpoints';
 import { useInitFavoritesStore, useFavoritesStore } from '@/lib/store/favoritesStore';
 import { favoriteKey } from '@/lib/utils/favorites';
 import { toast } from 'sonner';
@@ -82,7 +85,10 @@ export function AccountFavoritesPageClient({
   if (initialLoadError) {
     return (
       <div className="space-y-6">
-        <DashboardPageHeader title="My favorites" description="Music, videos, and more you've saved" />
+        <DashboardPageHeader
+          title="My favorites"
+          description="Music, videos, and more you've saved"
+        />
         <div className="rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive flex items-center justify-between gap-4">
           <span>{initialLoadError}</span>
           <Button
@@ -100,7 +106,10 @@ export function AccountFavoritesPageClient({
   if (items.length === 0) {
     return (
       <div className="space-y-8">
-        <DashboardPageHeader title="My favorites" description="Music, videos, and more you've saved" />
+        <DashboardPageHeader
+          title="My favorites"
+          description="Music, videos, and more you've saved"
+        />
         <div className="mx-auto max-w-md rounded-2xl border border-border/80 bg-card px-6 py-12 text-center shadow-sm">
           <Heart className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
           <p className="text-sm text-muted-foreground">
@@ -142,11 +151,7 @@ export function AccountFavoritesPageClient({
                     className="gap-0 overflow-hidden border-border/80 py-0 shadow-sm">
                     <div className="relative aspect-square bg-muted">
                       {item.image ? (
-                        <FillImage
-                          src={item.image}
-                          alt=""
-                          sizes="(max-width: 768px) 50vw, 280px"
-                        />
+                        <FillImage src={item.image} alt="" sizes="(max-width: 768px) 50vw, 280px" />
                       ) : (
                         <div className="flex h-full items-center justify-center text-muted-foreground">
                           <Icon className="h-10 w-10" />
@@ -162,7 +167,9 @@ export function AccountFavoritesPageClient({
                       </button>
                     </div>
                     <div className="space-y-2 p-4">
-                      <Link href={item.href} className="font-semibold text-foreground hover:underline line-clamp-2">
+                      <Link
+                        href={item.href}
+                        className="font-semibold text-foreground hover:underline line-clamp-2">
                         {item.title}
                       </Link>
                       {item.subtitle && (
