@@ -10,6 +10,7 @@
     "test:unit": "vitest run --config vitest.unit.config.ts",
     "test:integration": "vitest run --config vitest.integration.config.ts",
     "test:e2e": "playwright test",
+    "test:e2e:smoke": "cross-env PLAYWRIGHT_USE_WEBSERVER=1 playwright test",
     "test:phase": "vitest run --config vitest.phase.config.ts",
     "test:phase:unit": "vitest run --config vitest.phase.config.ts tests/phase/unit",
     "test:phase:integration": "vitest run --config vitest.phase.config.ts tests/phase/integration",

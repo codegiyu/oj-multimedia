@@ -97,3 +97,13 @@ All list/detail keys and query usage match `PUBLIC-PAGES-ENDPOINTS.md`.
 | Admin accept-invite create-password | **Done** — `/admin/auth/accept-invite/create-password` reuses reset-password flow with invite copy |
 | Artist portal delete actions | **Done** — delete buttons removed; updates via upload/WhatsApp only (backend DELETE returns 403) |
 | Notifications / newsletter admin | **Deferred** — no backend routes yet; keep out of admin nav until API exists |
+
+---
+
+## Phase 5 page verification
+
+| Item | Status |
+|------|--------|
+| Playwright smoke (public, community, marketplace, account/admin auth) | **Done** — see `tests/e2e/*` and `npm run test:e2e:smoke` |
+| Download `/api/v1` contract test | **Done** — `tests/e2e/download-url-contract.spec.ts` |
+| Manual sign-off matrix | **Done** — [`PAGE-SMOKE-MATRIX.md`](PAGE-SMOKE-MATRIX.md) |
