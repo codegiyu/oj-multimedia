@@ -36,72 +36,98 @@ export const ChartCard = ({
         ? 'text-destructive'
         : 'text-muted-foreground';
 
-  const cardContent = (
+  const detailHref = _id ? `/music/${_id}` : undefined;
+
+  return (
     <motion.div
       whileHover={{ x: 4 }}
       transition={{ duration: 0.2 }}
-      className={`group flex items-center gap-4 p-3 rounded-xl hover:bg-muted/50 transition-colors ${_id ? 'cursor-pointer' : ''}`}>
-      {/* Rank */}
-      <div className="w-8 text-center">
-        <span
-          className={`font-display font-bold text-lg ${rank <= 3 ? 'text-primary' : 'text-muted-foreground'}`}>
-          {rank}
-        </span>
-      </div>
+      className={`group flex items-center gap-4 p-3 rounded-xl hover:bg-muted/50 transition-colors ${detailHref ? '' : ''}`}>
+      {detailHref ? (
+        <Link
+          href={detailHref}
+          className="flex min-w-0 flex-1 items-center gap-4"
+          aria-label={`View ${title}`}>
+          <div className="w-8 text-center">
+            <span
+              className={`font-display font-bold text-lg ${rank <= 3 ? 'text-primary' : 'text-muted-foreground'}`}>
+              {rank}
+            </span>
+          </div>
 
-      {/* Trend */}
-      <div className={`w-6 flex items-center justify-center ${trendColor}`}>
-        <TrendIcon className="w-4 h-4" />
-      </div>
+          <div className={`w-6 flex items-center justify-center ${trendColor}`}>
+            <TrendIcon className="w-4 h-4" />
+          </div>
 
-      {/* Cover */}
-      <div className="relative w-12 h-12 rounded-lg overflow-hidden shrink-0">
-        <FillImage src={cover} alt={title} sizes="48px" />
-        <div className="absolute inset-0 bg-foreground/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-          <Play className="w-4 h-4 text-primary-foreground fill-current" />
-        </div>
-      </div>
+          <div className="relative w-12 h-12 rounded-lg overflow-hidden shrink-0">
+            <FillImage src={cover} alt="" sizes="48px" />
+            <div className="absolute inset-0 bg-foreground/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+              <Play className="w-4 h-4 text-primary-foreground fill-current" aria-hidden />
+            </div>
+          </div>
 
-      {/* Info */}
-      <div className="flex-1 min-w-0">
-        <h4 className="font-medium truncate group-hover:text-primary transition-colors">{title}</h4>
-        <p className="text-sm text-muted-foreground truncate">{artistName}</p>
-      </div>
+          <div className="flex-1 min-w-0">
+            <h4 className="font-medium truncate group-hover:text-primary transition-colors">
+              {title}
+            </h4>
+            <p className="text-sm text-muted-foreground truncate">{artistName}</p>
+          </div>
 
-      {/* Stats */}
-      <div className="text-right hidden sm:block">
-        <p className="text-sm font-medium">{plays}</p>
-        {change && (
-          <p className={`text-xs ${trendColor}`}>
-            {trend === 'up' ? '+' : trend === 'down' ? '-' : ''}
-            {change}%
-          </p>
-        )}
-      </div>
+          <div className="text-right hidden sm:block">
+            <p className="text-sm font-medium">{plays}</p>
+            {change && (
+              <p className={`text-xs ${trendColor}`}>
+                {trend === 'up' ? '+' : trend === 'down' ? '-' : ''}
+                {change}%
+              </p>
+            )}
+          </div>
+        </Link>
+      ) : (
+        <>
+          <div className="w-8 text-center">
+            <span
+              className={`font-display font-bold text-lg ${rank <= 3 ? 'text-primary' : 'text-muted-foreground'}`}>
+              {rank}
+            </span>
+          </div>
 
-      {/* Play Button */}
-      <Button
-        variant="play"
-        size="icon-sm"
-        className="opacity-0 group-hover:opacity-100 transition-opacity"
-        onClick={e => {
-          if (_id) {
-            e.preventDefault();
-            e.stopPropagation();
-          }
-        }}>
-        <Play className="w-4 h-4 fill-current ml-0.5" />
-      </Button>
+          <div className={`w-6 flex items-center justify-center ${trendColor}`}>
+            <TrendIcon className="w-4 h-4" />
+          </div>
+
+          <div className="relative w-12 h-12 rounded-lg overflow-hidden shrink-0">
+            <FillImage src={cover} alt={title} sizes="48px" />
+          </div>
+
+          <div className="flex-1 min-w-0">
+            <h4 className="font-medium truncate">{title}</h4>
+            <p className="text-sm text-muted-foreground truncate">{artistName}</p>
+          </div>
+
+          <div className="text-right hidden sm:block">
+            <p className="text-sm font-medium">{plays}</p>
+            {change && (
+              <p className={`text-xs ${trendColor}`}>
+                {trend === 'up' ? '+' : trend === 'down' ? '-' : ''}
+                {change}%
+              </p>
+            )}
+          </div>
+        </>
+      )}
+
+      {detailHref && (
+        <Button
+          variant="play"
+          size="icon-sm"
+          className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
+          asChild>
+          <Link href={detailHref} aria-label={`Play ${title}`}>
+            <Play className="w-4 h-4 fill-current ml-0.5" />
+          </Link>
+        </Button>
+      )}
     </motion.div>
   );
-
-  if (_id) {
-    return (
-      <Link href={`/music/${_id}`} className="block">
-        {cardContent}
-      </Link>
-    );
-  }
-
-  return cardContent;
 };
