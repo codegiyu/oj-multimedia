@@ -3,7 +3,11 @@ import { notFound } from 'next/navigation';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { VideoDetailPageClient } from '@/components/section/video/VideoDetailPageClient';
 import { callPublicServerApi } from '@/lib/services/serverApi';
-import { mapPublicVideoToDetailItem } from '@/lib/utils/publicApiMappers';
+import {
+  assertCompletePublicVideo,
+  filterPublicVideoList,
+  mapPublicVideoToDetailItem,
+} from '@/lib/utils/publicApiMappers';
 import type { VideoItemWithCreator } from '@/lib/utils/videos';
 
 interface VideoDetailPageProps {
@@ -58,13 +62,19 @@ export default async function VideoDetailPage({ params }: VideoDetailPageProps) 
   }
 
   const data = res.data;
+  if (!assertCompletePublicVideo(data.video)) {
+    notFound();
+  }
+
   const videoItem = mapPublicVideoToDetailItem(data.video) as VideoItemWithCreator;
 
   const category = videoItem.category ?? 'creative';
   const relatedRes = await callPublicServerApi('PUBLIC_GET_VIDEOS', {
     query: `?limit=4&page=1&status=published&type=recent&category=${encodeURIComponent(category)}`,
   });
-  const relatedList = relatedRes.type === 'success' ? (relatedRes.data?.videos ?? []) : [];
+  const relatedList = filterPublicVideoList(
+    relatedRes.type === 'success' ? (relatedRes.data?.videos ?? []) : []
+  );
   const relatedVideos: VideoItemWithCreator[] = relatedList
     .filter(v => String(v._id) !== id)
     .slice(0, 6)

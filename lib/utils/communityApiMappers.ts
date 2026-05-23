@@ -437,13 +437,17 @@ export function mapToEbook(item: Record<string, unknown>): {
   description: string;
   downloads: string;
   cover: string;
+  fileUrl?: string;
 } {
+  const fileUrl = str(item.fileUrl);
+
   return {
     _id: str(item._id),
     title: str(item.title),
     description: str(item.description),
     downloads: str(item.downloads ?? 0),
     cover: str(item.cover ?? item.coverImage),
+    ...(fileUrl ? { fileUrl } : {}),
   };
 }
 
@@ -471,13 +475,17 @@ export function mapToBeat(item: Record<string, unknown>): {
   description: string;
   downloads: string;
   genre: string;
+  fileUrl?: string;
 } {
+  const fileUrl = str(item.fileUrl);
+
   return {
     _id: str(item._id),
     title: str(item.title),
     description: str(item.description),
     downloads: str(item.downloads ?? 0),
     genre: str(item.genre),
+    ...(fileUrl ? { fileUrl } : {}),
   };
 }
 
@@ -488,13 +496,17 @@ export function mapToWallpaper(item: Record<string, unknown>): {
   description: string;
   downloads: string;
   category: string;
+  fileUrl?: string;
 } {
+  const fileUrl = str(item.fileUrl);
+
   return {
     _id: str(item._id),
     title: str(item.title),
     description: str(item.description),
     downloads: str(item.downloads ?? 0),
     category: str(item.category),
+    ...(fileUrl ? { fileUrl } : {}),
   };
 }
 

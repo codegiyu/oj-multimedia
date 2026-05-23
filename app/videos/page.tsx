@@ -16,6 +16,7 @@ import { normalizePublicCategoryByScope } from '@/lib/utils/contentCategoriesSer
 import { fetchPublicCategoryNav } from '@/lib/utils/contentCategoryNav';
 import { videoCategoryNavFallback } from '@/lib/constants/categoryNavFallbacks';
 import {
+  filterPublicVideoList,
   mapPublicVideoToTrendingVideo,
   mapPublicVideoToFeaturedVideo,
   mapPublicVideoToRecentUpload,
@@ -58,10 +59,18 @@ async function fetchVideoSections(category: string) {
   else if (shortRes.type === 'error')
     errorMessage = shortRes.error?.message ?? 'Failed to load short form';
 
-  const rawTrending = trendingRes.type === 'success' ? (trendingRes.data?.videos ?? []) : [];
-  const rawFeatured = featuredRes.type === 'success' ? (featuredRes.data?.videos ?? []) : [];
-  const rawRecent = recentRes.type === 'success' ? (recentRes.data?.videos ?? []) : [];
-  const rawShort = shortRes.type === 'success' ? (shortRes.data?.videos ?? []) : [];
+  const rawTrending = filterPublicVideoList(
+    trendingRes.type === 'success' ? (trendingRes.data?.videos ?? []) : []
+  );
+  const rawFeatured = filterPublicVideoList(
+    featuredRes.type === 'success' ? (featuredRes.data?.videos ?? []) : []
+  );
+  const rawRecent = filterPublicVideoList(
+    recentRes.type === 'success' ? (recentRes.data?.videos ?? []) : []
+  );
+  const rawShort = filterPublicVideoList(
+    shortRes.type === 'success' ? (shortRes.data?.videos ?? []) : []
+  );
 
   const trendingVideos: TrendingVideo[] = filterByCategory(rawTrending, category)
     .map(mapPublicVideoToTrendingVideo)

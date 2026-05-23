@@ -3,7 +3,11 @@ import { notFound } from 'next/navigation';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { MusicDetailPageClient } from '@/components/section/music/MusicDetailPageClient';
 import { callPublicServerApi } from '@/lib/services/serverApi';
-import { mapPublicMusicToDetailItem } from '@/lib/utils/publicApiMappers';
+import {
+  assertCompletePublicMusic,
+  filterPublicMusicList,
+  mapPublicMusicToDetailItem,
+} from '@/lib/utils/publicApiMappers';
 import type { MusicItemWithArtist } from '@/lib/utils/music';
 
 interface MusicDetailPageProps {
@@ -58,13 +62,19 @@ export default async function MusicDetailPage({ params }: MusicDetailPageProps) 
   }
 
   const data = res.data;
+  if (!assertCompletePublicMusic(data.music)) {
+    notFound();
+  }
+
   const musicItem = mapPublicMusicToDetailItem(data.music);
 
   const category = musicItem.category ?? 'gospel';
   const relatedRes = await callPublicServerApi('PUBLIC_GET_MUSIC', {
     query: `?limit=4&page=1&status=published&type=recent&category=${encodeURIComponent(category)}`,
   });
-  const relatedList = relatedRes.type === 'success' ? (relatedRes.data?.music ?? []) : [];
+  const relatedList = filterPublicMusicList(
+    relatedRes.type === 'success' ? (relatedRes.data?.music ?? []) : []
+  );
   const relatedSongs: MusicItemWithArtist[] = relatedList
     .filter(m => String(m._id) !== id)
     .slice(0, 3)

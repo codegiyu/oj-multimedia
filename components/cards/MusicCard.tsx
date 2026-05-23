@@ -23,6 +23,8 @@ interface MusicCardProps {
   downloadUrl?: string;
   audioUrl?: string;
   isMonetizable?: boolean;
+  price?: number;
+  /** @deprecated Use price */
   downloadPrice?: number;
   /** When set, the more menu uses the full options dropdown (detail / related tracks). */
   optionsItem?: MusicItemWithArtist;

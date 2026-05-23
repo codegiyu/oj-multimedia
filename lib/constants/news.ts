@@ -19,6 +19,7 @@ export interface FullStoryContent {
  */
 export interface NewsItem {
   _id: string;
+  slug?: string;
   title: string;
   excerpt?: string; // Optional - not all items need excerpts (e.g., video items)
   category: string;

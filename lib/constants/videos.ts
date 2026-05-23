@@ -60,8 +60,10 @@ export interface VideoItem {
   youtubeEmbedUrl?: string;
   downloadUrl?: string; // For downloads
   description?: string; // Video description
-  isMonetizable?: boolean; // Whether download requires payment
-  downloadPrice?: number; // Price for download (if monetizable)
+  isMonetizable?: boolean;
+  price?: number;
+  /** @deprecated Use price */
+  downloadPrice?: number;
   releaseDate?: string; // Release date
   tags?: string[]; // Tags for related content
   comments?: number; // Number of comments

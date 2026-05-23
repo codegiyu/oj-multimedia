@@ -15,6 +15,7 @@ import { normalizePublicCategoryByScope } from '@/lib/utils/contentCategoriesSer
 import { fetchPublicCategoryNav } from '@/lib/utils/contentCategoryNav';
 import { newsCategoryNavFallback } from '@/lib/constants/categoryNavFallbacks';
 import {
+  filterPublicNewsList,
   mapPublicNewsToFeaturedStory,
   mapPublicNewsToFeedItem,
   mapPublicNewsToTrendingStory,
@@ -49,10 +50,18 @@ async function fetchNewsSections(category: string) {
   else if (videoRes.type === 'error')
     errorMessage = videoRes.error?.message ?? 'Failed to load video stories';
 
-  const rawFeatured = featuredRes.type === 'success' ? (featuredRes.data?.articles ?? []) : [];
-  const rawLatest = latestRes.type === 'success' ? (latestRes.data?.articles ?? []) : [];
-  const rawTrending = trendingRes.type === 'success' ? (trendingRes.data?.articles ?? []) : [];
-  const rawVideo = videoRes.type === 'success' ? (videoRes.data?.articles ?? []) : [];
+  const rawFeatured = filterPublicNewsList(
+    featuredRes.type === 'success' ? (featuredRes.data?.articles ?? []) : []
+  );
+  const rawLatest = filterPublicNewsList(
+    latestRes.type === 'success' ? (latestRes.data?.articles ?? []) : []
+  );
+  const rawTrending = filterPublicNewsList(
+    trendingRes.type === 'success' ? (trendingRes.data?.articles ?? []) : []
+  );
+  const rawVideo = filterPublicNewsList(
+    videoRes.type === 'success' ? (videoRes.data?.articles ?? []) : []
+  );
 
   const featuredStories: FeaturedStory[] = filterByCategory(
     rawFeatured.map(mapPublicNewsToFeaturedStory),
