@@ -11,26 +11,43 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import type { MusicItemWithArtist } from '@/lib/utils/music';
+import { executeMusicDownload, getMusicDownloadStrategy } from '@/lib/services/musicDownload';
+import { shareContent } from '@/lib/utils/shareContent';
 
 interface MusicCardOptionsProps {
   musicItem: MusicItemWithArtist;
 }
 
-export const MusicCardOptions = ({ musicItem }: MusicCardOptionsProps) => {
-  const router = useRouter();
-
+function toMusicDownloadInput(musicItem: MusicItemWithArtist) {
   const artistName =
     typeof musicItem.artist === 'string' ? musicItem.artist : musicItem.artist.name;
+
+  return {
+    _id: musicItem._id,
+    slug: musicItem.slug,
+    title: musicItem.title,
+    artistName,
+    downloadUrl: musicItem.downloadUrl,
+    audioUrl: musicItem.audioUrl,
+    isMonetizable: musicItem.isMonetizable,
+    downloadPrice: musicItem.downloadPrice,
+    source: 'detail' as const,
+  };
+}
+
+export const MusicCardOptions = ({ musicItem }: MusicCardOptionsProps) => {
+  const router = useRouter();
+  const artistName =
+    typeof musicItem.artist === 'string' ? musicItem.artist : musicItem.artist.name;
+  const downloadInput = toMusicDownloadInput(musicItem);
+  const { canDownload } = getMusicDownloadStrategy(downloadInput);
+
   const handleShare = () => {
-    if (navigator.share) {
-      navigator.share({
-        title: musicItem.title,
-        text: `${musicItem.title} by ${artistName}`,
-        url: `${window.location.origin}/music/${musicItem._id}`,
-      });
-    } else {
-      navigator.clipboard.writeText(`${window.location.origin}/music/${musicItem._id}`);
-    }
+    void shareContent({
+      title: musicItem.title,
+      text: `${musicItem.title} by ${artistName}`,
+      url: `/music/${musicItem._id}`,
+    });
   };
 
   const handleAddToPlaylist = () => {
@@ -38,18 +55,11 @@ export const MusicCardOptions = ({ musicItem }: MusicCardOptionsProps) => {
   };
 
   const handleAddToFavorites = () => {
-    // TODO: Implement favorites functionality
+    // TODO: Implement favorites functionality (Phase 2)
   };
 
   const handleDownload = () => {
-    if (musicItem.downloadUrl) {
-      const link = document.createElement('a');
-      link.href = musicItem.downloadUrl;
-      link.download = `${musicItem.title} - ${artistName}.mp3`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
+    void executeMusicDownload(downloadInput);
   };
 
   const handleViewDetails = () => {
@@ -63,7 +73,7 @@ export const MusicCardOptions = ({ musicItem }: MusicCardOptionsProps) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon-sm" className="shrink-0">
+        <Button type="button" variant="ghost" size="icon-sm" className="shrink-0">
           <MoreHorizontal className="w-4 h-4" />
         </Button>
       </DropdownMenuTrigger>
@@ -81,7 +91,7 @@ export const MusicCardOptions = ({ musicItem }: MusicCardOptionsProps) => {
           Add to Favorites
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        {musicItem.downloadUrl && (
+        {canDownload && (
           <DropdownMenuItem onClick={handleDownload}>
             <Download className="w-4 h-4 mr-2" />
             Download

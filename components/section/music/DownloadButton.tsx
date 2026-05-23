@@ -1,69 +1,44 @@
 'use client';
 
-import { useState } from 'react';
 import { Download, Lock, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { MusicItemWithArtist } from '@/lib/utils/music';
-import { getPublicMusicDownloadUrl } from '@/lib/constants/endpoints';
-import { sendContentAnalyticsEvent } from '@/lib/services/contentAnalytics';
+import { useMusicDownload } from '@/lib/hooks/useMusicDownload';
+import type { MusicDownloadInput } from '@/lib/services/musicDownload';
 
 interface DownloadButtonProps {
   musicItem: MusicItemWithArtist;
 }
 
-export const DownloadButton = ({ musicItem }: DownloadButtonProps) => {
-  const [isDownloading, setIsDownloading] = useState(false);
-  const [isDownloaded, setIsDownloaded] = useState(false);
+function toMusicDownloadInput(musicItem: MusicItemWithArtist): MusicDownloadInput {
+  const artistName =
+    typeof musicItem.artist === 'string' ? musicItem.artist : musicItem.artist.name;
 
-  const idOrSlug = musicItem.slug || musicItem._id;
-  const trackedDownloadUrl = getPublicMusicDownloadUrl(idOrSlug);
-  const useTrackedDownload =
-    !musicItem.isMonetizable && Boolean(musicItem.audioUrl || musicItem.downloadUrl);
-
-  const handleDownload = async () => {
-    if (musicItem.isMonetizable && musicItem.downloadPrice) {
-      const proceed = window.confirm(
-        `This download costs $${musicItem.downloadPrice.toFixed(2)}. Proceed to payment?`
-      );
-      if (!proceed) return;
-    }
-
-    setIsDownloading(true);
-
-    try {
-      if (useTrackedDownload) {
-        window.location.href = trackedDownloadUrl;
-      } else if (musicItem.downloadUrl) {
-        sendContentAnalyticsEvent('music', idOrSlug, 'download');
-        const link = document.createElement('a');
-        link.href = musicItem.downloadUrl;
-        const artistName =
-          typeof musicItem.artist === 'string' ? musicItem.artist : musicItem.artist.name;
-        link.download = `${musicItem.title} - ${artistName}.mp3`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      } else {
-        return;
-      }
-
-      setIsDownloaded(true);
-      setTimeout(() => setIsDownloaded(false), 3000);
-    } catch {
-      void 0;
-    } finally {
-      setIsDownloading(false);
-    }
+  return {
+    _id: musicItem._id,
+    slug: musicItem.slug,
+    title: musicItem.title,
+    artistName,
+    downloadUrl: musicItem.downloadUrl,
+    audioUrl: musicItem.audioUrl,
+    isMonetizable: musicItem.isMonetizable,
+    downloadPrice: musicItem.downloadPrice,
+    source: 'detail',
   };
+}
 
-  if (!useTrackedDownload && !musicItem.downloadUrl) {
+export const DownloadButton = ({ musicItem }: DownloadButtonProps) => {
+  const input = toMusicDownloadInput(musicItem);
+  const { download, isDownloading, isDownloaded, canDownload } = useMusicDownload(input);
+
+  if (!canDownload) {
     return null;
   }
 
   return (
     <div className="flex items-center gap-4">
       <Button
-        onClick={() => void handleDownload()}
+        onClick={() => void download()}
         disabled={isDownloading || isDownloaded}
         size="lg"
         className="flex items-center gap-2">
