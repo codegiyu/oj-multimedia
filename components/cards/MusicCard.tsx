@@ -1,19 +1,15 @@
 'use client';
 
 import { motion } from 'motion/react';
-import { Play, Heart, MoreHorizontal, Share2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Play } from 'lucide-react';
 import Link from 'next/link';
 import { FillImage } from '@/components/general/FillImage';
 import { MusicCardDownloadButton } from '@/components/content/MusicCardDownloadButton';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import type { MusicDownloadInput } from '@/lib/services/musicDownload';
-import { shareContent } from '@/lib/utils/shareContent';
+import { ContentFavoriteStubButton } from '@/components/content/ContentFavoriteStubButton';
+import { MusicCardOptions } from '@/components/section/music/MusicCardOptions';
+import { MusicCardQuickMenu } from '@/components/section/music/MusicCardQuickMenu';
+import type { MusicItemWithArtist } from '@/lib/utils/music';
+import { toMusicDownloadInputFromCard } from '@/lib/utils/musicDownloadMappers';
 
 interface MusicCardProps {
   _id: string;
@@ -28,37 +24,15 @@ interface MusicCardProps {
   audioUrl?: string;
   isMonetizable?: boolean;
   downloadPrice?: number;
-}
-
-function buildDownloadInput(props: MusicCardProps): MusicDownloadInput {
-  const artistName = typeof props.artist === 'string' ? props.artist : props.artist.name;
-
-  return {
-    _id: props._id,
-    slug: props.slug,
-    title: props.title,
-    artistName,
-    downloadUrl: props.downloadUrl,
-    audioUrl: props.audioUrl,
-    isMonetizable: props.isMonetizable,
-    downloadPrice: props.downloadPrice,
-    source: 'card',
-  };
+  /** When set, the more menu uses the full options dropdown (detail / related tracks). */
+  optionsItem?: MusicItemWithArtist;
 }
 
 export const MusicCard = (props: MusicCardProps) => {
-  const { _id, title, artist, cover, plays, genre, isNew } = props;
+  const { _id, title, artist, cover, plays, genre, isNew, optionsItem } = props;
   const artistName = typeof artist === 'string' ? artist : artist.name;
   const detailHref = `/music/${_id}`;
-  const downloadInput = buildDownloadInput(props);
-
-  const handleShare = () => {
-    void shareContent({
-      title,
-      text: `${title} by ${artistName}`,
-      url: detailHref,
-    });
-  };
+  const downloadInput = toMusicDownloadInputFromCard(props, 'card');
 
   return (
     <motion.div
@@ -89,15 +63,7 @@ export const MusicCard = (props: MusicCardProps) => {
         </Link>
 
         <div className="absolute top-3 right-3 z-10 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon-sm"
-            className="bg-card/80 backdrop-blur-sm hover:bg-card"
-            aria-label="Add to favorites"
-            onClick={e => e.preventDefault()}>
-            <Heart className="w-4 h-4" />
-          </Button>
+          <ContentFavoriteStubButton className="bg-card/80 backdrop-blur-sm hover:bg-card" />
           <MusicCardDownloadButton input={downloadInput} />
         </div>
       </div>
@@ -111,29 +77,16 @@ export const MusicCard = (props: MusicCardProps) => {
             <p className="text-sm text-muted-foreground truncate">{artistName}</p>
             <p className="text-xs text-muted-foreground mt-2">{plays} plays</p>
           </Link>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon-sm"
-                className="shrink-0"
-                aria-label="More options"
-                onClick={e => e.stopPropagation()}>
-                <MoreHorizontal className="w-4 h-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-40">
-              <DropdownMenuItem
-                onClick={e => {
-                  e.preventDefault();
-                  handleShare();
-                }}>
-                <Share2 className="w-4 h-4 mr-2" />
-                Share
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {optionsItem ? (
+            <MusicCardOptions musicItem={optionsItem} />
+          ) : (
+            <MusicCardQuickMenu
+              musicId={_id}
+              title={title}
+              artistName={artistName}
+              downloadInput={downloadInput}
+            />
+          )}
         </div>
       </div>
     </motion.div>
