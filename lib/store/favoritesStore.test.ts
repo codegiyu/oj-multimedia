@@ -41,6 +41,56 @@ describe('favoritesStore', () => {
     });
   });
 
+  it('adds favorite keys on successful toggle on', async () => {
+    vi.mocked(callApi).mockResolvedValueOnce({
+      type: 'success',
+      message: 'Added',
+      requestName: 'USER_FAVORITES_ADD',
+      data: {
+        item: {
+          _id: 'f1',
+          entityType: 'music',
+          entityId: 'track-new',
+          createdAt: '2026-05-20T00:00:00.000Z',
+          title: 'Track',
+          href: '/music/track-new',
+        },
+      },
+    } as never);
+
+    const { actions } = useInitFavoritesStore.getState();
+    const result = await actions.toggleFavorite('music', 'track-new');
+
+    expect(result.favorited).toBe(true);
+    expect(actions.isFavorite('music', 'track-new')).toBe(true);
+    expect(callApi).toHaveBeenCalledWith('USER_FAVORITES_ADD', {
+      payload: { entityType: 'music', entityId: 'track-new' },
+    });
+  });
+
+  it('hydrates favorite keys from paginated list responses', async () => {
+    vi.mocked(callApi).mockResolvedValueOnce({
+      type: 'success',
+      message: 'OK',
+      requestName: 'USER_FAVORITES_LIST',
+      data: {
+        items: [
+          { entityType: 'music', entityId: 'a' },
+          { entityType: 'video', entityId: 'b' },
+        ],
+        pagination: { page: 1, limit: 100, total: 2, totalPages: 1 },
+      },
+    } as never);
+
+    const { actions } = useInitFavoritesStore.getState();
+
+    await actions.hydrateFromServer();
+
+    expect(useInitFavoritesStore.getState().hydrated).toBe(true);
+    expect(actions.isFavorite('music', 'a')).toBe(true);
+    expect(actions.isFavorite('video', 'b')).toBe(true);
+  });
+
   it('removes favorite keys on successful toggle off', async () => {
     useInitFavoritesStore.setState({
       favoriteKeys: { 'music:track-2': true },
