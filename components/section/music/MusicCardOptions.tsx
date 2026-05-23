@@ -12,34 +12,21 @@ import {
 import { Button } from '@/components/ui/button';
 import type { MusicItemWithArtist } from '@/lib/utils/music';
 import { executeMusicDownload, getMusicDownloadStrategy } from '@/lib/services/musicDownload';
+import { toMusicDownloadInputFromItem } from '@/lib/utils/musicDownloadMappers';
 import { shareContent } from '@/lib/utils/shareContent';
+import { useContentFavoriteStub } from '@/lib/hooks/useContentFavoriteStub';
+import { LoginModal } from '@/components/auth/LoginModal';
 
 interface MusicCardOptionsProps {
   musicItem: MusicItemWithArtist;
 }
 
-function toMusicDownloadInput(musicItem: MusicItemWithArtist) {
-  const artistName =
-    typeof musicItem.artist === 'string' ? musicItem.artist : musicItem.artist.name;
-
-  return {
-    _id: musicItem._id,
-    slug: musicItem.slug,
-    title: musicItem.title,
-    artistName,
-    downloadUrl: musicItem.downloadUrl,
-    audioUrl: musicItem.audioUrl,
-    isMonetizable: musicItem.isMonetizable,
-    downloadPrice: musicItem.downloadPrice,
-    source: 'detail' as const,
-  };
-}
-
 export const MusicCardOptions = ({ musicItem }: MusicCardOptionsProps) => {
   const router = useRouter();
+  const { requestFavorite, isLoginModalOpen, setIsLoginModalOpen } = useContentFavoriteStub();
   const artistName =
     typeof musicItem.artist === 'string' ? musicItem.artist : musicItem.artist.name;
-  const downloadInput = toMusicDownloadInput(musicItem);
+  const downloadInput = toMusicDownloadInputFromItem(musicItem, 'detail');
   const { canDownload } = getMusicDownloadStrategy(downloadInput);
 
   const handleShare = () => {
@@ -52,10 +39,6 @@ export const MusicCardOptions = ({ musicItem }: MusicCardOptionsProps) => {
 
   const handleAddToPlaylist = () => {
     // TODO: Implement playlist functionality
-  };
-
-  const handleAddToFavorites = () => {
-    // TODO: Implement favorites functionality (Phase 2)
   };
 
   const handleDownload = () => {
@@ -71,42 +54,50 @@ export const MusicCardOptions = ({ musicItem }: MusicCardOptionsProps) => {
   };
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button type="button" variant="ghost" size="icon-sm" className="shrink-0">
-          <MoreHorizontal className="w-4 h-4" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-48">
-        <DropdownMenuItem onClick={handleViewDetails}>
-          <Eye className="w-4 h-4 mr-2" />
-          View Details
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={handleAddToPlaylist}>
-          <Plus className="w-4 h-4 mr-2" />
-          Add to Playlist
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={handleAddToFavorites}>
-          <Heart className="w-4 h-4 mr-2" />
-          Add to Favorites
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        {canDownload && (
-          <DropdownMenuItem onClick={handleDownload}>
-            <Download className="w-4 h-4 mr-2" />
-            Download
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button type="button" variant="ghost" size="icon-sm" className="shrink-0">
+            <MoreHorizontal className="w-4 h-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-48">
+          <DropdownMenuItem onClick={handleViewDetails}>
+            <Eye className="w-4 h-4 mr-2" />
+            View Details
           </DropdownMenuItem>
-        )}
-        <DropdownMenuItem onClick={handleShare}>
-          <Share2 className="w-4 h-4 mr-2" />
-          Share
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleReport} className="text-destructive">
-          <Flag className="w-4 h-4 mr-2" />
-          Report
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+          <DropdownMenuItem onClick={handleAddToPlaylist}>
+            <Plus className="w-4 h-4 mr-2" />
+            Add to Playlist
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={requestFavorite}>
+            <Heart className="w-4 h-4 mr-2" />
+            Add to Favorites
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          {canDownload && (
+            <DropdownMenuItem onClick={handleDownload}>
+              <Download className="w-4 h-4 mr-2" />
+              Download
+            </DropdownMenuItem>
+          )}
+          <DropdownMenuItem onClick={handleShare}>
+            <Share2 className="w-4 h-4 mr-2" />
+            Share
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={handleReport} className="text-destructive">
+            <Flag className="w-4 h-4 mr-2" />
+            Report
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <LoginModal
+        open={isLoginModalOpen}
+        onOpenChange={setIsLoginModalOpen}
+        title="Sign in to save favorites"
+        description="Create an account or sign in to save music and videos to your favorites."
+      />
+    </>
   );
 };

@@ -12,6 +12,9 @@ import { DownloadButton } from './DownloadButton';
 import { MusicCard } from '@/components/cards/MusicCard';
 import { sendContentAnalyticsEvent } from '@/lib/services/contentAnalytics';
 import { MultilineText } from '@/components/general/MultilineText';
+import { useContentFavoriteStub } from '@/lib/hooks/useContentFavoriteStub';
+import { LoginModal } from '@/components/auth/LoginModal';
+import { shareContent } from '@/lib/utils/shareContent';
 
 interface MusicDetailPageClientProps {
   musicItem: MusicItemWithArtist;
@@ -32,17 +35,14 @@ export const MusicDetailPageClient = ({ musicItem, relatedSongs }: MusicDetailPa
     sendContentAnalyticsEvent('music', entityId, 'play');
   }, [entityId]);
 
+  const { requestFavorite, isLoginModalOpen, setIsLoginModalOpen } = useContentFavoriteStub();
+
   const handleShare = () => {
-    if (navigator.share) {
-      navigator.share({
-        title: musicItem.title,
-        text: `${musicItem.title} by ${typeof musicItem.artist === 'string' ? musicItem.artist : musicItem.artist.name}`,
-        url: window.location.href,
-      });
-    } else {
-      // Fallback: copy to clipboard
-      navigator.clipboard.writeText(window.location.href);
-    }
+    void shareContent({
+      title: musicItem.title,
+      text: `${musicItem.title} by ${artistName}`,
+      url: typeof window !== 'undefined' ? window.location.href : `/music/${musicItem._id}`,
+    });
   };
 
   return (
@@ -82,6 +82,8 @@ export const MusicDetailPageClient = ({ musicItem, relatedSongs }: MusicDetailPa
                 <Button
                   variant="ghost"
                   size="sm"
+                  type="button"
+                  onClick={requestFavorite}
                   className="gap-2 bg-background/80 backdrop-blur-sm text-foreground hover:bg-background">
                   <Bookmark className="w-4 h-4" />
                   Save
@@ -215,6 +217,12 @@ export const MusicDetailPageClient = ({ musicItem, relatedSongs }: MusicDetailPa
                       cover={song.cover}
                       plays={song.plays || '0'}
                       genre={song.category || 'Music'}
+                      slug={song.slug}
+                      downloadUrl={song.downloadUrl}
+                      audioUrl={song.audioUrl}
+                      isMonetizable={song.isMonetizable}
+                      downloadPrice={song.downloadPrice}
+                      optionsItem={song}
                     />
                   </motion.div>
                 ))}
@@ -223,6 +231,12 @@ export const MusicDetailPageClient = ({ musicItem, relatedSongs }: MusicDetailPa
           )}
         </div>
       </section>
+      <LoginModal
+        open={isLoginModalOpen}
+        onOpenChange={setIsLoginModalOpen}
+        title="Sign in to save favorites"
+        description="Create an account or sign in to save music and videos to your favorites."
+      />
     </article>
   );
 };

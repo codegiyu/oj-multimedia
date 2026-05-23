@@ -4,31 +4,14 @@ import { Download, Lock, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { MusicItemWithArtist } from '@/lib/utils/music';
 import { useMusicDownload } from '@/lib/hooks/useMusicDownload';
-import type { MusicDownloadInput } from '@/lib/services/musicDownload';
+import { toMusicDownloadInputFromItem } from '@/lib/utils/musicDownloadMappers';
 
 interface DownloadButtonProps {
   musicItem: MusicItemWithArtist;
 }
 
-function toMusicDownloadInput(musicItem: MusicItemWithArtist): MusicDownloadInput {
-  const artistName =
-    typeof musicItem.artist === 'string' ? musicItem.artist : musicItem.artist.name;
-
-  return {
-    _id: musicItem._id,
-    slug: musicItem.slug,
-    title: musicItem.title,
-    artistName,
-    downloadUrl: musicItem.downloadUrl,
-    audioUrl: musicItem.audioUrl,
-    isMonetizable: musicItem.isMonetizable,
-    downloadPrice: musicItem.downloadPrice,
-    source: 'detail',
-  };
-}
-
 export const DownloadButton = ({ musicItem }: DownloadButtonProps) => {
-  const input = toMusicDownloadInput(musicItem);
+  const input = toMusicDownloadInputFromItem(musicItem, 'detail');
   const { download, isDownloading, isDownloaded, canDownload } = useMusicDownload(input);
 
   if (!canDownload) {
