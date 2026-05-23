@@ -31,9 +31,9 @@ export const DevotionalsCategoryFilter = () => {
         <BookOpen className="w-4 h-4" />
         Category:
       </span>
-      {categoryOptions.map(cat => (
+      {categoryOptions.map((cat, index) => (
         <button
-          key={cat.value}
+          key={`${cat.value}-${index}`}
           type="button"
           onClick={() => void handleChange(cat.value)}
           className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
