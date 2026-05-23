@@ -22,10 +22,8 @@ export function FavoriteButton({
   iconClassName,
   'aria-label': ariaLabel = 'Add to favorites',
 }: FavoriteButtonProps) {
-  const { isFavorite, isPending, toggle, isLoginModalOpen, setIsLoginModalOpen } = useFavoriteToggle(
-    entityType,
-    entityId
-  );
+  const { isFavorite, isPending, toggle, isLoginModalOpen, setIsLoginModalOpen } =
+    useFavoriteToggle(entityType, entityId);
 
   return (
     <>
