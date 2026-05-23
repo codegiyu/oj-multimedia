@@ -27,6 +27,7 @@ export const TrendingDevotionals = ({ devotionals }: TrendingDevotionalsProps) =
       heading="Popular Devotionals"
       subtext="Daily inspiration for your journey"
       viewAllLink="/community/devotionals/popular"
+      sectionClassName="overflow-hidden"
       contentProps={{ enableAnimation: false }}>
       <div className="grid md:grid-cols-2 gap-4">
         {devotionals.map((devotional, index) => (

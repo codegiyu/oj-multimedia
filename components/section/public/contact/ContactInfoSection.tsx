@@ -80,7 +80,7 @@ export const ContactInfoSection = ({
   const showError = !!errorMessage;
 
   return (
-    <SectionContainer className="bg-secondary text-secondary-foreground h-full">
+    <SectionContainer className="bg-secondary text-secondary-foreground h-full overflow-hidden">
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         whileInView={siteLoading ? {} : { opacity: 1, y: 0 }}

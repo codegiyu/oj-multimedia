@@ -128,6 +128,7 @@ export const TopChartsPageClient = ({
         subtext={getPeriodLabel()}
         extraButtons={periodButtons}
         background="bg-muted/30"
+        sectionClassName="overflow-hidden"
         contentProps={{ enableAnimation: false }}>
         {itemsToShow.length === 0 ? (
           <EmptyState

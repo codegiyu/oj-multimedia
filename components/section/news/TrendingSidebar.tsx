@@ -24,7 +24,7 @@ interface TrendingSidebarProps {
 
 export const TrendingSidebar = ({ stories: trendingStories }: TrendingSidebarProps) => {
   return (
-    <aside className="bg-card rounded-2xl p-6 shadow-sm">
+    <aside className="bg-card rounded-2xl p-6 shadow-sm overflow-hidden">
       <div className="flex items-center gap-2 mb-6">
         <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
           <Flame className="w-4 h-4 text-primary" />

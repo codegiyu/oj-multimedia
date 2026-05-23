@@ -10,7 +10,7 @@ export const StorySection = () => {
   const { siteLoading } = useSiteStore(state => state);
 
   return (
-    <SectionContainer background="muted">
+    <SectionContainer background="muted" className="overflow-hidden">
       <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
         {/* Image/Visual Side */}
         <motion.div

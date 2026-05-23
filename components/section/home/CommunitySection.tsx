@@ -39,7 +39,7 @@ export const CommunitySection = ({
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   return (
-    <section id="community" className="py-16 md:py-24 bg-muted/30">
+    <section id="community" className="py-16 md:py-24 bg-muted/30 overflow-hidden">
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">

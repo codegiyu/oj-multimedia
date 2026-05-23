@@ -30,7 +30,7 @@ interface TopChartsSectionProps {
 
 export const TopChartsSection = ({ chartData, risingArtists }: TopChartsSectionProps) => {
   return (
-    <section className="py-16 md:py-24">
+    <section className="py-16 md:py-24 overflow-hidden">
       <div className="container mx-auto px-4">
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Top Songs Chart */}

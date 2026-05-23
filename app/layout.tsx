@@ -42,7 +42,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" data-scroll-behavior="smooth">
-      <body className={`antialiased`}>
+      <body className="antialiased overflow-x-hidden">
         <NextTopLoader color="hsl(var(--primary))" height={3} showSpinner={false} />
         <ScrollRestorationHandler />
         <LoadAnimationScreen />
