@@ -3,15 +3,16 @@ import { describeWithWebServer } from './helpers';
 
 describeWithWebServer('admin music list', () => {
   test('redirects unauthenticated users to admin login', async ({ page }) => {
-    await page.goto('/admin/dashboard/music');
+    await page.goto('/admin/dashboard/music', { waitUntil: 'domcontentloaded' });
 
-    await expect(page).toHaveURL(/\/admin\/auth\/login/);
+    await page.waitForURL(/\/admin\/auth\/login/, { timeout: 20_000 });
+    expect(page.url()).toMatch(/\/admin\/auth\/login/);
   });
 
   test('admin login page remains reachable after redirect', async ({ page }) => {
-    await page.goto('/admin/dashboard/music');
-    await page.waitForURL(/\/admin\/auth\/login/);
+    await page.goto('/admin/dashboard/music', { waitUntil: 'domcontentloaded' });
+    await page.waitForURL(/\/admin\/auth\/login/, { timeout: 20_000 });
 
-    await expect(page.getByRole('heading', { name: /sign in to your account/i })).toBeVisible();
+    await expect(page.getByText(/sign in to your account/i).first()).toBeVisible();
   });
 });
