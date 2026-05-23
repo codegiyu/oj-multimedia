@@ -12,7 +12,8 @@ import { DownloadButton } from './DownloadButton';
 import { MusicCard } from '@/components/cards/MusicCard';
 import { sendContentAnalyticsEvent } from '@/lib/services/contentAnalytics';
 import { MultilineText } from '@/components/general/MultilineText';
-import { useContentFavoriteStub } from '@/lib/hooks/useContentFavoriteStub';
+import { cn } from '@/lib/utils';
+import { useFavoriteToggle } from '@/lib/hooks/useFavoriteToggle';
 import { LoginModal } from '@/components/auth/LoginModal';
 import { shareContent } from '@/lib/utils/shareContent';
 
@@ -35,7 +36,10 @@ export const MusicDetailPageClient = ({ musicItem, relatedSongs }: MusicDetailPa
     sendContentAnalyticsEvent('music', entityId, 'play');
   }, [entityId]);
 
-  const { requestFavorite, isLoginModalOpen, setIsLoginModalOpen } = useContentFavoriteStub();
+  const { isFavorite, toggle, isLoginModalOpen, setIsLoginModalOpen } = useFavoriteToggle(
+    'music',
+    musicItem._id
+  );
 
   const handleShare = () => {
     void shareContent({
@@ -83,10 +87,11 @@ export const MusicDetailPageClient = ({ musicItem, relatedSongs }: MusicDetailPa
                   variant="ghost"
                   size="sm"
                   type="button"
-                  onClick={requestFavorite}
+                  aria-pressed={isFavorite}
+                  onClick={() => void toggle()}
                   className="gap-2 bg-background/80 backdrop-blur-sm text-foreground hover:bg-background">
-                  <Bookmark className="w-4 h-4" />
-                  Save
+                  <Bookmark className={cn('w-4 h-4', isFavorite && 'fill-current text-primary')} />
+                  {isFavorite ? 'Saved' : 'Save'}
                 </Button>
               </div>
             </div>

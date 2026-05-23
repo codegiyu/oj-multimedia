@@ -201,7 +201,13 @@ export function AccountPageClient({
         <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {[
             { href: '/account/orders', title: 'Orders', desc: 'Track purchases', icon: Package },
-            { href: '/account/wishlist', title: 'Wishlist', desc: 'Saved items', icon: Heart },
+            { href: '/account/wishlist', title: 'Wishlist', desc: 'Saved products', icon: Heart },
+            {
+              href: '/account/favorites',
+              title: 'Favorites',
+              desc: 'Saved music & videos',
+              icon: Heart,
+            },
             {
               href: '/account/settings',
               title: 'Settings',

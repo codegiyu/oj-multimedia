@@ -6,6 +6,7 @@ import type { Permission } from '@/lib/types/server-models';
 import type { ClientAdmin, PopulatedUser } from '../constants/endpoints';
 import { callApi } from '../services/callApi';
 import { getRouter } from '../utils/navigation';
+import { useInitFavoritesStore } from './favoritesStore';
 
 export interface AuthStore {
   initLoading: boolean;
@@ -78,6 +79,7 @@ export const useInitAuthStore = create<AuthStore>()((set, get) => ({
         }
 
         setUser(data.user);
+        void useInitFavoritesStore.getState().actions.hydrateFromServer();
       } catch (error) {
         void error;
         clearSession();
@@ -86,6 +88,7 @@ export const useInitAuthStore = create<AuthStore>()((set, get) => ({
       }
     },
     clearSession: () => {
+      useInitFavoritesStore.getState().actions.reset();
       set({ ...initialData, initLoading: false });
     },
     login: async (email: string, password: string) => {
@@ -107,6 +110,7 @@ export const useInitAuthStore = create<AuthStore>()((set, get) => ({
         setUser(data.user, {
           pauseNavigatingAwayFromAuth: false,
         });
+        void useInitFavoritesStore.getState().actions.hydrateFromServer();
 
         return { success: true };
       } catch (error) {
@@ -138,6 +142,7 @@ export const useInitAuthStore = create<AuthStore>()((set, get) => ({
         setUser(data.user, {
           pauseNavigatingAwayFromAuth: true,
         });
+        void useInitFavoritesStore.getState().actions.hydrateFromServer();
 
         return { success: true };
       } catch (error) {

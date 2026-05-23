@@ -66,6 +66,18 @@ export const AUTH_USER_ENDPOINTS: Record<string, EndpointDetails> = {
     path: '/api/v1/user/wishlist', // /:productId
     method: 'DELETE',
   },
+  USER_FAVORITES_LIST: {
+    path: '/api/v1/user/favorites',
+    method: 'GET',
+  },
+  USER_FAVORITES_ADD: {
+    path: '/api/v1/user/favorites',
+    method: 'POST',
+  },
+  USER_FAVORITES_REMOVE: {
+    path: '/api/v1/user/favorites', // /:entityType/:entityId
+    method: 'DELETE',
+  },
 
   // User cart (marketplace)
   USER_CART_GET: { path: '/api/v1/user/cart', method: 'GET' },

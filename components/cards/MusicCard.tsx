@@ -5,7 +5,7 @@ import { Play } from 'lucide-react';
 import Link from 'next/link';
 import { FillImage } from '@/components/general/FillImage';
 import { MusicCardDownloadButton } from '@/components/content/MusicCardDownloadButton';
-import { ContentFavoriteStubButton } from '@/components/content/ContentFavoriteStubButton';
+import { FavoriteButton } from '@/components/content/FavoriteButton';
 import { MusicCardOptions } from '@/components/section/music/MusicCardOptions';
 import { MusicCardQuickMenu } from '@/components/section/music/MusicCardQuickMenu';
 import type { MusicItemWithArtist } from '@/lib/utils/music';
@@ -63,7 +63,11 @@ export const MusicCard = (props: MusicCardProps) => {
         </Link>
 
         <div className="absolute top-3 right-3 z-10 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-          <ContentFavoriteStubButton className="bg-card/80 backdrop-blur-sm hover:bg-card" />
+          <FavoriteButton
+            entityType="music"
+            entityId={_id}
+            className="bg-card/80 backdrop-blur-sm hover:bg-card"
+          />
           <MusicCardDownloadButton input={downloadInput} />
         </div>
       </div>

@@ -221,6 +221,31 @@ export interface IUserWishlistAddRes {
   item: IUserWishlistItem;
 }
 
+export type ContentFavoriteEntityType = 'music' | 'video' | 'news' | 'devotional';
+
+export interface IUserContentFavoriteItem {
+  _id: string;
+  entityType: ContentFavoriteEntityType;
+  entityId: string;
+  createdAt: string;
+  title: string;
+  slug?: string;
+  image?: string;
+  subtitle?: string;
+  href: string;
+}
+
+export type IUserFavoritesListRes = GetListRes<IUserContentFavoriteItem, 'items'>;
+
+export interface IUserFavoritesAddPayload {
+  entityType: ContentFavoriteEntityType;
+  entityId: string;
+}
+
+export interface IUserFavoritesAddRes {
+  item: IUserContentFavoriteItem;
+}
+
 // User cart (marketplace)
 export interface ICartProductSummary {
   _id: string;
@@ -695,6 +720,13 @@ export interface AllEndpoints {
   USER_WISHLIST_LIST: EndpointDefinition<undefined, IUserWishlistListRes, `?${string}`>;
   USER_WISHLIST_ADD: EndpointDefinition<IUserWishlistAddPayload, IUserWishlistAddRes, undefined>;
   USER_WISHLIST_REMOVE: EndpointDefinition<undefined, { success: boolean }, `/${string}`>;
+  USER_FAVORITES_LIST: EndpointDefinition<undefined, IUserFavoritesListRes, `?${string}`>;
+  USER_FAVORITES_ADD: EndpointDefinition<IUserFavoritesAddPayload, IUserFavoritesAddRes, undefined>;
+  USER_FAVORITES_REMOVE: EndpointDefinition<
+    undefined,
+    { success: boolean },
+    `/${string}/${string}`
+  >;
 
   // User cart (marketplace)
   USER_CART_GET: EndpointDefinition<undefined, ICartRes, undefined>;
