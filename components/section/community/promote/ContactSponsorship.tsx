@@ -29,6 +29,7 @@ export const ContactSponsorship = ({
       iconColor="primary"
       heading="Contact for Sponsorship / Partnership"
       subtext="Interested in long-term partnerships or sponsorship opportunities? We offer custom solutions tailored to your brand and goals. Let's discuss how we can work together."
+      sectionClassName="overflow-hidden"
       contentProps={{ enableAnimation: false }}>
       <div className="grid md:grid-cols-2 gap-8 mb-12">
         {/* Contact Methods */}

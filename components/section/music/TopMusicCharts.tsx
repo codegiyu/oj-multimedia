@@ -95,6 +95,7 @@ export const TopMusicCharts = ({ songs: chartSongs }: TopMusicChartsProps) => {
       subtext={getPeriodLabel()}
       extraButtons={periodButtons}
       background="bg-muted/30"
+      sectionClassName="overflow-hidden"
       contentProps={{ enableAnimation: false }}>
       <div className="grid md:grid-cols-2 gap-4">
         {chartSongs.map((song, index) => (

@@ -53,6 +53,7 @@ export const DailyDevotionalsSection = ({
       heading="Daily Devotionals"
       subtext="Start your day with God's word"
       viewAllLink="/community/devotionals/latest"
+      sectionClassName="overflow-hidden"
       contentProps={{ enableAnimation: false }}>
       <div className="grid md:grid-cols-2 gap-4">
         {devotionals.map((devotional, index) => (
