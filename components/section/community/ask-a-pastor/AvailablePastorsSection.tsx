@@ -51,7 +51,7 @@ export const AvailablePastorsSection = ({ pastors }: AvailablePastorsSectionProp
 
               <div className="flex flex-wrap justify-center gap-1 mb-4">
                 {pastor.expertise.slice(0, 2).map(expertise => (
-                  <Badge key={expertise} variant="secondary" className="text-xs">
+                  <Badge key={`${pastor._id}-${expertise}`} variant="secondary" className="text-xs">
                     {expertise}
                   </Badge>
                 ))}

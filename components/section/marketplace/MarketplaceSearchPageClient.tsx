@@ -136,7 +136,9 @@ export function MarketplaceSearchPageClient({
               value={category || FILTER_ALL}
               onChange={e => handleCategoryChange(e.target.value)}
               className="rounded-md border border-input bg-background px-3 py-2 text-sm">
-              <option value={FILTER_ALL}>All categories</option>
+              <option key={FILTER_ALL} value={FILTER_ALL}>
+                All categories
+              </option>
               {categories.map(cat => (
                 <option key={cat._id} value={cat.slug}>
                   {cat.name}
@@ -151,7 +153,9 @@ export function MarketplaceSearchPageClient({
               value={vendor || FILTER_ALL}
               onChange={e => handleVendorChange(e.target.value)}
               className="rounded-md border border-input bg-background px-3 py-2 text-sm">
-              <option value={FILTER_ALL}>All vendors</option>
+              <option key={`vendor-${FILTER_ALL}`} value={FILTER_ALL}>
+                All vendors
+              </option>
               {vendors.map(v => (
                 <option key={v._id} value={v.slug}>
                   {v.storeName}

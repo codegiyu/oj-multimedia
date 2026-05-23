@@ -436,6 +436,7 @@ async function fetchHomeSections(filters: {
   const activePoll = pollsData.polls[0];
   const pollOptions: PollOption[] =
     activePoll?.options?.map(option => ({
+      _id: option._id,
       option: option.text,
       votes: option.percentage,
     })) ?? [];

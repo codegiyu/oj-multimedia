@@ -199,11 +199,11 @@ function ProductDetailContent({ product }: ProductDetailContentProps) {
                       <div key={opt.name} className="text-sm">
                         <p className="mb-2 font-medium text-foreground">{opt.name}</p>
                         <div className="flex flex-wrap gap-2">
-                          {opt.values.map(value => {
+                          {opt.values.map((value, valueIdx) => {
                             const active = selectedOptions[opt.name] === value;
                             return (
                               <button
-                                key={value}
+                                key={`${opt.name}-${valueIdx}-${value}`}
                                 type="button"
                                 onClick={() => handleOptionChange(opt.name, value)}
                                 className={`px-3 py-1 rounded-full border text-xs md:text-sm transition-colors ${

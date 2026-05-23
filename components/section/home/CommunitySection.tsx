@@ -19,6 +19,7 @@ export interface CommunityPost {
 }
 
 export interface PollOption {
+  _id: string;
   option: string;
   votes: number;
 }
@@ -156,7 +157,7 @@ export const CommunitySection = ({
                   <div className="space-y-2">
                     {pollOptions.map(item => (
                       <div
-                        key={item.option}
+                        key={item._id}
                         className="w-full relative bg-muted rounded-lg p-3 text-left text-sm overflow-hidden"
                         aria-label={`Poll result for ${item.option}`}>
                         <div

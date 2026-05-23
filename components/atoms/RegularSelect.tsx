@@ -14,6 +14,11 @@ import { cn } from '@/lib/utils';
 import { InputWrapper } from '../general/InputWrapper';
 import { ComponentPropsWithRef, FocusEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { Loader2 } from 'lucide-react';
+import {
+  fromRadixSelectItemValue,
+  resolveRadixSelectItemValue,
+  toRadixSelectItemValue,
+} from '@/lib/utils/radixSelectValues';
 
 const LOAD_MORE_SENTINEL_VALUE = '__load_more__';
 /** Radix SelectItem rejects `value=""`; map optional / placeholder options through this sentinel. */
@@ -112,8 +117,14 @@ export const RegularSelect = ({
     const itemsForSelect: SelectOption[] = hasEmptyPlaceholder
       ? [{ ...emptyOpts[0], value: EMPTY_OPTION_SENTINEL }, ...rest]
       : rest;
-    const rootSelectValue =
-      value === '' ? (hasEmptyPlaceholder ? EMPTY_OPTION_SENTINEL : undefined) : value;
+
+    let rootSelectValue: string | undefined;
+    if (value === '') {
+      rootSelectValue = hasEmptyPlaceholder ? EMPTY_OPTION_SENTINEL : undefined;
+    } else {
+      rootSelectValue = resolveRadixSelectItemValue(itemsForSelect, value);
+    }
+
     return { itemsForSelect, rootSelectValue };
   }, [options, value]);
 
@@ -156,7 +167,7 @@ export const RegularSelect = ({
               onSelectChange('');
               return;
             }
-            onSelectChange(v);
+            onSelectChange(fromRadixSelectItemValue(v));
           }}
           onOpenChange={open => setIsDropdownOpen(open === true)}
           name={name}>
@@ -214,19 +225,26 @@ export const RegularSelect = ({
             ) : (
               <>
                 {itemsForSelect.map(
-                  ({ text, altText, value: optValue, disabled: optDisabled = false }, idx) => (
-                    <SelectItem
-                      key={`${String(optValue)}-${idx}`}
-                      value={String(optValue)}
-                      disabled={optDisabled}
-                      className="overflow-hidden">
-                      <div className="flex w-full items-center gap-3 overflow-hidden">
-                        <span className={cn('text-foreground truncate', valueClassName)}>
-                          {altText || text}
-                        </span>
-                      </div>
-                    </SelectItem>
-                  )
+                  ({ text, altText, value: optValue, disabled: optDisabled = false }, idx) => {
+                    const radixValue =
+                      String(optValue) === EMPTY_OPTION_SENTINEL
+                        ? EMPTY_OPTION_SENTINEL
+                        : toRadixSelectItemValue(String(optValue), idx);
+
+                    return (
+                      <SelectItem
+                        key={radixValue}
+                        value={radixValue}
+                        disabled={optDisabled}
+                        className="overflow-hidden">
+                        <div className="flex w-full items-center gap-3 overflow-hidden">
+                          <span className={cn('text-foreground truncate', valueClassName)}>
+                            {altText || text}
+                          </span>
+                        </div>
+                      </SelectItem>
+                    );
+                  }
                 )}
                 {hasMore && (
                   <SelectItem
