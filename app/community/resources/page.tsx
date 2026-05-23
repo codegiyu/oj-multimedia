@@ -23,6 +23,7 @@ import {
 } from '@/lib/utils/communityApiMappers';
 import { DOWNLOAD_CATEGORIES_FALLBACK } from '@/lib/constants/promotionFallbacks';
 import type { ResourceDownloadCategory } from '@/lib/types/promotion';
+import { filterCompleteResources } from '@/lib/utils/contentCompleteness';
 
 export const metadata: Metadata = {
   title: 'Resources - Free Downloads & More',
@@ -65,7 +66,9 @@ async function fetchResourcesData(): Promise<
   ): T[] {
     if (res.type === 'error') return [];
     const list = (res.data?.resources ?? []) as unknown[];
-    return list.map(i => mapper(i as Record<string, unknown>));
+    return filterCompleteResources(list as Record<string, unknown>[]).map(i =>
+      mapper(i as Record<string, unknown>)
+    );
   }
 
   const downloadCategories: ResourceDownloadCategory[] =

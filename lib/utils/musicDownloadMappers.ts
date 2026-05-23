@@ -1,4 +1,5 @@
-import type { MusicDownloadInput, MusicDownloadSource } from '@/lib/services/musicDownload';
+import type { MusicDownloadInput, MusicDownloadSource } from '@/lib/services/contentDownload';
+import { resolveContentPrice } from '@/lib/services/contentDownload';
 import type { MusicItemWithArtist } from '@/lib/utils/music';
 
 export interface MusicCardDownloadFields {
@@ -9,6 +10,7 @@ export interface MusicCardDownloadFields {
   downloadUrl?: string;
   audioUrl?: string;
   isMonetizable?: boolean;
+  price?: number;
   downloadPrice?: number;
 }
 
@@ -27,7 +29,8 @@ export function toMusicDownloadInputFromItem(
     downloadUrl: musicItem.downloadUrl,
     audioUrl: musicItem.audioUrl,
     isMonetizable: musicItem.isMonetizable,
-    downloadPrice: musicItem.downloadPrice,
+    price: resolveContentPrice(musicItem),
+    downloadPrice: resolveContentPrice(musicItem),
     source,
   };
 }
@@ -46,7 +49,8 @@ export function toMusicDownloadInputFromCard(
     downloadUrl: fields.downloadUrl,
     audioUrl: fields.audioUrl,
     isMonetizable: fields.isMonetizable,
-    downloadPrice: fields.downloadPrice,
+    price: resolveContentPrice(fields),
+    downloadPrice: resolveContentPrice(fields),
     source,
   };
 }

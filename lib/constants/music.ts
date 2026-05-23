@@ -51,8 +51,11 @@ export interface MusicItem {
   downloadUrl?: string; // For downloads
   lyrics?: string; // Song lyrics
   description?: string; // Song description
-  isMonetizable?: boolean; // Whether download requires payment
-  downloadPrice?: number; // Price for download (if monetizable)
+  isMonetizable?: boolean;
+  /** Purchase price when monetizable (NGN). */
+  price?: number;
+  /** @deprecated Use price */
+  downloadPrice?: number;
   releaseDate?: string; // Release date
   tags?: string[]; // Tags for related content
 }

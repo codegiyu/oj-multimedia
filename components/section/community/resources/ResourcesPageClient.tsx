@@ -17,6 +17,7 @@ export interface Ebook {
   description: string;
   downloads: string;
   cover: string;
+  fileUrl?: string;
 }
 
 export interface Template {
@@ -33,6 +34,7 @@ export interface Beat {
   description: string;
   downloads: string;
   genre: string;
+  fileUrl?: string;
 }
 
 export interface Wallpaper {
@@ -41,6 +43,7 @@ export interface Wallpaper {
   description: string;
   downloads: string;
   category: string;
+  fileUrl?: string;
 }
 
 export interface AffiliateProduct {

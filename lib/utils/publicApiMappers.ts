@@ -25,6 +25,15 @@ import type { NewsItem as NewsDetailItem } from '@/lib/constants/news';
 import type { FeaturedArtist } from '@/components/section/music/FeaturedArtists';
 import type { FeaturedCreator } from '@/components/section/video/CreatorSpotlight';
 import { mapToCommunityArtist } from '@/lib/utils/communityApiMappers';
+import {
+  filterCompleteMusic,
+  filterCompleteNews,
+  filterCompleteVideo,
+  isCompleteMusic,
+  isCompleteNewsArticle,
+  isCompleteVideo,
+} from '@/lib/utils/contentCompleteness';
+import { resolveContentPrice } from '@/lib/services/contentDownload';
 
 function toArtistSummary(item: PublicMusicListItem) {
   const a = item.artist;
@@ -91,7 +100,14 @@ export function mapPublicMusicToDetailItem(item: PublicMusicListItem): MusicItem
   const createdAt = item.createdAt;
   const releaseDate =
     typeof createdAt === 'string' ? createdAt : ((createdAt as Date)?.toISOString?.() ?? '');
-  const dl = (item as { downloadUrl?: string }).downloadUrl;
+  const raw = item as PublicMusicListItem & {
+    downloadUrl?: string;
+    isMonetizable?: boolean;
+    price?: number;
+    downloadPrice?: number;
+  };
+  const price = resolveContentPrice(raw);
+
   return {
     _id: String(item._id),
     slug: item.slug,
@@ -105,10 +121,43 @@ export function mapPublicMusicToDetailItem(item: PublicMusicListItem): MusicItem
     coverImage: item.coverImage,
     audioUrl: item.audioUrl,
     videoUrl: item.videoUrl,
-    downloadUrl: dl,
+    downloadUrl: raw.downloadUrl,
+    isMonetizable: Boolean(raw.isMonetizable),
+    price,
+    downloadPrice: price,
     duration: (item as { duration?: string }).duration,
     releaseDate,
   } as MusicItemWithArtist;
+}
+
+export function filterPublicMusicList(items: PublicMusicListItem[]): PublicMusicListItem[] {
+  return filterCompleteMusic(
+    items as unknown as Record<string, unknown>[]
+  ) as PublicMusicListItem[];
+}
+
+export function filterPublicVideoList(items: PublicVideoListItem[]): PublicVideoListItem[] {
+  return filterCompleteVideo(
+    items as unknown as Record<string, unknown>[]
+  ) as PublicVideoListItem[];
+}
+
+export function filterPublicNewsList(items: PublicNewsListItem[]): PublicNewsListItem[] {
+  return filterCompleteNews(
+    items as unknown as Record<string, unknown>[]
+  ) as unknown as PublicNewsListItem[];
+}
+
+export function assertCompletePublicMusic(item: PublicMusicListItem): boolean {
+  return isCompleteMusic(item as unknown as Record<string, unknown>);
+}
+
+export function assertCompletePublicVideo(item: PublicVideoListItem): boolean {
+  return isCompleteVideo(item as unknown as Record<string, unknown>);
+}
+
+export function assertCompletePublicNews(item: PublicNewsListItem): boolean {
+  return isCompleteNewsArticle(item as unknown as Record<string, unknown>);
 }
 
 function videoCategoryToLabel(cat: string | undefined): string {
@@ -192,7 +241,13 @@ export function mapPublicVideoToDetailItem(item: PublicVideoListItem): VideoItem
     videoFileUrl?: string;
     embedUrl?: string;
     youtubeEmbedUrl?: string;
+    downloadUrl?: string;
+    isMonetizable?: boolean;
+    price?: number;
+    downloadPrice?: number;
   };
+  const price = resolveContentPrice(raw);
+
   return {
     _id: String(item._id),
     slug: item.slug,
@@ -206,6 +261,10 @@ export function mapPublicVideoToDetailItem(item: PublicVideoListItem): VideoItem
     videoFileUrl: raw.videoFileUrl,
     embedUrl: raw.embedUrl,
     youtubeEmbedUrl: raw.youtubeEmbedUrl,
+    downloadUrl: raw.downloadUrl ?? raw.videoFileUrl,
+    isMonetizable: Boolean(raw.isMonetizable),
+    price,
+    downloadPrice: price,
     duration: item.duration,
     uploadedAt,
   } as VideoItemWithCreator;

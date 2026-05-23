@@ -3,7 +3,7 @@
 import { Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useMusicDownload } from '@/lib/hooks/useMusicDownload';
-import type { MusicDownloadInput } from '@/lib/services/musicDownload';
+import type { MusicDownloadInput } from '@/lib/services/contentDownload';
 import { cn } from '@/lib/utils';
 
 interface MusicCardDownloadButtonProps {

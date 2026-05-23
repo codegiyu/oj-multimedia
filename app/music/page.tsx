@@ -15,6 +15,7 @@ import { normalizePublicCategoryByScope } from '@/lib/utils/contentCategoriesSer
 import { fetchPublicCategoryNav } from '@/lib/utils/contentCategoryNav';
 import { musicCategoryNavFallback } from '@/lib/constants/categoryNavFallbacks';
 import {
+  filterPublicMusicList,
   mapPublicMusicToTrendingSong,
   mapPublicMusicToChartSong,
   mapPublicMusicToRecentUpload,
@@ -53,9 +54,15 @@ async function fetchMusicSections(category: string, period: string) {
   else if (recentRes.type === 'error')
     errorMessage = recentRes.error?.message ?? 'Failed to load recent';
 
-  const rawTrending = trendingRes.type === 'success' ? (trendingRes.data?.music ?? []) : [];
-  const rawCharts = chartsRes.type === 'success' ? (chartsRes.data?.music ?? []) : [];
-  const rawRecent = recentRes.type === 'success' ? (recentRes.data?.music ?? []) : [];
+  const rawTrending = filterPublicMusicList(
+    trendingRes.type === 'success' ? (trendingRes.data?.music ?? []) : []
+  );
+  const rawCharts = filterPublicMusicList(
+    chartsRes.type === 'success' ? (chartsRes.data?.music ?? []) : []
+  );
+  const rawRecent = filterPublicMusicList(
+    recentRes.type === 'success' ? (recentRes.data?.music ?? []) : []
+  );
 
   const trendingSongs: TrendingSong[] = filterByCategory(
     rawTrending.map(mapPublicMusicToTrendingSong),

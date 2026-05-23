@@ -14,9 +14,10 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Button } from '@/components/ui/button';
 import type { NewsItem } from '@/lib/constants/news';
 import { MultilineText } from '@/components/general/MultilineText';
+import { NewsDownloadButton } from '@/components/section/news/NewsDownloadButton';
+import { Button } from '@/components/ui/button';
 
 interface NewsDetailPageClientProps {
   newsItem: NewsItem;
@@ -160,11 +161,12 @@ export const NewsDetailPageClient = ({ newsItem, relatedStories }: NewsDetailPag
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.08 }}
               className="mb-8">
-              <Button asChild variant="outline" size="lg">
-                <a href={newsItem.downloadUrl} target="_blank" rel="noopener noreferrer">
-                  Download resource
-                </a>
-              </Button>
+              <NewsDownloadButton
+                _id={newsItem._id}
+                slug={newsItem.slug}
+                title={newsItem.title}
+                downloadUrl={newsItem.downloadUrl}
+              />
             </motion.div>
           )}
 

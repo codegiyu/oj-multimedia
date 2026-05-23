@@ -393,6 +393,7 @@ export interface IMusic {
   status: 'draft' | 'published' | 'archived';
   isFeatured: boolean;
   isMonetizable: boolean;
+  price: number;
   submissionFee: number;
   views: number;
   downloads: number;
@@ -428,6 +429,7 @@ export interface IVideo {
   status: 'draft' | 'published' | 'archived';
   isFeatured: boolean;
   isMonetizable: boolean;
+  price: number;
   displayOrder: number;
   createdAt: string;
   updatedAt: string;
@@ -470,6 +472,7 @@ export interface ISermon {
   status: 'draft' | 'published' | 'archived';
   isFeatured: boolean;
   isMonetizable: boolean;
+  price: number;
   submissionFee: number;
   views: number;
   downloads: number;

@@ -154,7 +154,9 @@ export const MusicDetailPageClient = ({ musicItem, relatedSongs }: MusicDetailPa
             </motion.div>
           )}
 
-          {(musicItem.audioUrl || musicItem.downloadUrl) && (
+          {(musicItem.audioUrl ||
+            musicItem.downloadUrl ||
+            (musicItem.isMonetizable && (musicItem.price ?? musicItem.downloadPrice))) && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
