@@ -21,6 +21,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { EmptyState } from '@/components/section/news/EmptyState';
+import { FillImage, FixedImage } from '@/components/general/FillImage';
 
 export function CartPageClient() {
   const { items, actions } = useCartStore();
@@ -120,9 +121,9 @@ export function CartPageClient() {
               <Card
                 key={item.sku ? `${item.productId}-${item.sku}` : item.productId}
                 className="p-4 flex flex-col sm:flex-row gap-4">
-                <div className="w-full sm:w-24 h-24 bg-muted rounded-lg overflow-hidden shrink-0">
+                <div className="relative w-full sm:w-24 h-24 bg-muted rounded-lg overflow-hidden shrink-0">
                   {item.image ? (
-                    <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                    <FillImage src={item.image} alt={item.name} sizes="96px" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
                       <ShoppingCart className="w-8 h-8 text-muted-foreground" />
@@ -217,10 +218,12 @@ export function CartPageClient() {
                             {vendor.images.slice(0, 3).map(src => (
                               <span
                                 key={src}
-                                className="inline-block h-6 w-6 rounded-full overflow-hidden border border-border bg-muted">
-                                <img
+                                className="relative inline-block h-6 w-6 rounded-full overflow-hidden border border-border bg-muted">
+                                <FixedImage
                                   src={src}
                                   alt={vendor.vendorName}
+                                  width={24}
+                                  height={24}
                                   className="h-full w-full object-cover"
                                 />
                               </span>

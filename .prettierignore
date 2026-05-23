@@ -12,9 +12,8 @@ pnpm-lock.yaml
 .prettierrc
 components.json
 next-env.d.ts
-next.config.ts
-postcss.config.mjs
-tailwind.config.ts
+*.mjs
+*.config.ts
 tsconfig.json
 *.webmanifest
 *.code-workspace

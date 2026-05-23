@@ -5,6 +5,7 @@ import { motion } from 'motion/react';
 import { Users, MessageSquare, BarChart3, Sparkles, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { FixedImage } from '@/components/general/FillImage';
 import { useAuthStore } from '@/lib/store/useAuthStore';
 import { LoginModal } from '@/components/auth/LoginModal';
 import { EmptyState } from '@/components/section/news/EmptyState';
@@ -98,11 +99,13 @@ export const CommunitySection = ({
                       transition={{ delay: index * 0.1 }}
                       className="bg-card rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
                       <div className="flex gap-3">
-                        <div className="w-10 h-10 rounded-full overflow-hidden shrink-0">
-                          <img
+                        <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full">
+                          <FixedImage
                             src={post.avatar}
                             alt={post.user}
-                            className="w-full h-full object-cover"
+                            width={40}
+                            height={40}
+                            className="h-full w-full object-cover"
                           />
                         </div>
                         <div className="flex-1">

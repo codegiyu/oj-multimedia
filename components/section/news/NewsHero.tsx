@@ -23,7 +23,8 @@ export const NewsHero = () => {
           </div> */}
 
           <h1 className="text-4xl md:text-6xl font-display font-bold text-foreground mb-4">
-            What's <span className="text-primary">Trending</span>
+            {"What's "}
+            <span className="text-primary">Trending</span>
           </h1>
 
           <p className="text-lg text-muted-foreground max-w-xl mx-auto mb-8">

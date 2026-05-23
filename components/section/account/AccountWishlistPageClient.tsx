@@ -12,6 +12,7 @@ import type { IUserWishlistItem } from '@/lib/constants/endpoints';
 import { toast } from 'sonner';
 import { Heart, ShoppingCart } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { FillImage } from '@/components/general/FillImage';
 
 export interface AccountWishlistPageClientProps {
   initialItems: IUserWishlistItem[];
@@ -102,10 +103,10 @@ export function AccountWishlistPageClient({
               )}>
               <div className="relative aspect-square bg-muted">
                 {imageUrl ? (
-                  <img
+                  <FillImage
                     src={imageUrl}
                     alt={`${item.product.name} preview`}
-                    className="h-full w-full object-cover"
+                    sizes="(max-width: 768px) 50vw, 280px"
                   />
                 ) : (
                   <div className="flex h-full items-center justify-center text-muted-foreground">

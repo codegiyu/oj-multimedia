@@ -53,8 +53,9 @@ export const TestimoniesHero = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-lg md:text-xl text-muted-foreground mb-8 max-w-xl mx-auto">
-            Read inspiring stories of healing, breakthrough, transformation, and God's faithfulness
-            in the lives of believers. Your testimony could be next!
+            {
+              "Read inspiring stories of healing, breakthrough, transformation, and God's faithfulness in the lives of believers. Your testimony could be next!"
+            }
           </motion.p>
 
           <motion.div

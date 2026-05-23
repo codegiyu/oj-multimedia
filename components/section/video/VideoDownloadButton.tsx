@@ -50,6 +50,7 @@ export const VideoDownloadButton = ({ videoItem }: VideoDownloadButtonProps) => 
       setIsDownloaded(true);
       setTimeout(() => setIsDownloaded(false), 3000);
     } catch {
+      void 0;
     } finally {
       setIsDownloading(false);
     }

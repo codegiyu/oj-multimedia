@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
+import { FillImage } from '@/components/general/FillImage';
 import { useFileUpload } from '@/lib/hooks/use-file-upload';
 import type { EntityType, UploadIntent } from '@/lib/types/server-models';
 
@@ -70,11 +71,7 @@ export function ImageUploadField({
           )}
           aria-hidden={!showPreview}>
           {showPreview ? (
-            <img
-              src={previewUrl ?? (value as string)}
-              alt=""
-              className="h-full w-full object-cover"
-            />
+            <FillImage src={previewUrl ?? (value as string)} alt="" sizes="112px" />
           ) : (
             <ImageIcon className="h-10 w-10 text-muted-foreground" />
           )}

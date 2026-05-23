@@ -31,7 +31,7 @@ export const useClipboard = () => {
         if (typeof options?.clearAfter === 'number') {
           timeoutRef.current = setTimeout(() => setState(''), options.clearAfter);
         }
-      } catch (err) {
+      } catch {
         fallbackCopy(value);
         setState(value);
       }

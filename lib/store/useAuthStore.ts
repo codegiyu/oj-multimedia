@@ -159,6 +159,7 @@ export const useInitAuthStore = create<AuthStore>()((set, get) => ({
       try {
         await callApi('AUTH_LOGOUT', {});
       } catch {
+        void 0;
       } finally {
         clearSession();
 

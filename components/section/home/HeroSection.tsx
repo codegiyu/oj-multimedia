@@ -4,6 +4,7 @@ import { motion } from 'motion/react';
 import { Play, Upload, Headphones } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { FillImage } from '@/components/general/FillImage';
 
 export const HeroSection = () => {
   return (
@@ -14,10 +15,12 @@ export const HeroSection = () => {
         <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-secondary/15 to-accent/20" />
 
         {/* Background image with blend */}
-        <img
+        <FillImage
           src="/images/hero-bg.jpg"
           alt=""
-          className="w-full h-full object-cover opacity-50 mix-blend-overlay"
+          priority
+          sizes="100vw"
+          className="opacity-50 mix-blend-overlay"
         />
 
         {/* Animated gradient orbs */}

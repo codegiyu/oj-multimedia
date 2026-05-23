@@ -10,6 +10,7 @@ import { SectionContainer } from '@/components/general/SectionContainer';
 import { DataLoadError } from '@/components/general/DataLoadError';
 import { NewsCategories } from './NewsCategories';
 import type { CategoryNavItem } from '@/lib/utils/contentCategoryNav';
+import { FillImage } from '@/components/general/FillImage';
 import { NewsletterCTA } from '../shared';
 import { EmptyState } from './EmptyState';
 import { SectionComp } from '@/components/general/SectionComp';
@@ -93,10 +94,11 @@ export const FeaturedStoriesPageClient = ({
                     whileHover={{ y: -6 }}
                     className="h-full group bg-card rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer">
                     <div className="relative aspect-[16/10] overflow-hidden">
-                      <img
+                      <FillImage
                         src={story.image}
                         alt={story.title}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        sizes="(max-width: 768px) 50vw, 400px"
+                        className="transition-transform duration-500 group-hover:scale-110"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-foreground/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                       <span className="absolute bottom-3 left-3 px-2.5 py-1 rounded-full bg-primary text-primary-foreground text-xs font-medium">

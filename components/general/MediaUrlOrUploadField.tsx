@@ -9,6 +9,7 @@ import { Switch } from '@/components/ui/switch';
 import { RegularInput } from '@/components/atoms/RegularInput';
 import { useFileUpload } from '@/lib/hooks/use-file-upload';
 import type { EntityType, UploadIntent } from '@/lib/types/server-models';
+import { FillImage } from '@/components/general/FillImage';
 import {
   File as FileIcon,
   FileArchive,
@@ -263,11 +264,14 @@ function PreviewContent({
   }
   if (kind === 'image') {
     return (
-      <img
-        src={previewUrl}
-        alt={fileName}
-        className="h-full w-full max-h-56 object-contain rounded-md"
-      />
+      <div className="relative h-56 w-full">
+        <FillImage
+          src={previewUrl}
+          alt={fileName}
+          sizes="400px"
+          className="object-contain rounded-md"
+        />
+      </div>
     );
   }
   if (kind === 'video') {

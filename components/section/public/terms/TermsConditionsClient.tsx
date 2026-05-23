@@ -91,8 +91,9 @@ export const TermsConditionsClient = () => {
                   </li>
                 </ul>
                 <p className="text-muted-foreground leading-relaxed mt-4">
-                  <strong>Paid Promotions:</strong> Payments made for "Promote Your Music/Sermon" or
-                  "Get Featured" are final and non-refundable once service has started.
+                  <strong>Paid Promotions:</strong> Payments made for{' '}
+                  {'"Promote Your Music/Sermon"'} or {'"Get Featured"'} are final and non-refundable
+                  once service has started.
                 </p>
               </section>
 

@@ -3,6 +3,7 @@
 import { motion } from 'motion/react';
 import { Verified } from 'lucide-react';
 import Link from 'next/link';
+import { FixedImage } from '@/components/general/FillImage';
 
 export interface ArtistCardProps {
   _id: string;
@@ -19,10 +20,12 @@ export function ArtistCard({ _id, name, image, genre, followers, verified }: Art
       whileHover={{ y: -4 }}
       className="group p-4 rounded-2xl bg-muted/50 hover:bg-muted transition-colors cursor-pointer text-center">
       <div className="relative w-16 h-16 rounded-full overflow-hidden mx-auto mb-3">
-        <img
+        <FixedImage
           src={image}
           alt={name}
-          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+          width={64}
+          height={64}
+          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
         />
         {verified && (
           <div className="absolute bottom-0 right-0 w-5 h-5 bg-primary rounded-full flex items-center justify-center ring-2 ring-background">

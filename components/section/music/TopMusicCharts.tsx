@@ -2,6 +2,7 @@
 
 import { motion } from 'motion/react';
 import { Trophy } from 'lucide-react';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { useQueryState, parseAsString } from 'nuqs';
 import { SectionComp } from '@/components/general/SectionComp';
@@ -119,7 +120,7 @@ export const TopMusicCharts = ({ songs: chartSongs }: TopMusicChartsProps) => {
 
       <div className="text-center mt-8">
         <Button variant="outline" size="lg" asChild>
-          <a href="/music/top-charts">View Full Charts</a>
+          <Link href="/music/top-charts">View Full Charts</Link>
         </Button>
       </div>
     </SectionComp>

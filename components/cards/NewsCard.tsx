@@ -3,6 +3,7 @@
 import { motion } from 'motion/react';
 import { Clock, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+import { FillImage } from '@/components/general/FillImage';
 
 interface NewsCardProps {
   _id: string;
@@ -30,10 +31,11 @@ export const NewsCard = ({
         whileHover={{ y: -4 }}
         transition={{ duration: 0.3 }}
         className="group relative h-full min-h-[400px] rounded-2xl overflow-hidden cursor-pointer">
-        <img
+        <FillImage
           src={image}
           alt={title}
-          className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          sizes="(max-width: 768px) 100vw, 600px"
+          className="transition-transform duration-500 group-hover:scale-105"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-foreground via-foreground/50 to-transparent" />
 
@@ -74,11 +76,12 @@ export const NewsCard = ({
       whileHover={{ y: -4 }}
       transition={{ duration: 0.3 }}
       className="group h-full bg-card rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all cursor-pointer">
-      <div className="aspect-[16/10] overflow-hidden">
-        <img
+      <div className="relative aspect-[16/10] overflow-hidden">
+        <FillImage
           src={image}
           alt={title}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          sizes="(max-width: 768px) 100vw, 400px"
+          className="transition-transform duration-500 group-hover:scale-105"
         />
       </div>
       <div className="p-5">

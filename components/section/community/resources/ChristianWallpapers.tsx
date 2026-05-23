@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'motion/react';
-import { Image, Download, ArrowRight } from 'lucide-react';
+import { Image as ImageIcon, Download, ArrowRight } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { SectionComp } from '@/components/general/SectionComp';
@@ -16,7 +16,7 @@ export const ChristianWallpapers = ({ wallpapers }: ChristianWallpapersProps) =>
   return (
     <SectionComp
       id="wallpapers"
-      icon={Image}
+      icon={ImageIcon}
       iconColor="primary"
       heading="Christian Wallpapers"
       subtext="Download beautiful Christian wallpapers for your phone, tablet, and desktop"
@@ -32,7 +32,7 @@ export const ChristianWallpapers = ({ wallpapers }: ChristianWallpapersProps) =>
             <Card className="card-interactive">
               <CardContent className="p-0">
                 <div className="aspect-[9/16] bg-gradient-to-br from-primary/20 via-secondary/20 to-accent/20 rounded-t-xl flex items-center justify-center relative overflow-hidden">
-                  <Image className="w-16 h-16 text-primary/30" />
+                  <ImageIcon className="w-16 h-16 text-primary/30" aria-hidden />
                   <div className="absolute top-3 right-3">
                     <span className="px-2 py-1 bg-primary/20 text-primary text-xs font-medium rounded-full">
                       {wallpaper.category}

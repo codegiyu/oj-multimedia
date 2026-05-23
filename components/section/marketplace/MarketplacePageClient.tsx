@@ -6,6 +6,7 @@ import { SectionHeader } from '@/components/general/SectionHeader';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ProductCard } from './ProductCard';
+import { FillImage } from '@/components/general/FillImage';
 import { DataLoadError } from '@/components/general/DataLoadError';
 import { ShoppingBag, Store, UserPlus, Package, ShoppingCart, Search } from 'lucide-react';
 import Link from 'next/link';
@@ -224,13 +225,9 @@ export const MarketplacePageClient = ({
                 <Link key={vendor._id} href={`/marketplace/vendors/${vendor.slug}`}>
                   <Card className="group overflow-hidden hover:shadow-lg transition-shadow">
                     <div className="p-6 text-center">
-                      <div className="w-20 h-20 rounded-full bg-primary/10 mx-auto mb-4 flex items-center justify-center overflow-hidden">
+                      <div className="relative w-20 h-20 rounded-full bg-primary/10 mx-auto mb-4 flex items-center justify-center overflow-hidden">
                         {vendor.logo ? (
-                          <img
-                            src={vendor.logo}
-                            alt={vendor.storeName}
-                            className="w-full h-full object-cover"
-                          />
+                          <FillImage src={vendor.logo} alt={vendor.storeName} sizes="80px" />
                         ) : (
                           <Store className="w-10 h-10 text-primary" />
                         )}

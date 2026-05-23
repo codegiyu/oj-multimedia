@@ -4,6 +4,7 @@ import { motion } from 'motion/react';
 import { Play, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { FillImage } from '@/components/general/FillImage';
 
 interface ChartCardProps {
   _id?: string;
@@ -55,7 +56,7 @@ export const ChartCard = ({
 
       {/* Cover */}
       <div className="relative w-12 h-12 rounded-lg overflow-hidden shrink-0">
-        <img src={cover} alt={title} className="w-full h-full object-cover" />
+        <FillImage src={cover} alt={title} sizes="48px" />
         <div className="absolute inset-0 bg-foreground/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
           <Play className="w-4 h-4 text-primary-foreground fill-current" />
         </div>

@@ -110,12 +110,12 @@ export const ContactSponsorship = ({
                 <Handshake className="w-8 h-8 text-primary" />
               </div>
               <h3 className="text-2xl font-bold text-foreground mb-4">
-                Let's Build Something Great Together
+                {"Let's Build Something Great Together"}
               </h3>
               <p className="text-muted-foreground mb-6">
-                Whether you're looking for short-term promotions or long-term partnerships, we're
-                here to help. Contact us today to discuss your specific needs and discover how we
-                can help grow your audience.
+                {
+                  "Whether you're looking for short-term promotions or long-term partnerships, we're here to help. Contact us today to discuss your specific needs and discover how we can help grow your audience."
+                }
               </p>
               <div className="flex flex-wrap gap-4 justify-center">
                 {primaryEmail && (

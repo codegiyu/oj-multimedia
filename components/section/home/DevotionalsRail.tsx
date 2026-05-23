@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { FillImage } from '@/components/general/FillImage';
 import { motion } from 'motion/react';
 import { BookOpen } from 'lucide-react';
 import { SectionComp } from '@/components/general/SectionComp';
@@ -52,11 +53,7 @@ export function DevotionalsRail({ items }: DevotionalsRailProps) {
                 className="block rounded-2xl border border-border/60 bg-card overflow-hidden hover:border-primary/40 transition-colors shadow-sm">
                 {d.coverImage ? (
                   <div className="aspect-[16/10] relative bg-muted">
-                    <img
-                      src={d.coverImage}
-                      alt=""
-                      className="absolute inset-0 w-full h-full object-cover"
-                    />
+                    <FillImage src={d.coverImage} alt="" sizes="(max-width: 768px) 50vw, 400px" />
                   </div>
                 ) : (
                   <div className="aspect-[16/10] bg-muted flex items-center justify-center">

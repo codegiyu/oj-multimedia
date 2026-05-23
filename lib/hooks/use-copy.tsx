@@ -112,7 +112,9 @@ export function useCopy(options: UseCopyOptions): UseCopyReturn {
             variant: 'success',
           });
           setIsCopied(true);
-        } catch {}
+        } catch {
+          void 0;
+        }
       }
     }
   };
@@ -163,7 +165,9 @@ export function useCopy(options: UseCopyOptions): UseCopyReturn {
             variant: 'success',
           });
           setIsCopied(true);
-        } catch {}
+        } catch {
+          void 0;
+        }
       }
     }
   };

@@ -4,6 +4,7 @@ import { motion } from 'motion/react';
 import { Play, Heart, Download, MoreHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { FillImage } from '@/components/general/FillImage';
 
 interface MusicCardProps {
   _id: string;
@@ -25,10 +26,11 @@ export const MusicCard = ({ _id, title, artist, cover, plays, genre, isNew }: Mu
       className="group relative bg-card rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow cursor-pointer">
       {/* Cover Image */}
       <div className="relative aspect-square overflow-hidden">
-        <img
+        <FillImage
           src={cover}
           alt={title}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+          sizes="(max-width: 768px) 50vw, 280px"
+          className="transition-transform duration-500 group-hover:scale-110"
         />
 
         {/* Overlay */}

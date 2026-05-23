@@ -5,6 +5,7 @@ import { Clock, Eye, MessageCircle, Sparkles, User, Calendar } from 'lucide-reac
 import Link from 'next/link';
 import { SectionComp } from '@/components/general/SectionComp';
 import { EmptyState } from './EmptyState';
+import { FillImage } from '@/components/general/FillImage';
 
 export interface FeaturedStory {
   _id: string;
@@ -60,10 +61,11 @@ export const FeaturedStories = ({ stories: featuredStories }: FeaturedStoriesPro
             whileHover={{ y: -4 }}
             transition={{ duration: 0.3 }}
             className="h-full group relative md:h-[500px] rounded-2xl overflow-hidden cursor-pointer">
-            <img
+            <FillImage
               src={featuredStories[0].image}
               alt={featuredStories[0].title}
-              className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+              sizes="(max-width: 768px) 100vw, 600px"
+              className="transition-transform duration-500 group-hover:scale-105"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-foreground via-foreground/60 to-transparent" />
 
@@ -122,11 +124,12 @@ export const FeaturedStories = ({ stories: featuredStories }: FeaturedStoriesPro
                 transition={{ duration: 0.3, delay: index * 0.1 }}
                 whileHover={{ y: -4 }}
                 className="h-full group flex gap-4 bg-card rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all cursor-pointer">
-                <div className="w-1/3 min-w-[140px] overflow-hidden">
-                  <img
+                <div className="relative w-1/3 min-w-[140px] min-h-[120px] overflow-hidden">
+                  <FillImage
                     src={story.image}
                     alt={story.title}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    sizes="200px"
+                    className="transition-transform duration-500 group-hover:scale-105"
                   />
                 </div>
                 <div className="flex-1 p-4 flex flex-col justify-center">

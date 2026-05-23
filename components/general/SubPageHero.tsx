@@ -6,6 +6,7 @@ import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { DynamicIcon, LucideIconName } from './DynamicIcon';
+import { FillImage } from '@/components/general/FillImage';
 
 interface SubPageHeroProps {
   /** Main title of the sub-page */
@@ -50,10 +51,11 @@ export const SubPageHero = ({
       {/* Optional background image */}
       {backgroundImage && (
         <div className="absolute inset-0 z-0">
-          <img
+          <FillImage
             src={backgroundImage}
             alt=""
-            className="w-full h-full object-cover opacity-10 mix-blend-overlay"
+            sizes="100vw"
+            className="opacity-10 mix-blend-overlay"
           />
         </div>
       )}

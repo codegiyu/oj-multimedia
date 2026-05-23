@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks/set-state-in-effect */
+/* eslint-disable @next/next/no-img-element -- country flag icons are small fixed UI assets */
 'use client';
 
 import { cn } from '@/lib/utils';

@@ -15,6 +15,7 @@ import type { PopulatedMarketplaceOrder } from '@/lib/constants/endpoints';
 import type { IUserWishlistItem } from '@/lib/constants/endpoints';
 import { formatPrice } from '@/lib/utils/marketplace';
 import { cn } from '@/lib/utils';
+import { FillImage } from '@/components/general/FillImage';
 
 export interface AccountPageClientProps {
   user: PopulatedUser | null;
@@ -110,9 +111,9 @@ export function AccountPageClient({
                     <div
                       key={order._id}
                       className="flex items-center gap-3 bg-primary/[0.06] px-4 py-3 first:rounded-t-xl last:rounded-b-xl">
-                      <div className="h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-muted">
+                      <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-muted">
                         {thumb ? (
-                          <img src={thumb} alt="" className="h-full w-full object-cover" />
+                          <FillImage src={thumb} alt="" sizes="48px" />
                         ) : (
                           <div className="flex h-full items-center justify-center">
                             <Package className="h-5 w-5 text-muted-foreground" />
@@ -172,7 +173,7 @@ export function AccountPageClient({
                     className="gap-0 overflow-hidden border-border/80 py-0 shadow-sm">
                     <div className="relative aspect-[4/5] bg-muted">
                       {img ? (
-                        <img src={img} alt="" className="h-full w-full object-cover" />
+                        <FillImage src={img} alt="" sizes="(max-width: 768px) 50vw, 280px" />
                       ) : (
                         <div className="flex h-full items-center justify-center text-muted-foreground">
                           <Heart className="h-8 w-8" />

@@ -9,6 +9,7 @@ import { ListPagination } from '@/components/general/ListPagination';
 import { Store } from 'lucide-react';
 import Link from 'next/link';
 import { EmptyState } from '@/components/section/news/EmptyState';
+import { FillImage } from '@/components/general/FillImage';
 import type { IMarketplaceVendor } from '@/lib/constants/endpoints';
 
 export interface MarketplaceVendorsPageClientProps {
@@ -74,13 +75,9 @@ export function MarketplaceVendorsPageClient({
                   <Link key={vendor._id} href={`/marketplace/vendors/${vendor.slug}`}>
                     <Card className="group overflow-hidden hover:shadow-lg transition-shadow h-full">
                       <div className="p-6">
-                        <div className="w-20 h-20 rounded-full bg-primary/10 mx-auto mb-4 flex items-center justify-center overflow-hidden">
+                        <div className="relative w-20 h-20 rounded-full bg-primary/10 mx-auto mb-4 flex items-center justify-center overflow-hidden">
                           {vendor.logo ? (
-                            <img
-                              src={vendor.logo}
-                              alt={vendor.storeName}
-                              className="w-full h-full object-cover"
-                            />
+                            <FillImage src={vendor.logo} alt={vendor.storeName} sizes="80px" />
                           ) : (
                             <Store className="w-10 h-10 text-primary" />
                           )}

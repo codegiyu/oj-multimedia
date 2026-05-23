@@ -73,7 +73,7 @@ export const DevotionalsHero = () => {
                   ?.scrollIntoView({ behavior: 'smooth' });
               }}>
               <Calendar className="w-4 h-4" />
-              Today's Devotional
+              {"Today's Devotional"}
             </Button>
             <Button
               variant="hero-outline"

@@ -20,6 +20,7 @@ import { usePathname } from 'next/navigation';
 import { bottomBarLinks, sidebarLinksData } from '@/lib/constants/routing';
 import { GhostBtn } from '../atoms/GhostBtn';
 import Link from 'next/link';
+import { FixedImage } from '@/components/general/FillImage';
 
 export function AppSidebar() {
   const { state } = useSidebar();
@@ -34,7 +35,13 @@ export function AppSidebar() {
           <Link
             href="/admin/dashboard/home"
             className="flex items-center shrink-0 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-lg">
-            <img src="/images/logo-badge.png" alt="OJ Multimedia" className={'h-9 w-auto'} />
+            <FixedImage
+              src="/images/logo-badge.png"
+              alt="OJ Multimedia"
+              width={36}
+              height={36}
+              className="h-9 w-auto"
+            />
           </Link>
           {!isCollapsed && (
             <div className="flex-1">

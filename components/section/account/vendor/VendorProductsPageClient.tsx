@@ -15,6 +15,7 @@ import { getProductCategoryName, getProductSubCategoryName } from '@/lib/constan
 import type { ApiErrorResponse } from '@/lib/types/http';
 import { toast } from 'sonner';
 import { EmptyState } from '@/components/section/news/EmptyState';
+import { FillImage } from '@/components/general/FillImage';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -84,10 +85,10 @@ function VendorProductsList({
                   className="gap-0 overflow-hidden border-border/80 py-0 shadow-sm transition-shadow hover:shadow-md">
                   <div className="relative aspect-square bg-muted">
                     {product.images?.[0] ? (
-                      <img
+                      <FillImage
                         src={product.images[0]}
                         alt={`${product.name} product image`}
-                        className="h-full w-full object-cover"
+                        sizes="(max-width: 768px) 50vw, 280px"
                       />
                     ) : (
                       <div className="flex h-full items-center justify-center">

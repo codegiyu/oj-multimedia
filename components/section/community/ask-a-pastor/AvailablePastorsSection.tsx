@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { SectionComp } from '@/components/general/SectionComp';
 import type { AvailablePastor } from './AskAPastorPageClient';
 import { Button } from '@/components/ui/button';
+import { FixedImage } from '@/components/general/FillImage';
 
 interface AvailablePastorsSectionProps {
   pastors: AvailablePastor[];
@@ -34,10 +35,12 @@ export const AvailablePastorsSection = ({ pastors }: AvailablePastorsSectionProp
             className="bg-card rounded-2xl overflow-hidden shadow-sm border border-border/50 hover:shadow-md transition-all">
             <div className="p-6 text-center">
               <div className="relative mb-4 inline-block">
-                <img
+                <FixedImage
                   src={pastor.image}
                   alt={pastor.name}
-                  className="w-24 h-24 rounded-full object-cover mx-auto ring-4 ring-accent/20 group-hover:ring-accent/40 transition-all"
+                  width={96}
+                  height={96}
+                  className="mx-auto h-24 w-24 rounded-full object-cover ring-4 ring-accent/20 transition-all group-hover:ring-accent/40"
                 />
               </div>
               <h3 className="font-semibold text-foreground mb-1 group-hover:text-accent transition-colors">

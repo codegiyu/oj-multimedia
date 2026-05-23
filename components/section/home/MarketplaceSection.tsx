@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { SectionComp } from '@/components/general/SectionComp';
 import { EmptyState } from '@/components/section/news/EmptyState';
+import { FillImage } from '@/components/general/FillImage';
 
 export interface MarketplaceProduct {
   _id: string;
@@ -81,11 +82,12 @@ export const MarketplaceSection = ({ products }: MarketplaceSectionProps) => {
                 <motion.div
                   whileHover={{ y: -4 }}
                   className="group bg-card rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all">
-                  <div className="aspect-square overflow-hidden">
-                    <img
+                  <div className="relative aspect-square overflow-hidden">
+                    <FillImage
                       src={product.image}
                       alt={product.name}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      sizes="(max-width: 768px) 50vw, 280px"
+                      className="transition-transform duration-500 group-hover:scale-105"
                     />
                   </div>
                   <div className="p-4">
