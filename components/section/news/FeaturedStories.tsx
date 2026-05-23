@@ -124,7 +124,7 @@ export const FeaturedStories = ({ stories: featuredStories }: FeaturedStoriesPro
                 transition={{ duration: 0.3, delay: index * 0.1 }}
                 whileHover={{ y: -4 }}
                 className="h-full group flex gap-4 bg-card rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all cursor-pointer">
-                <div className="relative w-1/3 min-w-[140px] min-h-[120px] overflow-hidden">
+                <div className="relative w-[140px] min-h-[120px] overflow-hidden shrink-0">
                   <FillImage
                     src={story.image}
                     alt={story.title}

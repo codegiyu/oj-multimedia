@@ -31,7 +31,7 @@ export const VideoPageSkeleton = () => {
           </div>
           <div className="flex gap-4 overflow-x-auto pb-4">
             {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
-              <div key={i} className="min-w-[280px] md:min-w-[320px] shrink-0">
+              <div key={i} className="w-[280px] md:w-[320px] shrink-0">
                 <div className="bg-card rounded-2xl overflow-hidden">
                   <Skeleton className="aspect-video w-full" />
                   <div className="p-4">
@@ -127,7 +127,7 @@ export const VideoPageSkeleton = () => {
           </div>
           <div className="flex gap-3 overflow-x-auto pb-4">
             {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
-              <div key={i} className="min-w-[140px] md:min-w-[160px] shrink-0">
+              <div key={i} className="w-[140px] md:w-[160px] shrink-0">
                 <div className="bg-card rounded-2xl overflow-hidden">
                   <Skeleton className="aspect-[9/16] w-full" />
                   <div className="p-2">

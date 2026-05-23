@@ -102,7 +102,7 @@ export const TrendingVideosSection = ({ videos: trendingVideos }: TrendingVideos
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.05 }}
-              className="max-w-[240px] sm:max-w-[280px] lg:max-w-[300px] xl:max-w-[320px] 2xl:max-w-[340px] snap-start shrink-0">
+              className="w-[240px] sm:w-[280px] lg:w-[300px] xl:w-[320px] 2xl:w-[340px] snap-start shrink-0">
               <VideoCard {...video} />
             </motion.div>
           ))}

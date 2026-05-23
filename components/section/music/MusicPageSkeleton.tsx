@@ -31,7 +31,7 @@ export const MusicPageSkeleton = () => {
           </div>
           <div className="flex gap-4 overflow-x-auto pb-4">
             {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
-              <div key={i} className="min-w-[200px] md:min-w-[240px] shrink-0">
+              <div key={i} className="w-[200px] md:w-[240px] shrink-0">
                 <div className="bg-card rounded-2xl overflow-hidden">
                   <Skeleton className="aspect-square w-full" />
                   <div className="p-4">

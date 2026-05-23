@@ -42,7 +42,7 @@ export function SimpleMusicRail({ heading, subtext, viewAllLink, music }: Simple
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.05 }}
-              className="max-w-[160px] sm:max-w-[180px] md:max-w-[200px] lg:max-w-[220px] xl:max-w-[240px] 2xl:max-w-[260px] snap-start shrink-0">
+              className="w-[160px] sm:w-[180px] md:w-[200px] lg:w-[220px] xl:w-[240px] 2xl:w-[260px] snap-start shrink-0">
               <MusicCard {...track} />
             </motion.div>
           ))}

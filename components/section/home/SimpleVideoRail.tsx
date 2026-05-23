@@ -42,7 +42,7 @@ export function SimpleVideoRail({ heading, subtext, viewAllLink, videos }: Simpl
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.05 }}
-              className="max-w-[200px] sm:max-w-[220px] md:max-w-[260px] snap-start shrink-0">
+              className="w-[200px] sm:w-[220px] md:w-[260px] snap-start shrink-0">
               <VideoCard
                 _id={video._id}
                 title={video.title}

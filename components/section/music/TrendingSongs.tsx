@@ -74,7 +74,7 @@ export const TrendingSongs = ({ songs: trendingSongs }: TrendingSongsProps) => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: index * 0.05 }}
-            className="min-w-[200px] md:min-w-[240px] snap-start">
+            className="w-[200px] md:w-[240px] snap-start shrink-0">
             <MusicCard
               _id={song._id}
               title={song.title}

@@ -144,7 +144,7 @@ export const HomePageSkeleton = () => {
             <div className="grid gap-6">
               {[1, 2].map(i => (
                 <div key={i} className="flex gap-4 bg-card rounded-2xl p-4">
-                  <Skeleton className="w-1/3 min-w-[140px] h-full aspect-video rounded-xl" />
+                  <Skeleton className="w-[140px] h-full aspect-video rounded-xl shrink-0" />
                   <div className="flex-1">
                     <Skeleton className="h-5 w-20 mb-2 rounded-full" />
                     <Skeleton className="h-5 w-full mb-2" />
