@@ -1,9 +1,4 @@
 import type { NextConfig } from 'next';
-import bundleAnalyzer from '@next/bundle-analyzer';
-
-const withBundleAnalyzer = bundleAnalyzer({
-  enabled: process.env.ANALYZE === 'true',
-});
 
 const nextConfig: NextConfig = {
   images: {
@@ -40,4 +35,18 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withBundleAnalyzer(nextConfig);
+function withOptionalBundleAnalyzer(config: NextConfig): NextConfig {
+  if (process.env.ANALYZE !== 'true') {
+    return config;
+  }
+
+  // Dev-only: production images omit devDependencies (see Dockerfile prod-deps stage).
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const bundleAnalyzer = require('@next/bundle-analyzer').default as (
+    options: { enabled: boolean }
+  ) => (config: NextConfig) => NextConfig;
+
+  return bundleAnalyzer({ enabled: true })(config);
+}
+
+export default withOptionalBundleAnalyzer(nextConfig);
