@@ -4,6 +4,7 @@ import { motion } from 'motion/react';
 import { Play, Eye, Clock, MoreVertical, Heart, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { FillImage } from '@/components/general/FillImage';
 
 interface VideoCardProps {
   _id?: string;
@@ -48,10 +49,11 @@ export const VideoCard = ({
       transition={{ duration: 0.3 }}
       className="group flex gap-4 p-4 bg-card rounded-2xl hover:shadow-md transition-all cursor-pointer">
       <div className="relative w-32 h-20 rounded-xl overflow-hidden shrink-0">
-        <img
+        <FillImage
           src={thumbnail}
           alt={title}
-          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+          sizes="128px"
+          className="transition-transform duration-300 group-hover:scale-110"
         />
         <div className="absolute inset-0 bg-foreground/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
           <Play className="w-5 h-5 text-background fill-current" />
@@ -116,10 +118,11 @@ export const VideoCard = ({
       {/* Thumbnail */}
       <div
         className={`relative overflow-hidden ${isShortFormVariant ? 'aspect-[9/16]' : 'aspect-video'}`}>
-        <img
+        <FillImage
           src={thumbnail}
           alt={title}
-          className={`w-full h-full object-cover transition-transform duration-500 ${isFeaturedVariant || isShortFormVariant ? 'group-hover:scale-110' : 'group-hover:scale-105'}`}
+          sizes="(max-width: 768px) 100vw, 400px"
+          className={`transition-transform duration-500 ${isFeaturedVariant || isShortFormVariant ? 'group-hover:scale-110' : 'group-hover:scale-105'}`}
         />
 
         {/* Play Overlay */}

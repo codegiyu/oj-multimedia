@@ -98,7 +98,7 @@ export const SubmitBeatsForm = () => {
   const [instrumentalPreview, setInstrumentalPreview] = useState<string | null>(null);
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [beatFile, setBeatFile] = useState<File | null>(null);
-  const [instrumentalFile, setInstrumentalFile] = useState<File | null>(null);
+  const [, setInstrumentalFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string[]>>({});
 

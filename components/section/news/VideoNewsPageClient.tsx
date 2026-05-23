@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { SectionContainer } from '@/components/general/SectionContainer';
 import { DataLoadError } from '@/components/general/DataLoadError';
+import { FillImage } from '@/components/general/FillImage';
 import { NewsCategories } from './NewsCategories';
 import type { CategoryNavItem } from '@/lib/utils/contentCategoryNav';
 import { NewsletterCTA } from '../shared';
@@ -94,10 +95,11 @@ export const VideoNewsPageClient = ({
                     whileHover={{ y: -6 }}
                     className="group cursor-pointer">
                     <div className="relative aspect-video rounded-xl overflow-hidden mb-3">
-                      <img
+                      <FillImage
                         src={video.image}
                         alt={video.title}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        sizes="(max-width: 768px) 50vw, 400px"
+                        className="transition-transform duration-500 group-hover:scale-110"
                       />
                       <div className="absolute inset-0 bg-foreground/20 group-hover:bg-foreground/30 transition-colors" />
                       <div className="absolute inset-0 flex items-center justify-center">

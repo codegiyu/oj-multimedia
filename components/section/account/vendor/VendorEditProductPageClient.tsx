@@ -450,7 +450,7 @@ export function VendorEditProductPageClient({ productId }: { productId: string }
           <Package className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
           <h2 className="mb-2 text-lg font-semibold text-foreground">Product not found</h2>
           <p className="mb-4 text-muted-foreground">
-            This product may have been removed or you don't have access to it.
+            {"This product may have been removed or you don't have access to it."}
           </p>
           <Button asChild variant="outline" className="rounded-full">
             <Link href="/account/vendor/products">Back to products</Link>

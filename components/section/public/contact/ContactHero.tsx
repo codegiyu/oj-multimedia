@@ -44,7 +44,8 @@ export const ContactHero = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
             className="text-4xl sm:text-5xl md:text-6xl font-display font-bold leading-tight mb-6">
-            Let's <span className="gradient-text">Connect</span>
+            {"Let's "}
+            <span className="gradient-text">Connect</span>
           </motion.h1>
 
           <motion.p
@@ -52,8 +53,9 @@ export const ContactHero = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-lg md:text-xl text-muted-foreground mb-8 max-w-xl mx-auto">
-            Have a question, prayer request, or want to partner with us? We're here to help and
-            connect with you.
+            {
+              "Have a question, prayer request, or want to partner with us? We're here to help and connect with you."
+            }
           </motion.p>
 
           <motion.div

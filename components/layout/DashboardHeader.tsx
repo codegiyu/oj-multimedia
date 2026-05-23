@@ -21,6 +21,7 @@ import Link from 'next/link';
 import { GhostBtn } from '../atoms/GhostBtn';
 import { getPersonDisplayName, getPersonInitials } from '@/lib/utils/general';
 import { getPublicSiteHref } from '@/lib/constants/texts';
+import { FixedImage } from '@/components/general/FillImage';
 
 export const DashboardHeader = () => {
   return (
@@ -45,7 +46,15 @@ export const DashboardHeader = () => {
 };
 
 function LogoHeaderIcon() {
-  return <img src="/images/logo-badge.png" alt="OJ Multimedia" className={'h-9 w-auto'} />;
+  return (
+    <FixedImage
+      src="/images/logo-badge.png"
+      alt="OJ Multimedia"
+      width={36}
+      height={36}
+      className="h-9 w-auto"
+    />
+  );
 }
 
 const MobileMenuButton = () => {

@@ -22,6 +22,7 @@ import { Badge } from '@/components/ui/badge';
 import { ApprovalModal } from '@/components/section/admin/shared';
 import { MediaUrlOrUploadField } from '@/components/general/MediaUrlOrUploadField';
 import { useFileUpload } from '@/lib/hooks/use-file-upload';
+import { FillImage } from '@/components/general/FillImage';
 
 const slotFilterOptions: SelectOption[] = [
   { text: 'All slots', value: 'all' },
@@ -298,12 +299,12 @@ export function HomeAdvertsPageClient({
                 adverts.map(a => (
                   <tr key={a._id} className="border-b border-border/60 hover:bg-muted/30">
                     <td className="p-3">
-                      <div className="w-16 h-10 rounded overflow-hidden bg-muted">
+                      <div className="relative h-10 w-16 overflow-hidden rounded bg-muted">
                         {a.imageUrl ? (
-                          <img
+                          <FillImage
                             src={a.imageUrl}
                             alt={`Home advert preview (${a.slot})`}
-                            className="w-full h-full object-cover"
+                            sizes="64px"
                           />
                         ) : null}
                       </div>

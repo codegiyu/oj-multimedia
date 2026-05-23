@@ -14,6 +14,7 @@ import { formatPrice } from '@/lib/utils/marketplace';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { Loader2 } from 'lucide-react';
+import { FillImage } from '@/components/general/FillImage';
 
 const STATUS_OPTIONS = [
   { value: '', label: 'All' },
@@ -222,13 +223,9 @@ export function AccountOrdersPageClient({
                     <div
                       key={`${order._id}-${idx}`}
                       className="flex items-center gap-3 rounded-2xl bg-background/80 px-3 py-2">
-                      <div className="h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-muted">
+                      <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-muted">
                         {line.product.image ? (
-                          <img
-                            src={line.product.image}
-                            alt=""
-                            className="h-full w-full object-cover"
-                          />
+                          <FillImage src={line.product.image} alt="" sizes="48px" />
                         ) : (
                           <div className="flex h-full items-center justify-center text-[10px] text-muted-foreground">
                             —

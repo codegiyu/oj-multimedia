@@ -61,7 +61,7 @@ export const useInitSiteSettingsStore = create<SiteSettingsStore>()((set, get) =
   actions: {
     fetchSettings: async (slice = 'all', options = {}) => {
       const { force = false } = options;
-      const { lastFetched, isLoading, loadedSlices, settings } = get();
+      const { lastFetched, isLoading, loadedSlices } = get();
 
       // Return early if cache is valid and slice is already loaded
       if (!force && isCacheValid(lastFetched) && loadedSlices.has(slice)) {

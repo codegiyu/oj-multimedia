@@ -215,7 +215,11 @@ export const SearchModal = ({ isOpen, onClose }: SearchModalProps) => {
               </div>
             ) : showEmpty ? (
               <div className="p-8 text-center text-muted-foreground">
-                <p>No results found for "{query}"</p>
+                <p>
+                  No results found for {'"'}
+                  {query}
+                  {'"'}
+                </p>
               </div>
             ) : (
               <div className="p-6">

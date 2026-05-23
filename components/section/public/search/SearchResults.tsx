@@ -5,6 +5,7 @@ import { motion } from 'motion/react';
 import { Play, Clock, Video, Eye } from 'lucide-react';
 import type { SearchResultType } from '@/lib/constants/endpoints';
 import { getSearchResultDetailHref } from '@/lib/utils/searchResultRoutes';
+import { FillImage } from '@/components/general/FillImage';
 
 export interface SearchResultItem {
   _id: string;
@@ -47,10 +48,11 @@ export const SearchResults = ({ results }: SearchResultsProps) => {
             {/* Image */}
             <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-primary/20 to-accent/20">
               {result.image ? (
-                <img
+                <FillImage
                   src={typeof result.image === 'string' ? result.image : result.image.src}
                   alt={result.title}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  sizes="(max-width: 768px) 50vw, 280px"
+                  className="transition-transform duration-500 group-hover:scale-110"
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center">

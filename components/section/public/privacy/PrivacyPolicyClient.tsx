@@ -113,7 +113,7 @@ export const PrivacyPolicyClient = () => {
                   4. Sharing of Information
                 </h2>
                 <p className="text-muted-foreground leading-relaxed mb-4">
-                  We do <strong>NOT</strong> sell users' personal information.
+                  We do <strong>NOT</strong> sell {"users'"} personal information.
                 </p>
                 <p className="text-muted-foreground leading-relaxed mb-2">
                   However, we may share information with:
@@ -163,7 +163,9 @@ export const PrivacyPolicyClient = () => {
               </section>
 
               <section>
-                <h2 className="text-2xl font-bold text-foreground mb-4">7. Children's Privacy</h2>
+                <h2 className="text-2xl font-bold text-foreground mb-4">
+                  7. {"Children's Privacy"}
+                </h2>
                 <p className="text-muted-foreground leading-relaxed">
                   This platform is not intended for children under 13. We do not knowingly collect
                   information from minors.
@@ -202,7 +204,7 @@ export const PrivacyPolicyClient = () => {
                 </h2>
                 <p className="text-muted-foreground leading-relaxed">
                   We may update this policy occasionally. Updates will be posted on this page with
-                  the "Last Updated" date.
+                  the {'"Last Updated"'} date.
                 </p>
               </section>
 

@@ -3,6 +3,7 @@
 import { motion } from 'motion/react';
 import { Heart, MessageSquare, Quote, Star } from 'lucide-react';
 import Link from 'next/link';
+import { FixedImage } from '@/components/general/FillImage';
 import { Card, CardContent } from '@/components/ui/card';
 import { SectionComp } from '@/components/general/SectionComp';
 import type { Testimony } from './TestimoniesPageClient';
@@ -44,10 +45,12 @@ export const FeaturedTestimonies = ({ testimonies }: FeaturedTestimoniesProps) =
 
                   <div className="flex items-center justify-between pt-4 border-t border-border">
                     <div className="flex items-center gap-3">
-                      <img
+                      <FixedImage
                         src={testimony.avatar}
                         alt={testimony.author}
-                        className="w-10 h-10 rounded-full object-cover"
+                        width={40}
+                        height={40}
+                        className="h-10 w-10 rounded-full object-cover"
                       />
                       <div>
                         <p className="font-semibold text-sm text-foreground">{testimony.author}</p>

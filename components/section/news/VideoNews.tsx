@@ -5,6 +5,7 @@ import { Play, Clock, User, Calendar } from 'lucide-react';
 import Link from 'next/link';
 import { SectionComp } from '@/components/general/SectionComp';
 import { EmptyState } from './EmptyState';
+import { FillImage } from '@/components/general/FillImage';
 
 export interface VideoNewsItem {
   _id: string;
@@ -49,10 +50,11 @@ export const VideoNews = ({ videos }: VideoNewsProps) => {
                 whileHover={{ y: -6 }}
                 className="group cursor-pointer">
                 <div className="relative aspect-video rounded-xl overflow-hidden mb-3">
-                  <img
+                  <FillImage
                     src={video.image}
                     alt={video.title}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    sizes="(max-width: 768px) 50vw, 400px"
+                    className="transition-transform duration-500 group-hover:scale-110"
                   />
                   <div className="absolute inset-0 bg-foreground/20 group-hover:bg-foreground/30 transition-colors" />
                   <div className="absolute inset-0 flex items-center justify-center">

@@ -8,6 +8,7 @@ import type { MarketplaceProduct } from '@/lib/utils/marketplace';
 import { formatPrice } from '@/lib/utils/marketplace';
 import { useCartStore } from '@/lib/store/cartStore';
 import type { IMarketplaceProduct } from '@/lib/constants/endpoints';
+import { FillImage } from '@/components/general/FillImage';
 
 export interface ProductCardProps {
   product: MarketplaceProduct | IMarketplaceProduct;
@@ -55,10 +56,11 @@ export function ProductCard({
       <Link href={`/marketplace/products/${product.slug}`} className="block">
         <div className="relative aspect-square bg-muted rounded-t-xl overflow-hidden">
           {imageUrl ? (
-            <img
+            <FillImage
               src={imageUrl}
               alt={product.name}
-              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+              sizes="(max-width: 768px) 50vw, 280px"
+              className="transition-transform duration-300 group-hover:scale-105"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center">

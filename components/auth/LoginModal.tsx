@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { useGoogleLogin } from '@/lib/hooks/use-google-login';
 import { LogIn, Loader2 } from 'lucide-react';
+import { FillImage, FixedImage } from '@/components/general/FillImage';
 
 interface LoginModalProps {
   open: boolean;
@@ -36,17 +37,24 @@ export function LoginModal({
         <div className="grid md:grid-cols-2 min-h-[500px]">
           {/* Left Section - Artwork */}
           <div className="hidden md:block relative overflow-hidden">
-            <img
+            <FillImage
               src="/images/signin-artwork.jpg"
               alt=""
-              className="absolute inset-0 w-full h-full object-cover object-left"
-              fetchPriority="high"
+              priority
+              sizes="50vw"
+              className="object-cover object-left"
             />
             {/* Subtle overlay for readability */}
             <div className="absolute inset-0 bg-gradient-to-r from-dark/20 via-dark/20 to-dark/20" />
             <div className="relative z-10 flex flex-col items-start justify-between p-6 h-full text-white">
               <div className="">
-                <img src="/images/logo-badge.png" alt="OJ Multimedia" className="h-16" />
+                <FixedImage
+                  src="/images/logo-badge.png"
+                  alt="OJ Multimedia"
+                  width={64}
+                  height={64}
+                  className="h-16 w-auto"
+                />
               </div>
               <div className="">
                 <h2 className="text-xl font-bold mb-4 drop-shadow-sm">{title}</h2>

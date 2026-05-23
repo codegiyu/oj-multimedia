@@ -17,6 +17,7 @@ import {
 } from '@/lib/constants/endpoints';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
+import { FillImage } from '@/components/general/FillImage';
 
 export interface ProductDetailClientProps {
   product: (MarketplaceProduct | IMarketplaceProduct) | null;
@@ -147,8 +148,12 @@ function ProductDetailContent({ product }: ProductDetailContentProps) {
                 <Swiper spaceBetween={16} slidesPerView={1} className="w-full h-full max-h-[480px]">
                   {images.map(src => (
                     <SwiperSlide key={src}>
-                      <div className="aspect-square w-full h-full flex items-center justify-center bg-muted">
-                        <img src={src} alt={product.name} className="w-full h-full object-cover" />
+                      <div className="relative aspect-square w-full h-full bg-muted">
+                        <FillImage
+                          src={src}
+                          alt={product.name}
+                          sizes="(max-width: 768px) 100vw, 600px"
+                        />
                       </div>
                     </SwiperSlide>
                   ))}

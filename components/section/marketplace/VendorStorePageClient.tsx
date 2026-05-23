@@ -8,6 +8,7 @@ import { Store, ChevronRight, MessageCircle, Package } from 'lucide-react';
 import Link from 'next/link';
 import { EmptyState } from '@/components/section/news/EmptyState';
 import type { IMarketplaceVendor, IMarketplaceProduct } from '@/lib/constants/endpoints';
+import { FillImage } from '@/components/general/FillImage';
 
 export interface VendorStorePageClientProps {
   vendor: IMarketplaceVendor | null;
@@ -48,13 +49,9 @@ export function VendorStorePageClient({ vendor, products = [] }: VendorStorePage
 
           <Card className="p-8 mb-12">
             <div className="flex flex-col md:flex-row gap-8 items-center md:items-start">
-              <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden shrink-0">
+              <div className="relative w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden shrink-0">
                 {vendor.logo ? (
-                  <img
-                    src={vendor.logo}
-                    alt={vendor.storeName}
-                    className="w-full h-full object-cover"
-                  />
+                  <FillImage src={vendor.logo} alt={vendor.storeName} sizes="96px" />
                 ) : (
                   <Store className="w-12 h-12 text-primary" />
                 )}
