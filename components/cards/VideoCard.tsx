@@ -1,10 +1,11 @@
 'use client';
 
 import { motion } from 'motion/react';
-import { Play, Eye, Clock, MoreVertical, Heart, Share2 } from 'lucide-react';
+import { Play, Eye, Clock, MoreVertical, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { FillImage } from '@/components/general/FillImage';
+import { ShareIconButton } from '@/components/content/ShareIconButton';
 
 interface VideoCardProps {
   _id?: string;
@@ -190,15 +191,15 @@ export const VideoCard = ({
               onClick={e => e.preventDefault()}>
               <Heart className="w-3 h-3" />
             </Button>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon-sm"
-              className="bg-card/80 backdrop-blur-sm hover:bg-card h-7 w-7"
-              aria-label="Share"
-              onClick={e => e.preventDefault()}>
-              <Share2 className="w-3 h-3" />
-            </Button>
+            {detailHref && (
+              <ShareIconButton
+                title={title}
+                text={`${title} by ${creatorName}`}
+                url={detailHref}
+                className="bg-card/80 backdrop-blur-sm hover:bg-card h-7 w-7"
+                iconClassName="w-3 h-3"
+              />
+            )}
           </div>
         )}
       </div>

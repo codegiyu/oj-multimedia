@@ -1,10 +1,19 @@
 'use client';
 
 import { motion } from 'motion/react';
-import { Play, Heart, Download, MoreHorizontal } from 'lucide-react';
+import { Play, Heart, MoreHorizontal, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { FillImage } from '@/components/general/FillImage';
+import { MusicCardDownloadButton } from '@/components/content/MusicCardDownloadButton';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import type { MusicDownloadInput } from '@/lib/services/musicDownload';
+import { shareContent } from '@/lib/utils/shareContent';
 
 interface MusicCardProps {
   _id: string;
@@ -14,11 +23,42 @@ interface MusicCardProps {
   plays: string;
   genre: string;
   isNew?: boolean;
+  slug?: string;
+  downloadUrl?: string;
+  audioUrl?: string;
+  isMonetizable?: boolean;
+  downloadPrice?: number;
 }
 
-export const MusicCard = ({ _id, title, artist, cover, plays, genre, isNew }: MusicCardProps) => {
+function buildDownloadInput(props: MusicCardProps): MusicDownloadInput {
+  const artistName = typeof props.artist === 'string' ? props.artist : props.artist.name;
+
+  return {
+    _id: props._id,
+    slug: props.slug,
+    title: props.title,
+    artistName,
+    downloadUrl: props.downloadUrl,
+    audioUrl: props.audioUrl,
+    isMonetizable: props.isMonetizable,
+    downloadPrice: props.downloadPrice,
+    source: 'card',
+  };
+}
+
+export const MusicCard = (props: MusicCardProps) => {
+  const { _id, title, artist, cover, plays, genre, isNew } = props;
   const artistName = typeof artist === 'string' ? artist : artist.name;
   const detailHref = `/music/${_id}`;
+  const downloadInput = buildDownloadInput(props);
+
+  const handleShare = () => {
+    void shareContent({
+      title,
+      text: `${title} by ${artistName}`,
+      url: detailHref,
+    });
+  };
 
   return (
     <motion.div
@@ -58,15 +98,7 @@ export const MusicCard = ({ _id, title, artist, cover, plays, genre, isNew }: Mu
             onClick={e => e.preventDefault()}>
             <Heart className="w-4 h-4" />
           </Button>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon-sm"
-            className="bg-card/80 backdrop-blur-sm hover:bg-card"
-            aria-label="Download"
-            onClick={e => e.preventDefault()}>
-            <Download className="w-4 h-4" />
-          </Button>
+          <MusicCardDownloadButton input={downloadInput} />
         </div>
       </div>
 
@@ -79,15 +111,29 @@ export const MusicCard = ({ _id, title, artist, cover, plays, genre, isNew }: Mu
             <p className="text-sm text-muted-foreground truncate">{artistName}</p>
             <p className="text-xs text-muted-foreground mt-2">{plays} plays</p>
           </Link>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon-sm"
-            className="shrink-0"
-            aria-label="More options"
-            onClick={e => e.preventDefault()}>
-            <MoreHorizontal className="w-4 h-4" />
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-sm"
+                className="shrink-0"
+                aria-label="More options"
+                onClick={e => e.stopPropagation()}>
+                <MoreHorizontal className="w-4 h-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-40">
+              <DropdownMenuItem
+                onClick={e => {
+                  e.preventDefault();
+                  handleShare();
+                }}>
+                <Share2 className="w-4 h-4 mr-2" />
+                Share
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </motion.div>
