@@ -76,7 +76,7 @@ export const ShortFormVideos = ({ videos: shortFormVideos }: ShortFormVideosProp
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ delay: index * 0.05 }}
-            className="min-w-[140px] md:min-w-[160px] snap-start">
+            className="w-[140px] md:w-[160px] snap-start shrink-0">
             <VideoCard
               _id={video._id}
               title={video.title}

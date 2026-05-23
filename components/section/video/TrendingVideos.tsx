@@ -74,7 +74,7 @@ export const TrendingVideos = ({ videos: trendingVideos }: TrendingVideosProps) 
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: index * 0.05 }}
-            className="min-w-[280px] md:min-w-[320px] snap-start">
+            className="w-[280px] md:w-[320px] snap-start shrink-0">
             <VideoCard
               _id={video._id}
               title={video.title}
