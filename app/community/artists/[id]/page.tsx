@@ -16,6 +16,7 @@ import type {
 } from '@/lib/constants/endpoints';
 import { filterPublicAlbumList, mapPublicAlbumToCard } from '@/lib/utils/publicApiMappers';
 import type { PublicAlbumCard } from '@/lib/utils/publicApiMappers';
+import { buildDetailShareMetadata } from '@/lib/utils/metadata';
 
 interface ArtistDetailPageProps {
   params: Promise<{ id: string }>;
@@ -43,10 +44,17 @@ export async function generateMetadata({ params }: ArtistDetailPageProps): Promi
   }
 
   const artist = (res.data as IPublicArtistItemRes).artist;
-  return {
-    title: `${artist.name} - Artist Profile`,
-    description: artist.bio?.substring(0, 160) ?? `Discover music and videos by ${artist.name}.`,
-  };
+  const title = `${artist.name} - Artist Profile`;
+  const description =
+    artist.bio?.substring(0, 160) ?? `Discover music and videos by ${artist.name}.`;
+
+  return buildDetailShareMetadata({
+    title,
+    description,
+    path: `/community/artists/${id}`,
+    image: artist.coverImage ?? artist.image,
+    imageAlt: artist.name,
+  });
 }
 
 export default async function ArtistDetailPage({ params }: ArtistDetailPageProps) {

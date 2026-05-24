@@ -4,6 +4,7 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { PollDetailPageClient } from '@/components/section/community/polls/PollDetailPageClient';
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import { mapToPoll } from '@/lib/utils/communityApiMappers';
+import { buildDetailShareMetadata } from '@/lib/utils/metadata';
 
 interface PollDetailPageProps {
   params: Promise<{ id: string }>;
@@ -23,10 +24,22 @@ export async function generateMetadata({ params }: PollDetailPageProps): Promise
   }
   const data = res.data;
   const poll = data.poll as unknown as Record<string, unknown>;
-  return {
-    title: `${String(poll?.question ?? 'Poll')} - Polls & Voting`,
-    description: String(poll?.description ?? poll?.question ?? ''),
-  };
+  const question = String(poll?.question ?? 'Poll');
+  const title = `${question} - Polls & Voting`;
+  const coverImage =
+    typeof poll?.coverImage === 'string'
+      ? poll.coverImage
+      : typeof poll?.image === 'string'
+        ? poll.image
+        : undefined;
+
+  return buildDetailShareMetadata({
+    title,
+    description: String(poll?.description ?? question),
+    path: `/community/polls-and-voting/${id}`,
+    image: coverImage,
+    imageAlt: question,
+  });
 }
 
 export default async function PollDetailPage({ params }: PollDetailPageProps) {

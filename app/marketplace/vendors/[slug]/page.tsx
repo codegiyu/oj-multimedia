@@ -5,6 +5,7 @@ import { VendorStorePageSkeleton } from '@/components/section/marketplace/Vendor
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import type { IMarketplaceVendor, IMarketplaceProduct } from '@/lib/constants/endpoints';
 import { MainLayout } from '@/components/layout/MainLayout';
+import { buildDetailShareMetadata } from '@/lib/utils/metadata';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -34,10 +35,18 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!vendor) {
     return { title: 'Vendor not found - Marketplace' };
   }
-  return {
-    title: `${vendor.storeName} - Marketplace`,
-    description: vendor.storeDescription ?? `Shop from ${vendor.storeName} on our marketplace.`,
-  };
+
+  const title = `${vendor.storeName} - Marketplace`;
+  const description =
+    vendor.storeDescription ?? `Shop from ${vendor.storeName} on our marketplace.`;
+
+  return buildDetailShareMetadata({
+    title,
+    description,
+    path: `/marketplace/vendors/${slug}`,
+    image: vendor.logo ?? vendor.coverImage,
+    imageAlt: vendor.storeName,
+  });
 }
 
 export default async function VendorStorePage({ params }: PageProps) {

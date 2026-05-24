@@ -5,6 +5,7 @@ import { AlbumDetailPageClient } from '@/components/section/music/AlbumDetailPag
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import { mapPublicAlbumToCard } from '@/lib/utils/publicApiMappers';
 import type { IPublicAlbumItemRes } from '@/lib/constants/endpoints';
+import { buildDetailShareMetadata } from '@/lib/utils/metadata';
 
 interface AlbumDetailPageProps {
   params: Promise<{ id: string }>;
@@ -27,11 +28,17 @@ export async function generateMetadata({ params }: AlbumDetailPageProps): Promis
   const album = res.data.album;
   const artistName =
     typeof album.artist === 'string' ? album.artist : (album.artist?.name ?? 'Artist');
+  const title = `${album.title} by ${artistName} - Album`;
+  const description =
+    album.excerpt ?? album.description ?? `Listen to ${album.title} on OJ Multimedia.`;
 
-  return {
-    title: `${album.title} by ${artistName} - Album`,
-    description: album.excerpt ?? album.description ?? `Listen to ${album.title} on OJ Multimedia.`,
-  };
+  return buildDetailShareMetadata({
+    title,
+    description,
+    path: `/music/albums/${id}`,
+    image: album.coverImage,
+    imageAlt: album.title,
+  });
 }
 
 export default async function AlbumDetailPage({ params }: AlbumDetailPageProps) {

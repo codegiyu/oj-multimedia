@@ -6,6 +6,7 @@ import { callPublicServerApi } from '@/lib/services/serverApi';
 import { mapToTestimony, mapToTestimonyDetail } from '@/lib/utils/communityApiMappers';
 import { buildCommunityListQuery } from '@/lib/utils/communityListQuery';
 import type { TestimonyItem } from '@/lib/constants/community/testimonies';
+import { buildDetailShareMetadata } from '@/lib/utils/metadata';
 
 interface TestimonyDetailPageProps {
   params: Promise<{ id: string }>;
@@ -54,11 +55,15 @@ export async function generateMetadata({ params }: TestimonyDetailPageProps): Pr
 
   const raw = res.data.testimony as unknown as Record<string, unknown>;
   const testimony = mapToTestimonyDetail(raw);
+  const title = `${testimony.title || 'Testimony'} by ${testimony.author} - Testimonies`;
 
-  return {
-    title: `${testimony.title || 'Testimony'} by ${testimony.author} - Testimonies`,
+  return buildDetailShareMetadata({
+    title,
     description: testimony.content.substring(0, 160),
-  };
+    path: `/community/testimonies/${id}`,
+    image: testimony.avatar,
+    imageAlt: testimony.author,
+  });
 }
 
 export default async function TestimonyDetailPage({ params }: TestimonyDetailPageProps) {
