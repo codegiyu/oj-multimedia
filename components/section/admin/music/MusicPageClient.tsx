@@ -16,6 +16,7 @@ import { Plus } from 'lucide-react';
 import { PUBLISHABLE_STATUS_FILTER_SELECT_OPTIONS } from '@/lib/constants/adminSelectOptions';
 import type { SelectOption } from '@/lib/types/general';
 import { loadAdminContentCategorySelectOptions } from '@/lib/utils/adminContentCategorySelect';
+import { useAdminListSearch } from '@/lib/hooks/useAdminListSearch';
 
 export interface MusicPageClientProps {
   pageTitle: string;
@@ -62,6 +63,7 @@ export function MusicPageClient({
   const [rejectTarget, setRejectTarget] = useState<ArtistMusicListItem | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<ArtistMusicListItem | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
+  const { onSearchChange, onSearchCommit } = useAdminListSearch(setSearchQuery, setPage);
 
   const handleRefresh = () => router.refresh();
 
@@ -146,8 +148,8 @@ export function MusicPageClient({
       filterableDataPageProps={{
         searchPlaceholder: 'Search music...',
         searchValue: searchQuery,
-        onSearchChange: setSearchQuery,
-        onSearchApply: () => setPage(1),
+        onSearchChange,
+        onSearchCommit,
         filters: [
           {
             label: 'Status',

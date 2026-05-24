@@ -1,6 +1,7 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 'use client';
 
-import { useState, ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Search, Filter } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -14,6 +15,9 @@ import {
 import { RegularBtn } from '@/components/atoms/RegularBtn';
 import { RegularSelect } from '@/components/atoms/RegularSelect';
 import type { SelectOption } from '@/lib/types/general';
+import { createDebouncedCallback } from '@/lib/utils/debouncedCallback';
+
+export const DEFAULT_SEARCH_DEBOUNCE_MS = 350;
 
 export interface FilterConfig {
   label: string;
@@ -29,10 +33,14 @@ export interface FilterableDataPageProps {
   onApplyFilters?: (filters: Record<string, string>) => void;
   /** Controlled search: value from parent (e.g. URL param) */
   searchValue?: string;
-  /** When provided, parent controls search and receives updates (e.g. for API/URL) */
+  /** When provided, parent controls search; updates are debounced before calling this */
   onSearchChange?: (value: string) => void;
-  /** When user presses Enter in search, optionally trigger apply */
+  /** Called when a debounced search commits or Enter is pressed (e.g. reset page) */
+  onSearchCommit?: () => void;
+  /** @deprecated Use onSearchCommit; kept for backward compatibility */
   onSearchApply?: () => void;
+  /** Debounce delay for controlled search URL updates (ms) */
+  searchDebounceMs?: number;
   children?: ReactNode;
 }
 
@@ -42,23 +50,81 @@ export function FilterableDataPage({
   onApplyFilters,
   searchValue,
   onSearchChange,
+  onSearchCommit,
   onSearchApply,
+  searchDebounceMs = DEFAULT_SEARCH_DEBOUNCE_MS,
   children,
 }: FilterableDataPageProps) {
+  const isControlled = searchValue !== undefined;
   const [internalSearch, setInternalSearch] = useState('');
-  const searchQuery = searchValue !== undefined ? searchValue : internalSearch;
+  const [draftSearch, setDraftSearch] = useState(searchValue ?? '');
+
+  const onSearchChangeRef = useRef(onSearchChange);
+  const onSearchCommitRef = useRef(onSearchCommit ?? onSearchApply);
+
+  useEffect(() => {
+    onSearchChangeRef.current = onSearchChange;
+  }, [onSearchChange]);
+
+  useEffect(() => {
+    onSearchCommitRef.current = onSearchCommit ?? onSearchApply;
+  }, [onSearchCommit, onSearchApply]);
+
+  useEffect(() => {
+    if (isControlled) {
+      setDraftSearch(searchValue ?? '');
+    }
+  }, [searchValue, isControlled]);
+
+  const debouncedCommitRef = useRef<ReturnType<typeof createDebouncedCallback<[string]>> | null>(
+    null
+  );
+
+  useEffect(() => {
+    if (!isControlled || !onSearchChange) {
+      debouncedCommitRef.current?.cancel();
+      debouncedCommitRef.current = null;
+      return;
+    }
+
+    const debounced = createDebouncedCallback((value: string) => {
+      onSearchChangeRef.current?.(value);
+      onSearchCommitRef.current?.();
+    }, searchDebounceMs);
+    debouncedCommitRef.current = debounced;
+
+    return () => {
+      debounced.cancel();
+    };
+  }, [isControlled, onSearchChange, searchDebounceMs]);
+
+  const searchQuery = isControlled ? draftSearch : internalSearch;
+
+  const commitSearchNow = () => {
+    if (isControlled && onSearchChange) {
+      debouncedCommitRef.current?.flush();
+      if (!debouncedCommitRef.current) {
+        onSearchChange(draftSearch);
+        onSearchCommitRef.current?.();
+      }
+      return;
+    }
+    onSearchCommitRef.current?.();
+  };
 
   const handleSearchChange = (value: string) => {
-    if (onSearchChange) {
-      onSearchChange(value);
-    } else {
-      setInternalSearch(value);
+    if (isControlled) {
+      setDraftSearch(value);
+      debouncedCommitRef.current?.call(value);
+      return;
     }
+
+    setInternalSearch(value);
   };
 
   const handleSearchKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && onSearchApply) {
-      onSearchApply();
+    if (e.key === 'Enter') {
+      commitSearchNow();
     }
   };
 
@@ -84,6 +150,7 @@ export function FilterableDataPage({
               value={searchQuery}
               onChange={e => handleSearchChange(e.target.value)}
               onKeyDown={handleSearchKeyDown}
+              aria-label={searchPlaceholder}
             />
           </div>
 
@@ -114,14 +181,16 @@ export function FilterableDataPage({
                   </div>
                 ))}
 
-                <div className="p-2 pt-0 border-t border-border">
-                  <RegularBtn
-                    text="Apply Filters"
-                    variant="default"
-                    className="w-full"
-                    onClick={handleApplyFilters}
-                  />
-                </div>
+                {onApplyFilters ? (
+                  <div className="p-2 pt-0 border-t border-border">
+                    <RegularBtn
+                      text="Apply Filters"
+                      variant="default"
+                      className="w-full"
+                      onClick={handleApplyFilters}
+                    />
+                  </div>
+                ) : null}
               </DropdownMenuContent>
             </DropdownMenu>
           )}

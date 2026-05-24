@@ -29,19 +29,10 @@ import {
   type AdminHomeAdvertsListParams,
   type AdminDocumentsListParams,
   type AdminEmailLogsListParams,
+  type AdminContentListParams,
 } from '@/lib/utils/adminDashboardSearchParams';
+import { buildAdminListQuery } from '@/lib/admin/buildListQuery';
 import { callServerApi } from '@/lib/services/serverApi';
-import { ADMIN_DASHBOARD_LIST_PAGE_SIZE } from '@/lib/constants/pagination';
-
-/** Ensures API `limit` is a positive integer string (backend: `^[0-9]+$`). */
-function limitQueryValue(pageSize: unknown): string {
-  const n =
-    typeof pageSize === 'number' && Number.isFinite(pageSize)
-      ? Math.floor(pageSize)
-      : parseInt(String(pageSize ?? '').trim(), 10);
-  const safe = Number.isFinite(n) && n > 0 ? n : ADMIN_DASHBOARD_LIST_PAGE_SIZE;
-  return String(safe);
-}
 
 export type AdminListPayload<T> = {
   items: T[];
@@ -49,27 +40,16 @@ export type AdminListPayload<T> = {
   listError: string | null;
 };
 
-function standardQueryParams(p: AdminStandardListParams, sort: string): URLSearchParams {
-  const params = new URLSearchParams();
-  params.set('page', String(p.page));
-  params.set('limit', limitQueryValue(p.pageSize));
-  params.set('sort', sort);
-  if (p.search.trim()) params.set('search', p.search.trim());
-  if (p.status && p.status !== 'all') params.set('status', p.status);
-  return params;
-}
-
-function musicSortParam(sortKey: string): string {
-  if (sortKey === 'downloads') return '-downloads';
-  if (sortKey === 'plays') return '-plays';
-  return '-createdAt';
+function toContentParams(p: AdminStandardListParams): AdminContentListParams {
+  return { ...p, category: 'all', artist: 'all', vendor: 'all' };
 }
 
 export async function serverFetchAdminMusicList(
-  p: AdminStandardListParams,
+  p: AdminStandardListParams | AdminContentListParams,
   sortKey: string
 ): Promise<AdminListPayload<ArtistMusicListItem>> {
-  const params = standardQueryParams(p, musicSortParam(sortKey));
+  const content = 'category' in p ? p : toContentParams(p);
+  const params = buildAdminListQuery('music', content, { sortKey });
   const res = await callServerApi('ADMIN_MUSIC_LIST', {
     query: `?${params.toString()}` as `?${string}`,
   });
@@ -86,7 +66,7 @@ export async function serverFetchAdminMusicList(
 export async function serverFetchAdminVideosList(
   p: AdminStandardListParams
 ): Promise<AdminListPayload<ArtistVideoListItem>> {
-  const params = standardQueryParams(p, '-createdAt');
+  const params = buildAdminListQuery('content', toContentParams(p), { sort: '-createdAt' });
   const res = await callServerApi('ADMIN_VIDEOS_LIST', {
     query: `?${params.toString()}` as `?${string}`,
   });
@@ -103,7 +83,7 @@ export async function serverFetchAdminVideosList(
 export async function serverFetchAdminNewsList(
   p: AdminStandardListParams
 ): Promise<AdminListPayload<PublicNewsListItem>> {
-  const params = standardQueryParams(p, '-createdAt');
+  const params = buildAdminListQuery('content', toContentParams(p), { sort: '-createdAt' });
   const res = await callServerApi('ADMIN_NEWS_LIST', {
     query: `?${params.toString()}` as `?${string}`,
   });
@@ -120,7 +100,7 @@ export async function serverFetchAdminNewsList(
 export async function serverFetchAdminPollsList(
   p: AdminStandardListParams
 ): Promise<AdminListPayload<PollListItem>> {
-  const params = standardQueryParams(p, '-createdAt');
+  const params = buildAdminListQuery('standard', p, { sort: '-createdAt' });
   const res = await callServerApi('ADMIN_POLLS_LIST', {
     query: `?${params.toString()}` as `?${string}`,
   });
@@ -137,7 +117,7 @@ export async function serverFetchAdminPollsList(
 export async function serverFetchAdminAlbumsList(
   p: AdminStandardListParams
 ): Promise<AdminListPayload<AlbumListItem>> {
-  const params = standardQueryParams(p, '-createdAt');
+  const params = buildAdminListQuery('content', toContentParams(p), { sort: '-createdAt' });
   const res = await callServerApi('ADMIN_ALBUMS_LIST', {
     query: `?${params.toString()}` as `?${string}`,
   });
@@ -154,7 +134,7 @@ export async function serverFetchAdminAlbumsList(
 export async function serverFetchAdminDevotionalsList(
   p: AdminStandardListParams
 ): Promise<AdminListPayload<DevotionalListItem>> {
-  const params = standardQueryParams(p, '-createdAt');
+  const params = buildAdminListQuery('content', toContentParams(p), { sort: '-createdAt' });
   const res = await callServerApi('ADMIN_DEVOTIONALS_LIST', {
     query: `?${params.toString()}` as `?${string}`,
   });
@@ -171,7 +151,7 @@ export async function serverFetchAdminDevotionalsList(
 export async function serverFetchAdminGospelVersesList(
   p: AdminStandardListParams
 ): Promise<AdminListPayload<IGospelVerse>> {
-  const params = standardQueryParams(p, '-createdAt');
+  const params = buildAdminListQuery('standard', p, { sort: '-createdAt' });
   const res = await callServerApi('ADMIN_GOSPEL_VERSES_LIST', {
     query: `?${params.toString()}` as `?${string}`,
   });
@@ -188,7 +168,7 @@ export async function serverFetchAdminGospelVersesList(
 export async function serverFetchAdminResourcesList(
   p: AdminStandardListParams
 ): Promise<AdminListPayload<ResourceListItem>> {
-  const params = standardQueryParams(p, '-createdAt');
+  const params = buildAdminListQuery('content', toContentParams(p), { sort: '-createdAt' });
   const res = await callServerApi('ADMIN_RESOURCES_LIST', {
     query: `?${params.toString()}` as `?${string}`,
   });
@@ -205,7 +185,7 @@ export async function serverFetchAdminResourcesList(
 export async function serverFetchAdminTestimoniesList(
   p: AdminStandardListParams
 ): Promise<AdminListPayload<TestimonyListItem>> {
-  const params = standardQueryParams(p, '-createdAt');
+  const params = buildAdminListQuery('content', toContentParams(p), { sort: '-createdAt' });
   const res = await callServerApi('ADMIN_TESTIMONIES_LIST', {
     query: `?${params.toString()}` as `?${string}`,
   });
@@ -222,7 +202,7 @@ export async function serverFetchAdminTestimoniesList(
 export async function serverFetchAdminPrayerRequestsList(
   p: AdminStandardListParams
 ): Promise<AdminListPayload<PrayerRequestListItem>> {
-  const params = standardQueryParams(p, '-createdAt');
+  const params = buildAdminListQuery('content', toContentParams(p), { sort: '-createdAt' });
   const res = await callServerApi('ADMIN_PRAYER_REQUESTS_LIST', {
     query: `?${params.toString()}` as `?${string}`,
   });
@@ -239,7 +219,7 @@ export async function serverFetchAdminPrayerRequestsList(
 export async function serverFetchAdminAskAPastorList(
   p: AdminStandardListParams
 ): Promise<AdminListPayload<QuestionListItem>> {
-  const params = standardQueryParams(p, '-createdAt');
+  const params = buildAdminListQuery('content', toContentParams(p), { sort: '-createdAt' });
   const res = await callServerApi('ADMIN_ASK_PASTOR_LIST', {
     query: `?${params.toString()}` as `?${string}`,
   });
@@ -256,11 +236,7 @@ export async function serverFetchAdminAskAPastorList(
 export async function serverFetchAdminContactSubmissionsList(
   p: AdminStandardListParams
 ): Promise<AdminListPayload<ContactSubmission>> {
-  const params = new URLSearchParams();
-  params.set('page', String(p.page));
-  params.set('limit', limitQueryValue(p.pageSize));
-  params.set('sort', '-createdAt');
-  if (p.search.trim()) params.set('search', p.search.trim());
+  const params = buildAdminListQuery('contactSubmissions', p, { sort: '-createdAt' });
   const res = await callServerApi('ADMIN_CONTACT_SUBMISSIONS_LIST', {
     query: `?${params.toString()}` as `?${string}`,
   });
@@ -277,11 +253,7 @@ export async function serverFetchAdminContactSubmissionsList(
 export async function serverFetchAdminDocumentsList(
   p: AdminDocumentsListParams
 ): Promise<AdminListPayload<Record<string, unknown>>> {
-  const params = new URLSearchParams();
-  params.set('page', String(p.page));
-  params.set('limit', limitQueryValue(p.pageSize));
-  params.set('sort', '-createdAt');
-  if (p.status && p.status !== 'all') params.set('status', p.status);
+  const params = buildAdminListQuery('documents', p, { sort: '-createdAt' });
   const res = await callServerApi('ADMIN_DOCUMENTS_LIST', {
     query: `?${params.toString()}` as `?${string}`,
   });
@@ -298,11 +270,7 @@ export async function serverFetchAdminDocumentsList(
 export async function serverFetchAdminEmailLogsList(
   p: AdminEmailLogsListParams
 ): Promise<AdminListPayload<IEmailLog>> {
-  const params = new URLSearchParams();
-  if (p.filterStatus !== 'all') params.set('status', p.filterStatus);
-  params.set('page', String(p.page));
-  params.set('limit', limitQueryValue(p.pageSize));
-  params.set('sort', '-createdAt');
+  const params = buildAdminListQuery('emailLogs', p, { sort: '-createdAt' });
   const res = await callServerApi('ADMIN_EMAIL_LOGS_LIST', {
     query: `?${params.toString()}` as `?${string}`,
   });
@@ -319,12 +287,7 @@ export async function serverFetchAdminEmailLogsList(
 export async function serverFetchAdminContentCategoriesList(
   p: AdminCategoriesListParams
 ): Promise<AdminListPayload<IContentCategoryItem>> {
-  const params = new URLSearchParams();
-  params.set('page', String(p.page));
-  params.set('limit', limitQueryValue(p.pageSize));
-  params.set('sort', 'displayOrder');
-  if (p.search.trim()) params.set('search', p.search.trim());
-  if (p.scope && p.scope !== 'all') params.set('scope', p.scope);
+  const params = buildAdminListQuery('categories', p, { sort: 'displayOrder' });
   const res = await callServerApi('ADMIN_CONTENT_CATEGORIES_LIST', {
     query: `?${params.toString()}` as `?${string}`,
   });
@@ -341,11 +304,7 @@ export async function serverFetchAdminContentCategoriesList(
 export async function serverFetchAdminHomeAdvertsList(
   p: AdminHomeAdvertsListParams
 ): Promise<AdminListPayload<IHomeAdvertItem>> {
-  const params = new URLSearchParams();
-  params.set('page', String(p.page));
-  params.set('limit', limitQueryValue(p.pageSize));
-  params.set('sort', 'displayOrder');
-  if (p.slot && p.slot !== 'all') params.set('slot', p.slot);
+  const params = buildAdminListQuery('homeAdverts', p, { sort: 'displayOrder' });
   const res = await callServerApi('ADMIN_HOME_ADVERTS_LIST', {
     query: `?${params.toString()}` as `?${string}`,
   });
@@ -362,11 +321,7 @@ export async function serverFetchAdminHomeAdvertsList(
 export async function serverFetchAdminArtistsList(
   p: AdminStandardListParams
 ): Promise<AdminListPayload<ArtistListItem>> {
-  const params = new URLSearchParams();
-  params.set('page', String(p.page));
-  params.set('limit', limitQueryValue(p.pageSize));
-  params.set('sort', '-createdAt');
-  if (p.search.trim()) params.set('search', p.search.trim());
+  const params = buildAdminListQuery('artists', p, { sort: '-createdAt' });
   const res = await callServerApi('ADMIN_ARTISTS_LIST', {
     query: `?${params.toString()}` as `?${string}`,
   });
@@ -383,11 +338,7 @@ export async function serverFetchAdminArtistsList(
 export async function serverFetchAdminPastorsList(
   p: AdminStandardListParams
 ): Promise<AdminListPayload<PastorListItem>> {
-  const params = new URLSearchParams();
-  params.set('page', String(p.page));
-  params.set('limit', limitQueryValue(p.pageSize));
-  params.set('sort', '-createdAt');
-  if (p.search.trim()) params.set('search', p.search.trim());
+  const params = buildAdminListQuery('pastors', p, { sort: '-createdAt' });
   const res = await callServerApi('ADMIN_PASTORS_LIST', {
     query: `?${params.toString()}` as `?${string}`,
   });
@@ -406,7 +357,7 @@ const marketplaceSort = '-createdAt';
 export async function serverFetchAdminVendorsList(
   p: AdminStandardListParams
 ): Promise<AdminListPayload<IMarketplaceVendor>> {
-  const params = standardQueryParams(p, marketplaceSort);
+  const params = buildAdminListQuery('standard', p, { sort: marketplaceSort });
   const res = await callServerApi('ADMIN_VENDORS_LIST', {
     query: `?${params.toString()}` as `?${string}`,
   });
@@ -423,7 +374,9 @@ export async function serverFetchAdminVendorsList(
 export async function serverFetchAdminProductsList(
   p: AdminStandardListParams
 ): Promise<AdminListPayload<IMarketplaceProduct>> {
-  const params = standardQueryParams(p, marketplaceSort);
+  const params = buildAdminListQuery('marketplaceWithVendor', toContentParams(p), {
+    sort: marketplaceSort,
+  });
   const res = await callServerApi('ADMIN_PRODUCTS_LIST', {
     query: `?${params.toString()}` as `?${string}`,
   });
@@ -440,7 +393,9 @@ export async function serverFetchAdminProductsList(
 export async function serverFetchAdminOrdersList(
   p: AdminStandardListParams
 ): Promise<AdminListPayload<PopulatedMarketplaceOrder>> {
-  const params = standardQueryParams(p, marketplaceSort);
+  const params = buildAdminListQuery('marketplaceWithVendor', toContentParams(p), {
+    sort: marketplaceSort,
+  });
   const res = await callServerApi('ADMIN_ORDERS_LIST', {
     query: `?${params.toString()}` as `?${string}`,
   });

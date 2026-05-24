@@ -1,5 +1,7 @@
 import { ADMIN_DASHBOARD_LIST_PAGE_SIZE } from '@/lib/constants/pagination';
 
+export const ADMIN_FILTER_ALL = 'all';
+
 export function firstSearchParam(value: string | string[] | undefined): string | undefined {
   if (value === undefined) return undefined;
   return Array.isArray(value) ? value[0] : value;
@@ -37,7 +39,39 @@ export function parseAdminStandardListParams(
     page: parsePositiveInt(firstSearchParam(raw.page), 1),
     pageSize: parsePositiveInt(firstListPageSizeParam(raw), ADMIN_DASHBOARD_LIST_PAGE_SIZE),
     search: firstSearchParam(raw.search) ?? '',
-    status: firstSearchParam(raw.status) ?? 'all',
+    status: firstSearchParam(raw.status) ?? ADMIN_FILTER_ALL,
+  };
+}
+
+/** Standard list params plus optional category, artist, and vendor filters. */
+export interface AdminContentListParams extends AdminStandardListParams {
+  category: string;
+  artist: string;
+  vendor: string;
+}
+
+export function parseAdminContentListParams(
+  raw: Record<string, string | string[] | undefined>
+): AdminContentListParams {
+  const base = parseAdminStandardListParams(raw);
+  return {
+    ...base,
+    category: firstSearchParam(raw.category) ?? ADMIN_FILTER_ALL,
+    artist: firstSearchParam(raw.artist) ?? ADMIN_FILTER_ALL,
+    vendor: firstSearchParam(raw.vendor) ?? ADMIN_FILTER_ALL,
+  };
+}
+
+export interface AdminMusicListParams extends AdminContentListParams {
+  sort: string;
+}
+
+export function parseAdminMusicListParams(
+  raw: Record<string, string | string[] | undefined>
+): AdminMusicListParams {
+  return {
+    ...parseAdminContentListParams(raw),
+    sort: parseAdminMusicSort(raw),
   };
 }
 
@@ -53,10 +87,7 @@ export function parseTabParam(
   return firstSearchParam(raw[key]) ?? fallback;
 }
 
-export interface AdminCategoriesListParams {
-  page: number;
-  pageSize: number;
-  search: string;
+export interface AdminCategoriesListParams extends AdminStandardListParams {
   scope: string;
 }
 
@@ -66,7 +97,7 @@ export function parseAdminCategoriesListParams(
   const base = parseAdminStandardListParams(raw);
   return {
     ...base,
-    scope: firstSearchParam(raw.scope) ?? 'all',
+    scope: firstSearchParam(raw.scope) ?? ADMIN_FILTER_ALL,
   };
 }
 
@@ -82,7 +113,7 @@ export function parseAdminHomeAdvertsListParams(
   return {
     page: parsePositiveInt(firstSearchParam(raw.page), 1),
     pageSize: parsePositiveInt(firstListPageSizeParam(raw), ADMIN_DASHBOARD_LIST_PAGE_SIZE),
-    slot: firstSearchParam(raw.slot) ?? 'all',
+    slot: firstSearchParam(raw.slot) ?? ADMIN_FILTER_ALL,
   };
 }
 
@@ -90,6 +121,9 @@ export interface AdminDocumentsListParams {
   page: number;
   pageSize: number;
   status: string;
+  search: string;
+  entityType: string;
+  intent: string;
 }
 
 export function parseAdminDocumentsListParams(
@@ -98,7 +132,10 @@ export function parseAdminDocumentsListParams(
   return {
     page: parsePositiveInt(firstSearchParam(raw.page), 1),
     pageSize: parsePositiveInt(firstListPageSizeParam(raw), ADMIN_DASHBOARD_LIST_PAGE_SIZE),
-    status: firstSearchParam(raw.status) ?? 'all',
+    status: firstSearchParam(raw.status) ?? ADMIN_FILTER_ALL,
+    search: firstSearchParam(raw.search) ?? '',
+    entityType: firstSearchParam(raw.entityType) ?? ADMIN_FILTER_ALL,
+    intent: firstSearchParam(raw.intent) ?? ADMIN_FILTER_ALL,
   };
 }
 
@@ -106,6 +143,11 @@ export interface AdminEmailLogsListParams {
   page: number;
   pageSize: number;
   filterStatus: string;
+  search: string;
+  type: string;
+  tab: string;
+  startDate: string;
+  endDate: string;
 }
 
 export function parseAdminEmailLogsListParams(
@@ -114,6 +156,11 @@ export function parseAdminEmailLogsListParams(
   return {
     page: parsePositiveInt(firstSearchParam(raw.page), 1),
     pageSize: parsePositiveInt(firstListPageSizeParam(raw), ADMIN_DASHBOARD_LIST_PAGE_SIZE),
-    filterStatus: firstSearchParam(raw.status) ?? 'all',
+    filterStatus: firstSearchParam(raw.status) ?? ADMIN_FILTER_ALL,
+    search: firstSearchParam(raw.search) ?? '',
+    type: firstSearchParam(raw.type) ?? ADMIN_FILTER_ALL,
+    tab: firstSearchParam(raw.tab) ?? ADMIN_FILTER_ALL,
+    startDate: firstSearchParam(raw.startDate) ?? '',
+    endDate: firstSearchParam(raw.endDate) ?? '',
   };
 }
