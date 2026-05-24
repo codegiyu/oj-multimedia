@@ -9,6 +9,7 @@ import {
   mapPublicMusicToDetailItem,
 } from '@/lib/utils/publicApiMappers';
 import type { MusicItemWithArtist } from '@/lib/utils/music';
+import { buildDetailShareMetadata } from '@/lib/utils/metadata';
 
 interface MusicDetailPageProps {
   params: Promise<{ id: string }>;
@@ -38,12 +39,19 @@ export async function generateMetadata({ params }: MusicDetailPageProps): Promis
   const data = res.data;
   const musicItem = mapPublicMusicToDetailItem(data.music);
   const artistName = musicItem.artist?.name ?? 'Artist';
-  return {
-    title: `${musicItem.title} by ${artistName} - Music`,
-    description:
-      musicItem.description ||
-      `Listen to ${musicItem.title} by ${artistName}. ${musicItem.plays || ''} plays.`,
-  };
+  const title = `${musicItem.title} by ${artistName} - Music`;
+  const description =
+    musicItem.description ||
+    `Listen to ${musicItem.title} by ${artistName}. ${musicItem.plays || ''} plays.`;
+
+  return buildDetailShareMetadata({
+    title,
+    description,
+    path: `/music/${id}`,
+    image: musicItem.image || musicItem.cover,
+    imageAlt: musicItem.title,
+    type: 'music.song',
+  });
 }
 
 export default async function MusicDetailPage({ params }: MusicDetailPageProps) {
