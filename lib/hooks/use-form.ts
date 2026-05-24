@@ -93,6 +93,15 @@ export const useForm = <TSchema extends ZodType<any>>({
   const firstButtonFieldRef = useRef<HTMLButtonElement>(null);
   const timeoutRef = useRef<NodeJS.Timeout>(null);
 
+  const clearFieldErrors = () => {
+    setFormErrors(() => {
+      const initialErrors: FormErrors = {};
+      for (const key in defaultFormValues) initialErrors[key] = [];
+
+      return initialErrors;
+    });
+  };
+
   const validateForm = (obj?: Partial<FormValues>) => {
     const result = formSchema.safeParse({ ...formValues, ...obj });
     const errors = result.success ? {} : z.flattenError(result.error).fieldErrors;
@@ -187,7 +196,9 @@ export const useForm = <TSchema extends ZodType<any>>({
     const formValid = formSchema.safeParse(formValues);
 
     if (!formValid.success) {
+      setFormErrors(z.flattenError(formValid.error).fieldErrors as FormErrors);
       setErrorsVisible(true);
+
       return;
     }
 
@@ -195,16 +206,19 @@ export const useForm = <TSchema extends ZodType<any>>({
     const wasSubmittedSuccessfully = await onSubmit(formValues);
     setLoading(false);
     setSubmitted(wasSubmittedSuccessfully);
-    setErrorsVisible(true);
+
+    if (wasSubmittedSuccessfully) {
+      setErrorsVisible(false);
+      clearFieldErrors();
+    } else {
+      setErrorsVisible(true);
+    }
   };
 
   const resetForm = () => {
     setFormValues(defaultFormValues);
-    setFormErrors(() => {
-      const initialErrors: FormErrors = {};
-      for (const key in defaultFormValues) initialErrors[key] = [];
-      return initialErrors;
-    });
+    clearFieldErrors();
+    setErrorsVisible(false);
     setSubmitted(false);
     firstFieldRef.current?.focus();
   };

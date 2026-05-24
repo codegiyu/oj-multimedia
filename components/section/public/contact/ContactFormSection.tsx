@@ -36,6 +36,7 @@ export const ContactFormSection = () => {
     handleSubmit,
     isValid,
     validateForm,
+    resetForm,
   } = useForm<typeof contactSchema>({
     formSchema: contactSchema,
     defaultFormValues: {
@@ -63,6 +64,8 @@ export const ContactFormSection = () => {
 
       const message = data?.message ?? "Message sent successfully! We'll get back to you soon.";
       toast.success(message);
+      resetForm();
+
       return true;
     },
   });
