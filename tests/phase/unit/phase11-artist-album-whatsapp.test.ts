@@ -32,7 +32,7 @@ describe('phase 11 artist album WhatsApp requests', () => {
 
     if (file.endsWith('ManageAlbumWhatsAppModal.tsx')) {
       expect(source).toContain('Proceed on WhatsApp');
-      expect(source).toContain('buildAlbumRequestWhatsAppHref');
+      expect(source).toContain('buildWhatsAppHref');
     }
 
     if (file.endsWith('AlbumManageButton.tsx')) {

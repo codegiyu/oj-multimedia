@@ -7,20 +7,13 @@ import { DashboardPageHeader } from '@/components/layout/user-dashboard';
 import { Card } from '@/components/ui/card';
 import { RegularBtn } from '@/components/atoms/RegularBtn';
 import { useInitSiteSettingsStore } from '@/lib/store/useSiteSettingsStore';
+import { buildWhatsAppHref } from '@/lib/services/whatsappMessaging.service';
 
 export interface ArtistPortalUploadPageClientProps {
   initialLoadError: string | null;
 }
 
-function buildWhatsAppHref(raw: string | undefined): string | null {
-  if (!raw?.trim()) return null;
-  const digits = raw.replace(/\D/g, '');
-  if (!digits.length) return null;
-  const text = encodeURIComponent(
-    'Hi, I would like to submit music/video for publishing on OJ Multimedia.'
-  );
-  return `https://wa.me/${digits}?text=${text}`;
-}
+const ARTIST_CONTENT_SUBMIT_PAYLOAD = { type: 'artist_content_submit' as const };
 
 export function ArtistPortalUploadPageClient({
   initialLoadError,
@@ -33,7 +26,7 @@ export function ArtistPortalUploadPageClient({
   }, [fetchSettings]);
 
   const waHref = useMemo(
-    () => buildWhatsAppHref(settings?.contactInfo?.whatsapp),
+    () => buildWhatsAppHref(settings?.contactInfo?.whatsapp, ARTIST_CONTENT_SUBMIT_PAYLOAD),
     [settings?.contactInfo?.whatsapp]
   );
 

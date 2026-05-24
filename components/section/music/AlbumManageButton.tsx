@@ -5,7 +5,7 @@ import { Settings2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { callApi } from '@/lib/services/callApi';
 import { ManageAlbumWhatsAppModal } from '@/components/section/shared/ManageAlbumWhatsAppModal';
-import type { AlbumWhatsAppRequestType } from '@/lib/services/buildAlbumRequestWhatsApp';
+import type { AlbumWhatsAppRequestType } from '@/lib/services/whatsappMessaging.service';
 
 interface AlbumManageButtonProps {
   albumArtistId: string;

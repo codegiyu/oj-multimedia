@@ -15,10 +15,9 @@ import { Button } from '@/components/ui/button';
 import { RegularBtn } from '@/components/atoms/RegularBtn';
 import { useInitSiteSettingsStore } from '@/lib/store/useSiteSettingsStore';
 import {
-  buildPaidDownloadWhatsAppHref,
-  buildPaidDownloadWhatsAppMessage,
+  buildWhatsAppHref,
   type PaidDownloadContentType,
-} from '@/lib/services/buildPaidDownloadWhatsApp';
+} from '@/lib/services/whatsappMessaging.service';
 import { formatPrice } from '@/lib/utils/marketplace';
 
 export interface PaidDownloadModalProps {
@@ -49,21 +48,17 @@ export function PaidDownloadModal({
     void fetchSettings('contactInfo', { force: false });
   }, [open, fetchSettings]);
 
-  const message = useMemo(
-    () =>
-      buildPaidDownloadWhatsAppMessage({
-        contentType,
-        title,
-        creatorName,
-        price,
-        pageUrl,
-      }),
+  const downloadPayload = useMemo(
+    () => ({
+      type: 'paid_download' as const,
+      data: { contentType, title, creatorName, price, pageUrl },
+    }),
     [contentType, title, creatorName, price, pageUrl]
   );
 
   const waHref = useMemo(
-    () => buildPaidDownloadWhatsAppHref(settings?.contactInfo?.whatsapp, message),
-    [settings?.contactInfo?.whatsapp, message]
+    () => buildWhatsAppHref(settings?.contactInfo?.whatsapp, downloadPayload),
+    [settings?.contactInfo?.whatsapp, downloadPayload]
   );
 
   return (

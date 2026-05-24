@@ -18,10 +18,10 @@ import { RegularSelect } from '@/components/atoms/RegularSelect';
 import type { SelectOption } from '@/lib/types/general';
 import { useInitSiteSettingsStore } from '@/lib/store/useSiteSettingsStore';
 import {
-  buildAlbumRequestWhatsAppHref,
+  buildWhatsAppHref,
   resolveAlbumPublicPageUrl,
   type AlbumWhatsAppRequestType,
-} from '@/lib/services/buildAlbumRequestWhatsApp';
+} from '@/lib/services/whatsappMessaging.service';
 
 const REQUEST_OPTIONS: SelectOption[] = [
   { text: 'Create a new album', value: 'create' },
@@ -65,12 +65,15 @@ export function ManageAlbumWhatsAppModal({
   const waHref = useMemo(() => {
     const albumPageUrl = album ? resolveAlbumPublicPageUrl(album) : undefined;
 
-    return buildAlbumRequestWhatsAppHref(settings?.contactInfo?.whatsapp, {
-      requestType,
-      artistName,
-      albumTitle: album?.title,
-      albumId: album?._id,
-      albumPageUrl,
+    return buildWhatsAppHref(settings?.contactInfo?.whatsapp, {
+      type: 'album_request',
+      data: {
+        requestType,
+        artistName,
+        albumTitle: album?.title,
+        albumId: album?._id,
+        albumPageUrl,
+      },
     });
   }, [settings?.contactInfo?.whatsapp, requestType, artistName, album]);
 
