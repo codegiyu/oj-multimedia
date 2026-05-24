@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { buildDetailShareMetadata, resolveShareImageUrl } from '@/lib/utils/metadata';
 import { SEO_DETAILS } from '@/lib/constants/texts';
+import { URL } from 'url';
 
 describe('resolveShareImageUrl', () => {
   it('returns default SEO image when cover is missing or blank', () => {
@@ -74,5 +75,31 @@ describe('buildDetailShareMetadata', () => {
       { url: SEO_DETAILS.image, width: 1200, height: 630, alt: 'Track - Music' },
     ]);
     expect(meta.twitter?.images).toEqual([SEO_DETAILS.image]);
+  });
+
+  it('includes article openGraph fields when provided', () => {
+    const meta = buildDetailShareMetadata({
+      title: 'Story - News',
+      description: 'Excerpt',
+      path: '/news/story/abc',
+      image: '/news/cover.jpg',
+      type: 'article',
+      publishedTime: '2026-05-01',
+      authors: ['Editor'],
+    });
+
+    type OpenGraph = {
+      type: string;
+      publishedTime?: string;
+      authors?: string[];
+      images?: { url: string }[];
+    };
+
+    expect((meta.openGraph as OpenGraph)?.type).toBe('article');
+    expect((meta.openGraph as OpenGraph)?.publishedTime).toBe('2026-05-01');
+    expect((meta.openGraph as OpenGraph)?.authors).toEqual(['Editor']);
+    expect((meta.openGraph as OpenGraph)?.images?.[0]?.url).toBe(
+      new URL('/news/cover.jpg', SEO_DETAILS.metadataBase).toString()
+    );
   });
 });

@@ -9,6 +9,7 @@ import {
   mapPublicVideoToDetailItem,
 } from '@/lib/utils/publicApiMappers';
 import type { VideoItemWithCreator } from '@/lib/utils/videos';
+import { buildDetailShareMetadata } from '@/lib/utils/metadata';
 
 interface VideoDetailPageProps {
   params: Promise<{ id: string }>;
@@ -38,12 +39,18 @@ export async function generateMetadata({ params }: VideoDetailPageProps): Promis
   const data = res.data;
   const videoItem = mapPublicVideoToDetailItem(data.video);
   const creatorName = videoItem.creator?.name ?? 'Creator';
-  return {
-    title: `${videoItem.title} by ${creatorName} - Videos`,
-    description:
-      videoItem.description ||
-      `Watch ${videoItem.title} by ${creatorName}. ${videoItem.views || ''} views.`,
-  };
+  const title = `${videoItem.title} by ${creatorName} - Videos`;
+  const description =
+    videoItem.description ||
+    `Watch ${videoItem.title} by ${creatorName}. ${videoItem.views || ''} views.`;
+
+  return buildDetailShareMetadata({
+    title,
+    description,
+    path: `/videos/${id}`,
+    image: videoItem.thumbnail,
+    imageAlt: videoItem.title,
+  });
 }
 
 export default async function VideoDetailPage({ params }: VideoDetailPageProps) {

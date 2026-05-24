@@ -5,6 +5,7 @@ import { NewsDetailPageClient } from '@/components/section/news/NewsDetailPageCl
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import { mapPublicNewsToDetailItem } from '@/lib/utils/publicApiMappers';
 import type { NewsItem } from '@/lib/constants/news';
+import { buildDetailShareMetadata } from '@/lib/utils/metadata';
 
 interface NewsStoryPageProps {
   params: Promise<{ id: string }>;
@@ -32,29 +33,17 @@ export async function generateMetadata({ params }: NewsStoryPageProps): Promise<
   const newsItem = mapPublicNewsToDetailItem(data.article);
   const title = `${newsItem.title} - News & Lifestyle Updates`;
   const description = newsItem.excerpt || newsItem.title;
-  const imageUrl = newsItem.image?.startsWith('/')
-    ? `${process.env.NEXT_PUBLIC_SITE_URL || ''}${newsItem.image}`
-    : newsItem.image;
-  return {
+
+  return buildDetailShareMetadata({
     title,
     description,
-    openGraph: {
-      title,
-      description,
-      type: 'article',
-      publishedTime: newsItem.date,
-      authors: newsItem.author ? [newsItem.author] : undefined,
-      images: imageUrl
-        ? [{ url: imageUrl, width: 1200, height: 630, alt: newsItem.title }]
-        : undefined,
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title,
-      description,
-      images: imageUrl ? [imageUrl] : undefined,
-    },
-  };
+    path: `/news/story/${id}`,
+    image: newsItem.image,
+    imageAlt: newsItem.title,
+    type: 'article',
+    publishedTime: newsItem.date,
+    authors: newsItem.author ? [newsItem.author] : undefined,
+  });
 }
 
 export default async function NewsStoryPage({ params }: NewsStoryPageProps) {

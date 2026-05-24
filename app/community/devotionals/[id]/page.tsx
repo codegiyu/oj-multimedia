@@ -4,6 +4,7 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { DevotionalDetailPageClient } from '@/components/section/community/devotionals/DevotionalDetailPageClient';
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import { mapToDailyDevotional } from '@/lib/utils/communityApiMappers';
+import { buildDetailShareMetadata } from '@/lib/utils/metadata';
 
 interface DevotionalDetailPageProps {
   params: Promise<{ id: string }>;
@@ -29,12 +30,23 @@ export async function generateMetadata({ params }: DevotionalDetailPageProps): P
   }
   const data = res.data;
   const d = data.devotional as unknown as Record<string, unknown>;
-  const title = String(d?.title ?? 'Devotional');
-  const excerpt = d?.excerpt ?? d?.description ?? title;
-  return {
-    title: `${title} - Devotionals`,
-    description: String(excerpt),
-  };
+  const title = `${String(d?.title ?? 'Devotional')} - Devotionals`;
+  const description = String(d?.excerpt ?? d?.description ?? d?.title ?? 'Devotional');
+  const coverImage =
+    typeof d?.coverImage === 'string'
+      ? d.coverImage
+      : typeof d?.image === 'string'
+        ? d.image
+        : undefined;
+
+  return buildDetailShareMetadata({
+    title,
+    description,
+    path: `/community/devotionals/${id}`,
+    image: coverImage,
+    imageAlt: String(d?.title ?? 'Devotional'),
+    type: 'article',
+  });
 }
 
 export default async function DevotionalDetailPage({ params }: DevotionalDetailPageProps) {

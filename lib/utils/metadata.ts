@@ -9,6 +9,8 @@ export type DetailShareMetadataInput = {
   image?: string | null;
   imageAlt?: string;
   type?: 'website' | 'article' | 'music.song';
+  publishedTime?: string;
+  authors?: string[];
 };
 
 /** Absolute URL for Open Graph / Twitter images (social crawlers require absolute URLs). */
@@ -55,6 +57,8 @@ export function buildDetailShareMetadata(input: DetailShareMetadataInput): Metad
       url: canonical,
       type: input.type ?? 'website',
       images: [{ url: imageUrl, width: 1200, height: 630, alt: imageAlt }],
+      ...(input.publishedTime && { publishedTime: input.publishedTime }),
+      ...(input.authors?.length && { authors: input.authors }),
     },
     twitter: {
       card: 'summary_large_image',

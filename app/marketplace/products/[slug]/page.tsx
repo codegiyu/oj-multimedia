@@ -4,6 +4,7 @@ import { ProductDetailClient } from '@/components/section/marketplace/ProductDet
 import { ProductDetailSkeleton } from '@/components/section/marketplace/ProductDetailSkeleton';
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import { MainLayout } from '@/components/layout/MainLayout';
+import { buildDetailShareMetadata } from '@/lib/utils/metadata';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -23,10 +24,17 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!product) {
     return { title: 'Product not found - Marketplace' };
   }
-  return {
-    title: `${product.name} - Marketplace`,
-    description: product.description ?? `Buy ${product.name} from our marketplace.`,
-  };
+
+  const title = `${product.name} by ${product.vendorName} - Marketplace`;
+  const description = product.description ?? `Buy ${product.name} from our marketplace.`;
+
+  return buildDetailShareMetadata({
+    title,
+    description,
+    path: `/marketplace/products/${slug}`,
+    image: product.images?.[0],
+    imageAlt: product.name,
+  });
 }
 
 export default async function ProductDetailPage({ params }: PageProps) {
