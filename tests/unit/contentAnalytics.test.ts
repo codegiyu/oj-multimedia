@@ -42,4 +42,20 @@ describe('sendContentAnalyticsEvent', () => {
       '/api/v1/public/analytics/content-event'
     );
   });
+
+  it('supports album view events', async () => {
+    const { sendContentAnalyticsEvent } = await import('@/lib/services/contentAnalytics');
+
+    sendContentAnalyticsEvent('album', 'greatest-hits', 'view', { force: true });
+
+    expect(requestMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          entityType: 'album',
+          entityIdOrSlug: 'greatest-hits',
+          event: 'view',
+        }),
+      })
+    );
+  });
 });

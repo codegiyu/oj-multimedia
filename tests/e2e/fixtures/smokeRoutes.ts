@@ -89,5 +89,6 @@ export const ACCOUNT_PROTECTED_ROUTES: string[] = [
   '/account',
   '/account/artist-portal',
   '/account/artist-portal/music',
+  '/account/artist-portal/albums',
   '/account/vendor',
 ];

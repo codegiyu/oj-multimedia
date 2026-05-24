@@ -14,6 +14,7 @@ Phases 4–7 (images, admin modals, backend, admin dashboard) are **done**. Rema
 | 9 | Admin music ↔ album linking (picker, table, drawer) | oj-multimedia (+ admin music album populate) |
 | 10 | Public music album surfacing (API shaping, detail breadcrumb, card label) | oj-multimedia + oj-backend |
 | 11 | Artist album requests via WhatsApp (modal, portal albums, manage on detail) | oj-multimedia |
+| 12 | Release & observability (E2E album flows, album view analytics) | oj-multimedia + oj-backend |
 
 ## Phase 8 — Public albums (done)
 
@@ -54,11 +55,13 @@ Phases 4–7 (images, admin modals, backend, admin dashboard) are **done**. Rema
 
 **Not building:** artist portal album CRUD, approval queue, or direct admin bypass.
 
-## Phase 12 — Release & observability (current)
+## Phase 12 — Release & observability (done)
 
-- E2E: `/music/albums`, album detail, search hit → detail
-- Smoke routes already include `/admin/dashboard/albums`
-- Optional: content analytics events for album view (if product wants parity with music)
+**Goal:** Ship album flows with automated coverage and view metrics parity with other public content.
+
+- E2E (`tests/e2e/album-routes.spec.ts`): albums list, missing detail → 404, list → detail when data exists, search `type=album` → detail when results exist
+- Smoke: `/music/albums` (public), `/admin/dashboard/albums` (admin), `/account/artist-portal/albums` (account protected)
+- Analytics: `album` entity on public content-event API; `sendContentAnalyticsEvent('album', …, 'view')` on album detail
 
 ## Risk register (carried forward)
 
