@@ -17,6 +17,7 @@ import { PUBLISHABLE_STATUS_FILTER_SELECT_OPTIONS } from '@/lib/constants/adminS
 import type { SelectOption } from '@/lib/types/general';
 import { loadAdminContentCategorySelectOptions } from '@/lib/utils/adminContentCategorySelect';
 import { useAdminListSearch } from '@/lib/hooks/useAdminListSearch';
+import { useAdminArtistFilterOptions } from '@/lib/hooks/useAdminArtistFilterOptions';
 
 export interface MusicPageClientProps {
   pageTitle: string;
@@ -42,7 +43,9 @@ export function MusicPageClient({
     'category',
     parseAsString.withDefault('all')
   );
+  const [filterArtist, setFilterArtist] = useQueryState('artist', parseAsString.withDefault('all'));
   const [sortKey, setSortKey] = useQueryState('sort', parseAsString.withDefault('newest'));
+  const artistOptions = useAdminArtistFilterOptions();
   const [categoryOptions, setCategoryOptions] = useState<SelectOption[]>([
     { text: 'All', value: 'all' },
   ]);
@@ -166,6 +169,15 @@ export function MusicPageClient({
             options: categoryOptions,
             onChange: v => {
               setFilterCategory(v);
+              setPage(1);
+            },
+          },
+          {
+            label: 'Artist',
+            value: filterArtist,
+            options: artistOptions,
+            onChange: v => {
+              setFilterArtist(v);
               setPage(1);
             },
           },

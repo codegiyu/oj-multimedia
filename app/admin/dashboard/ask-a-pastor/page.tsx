@@ -1,7 +1,7 @@
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { AskAPastorPageClient } from '@/components/section/admin/ask-a-pastor/AskAPastorPageClient';
 import { serverFetchAdminAskAPastorList } from '@/lib/services/adminDashboardServerData';
-import { parseAdminStandardListParams } from '@/lib/utils/adminDashboardSearchParams';
+import { parseAdminContentListParams } from '@/lib/utils/adminDashboardSearchParams';
 import { Metadata } from 'next';
 import { Suspense } from 'react';
 import { Loader2 } from 'lucide-react';
@@ -46,7 +46,7 @@ async function AdminAskAPastorPageServer({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const raw = await searchParams;
-  const listParams = parseAdminStandardListParams(raw);
+  const listParams = parseAdminContentListParams(raw);
   const { items, totalPages, listError } = await serverFetchAdminAskAPastorList(listParams);
 
   return (

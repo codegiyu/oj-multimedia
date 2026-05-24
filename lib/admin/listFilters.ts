@@ -15,7 +15,8 @@ export type AdminListResourceKey =
   | 'contactSubmissions'
   | 'artists'
   | 'pastors'
-  | 'marketplaceWithVendor';
+  | 'marketplaceWithVendor'
+  | 'marketplaceOrders';
 
 export type AdminListFilterField =
   | 'search'
@@ -31,7 +32,8 @@ export type AdminListFilterField =
   | 'type'
   | 'tab'
   | 'startDate'
-  | 'endDate';
+  | 'endDate'
+  | 'isActive';
 
 export const ADMIN_LIST_FILTER_FIELDS: Record<AdminListResourceKey, AdminListFilterField[]> = {
   standard: ['search', 'status', 'sort'],
@@ -39,12 +41,13 @@ export const ADMIN_LIST_FILTER_FIELDS: Record<AdminListResourceKey, AdminListFil
   music: ['search', 'status', 'sort', 'category', 'artist', 'vendor'],
   documents: ['search', 'status', 'sort', 'entityType', 'intent'],
   emailLogs: ['search', 'status', 'type', 'tab', 'startDate', 'endDate', 'sort'],
-  categories: ['search', 'scope', 'sort'],
-  homeAdverts: ['slot', 'sort'],
+  categories: ['search', 'scope', 'sort', 'isActive'],
+  homeAdverts: ['slot', 'search', 'sort'],
   contactSubmissions: ['search', 'sort'],
   artists: ['search', 'status', 'sort'],
   pastors: ['search', 'sort'],
-  marketplaceWithVendor: ['search', 'status', 'sort', 'vendor'],
+  marketplaceWithVendor: ['search', 'status', 'sort', 'vendor', 'category'],
+  marketplaceOrders: ['search', 'status', 'sort', 'vendor', 'startDate', 'endDate'],
 };
 
 export function adminListSupportsFilter(

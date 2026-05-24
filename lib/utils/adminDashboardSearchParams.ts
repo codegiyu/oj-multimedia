@@ -48,6 +48,9 @@ export interface AdminContentListParams extends AdminStandardListParams {
   category: string;
   artist: string;
   vendor: string;
+  type: string;
+  startDate: string;
+  endDate: string;
 }
 
 export function parseAdminContentListParams(
@@ -59,6 +62,9 @@ export function parseAdminContentListParams(
     category: firstSearchParam(raw.category) ?? ADMIN_FILTER_ALL,
     artist: firstSearchParam(raw.artist) ?? ADMIN_FILTER_ALL,
     vendor: firstSearchParam(raw.vendor) ?? ADMIN_FILTER_ALL,
+    type: firstSearchParam(raw.type) ?? ADMIN_FILTER_ALL,
+    startDate: firstSearchParam(raw.startDate) ?? '',
+    endDate: firstSearchParam(raw.endDate) ?? '',
   };
 }
 
@@ -89,6 +95,7 @@ export function parseTabParam(
 
 export interface AdminCategoriesListParams extends AdminStandardListParams {
   scope: string;
+  isActive: string;
 }
 
 export function parseAdminCategoriesListParams(
@@ -98,6 +105,7 @@ export function parseAdminCategoriesListParams(
   return {
     ...base,
     scope: firstSearchParam(raw.scope) ?? ADMIN_FILTER_ALL,
+    isActive: firstSearchParam(raw.isActive) ?? ADMIN_FILTER_ALL,
   };
 }
 
@@ -105,6 +113,7 @@ export interface AdminHomeAdvertsListParams {
   page: number;
   pageSize: number;
   slot: string;
+  search: string;
 }
 
 export function parseAdminHomeAdvertsListParams(
@@ -114,6 +123,7 @@ export function parseAdminHomeAdvertsListParams(
     page: parsePositiveInt(firstSearchParam(raw.page), 1),
     pageSize: parsePositiveInt(firstListPageSizeParam(raw), ADMIN_DASHBOARD_LIST_PAGE_SIZE),
     slot: firstSearchParam(raw.slot) ?? ADMIN_FILTER_ALL,
+    search: firstSearchParam(raw.search) ?? '',
   };
 }
 

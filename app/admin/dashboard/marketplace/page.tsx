@@ -11,7 +11,7 @@ import {
   serverFetchAdminVendorsList,
 } from '@/lib/services/adminDashboardServerData';
 import {
-  parseAdminStandardListParams,
+  parseAdminContentListParams,
   parseTabParam,
 } from '@/lib/utils/adminDashboardSearchParams';
 import { Metadata } from 'next';
@@ -62,7 +62,7 @@ async function AdminMarketplacePageServer({
 }) {
   const raw = await searchParams;
   const tab = parseTabParam(raw, 'tab', TAB_VENDORS);
-  const listParams = parseAdminStandardListParams(raw);
+  const listParams = parseAdminContentListParams(raw);
 
   let vendors: IMarketplaceVendor[] = [];
   let products: IMarketplaceProduct[] = [];

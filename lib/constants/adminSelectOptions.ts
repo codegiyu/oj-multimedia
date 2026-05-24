@@ -67,6 +67,27 @@ export const DOCUMENT_ENTITY_TYPE_FILTER_SELECT_OPTIONS: ReadonlyArray<SelectOpt
   { text: 'Artist', value: 'artist' },
 ];
 
+export const ARTIST_STATUS_FILTER_SELECT_OPTIONS: ReadonlyArray<SelectOption> = [
+  { text: 'All', value: 'all' },
+  { text: 'Active', value: 'active' },
+  { text: 'Inactive', value: 'inactive' },
+];
+
+export const CONTENT_CATEGORY_IS_ACTIVE_FILTER_SELECT_OPTIONS: ReadonlyArray<SelectOption> = [
+  { text: 'All', value: 'all' },
+  { text: 'Active', value: 'active' },
+  { text: 'Inactive', value: 'inactive' },
+];
+
+export const RESOURCE_TYPE_FILTER_SELECT_OPTIONS: ReadonlyArray<SelectOption> = [
+  { text: 'All types', value: 'all' },
+  { text: 'E-book', value: 'ebook' },
+  { text: 'Template', value: 'template' },
+  { text: 'Beat', value: 'beat' },
+  { text: 'Wallpaper', value: 'wallpaper' },
+  { text: 'Affiliate', value: 'affiliate' },
+];
+
 export const DOCUMENT_INTENT_FILTER_SELECT_OPTIONS: ReadonlyArray<SelectOption> = [
   { text: 'All intents', value: 'all' },
   { text: 'Avatar', value: 'avatar' },

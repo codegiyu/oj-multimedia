@@ -41,8 +41,28 @@ export type AdminListPayload<T> = {
   listError: string | null;
 };
 
-function toContentParams(p: AdminStandardListParams): AdminContentListParams {
-  return { ...p, category: 'all', artist: 'all', vendor: 'all' };
+function toContentParams(
+  p: AdminStandardListParams | AdminContentListParams
+): AdminContentListParams {
+  if ('category' in p) {
+    const c = p as AdminContentListParams;
+    return {
+      ...c,
+      startDate: c.startDate ?? '',
+      endDate: c.endDate ?? '',
+      type: c.type ?? 'all',
+    };
+  }
+
+  return {
+    ...p,
+    category: 'all',
+    artist: 'all',
+    vendor: 'all',
+    type: 'all',
+    startDate: '',
+    endDate: '',
+  };
 }
 
 export async function serverFetchAdminMusicList(
@@ -101,9 +121,9 @@ export async function serverFetchAdminNewsList(
 }
 
 export async function serverFetchAdminPollsList(
-  p: AdminStandardListParams
+  p: AdminStandardListParams | AdminContentListParams
 ): Promise<AdminListPayload<PollListItem>> {
-  const params = buildAdminListQuery('standard', p, { sort: '-createdAt' });
+  const params = buildAdminListQuery('content', toContentParams(p), { sort: '-createdAt' });
   const res = await callServerApi('ADMIN_POLLS_LIST', {
     query: `?${params.toString()}` as `?${string}`,
   });
@@ -375,7 +395,7 @@ export async function serverFetchAdminVendorsList(
 }
 
 export async function serverFetchAdminProductsList(
-  p: AdminStandardListParams
+  p: AdminStandardListParams | AdminContentListParams
 ): Promise<AdminListPayload<IMarketplaceProduct>> {
   const params = buildAdminListQuery('marketplaceWithVendor', toContentParams(p), {
     sort: marketplaceSort,
@@ -394,9 +414,10 @@ export async function serverFetchAdminProductsList(
 }
 
 export async function serverFetchAdminOrdersList(
-  p: AdminStandardListParams
+  p: AdminStandardListParams | AdminContentListParams
 ): Promise<AdminListPayload<PopulatedMarketplaceOrder>> {
-  const params = buildAdminListQuery('marketplaceWithVendor', toContentParams(p), {
+  const content = toContentParams(p);
+  const params = buildAdminListQuery('marketplaceOrders', content, {
     sort: marketplaceSort,
   });
   const res = await callServerApi('ADMIN_ORDERS_LIST', {
