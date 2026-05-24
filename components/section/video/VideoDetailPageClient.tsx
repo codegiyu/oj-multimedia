@@ -13,7 +13,8 @@ import {
   Heart,
 } from 'lucide-react';
 import Link from 'next/link';
-import Image from 'next/image';
+import { FillImage } from '@/components/general/FillImage';
+import { resolveContentImage } from '@/lib/constants/contentImageDefaults';
 import { Button } from '@/components/ui/button';
 import type { VideoItemWithCreator } from '@/lib/utils/videos';
 import { VideoPlayerDynamic } from './VideoPlayerDynamic';
@@ -74,12 +75,12 @@ export const VideoDetailPageClient = ({ videoItem, relatedVideos }: VideoDetailP
     <article className="min-h-screen">
       {/* Hero Section with Thumbnail */}
       <section className="relative h-[400px] md:h-[500px] lg:h-[600px] overflow-hidden">
-        <Image
+        <FillImage
           src={videoItem.thumbnail}
           alt={videoItem.title}
-          fill
-          className="object-cover"
+          imageContext="public"
           priority
+          sizes="100vw"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-foreground via-foreground/60 to-transparent" />
 
@@ -177,7 +178,7 @@ export const VideoDetailPageClient = ({ videoItem, relatedVideos }: VideoDetailP
               className="mb-8">
               <VideoPlayerDynamic
                 videoUrl={videoItem.videoFileUrl}
-                poster={videoItem.thumbnail}
+                poster={resolveContentImage(videoItem.thumbnail, 'public')}
                 title={videoItem.title}
                 description={videoItem.description}
                 onFirstPlay={onVideoFirstPlay}
@@ -207,7 +208,7 @@ export const VideoDetailPageClient = ({ videoItem, relatedVideos }: VideoDetailP
               className="mb-8">
               <VideoPlayerDynamic
                 videoUrl={videoItem.videoUrl}
-                poster={videoItem.thumbnail}
+                poster={resolveContentImage(videoItem.thumbnail, 'public')}
                 title={videoItem.title}
                 description={videoItem.description}
                 onFirstPlay={onVideoFirstPlay}

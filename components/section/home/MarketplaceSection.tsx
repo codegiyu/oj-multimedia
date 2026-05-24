@@ -84,8 +84,9 @@ export const MarketplaceSection = ({ products }: MarketplaceSectionProps) => {
                   className="group bg-card rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all">
                   <div className="relative aspect-square overflow-hidden">
                     <FillImage
-                      src={product.image}
+                      src={product.image ?? ''}
                       alt={product.name}
+                      imageContext="public"
                       sizes="(max-width: 768px) 50vw, 280px"
                       className="transition-transform duration-500 group-hover:scale-105"
                     />

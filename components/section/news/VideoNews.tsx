@@ -51,6 +51,7 @@ export const VideoNews = ({ videos }: VideoNewsProps) => {
                 className="group cursor-pointer">
                 <div className="relative aspect-video rounded-xl overflow-hidden mb-3">
                   <FillImage
+                    imageContext="public"
                     src={video.image}
                     alt={video.title}
                     sizes="(max-width: 768px) 50vw, 400px"

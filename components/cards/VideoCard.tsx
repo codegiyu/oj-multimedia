@@ -58,6 +58,7 @@ export const VideoCard = ({
             aria-label={`View ${title}`}>
             <div className="relative w-32 h-20 rounded-xl overflow-hidden shrink-0">
               <FillImage
+                imageContext="public"
                 src={thumbnail}
                 alt=""
                 sizes="128px"
@@ -95,7 +96,7 @@ export const VideoCard = ({
         ) : (
           <div className="flex min-w-0 flex-1 gap-4">
             <div className="relative w-32 h-20 rounded-xl overflow-hidden shrink-0">
-              <FillImage src={thumbnail} alt={title} sizes="128px" />
+              <FillImage imageContext="public" src={thumbnail} alt={title} sizes="128px" />
             </div>
             <div className="flex-1 min-w-0">
               <h3 className="font-semibold text-sm truncate mb-1">{title}</h3>
@@ -130,6 +131,7 @@ export const VideoCard = ({
             className="absolute inset-0 z-0 block"
             aria-label={`View ${title}`}>
             <FillImage
+              imageContext="public"
               src={thumbnail}
               alt=""
               sizes="(max-width: 768px) 100vw, 400px"
@@ -170,7 +172,12 @@ export const VideoCard = ({
           </Link>
         ) : (
           <>
-            <FillImage src={thumbnail} alt={title} sizes="(max-width: 768px) 100vw, 400px" />
+            <FillImage
+              imageContext="public"
+              src={thumbnail}
+              alt={title}
+              sizes="(max-width: 768px) 100vw, 400px"
+            />
             <span className="absolute bottom-2 right-2 px-2 py-1 rounded-md bg-foreground/80 text-xs text-primary-foreground">
               {duration}
             </span>

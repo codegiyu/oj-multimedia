@@ -475,9 +475,11 @@ export function mapToBeat(item: Record<string, unknown>): {
   description: string;
   downloads: string;
   genre: string;
+  cover?: string;
   fileUrl?: string;
 } {
   const fileUrl = str(item.fileUrl);
+  const cover = str(item.cover ?? item.coverImage);
 
   return {
     _id: str(item._id),
@@ -485,6 +487,7 @@ export function mapToBeat(item: Record<string, unknown>): {
     description: str(item.description),
     downloads: str(item.downloads ?? 0),
     genre: str(item.genre),
+    ...(cover ? { cover } : {}),
     ...(fileUrl ? { fileUrl } : {}),
   };
 }
@@ -496,9 +499,11 @@ export function mapToWallpaper(item: Record<string, unknown>): {
   description: string;
   downloads: string;
   category: string;
+  cover?: string;
   fileUrl?: string;
 } {
   const fileUrl = str(item.fileUrl);
+  const cover = str(item.cover ?? item.coverImage);
 
   return {
     _id: str(item._id),
@@ -506,6 +511,7 @@ export function mapToWallpaper(item: Record<string, unknown>): {
     description: str(item.description),
     downloads: str(item.downloads ?? 0),
     category: str(item.category),
+    ...(cover ? { cover } : {}),
     ...(fileUrl ? { fileUrl } : {}),
   };
 }

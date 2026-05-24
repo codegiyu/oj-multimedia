@@ -32,6 +32,7 @@ export const NewsCard = ({
         transition={{ duration: 0.3 }}
         className="group relative h-full min-h-[400px] rounded-2xl overflow-hidden cursor-pointer">
         <FillImage
+          imageContext="public"
           src={image}
           alt={title}
           sizes="(max-width: 768px) 100vw, 600px"
@@ -78,6 +79,7 @@ export const NewsCard = ({
       className="group h-full bg-card rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all cursor-pointer">
       <div className="relative aspect-[16/10] overflow-hidden">
         <FillImage
+          imageContext="public"
           src={image}
           alt={title}
           sizes="(max-width: 768px) 100vw, 400px"

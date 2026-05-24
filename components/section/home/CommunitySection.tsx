@@ -102,6 +102,7 @@ export const CommunitySection = ({
                       <div className="flex gap-3">
                         <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full">
                           <FixedImage
+                            imageContext="public"
                             src={post.avatar}
                             alt={post.user}
                             width={40}

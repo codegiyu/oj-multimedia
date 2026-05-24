@@ -3,7 +3,7 @@
 import { motion } from 'motion/react';
 import { ArrowLeft, Music, Video, Users, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
-import Image from 'next/image';
+import { FillImage } from '@/components/general/FillImage';
 import { Button } from '@/components/ui/button';
 import { MusicCard } from '@/components/cards/MusicCard';
 import { VideoCard } from '@/components/cards/VideoCard';
@@ -47,11 +47,10 @@ export function ArtistDetailPageClient({
               className="flex flex-col md:flex-row gap-8 items-start">
               <div className="shrink-0">
                 <div className="relative w-40 h-40 md:w-48 md:h-48 rounded-2xl overflow-hidden ring-4 ring-background shadow-lg">
-                  <Image
+                  <FillImage
                     src={artist.image}
                     alt={artist.name}
-                    fill
-                    className="object-cover"
+                    imageContext="public"
                     sizes="(max-width: 768px) 160px, 192px"
                   />
                 </div>

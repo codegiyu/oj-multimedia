@@ -1,9 +1,10 @@
 'use client';
 
 import { motion } from 'motion/react';
-import { Headphones, Download, Music } from 'lucide-react';
+import { Headphones, Download } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { SectionComp } from '@/components/general/SectionComp';
+import { FillImage } from '@/components/general/FillImage';
 import type { Beat } from './ResourcesPageClient';
 import { ResourceDownloadButton } from '@/components/section/shared/ResourceDownloadButton';
 
@@ -30,8 +31,13 @@ export const FreeBeats = ({ beats }: FreeBeatsProps) => {
             transition={{ delay: index * 0.1 }}>
             <Card className="card-interactive">
               <CardContent className="p-0">
-                <div className="aspect-square bg-gradient-to-br from-accent/20 to-accent/10 rounded-t-xl flex items-center justify-center relative">
-                  <Music className="w-16 h-16 text-accent/50" />
+                <div className="aspect-square relative bg-muted rounded-t-xl overflow-hidden">
+                  <FillImage
+                    src={beat.cover ?? ''}
+                    alt={beat.title}
+                    imageContext="public"
+                    sizes="(max-width: 768px) 50vw, 280px"
+                  />
                   <div className="absolute top-3 right-3">
                     <span className="px-2 py-1 bg-accent/20 text-accent-foreground text-xs font-medium rounded-full">
                       {beat.genre}

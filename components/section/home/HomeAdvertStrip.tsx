@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
+import { FillImage } from '@/components/general/FillImage';
 import type { IHomeAdvertItem } from '@/lib/constants/endpoints';
 
 interface HomeAdvertStripProps {
@@ -19,13 +19,13 @@ export function HomeAdvertStrip({ adverts }: HomeAdvertStripProps) {
       <div className="container mx-auto px-4 flex flex-col gap-6">
         {active.map(ad => {
           const inner = (
-            <div className="relative w-full overflow-hidden rounded-2xl border border-border/50 bg-card shadow-sm">
-              <Image
-                src={ad.imageUrl}
+            <div className="relative w-full overflow-hidden rounded-2xl border border-border/50 bg-card shadow-sm aspect-[1200/280] max-h-[200px] md:max-h-[280px]">
+              <FillImage
+                src={ad.imageUrl ?? ''}
                 alt={`Advertisement (${ad.slot === 'after_hero' ? 'after hero' : 'before call to action'})`}
-                width={1200}
-                height={280}
-                className="h-auto max-h-[200px] w-full object-cover object-center md:max-h-[280px]"
+                imageContext="public"
+                sizes="100vw"
+                className="object-center"
               />
             </div>
           );

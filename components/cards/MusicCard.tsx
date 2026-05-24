@@ -44,6 +44,7 @@ export const MusicCard = (props: MusicCardProps) => {
       <div className="relative aspect-square overflow-hidden">
         <Link href={detailHref} className="absolute inset-0 z-0 block" aria-label={`View ${title}`}>
           <FillImage
+            imageContext="public"
             src={cover}
             alt=""
             sizes="(max-width: 768px) 50vw, 280px"

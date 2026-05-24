@@ -3,7 +3,7 @@
 import { motion } from 'motion/react';
 import { ArrowLeft, Heart, MessageCircle, Calendar, Share2, Bookmark, User } from 'lucide-react';
 import Link from 'next/link';
-import Image from 'next/image';
+import { FixedImage } from '@/components/general/FillImage';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { toast } from '@/components/atoms/Toast';
@@ -81,11 +81,12 @@ export const TestimonyDetailPageClient = ({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               className="flex items-start gap-6">
-              <Image
+              <FixedImage
                 src={testimony.avatar}
                 alt={testimony.author}
                 width={80}
                 height={80}
+                imageContext="public"
                 className="rounded-full"
               />
               <div className="flex-1">

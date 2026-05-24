@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import { SectionContainer } from '@/components/general/SectionContainer';
 import { Button } from '@/components/ui/button';
-import { Package, MessageCircle, ShoppingCart, Store, ChevronRight } from 'lucide-react';
+import { MessageCircle, ShoppingCart, Store, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import type { MarketplaceProduct } from '@/lib/utils/marketplace';
 import { formatPrice } from '@/lib/utils/marketplace';
@@ -152,6 +152,7 @@ function ProductDetailContent({ product }: ProductDetailContentProps) {
                         <FillImage
                           src={src}
                           alt={product.name}
+                          imageContext="public"
                           sizes="(max-width: 768px) 100vw, 600px"
                         />
                       </div>
@@ -159,8 +160,13 @@ function ProductDetailContent({ product }: ProductDetailContentProps) {
                   ))}
                 </Swiper>
               ) : (
-                <div className="aspect-square w-full h-full flex items-center justify-center bg-muted">
-                  <Package className="w-24 h-24 text-muted-foreground" />
+                <div className="relative aspect-square w-full h-full bg-muted">
+                  <FillImage
+                    src=""
+                    alt={product.name}
+                    imageContext="public"
+                    sizes="(max-width: 768px) 100vw, 600px"
+                  />
                 </div>
               )}
             </div>

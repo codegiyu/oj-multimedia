@@ -34,6 +34,7 @@ export interface Beat {
   description: string;
   downloads: string;
   genre: string;
+  cover?: string;
   fileUrl?: string;
 }
 
@@ -43,6 +44,7 @@ export interface Wallpaper {
   description: string;
   downloads: string;
   category: string;
+  cover?: string;
   fileUrl?: string;
 }
 

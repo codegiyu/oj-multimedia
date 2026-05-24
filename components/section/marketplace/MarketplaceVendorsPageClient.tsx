@@ -75,12 +75,13 @@ export function MarketplaceVendorsPageClient({
                   <Link key={vendor._id} href={`/marketplace/vendors/${vendor.slug}`}>
                     <Card className="group overflow-hidden hover:shadow-lg transition-shadow h-full">
                       <div className="p-6">
-                        <div className="relative w-20 h-20 rounded-full bg-primary/10 mx-auto mb-4 flex items-center justify-center overflow-hidden">
-                          {vendor.logo ? (
-                            <FillImage src={vendor.logo} alt={vendor.storeName} sizes="80px" />
-                          ) : (
-                            <Store className="w-10 h-10 text-primary" />
-                          )}
+                        <div className="relative w-20 h-20 rounded-full bg-primary/10 mx-auto mb-4 overflow-hidden">
+                          <FillImage
+                            src={vendor.logo ?? ''}
+                            alt={vendor.storeName}
+                            imageContext="public"
+                            sizes="80px"
+                          />
                         </div>
                         <h2 className="text-xl font-bold text-foreground text-center mb-2 group-hover:text-primary transition-colors">
                           {vendor.storeName}

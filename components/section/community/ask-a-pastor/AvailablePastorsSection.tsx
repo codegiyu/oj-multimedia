@@ -36,6 +36,7 @@ export const AvailablePastorsSection = ({ pastors }: AvailablePastorsSectionProp
             <div className="p-6 text-center">
               <div className="relative mb-4 inline-block">
                 <FixedImage
+                  imageContext="public"
                   src={pastor.image}
                   alt={pastor.name}
                   width={96}

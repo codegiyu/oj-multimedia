@@ -4,6 +4,7 @@ import { motion } from 'motion/react';
 import { BookOpen, Download } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { SectionComp } from '@/components/general/SectionComp';
+import { FillImage } from '@/components/general/FillImage';
 import type { Ebook } from './ResourcesPageClient';
 import { ResourceDownloadButton } from '@/components/section/shared/ResourceDownloadButton';
 
@@ -30,8 +31,13 @@ export const FreeEbooks = ({ ebooks }: FreeEbooksProps) => {
             transition={{ delay: index * 0.1 }}>
             <Card className="card-interactive">
               <CardContent className="p-0">
-                <div className="aspect-[3/4] bg-gradient-to-br from-primary/20 to-primary/10 rounded-t-xl flex items-center justify-center">
-                  <BookOpen className="w-16 h-16 text-primary/50" />
+                <div className="aspect-[3/4] relative bg-muted rounded-t-xl overflow-hidden">
+                  <FillImage
+                    src={ebook.cover ?? ''}
+                    alt={ebook.title}
+                    imageContext="public"
+                    sizes="(max-width: 768px) 50vw, 280px"
+                  />
                 </div>
                 <div className="p-6">
                   <h3 className="font-bold text-foreground mb-2 line-clamp-2">{ebook.title}</h3>
