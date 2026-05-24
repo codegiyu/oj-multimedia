@@ -65,8 +65,8 @@ export const AudioPlayer = ({ audioUrl, title, artist, onFirstPlay }: AudioPlaye
         </div>
       )}
 
-      <div className="w-full min-h-[60px]">
-        <MediaController className="audio-player block w-full min-h-[60px]">
+      <div className="w-full min-h-[60px] overflow-hidden rounded-xl border border-border/40 bg-muted/40">
+        <MediaController className="audio-player block w-full min-h-[60px] rounded-xl">
           <audio slot="media" src={audioUrl} preload="metadata" />
           <MediaControlBar className="flex w-full items-center gap-2 px-3 py-3 min-h-[60px]">
             <MediaPlayButton className="text-foreground hover:text-primary transition-colors" />

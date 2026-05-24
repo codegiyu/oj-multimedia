@@ -787,6 +787,8 @@
 
 /* Media Chrome audio player — plain CSS (Tailwind layers strip custom-element selectors) */
 media-controller.audio-player {
+  overflow: hidden;
+  border-radius: 0.75rem;
   --media-primary-color: hsl(var(--primary));
   --media-secondary-color: hsl(var(--muted-foreground));
   --media-range-bar-color: hsl(var(--primary));
