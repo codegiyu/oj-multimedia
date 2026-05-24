@@ -14,6 +14,8 @@ import type {
   CommunityHubData,
   DevotionalsListData,
   DevotionalDetailData,
+  AlbumsListData,
+  AlbumDetailData,
   TestimoniesListData,
   TestimonyDetailData,
   PrayerRequestsListData,
@@ -839,6 +841,13 @@ export interface AllEndpoints {
   ADMIN_MUSIC_DELETE: EndpointDefinition<undefined, { success: boolean }, `/${string}`>;
   ADMIN_MUSIC_APPROVE: EndpointDefinition<undefined, IArtistMusicItemRes, `/${string}`>;
   ADMIN_MUSIC_REJECT: EndpointDefinition<{ reason: string }, IArtistMusicItemRes, `/${string}`>;
+
+  // Admin content - Albums
+  ADMIN_ALBUMS_LIST: EndpointDefinition<undefined, AlbumsListData, `?${string}`>;
+  ADMIN_ALBUM_ITEM: EndpointDefinition<undefined, AlbumDetailData, `/${string}`>;
+  ADMIN_ALBUM_CREATE: EndpointDefinition<Record<string, unknown>, AlbumDetailData, undefined>;
+  ADMIN_ALBUM_UPDATE: EndpointDefinition<Record<string, unknown>, AlbumDetailData, `/${string}`>;
+  ADMIN_ALBUM_DELETE: EndpointDefinition<undefined, { success: boolean }, `/${string}`>;
 
   // Admin content - Videos
   ADMIN_VIDEOS_LIST: EndpointDefinition<

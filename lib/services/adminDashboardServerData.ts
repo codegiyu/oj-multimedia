@@ -13,6 +13,7 @@ import type {
 } from '@/lib/constants/endpoints';
 import type { IGospelVerse } from '@/lib/types/server-models';
 import type {
+  AlbumListItem,
   DevotionalListItem,
   PollListItem,
   ResourceListItem,
@@ -128,6 +129,23 @@ export async function serverFetchAdminPollsList(
   }
   return {
     items: res.data.polls ?? [],
+    totalPages: res.data.pagination?.totalPages ?? 1,
+    listError: null,
+  };
+}
+
+export async function serverFetchAdminAlbumsList(
+  p: AdminStandardListParams
+): Promise<AdminListPayload<AlbumListItem>> {
+  const params = standardQueryParams(p, '-createdAt');
+  const res = await callServerApi('ADMIN_ALBUMS_LIST', {
+    query: `?${params.toString()}` as `?${string}`,
+  });
+  if (res.type === 'error') {
+    return { items: [], totalPages: 1, listError: res.message ?? 'Failed to load albums' };
+  }
+  return {
+    items: res.data.albums ?? [],
     totalPages: res.data.pagination?.totalPages ?? 1,
     listError: null,
   };
