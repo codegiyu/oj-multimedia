@@ -99,6 +99,7 @@ export const TrendingSongsPageClient = ({
                     plays={song.plays}
                     genre={song.category || 'Music'}
                     isNew={song.isNew}
+                    album={song.album}
                   />
                 </motion.div>
               ))}

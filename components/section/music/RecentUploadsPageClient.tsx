@@ -66,6 +66,7 @@ export const RecentUploadsPageClient = ({
                     cover={song.cover}
                     plays="0"
                     genre={song.genre}
+                    album={song.album}
                   />
                 </motion.div>
               ))}

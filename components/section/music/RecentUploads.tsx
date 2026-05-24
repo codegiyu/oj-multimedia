@@ -5,6 +5,7 @@ import { Sparkles } from 'lucide-react';
 import { SectionComp } from '@/components/general/SectionComp';
 import { MusicCard } from '@/components/cards/MusicCard';
 import { EmptyState } from '../news/EmptyState';
+import type { MusicAlbumSummary } from '@/lib/constants/endpoints';
 
 export interface RecentUpload {
   _id: string;
@@ -13,6 +14,7 @@ export interface RecentUpload {
   cover: string;
   uploadedAt: string;
   genre: string;
+  album?: MusicAlbumSummary;
 }
 
 interface RecentUploadsProps {
@@ -61,6 +63,7 @@ export const RecentUploads = ({ uploads: recentUploads }: RecentUploadsProps) =>
               cover={song.cover}
               plays="0"
               genre={song.genre}
+              album={song.album}
             />
           </motion.div>
         ))}

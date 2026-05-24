@@ -2,7 +2,7 @@
 
 import { useEffect, useCallback } from 'react';
 import { motion } from 'motion/react';
-import { ArrowLeft, Clock, Eye, Calendar, Share2, Bookmark, Music } from 'lucide-react';
+import { ArrowLeft, Clock, Eye, Calendar, Share2, Bookmark, Music, DiscAlbum } from 'lucide-react';
 import Link from 'next/link';
 import { FillImage } from '@/components/general/FillImage';
 import { Button } from '@/components/ui/button';
@@ -16,6 +16,7 @@ import { cn } from '@/lib/utils';
 import { useFavoriteToggle } from '@/lib/hooks/useFavoriteToggle';
 import { LoginModal } from '@/components/auth/LoginModal';
 import { shareContent } from '@/lib/utils/shareContent';
+import { publicMusicAlbumHref } from '@/lib/utils/publicMusicAlbum';
 
 interface MusicDetailPageClientProps {
   musicItem: MusicItemWithArtist;
@@ -103,13 +104,43 @@ export const MusicDetailPageClient = ({ musicItem, relatedSongs }: MusicDetailPa
             </div>
 
             <div className="max-w-4xl">
+              <nav
+                aria-label="Breadcrumb"
+                className="flex flex-wrap items-center gap-2 text-sm text-primary-foreground/80 mb-3">
+                <Link
+                  href="/music"
+                  className="hover:text-primary-foreground underline-offset-4 hover:underline">
+                  Music
+                </Link>
+                {musicItem.album ? (
+                  <>
+                    <span aria-hidden>/</span>
+                    <Link
+                      href={publicMusicAlbumHref(musicItem.album)}
+                      className="inline-flex items-center gap-1 hover:text-primary-foreground underline-offset-4 hover:underline">
+                      <DiscAlbum className="w-3.5 h-3.5 shrink-0" aria-hidden />
+                      {musicItem.album.title}
+                    </Link>
+                  </>
+                ) : null}
+              </nav>
               <span className="inline-flex w-fit px-3 py-1 rounded-full bg-primary text-primary-foreground text-xs font-medium mb-4">
                 {musicItem.category}
               </span>
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold mb-2">
                 {musicItem.title}
               </h1>
-              <p className="text-xl md:text-2xl text-primary-foreground/90 mb-4">{artistName}</p>
+              <p className="text-xl md:text-2xl text-primary-foreground/90 mb-2">{artistName}</p>
+              {musicItem.album ? (
+                <Link
+                  href={publicMusicAlbumHref(musicItem.album)}
+                  className="inline-flex items-center gap-1.5 text-sm text-primary-foreground/85 hover:text-primary-foreground mb-4 underline-offset-4 hover:underline">
+                  <DiscAlbum className="w-4 h-4 shrink-0" aria-hidden />
+                  From album: {musicItem.album.title}
+                </Link>
+              ) : (
+                <div className="mb-4" />
+              )}
               <div className="flex items-center gap-4 text-sm text-primary-foreground/80 flex-wrap">
                 {musicItem.plays && (
                   <span className="flex items-center gap-1">
@@ -235,6 +266,7 @@ export const MusicDetailPageClient = ({ musicItem, relatedSongs }: MusicDetailPa
                       audioUrl={song.audioUrl}
                       isMonetizable={song.isMonetizable}
                       downloadPrice={song.downloadPrice}
+                      album={song.album}
                       optionsItem={song}
                     />
                   </motion.div>

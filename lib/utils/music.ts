@@ -6,6 +6,7 @@ import {
 } from '@/lib/constants/contentTaxonomy';
 import { populateArtist } from '@/lib/utils/community/artists';
 import type { ArtistProfile } from '@/lib/types/artist';
+import type { MusicAlbumSummary } from '@/lib/constants/endpoints';
 import { MUSIC_ITEMS, type MusicItem } from '@/lib/constants/music';
 
 export type MusicItemArtist = { _id: string; name: string };
@@ -99,7 +100,10 @@ export function getRisingArtistsForHome(limit: number = 4): ArtistProfile[] {
 }
 
 /** Music item with artist populated to { _id, name } */
-export type MusicItemWithArtist = Omit<MusicItem, 'artist'> & { artist: MusicItemArtist };
+export type MusicItemWithArtist = Omit<MusicItem, 'artist'> & {
+  artist: MusicItemArtist;
+  album?: MusicAlbumSummary;
+};
 
 /**
  * Get a music item by its ID. Artist is populated to { _id, name }.
