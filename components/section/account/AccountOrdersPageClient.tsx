@@ -15,6 +15,9 @@ import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { Loader2 } from 'lucide-react';
 import { FillImage } from '@/components/general/FillImage';
+import { FilterableDataPage } from '@/components/general/FilterableDataPage';
+import { buildAccountOrdersQuery, isAccountListUnfiltered } from '@/lib/account/accountListFilters';
+import { useAccountListSearch } from '@/lib/hooks/useAccountListSearch';
 
 const STATUS_OPTIONS = [
   { value: '', label: 'All' },
@@ -52,6 +55,8 @@ export function AccountOrdersPageClient({
   const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1));
   const [pageSize] = useQueryState('pagesize', parseAsInteger.withDefault(10));
   const [statusFilter, setStatusFilter] = useQueryState('status', parseAsString.withDefault(''));
+  const [searchQuery, setSearchQuery] = useQueryState('search', parseAsString.withDefault(''));
+  const { onSearchChange, onSearchCommit } = useAccountListSearch(setSearchQuery, setPage);
   const didMountRef = useRef(false);
 
   useEffect(() => {
@@ -64,11 +69,12 @@ export function AccountOrdersPageClient({
 
     const loadOrders = async () => {
       setLoading(true);
-      const params = new URLSearchParams();
-      params.set('page', String(page));
-      params.set('limit', String(pageSize));
-      if (statusFilter) params.set('status', statusFilter);
-      const query = `?${params.toString()}` as const;
+      const query = `?${buildAccountOrdersQuery({
+        page,
+        pageSize,
+        search: searchQuery,
+        status: statusFilter,
+      }).toString()}` as const;
 
       const { data, error, message } = await callApi('MARKETPLACE_GET_MY_ORDERS', { query });
 
@@ -90,7 +96,9 @@ export function AccountOrdersPageClient({
     return () => {
       cancelled = true;
     };
-  }, [page, pageSize, statusFilter]);
+  }, [page, pageSize, statusFilter, searchQuery]);
+
+  const showOnboardingEmpty = isAccountListUnfiltered(searchQuery, statusFilter);
 
   const pageStats = useMemo(() => {
     const pending = orders.filter(o =>
@@ -101,7 +109,7 @@ export function AccountOrdersPageClient({
     return { pending, shipped, completed, total: orders.length };
   }, [orders]);
 
-  if (orders.length === 0 && !errorMessage) {
+  if (orders.length === 0 && !errorMessage && showOnboardingEmpty) {
     return (
       <div className="space-y-8">
         <DashboardPageHeader title="My orders" description="Track and manage your purchases" />
@@ -130,6 +138,13 @@ export function AccountOrdersPageClient({
       ) : null}
 
       <DashboardPageHeader title="My orders" description="Track and manage your purchases" />
+
+      <FilterableDataPage
+        searchPlaceholder="Search by order number or vendor..."
+        searchValue={searchQuery}
+        onSearchChange={onSearchChange}
+        onSearchCommit={onSearchCommit}
+      />
 
       {errorMessage && (
         <div className="rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive flex items-center justify-between gap-4">
@@ -167,6 +182,12 @@ export function AccountOrdersPageClient({
           />
         </div>
       </div>
+
+      {orders.length === 0 && !showOnboardingEmpty && !errorMessage && (
+        <Card className="border-border/80 p-8 text-center text-sm text-muted-foreground">
+          No orders match your search or filters.
+        </Card>
+      )}
 
       {orders.length > 0 && (
         <>

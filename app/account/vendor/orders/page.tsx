@@ -2,6 +2,7 @@ import { Suspense } from 'react';
 import { VendorOrdersPageClient } from '@/components/section/account/vendor/VendorOrdersPageClient';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { Metadata } from 'next';
+import { buildAccountOrdersQuery } from '@/lib/account/accountListFilters';
 import { callServerApi } from '@/lib/services/serverApi';
 import type { ApiErrorResponse } from '@/lib/types/http';
 
@@ -26,15 +27,21 @@ function VendorOrdersPageSkeleton() {
 export default function VendorOrdersPage({
   searchParams,
 }: {
-  searchParams?: { page?: string; pagesize?: string; status?: string };
+  searchParams?: { page?: string; pagesize?: string; status?: string; search?: string };
 }) {
   const page = Number(searchParams?.page ?? 1) || 1;
   const pageSize = Number(searchParams?.pagesize ?? 10) || 10;
   const status = searchParams?.status ?? '';
+  const search = searchParams?.search ?? '';
 
   return (
     <Suspense fallback={<VendorOrdersPageSkeleton />}>
-      <VendorOrdersPageClientServer page={page} pageSize={pageSize} status={status} />
+      <VendorOrdersPageClientServer
+        page={page}
+        pageSize={pageSize}
+        status={status}
+        search={search}
+      />
     </Suspense>
   );
 }
@@ -43,17 +50,17 @@ async function VendorOrdersPageClientServer({
   page,
   pageSize,
   status,
+  search,
 }: {
   page: number;
   pageSize: number;
   status: string;
+  search: string;
 }) {
-  const searchParams = new URLSearchParams();
-  searchParams.set('page', String(page));
-  searchParams.set('limit', String(pageSize));
-  if (status) searchParams.set('status', status);
+  const query =
+    `?${buildAccountOrdersQuery({ page, pageSize, search, status }).toString()}` as const;
 
-  const res = await callServerApi('VENDOR_GET_ORDERS', { query: `?${searchParams.toString()}` });
+  const res = await callServerApi('VENDOR_GET_ORDERS', { query });
 
   if (res.error || !res.data) {
     const responseCode = (res.error as ApiErrorResponse | undefined)?.responseCode;

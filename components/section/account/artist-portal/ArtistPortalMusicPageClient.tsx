@@ -13,6 +13,12 @@ import { Loader2, MessageCircle, Plus, Pencil } from 'lucide-react';
 import { ArtistMusicFormModalDynamic } from './ArtistMusicFormModalDynamic';
 import { ArtistContentMonetizationBadge } from './ArtistContentMonetizationBadge';
 import { DashboardThumbnail } from '@/components/general/DashboardThumbnail';
+import { FilterableDataPage } from '@/components/general/FilterableDataPage';
+import {
+  buildAccountArtistContentQuery,
+  isAccountListUnfiltered,
+} from '@/lib/account/accountListFilters';
+import { useAccountListSearch } from '@/lib/hooks/useAccountListSearch';
 
 const STATUS_FILTERS: Array<{ value: '' | 'draft' | 'published' | 'archived'; label: string }> = [
   { value: '', label: 'All' },
@@ -38,6 +44,8 @@ export function ArtistPortalMusicPageClient({
   const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1));
   const [pageSize] = useQueryState('pagesize', parseAsInteger.withDefault(10));
   const [status, setStatus] = useQueryState('status', parseAsString.withDefault(''));
+  const [searchQuery, setSearchQuery] = useQueryState('search', parseAsString.withDefault(''));
+  const { onSearchChange, onSearchCommit } = useAccountListSearch(setSearchQuery, setPage);
   const [totalPages, setTotalPages] = useState(initialTotalPages);
   const [reloadIndex, setReloadIndex] = useState(0);
   const [formOpen, setFormOpen] = useState(false);
@@ -68,11 +76,12 @@ export function ArtistPortalMusicPageClient({
 
     const loadMusic = async () => {
       setLoading(true);
-      const params = new URLSearchParams();
-      params.set('page', String(page));
-      params.set('limit', String(pageSize));
-      if (status) params.set('status', status);
-      const query = `?${params.toString()}` as const;
+      const query = `?${buildAccountArtistContentQuery({
+        page,
+        pageSize,
+        search: searchQuery,
+        status,
+      }).toString()}` as const;
 
       const { data, error, message } = await callApi('ARTIST_GET_MUSIC', {
         query,
@@ -103,7 +112,9 @@ export function ArtistPortalMusicPageClient({
     return () => {
       cancelled = true;
     };
-  }, [page, pageSize, status, reloadIndex]);
+  }, [page, pageSize, status, searchQuery, reloadIndex]);
+
+  const showOnboardingEmpty = isAccountListUnfiltered(searchQuery, status);
 
   const playsLabel = (item: ArtistMusicListItem) =>
     'views' in item && typeof item.views === 'number'
@@ -160,13 +171,23 @@ export function ArtistPortalMusicPageClient({
         </div>
       )}
 
+      <FilterableDataPage
+        searchPlaceholder="Search tracks..."
+        searchValue={searchQuery}
+        onSearchChange={onSearchChange}
+        onSearchCommit={onSearchCommit}
+      />
+
       <div className="flex flex-wrap gap-2">
         {STATUS_FILTERS.map(f => (
           <Button
             key={f.label}
             variant={status === f.value ? 'default' : 'outline'}
             size="sm"
-            onClick={() => setStatus(f.value)}>
+            onClick={() => {
+              setStatus(f.value);
+              setPage(1);
+            }}>
             {f.label}
           </Button>
         ))}
@@ -175,21 +196,24 @@ export function ArtistPortalMusicPageClient({
       {music.length === 0 ? (
         <Card className="p-8 text-center">
           <p className="text-muted-foreground">
-            You do not have any tracks yet. Add a draft below or message our team on the submit
-            page.
+            {showOnboardingEmpty
+              ? 'You do not have any tracks yet. Add a draft below or message our team on the submit page.'
+              : 'No tracks match your search or filters.'}
           </p>
-          <div className="mt-4 flex flex-wrap justify-center gap-2">
-            <Button type="button" className="gap-2" onClick={openCreate}>
-              <Plus className="h-4 w-4" />
-              Add track
-            </Button>
-            <Button asChild variant="outline" className="gap-2">
-              <Link href="/account/artist-portal/upload">
-                <MessageCircle className="h-4 w-4" />
-                Message team
-              </Link>
-            </Button>
-          </div>
+          {showOnboardingEmpty ? (
+            <div className="mt-4 flex flex-wrap justify-center gap-2">
+              <Button type="button" className="gap-2" onClick={openCreate}>
+                <Plus className="h-4 w-4" />
+                Add track
+              </Button>
+              <Button asChild variant="outline" className="gap-2">
+                <Link href="/account/artist-portal/upload">
+                  <MessageCircle className="h-4 w-4" />
+                  Message team
+                </Link>
+              </Button>
+            </div>
+          ) : null}
         </Card>
       ) : (
         <div className="space-y-3">

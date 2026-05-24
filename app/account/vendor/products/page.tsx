@@ -2,6 +2,7 @@ import { Suspense } from 'react';
 import { VendorProductsPageClient } from '@/components/section/account/vendor/VendorProductsPageClient';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { Metadata } from 'next';
+import { buildAccountVendorProductsQuery } from '@/lib/account/accountListFilters';
 import { callServerApi } from '@/lib/services/serverApi';
 import type { ApiErrorResponse } from '@/lib/types/http';
 
@@ -27,14 +28,29 @@ function VendorProductsPageSkeleton() {
 export default function VendorProductsPage({
   searchParams,
 }: {
-  searchParams?: { page?: string; pagesize?: string };
+  searchParams?: {
+    page?: string;
+    pagesize?: string;
+    status?: string;
+    category?: string;
+    search?: string;
+  };
 }) {
   const page = Number(searchParams?.page ?? 1) || 1;
   const pageSize = Number(searchParams?.pagesize ?? 10) || 10;
+  const status = searchParams?.status ?? 'all';
+  const category = searchParams?.category ?? 'all';
+  const search = searchParams?.search ?? '';
 
   return (
     <Suspense fallback={<VendorProductsPageSkeleton />}>
-      <VendorProductsPageClientServer page={page} pageSize={pageSize} />
+      <VendorProductsPageClientServer
+        page={page}
+        pageSize={pageSize}
+        status={status}
+        category={category}
+        search={search}
+      />
     </Suspense>
   );
 }
@@ -42,11 +58,18 @@ export default function VendorProductsPage({
 async function VendorProductsPageClientServer({
   page,
   pageSize,
+  status,
+  category,
+  search,
 }: {
   page: number;
   pageSize: number;
+  status: string;
+  category: string;
+  search: string;
 }) {
-  const query = `?page=${page}&limit=${pageSize}` as const;
+  const query =
+    `?${buildAccountVendorProductsQuery({ page, pageSize, status, category, search }).toString()}` as const;
   const res = await callServerApi('VENDOR_GET_PRODUCTS', { query });
 
   if (res.error || !res.data) {

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { useQueryState, parseAsInteger } from 'nuqs';
+import { useQueryState, parseAsInteger, parseAsString } from 'nuqs';
 import { DashboardPageHeader } from '@/components/layout/user-dashboard';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -23,9 +23,27 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
+import { FilterableDataPage } from '@/components/general/FilterableDataPage';
+import type { SelectOption } from '@/lib/types/general';
+import {
+  buildAccountVendorProductsQuery,
+  isAccountListUnfiltered,
+} from '@/lib/account/accountListFilters';
+import { VENDOR_PRODUCT_STATUS_FILTER_SELECT_OPTIONS } from '@/lib/constants/accountSelectOptions';
+import { useAccountListSearch } from '@/lib/hooks/useAccountListSearch';
+import { loadMarketplaceCategorySelectOptions } from '@/lib/utils/adminEntitySelect';
 
 interface VendorProductsListProps {
   products: IVendorProductsRes['products'];
+  searchQuery: string;
+  searchValue: string;
+  onSearchChange: (value: string) => void;
+  onSearchCommit: () => void;
+  filterStatus: string;
+  filterCategory: string;
+  categoryOptions: SelectOption[];
+  onFilterStatusChange: (value: string) => void;
+  onFilterCategoryChange: (value: string) => void;
   page: number;
   totalPages: number;
   onPreviousPage: () => void;
@@ -37,6 +55,15 @@ interface VendorProductsListProps {
 
 function VendorProductsList({
   products,
+  searchQuery,
+  searchValue,
+  onSearchChange,
+  onSearchCommit,
+  filterStatus,
+  filterCategory,
+  categoryOptions,
+  onFilterStatusChange,
+  onFilterCategoryChange,
   page,
   totalPages,
   onPreviousPage,
@@ -45,6 +72,8 @@ function VendorProductsList({
   archivingProductId,
   loading,
 }: VendorProductsListProps) {
+  const showOnboardingEmpty = isAccountListUnfiltered(searchQuery, filterStatus, filterCategory);
+
   return (
     <div className="relative space-y-8">
       {loading ? (
@@ -62,15 +91,42 @@ function VendorProductsList({
         </Button>
       </DashboardPageHeader>
 
+      <FilterableDataPage
+        searchPlaceholder="Search products..."
+        searchValue={searchValue}
+        onSearchChange={onSearchChange}
+        onSearchCommit={onSearchCommit}
+        filters={[
+          {
+            label: 'Status',
+            value: filterStatus,
+            options: [...VENDOR_PRODUCT_STATUS_FILTER_SELECT_OPTIONS],
+            onChange: onFilterStatusChange,
+          },
+          {
+            label: 'Category',
+            value: filterCategory,
+            options: categoryOptions,
+            onChange: onFilterCategoryChange,
+          },
+        ]}
+      />
+
       {products.length === 0 ? (
-        <EmptyState
-          title="No products yet"
-          description="Add your first product to start selling on the marketplace."
-          icon={<Package className="h-12 w-12 text-muted-foreground" />}
-          actionLabel="Add your first product"
-          actionHref="/account/vendor/products/new"
-          showDefaultActions={false}
-        />
+        showOnboardingEmpty ? (
+          <EmptyState
+            title="No products yet"
+            description="Add your first product to start selling on the marketplace."
+            icon={<Package className="h-12 w-12 text-muted-foreground" />}
+            actionLabel="Add your first product"
+            actionHref="/account/vendor/products/new"
+            showDefaultActions={false}
+          />
+        ) : (
+          <Card className="border-border/80 p-8 text-center text-sm text-muted-foreground">
+            No products match your search or filters.
+          </Card>
+        )
       ) : (
         <>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
@@ -192,10 +248,26 @@ export function VendorProductsPageClient({
   const [errorMessage, setErrorMessage] = useState<string | null>(initialErrorMessage);
   const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1));
   const [pageSize] = useQueryState('pagesize', parseAsInteger.withDefault(10));
+  const [searchQuery, setSearchQuery] = useQueryState('search', parseAsString.withDefault(''));
+  const [filterStatus, setFilterStatus] = useQueryState('status', parseAsString.withDefault('all'));
+  const [filterCategory, setFilterCategory] = useQueryState(
+    'category',
+    parseAsString.withDefault('all')
+  );
+  const { onSearchChange, onSearchCommit } = useAccountListSearch(setSearchQuery, setPage);
+  const [categoryOptions, setCategoryOptions] = useState<SelectOption[]>([
+    { text: 'All categories', value: 'all' },
+  ]);
   const [totalPages, setTotalPages] = useState(initialTotalPages);
   const [reloadIndex, setReloadIndex] = useState(0);
   const [archivingProductId, setArchivingProductId] = useState<string | null>(null);
   const didMountRef = useRef(false);
+
+  useEffect(() => {
+    void loadMarketplaceCategorySelectOptions().then(options => {
+      setCategoryOptions([{ text: 'All categories', value: 'all' }, ...options]);
+    });
+  }, []);
 
   const handleArchive = async (productId: string) => {
     setArchivingProductId(productId);
@@ -222,7 +294,13 @@ export function VendorProductsPageClient({
 
     const loadProducts = async () => {
       setLoading(true);
-      const query = `?page=${page}&limit=${pageSize}` as const;
+      const query = `?${buildAccountVendorProductsQuery({
+        page,
+        pageSize,
+        search: searchQuery,
+        status: filterStatus,
+        category: filterCategory,
+      }).toString()}` as const;
       const { data, error, message } = await callApi('VENDOR_GET_PRODUCTS', { query });
 
       if (cancelled) return;
@@ -252,7 +330,7 @@ export function VendorProductsPageClient({
     return () => {
       cancelled = true;
     };
-  }, [page, pageSize, reloadIndex]);
+  }, [page, pageSize, searchQuery, filterStatus, filterCategory, reloadIndex]);
 
   return (
     <div className="space-y-4">
@@ -270,6 +348,21 @@ export function VendorProductsPageClient({
       )}
       <VendorProductsList
         products={products}
+        searchQuery={searchQuery}
+        searchValue={searchQuery}
+        onSearchChange={onSearchChange}
+        onSearchCommit={onSearchCommit}
+        filterStatus={filterStatus}
+        filterCategory={filterCategory}
+        categoryOptions={categoryOptions}
+        onFilterStatusChange={v => {
+          setFilterStatus(v);
+          setPage(1);
+        }}
+        onFilterCategoryChange={v => {
+          setFilterCategory(v);
+          setPage(1);
+        }}
         page={page}
         totalPages={totalPages}
         onPreviousPage={() => setPage(Math.max(1, page - 1))}
