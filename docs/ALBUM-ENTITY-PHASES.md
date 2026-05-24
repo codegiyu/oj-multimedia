@@ -13,6 +13,7 @@ Phases 4–7 (images, admin modals, backend, admin dashboard) are **done**. Rema
 | 8 | Public albums (list, detail, search, artist profile) | oj-multimedia |
 | 9 | Admin music ↔ album linking (picker, table, drawer) | oj-multimedia (+ admin music album populate) |
 | 10 | Public music album surfacing (API shaping, detail breadcrumb, card label) | oj-multimedia + oj-backend |
+| 11 | Artist album requests via WhatsApp (modal, portal albums, manage on detail) | oj-multimedia |
 
 ## Phase 8 — Public albums (done)
 
@@ -43,13 +44,15 @@ Phases 4–7 (images, admin modals, backend, admin dashboard) are **done**. Rema
 - Backend: include `album` (id, title, slug) on `shapeMusicListItem` / `shapeMusicDetail` (published albums only)
 - Frontend: breadcrumb / link on music detail; album label on `MusicCard`
 
-## Phase 11 — Artist-submitted albums (out of scope)
+## Phase 11 — Artist album requests via WhatsApp (done)
 
-**Not building:** artist portal album CRUD, approval queue, or self-service upload flows.
+**Goal:** Artists request album create/edit/delete through admin WhatsApp — no self-service album CRUD.
 
-**Operational workflow:** Artists may request an album via **WhatsApp** (or other offline channel). Admin creates the album in **Dashboard → Albums**, assigns ownership to the artist’s user account, then links tracks from **Music** (Phase 9).
+- `ManageAlbumWhatsAppModal`: confirm intent (create / edit / delete), then **Proceed on WhatsApp** with a pre-filled message to site `contactInfo.whatsapp`
+- Public **album detail**: **Manage album** for the owning artist (via `ARTIST_GET_ME`)
+- **Artist portal → My albums** (`/account/artist-portal/albums`): list published albums, per-album manage, **Request new album**
 
-Document this in admin-facing help/runbook when needed.
+**Not building:** artist portal album CRUD, approval queue, or direct admin bypass.
 
 ## Phase 12 — Release & observability (current)
 
