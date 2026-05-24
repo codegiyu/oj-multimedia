@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { motion } from 'motion/react';
 import { ArrowLeft, Calendar, DiscAlbum, ListMusic } from 'lucide-react';
 import Link from 'next/link';
@@ -10,6 +11,7 @@ import { MultilineText } from '@/components/general/MultilineText';
 import type { PublicAlbumCard } from '@/lib/utils/publicApiMappers';
 import type { PublicAlbumTrackItem } from '@/lib/constants/endpoints';
 import { mapPublicAlbumTrackToMusicCardProps } from '@/lib/utils/publicApiMappers';
+import { sendContentAnalyticsEvent } from '@/lib/services/contentAnalytics';
 import { AlbumManageButton } from './AlbumManageButton';
 
 interface AlbumDetailPageClientProps {
@@ -18,6 +20,12 @@ interface AlbumDetailPageClientProps {
 }
 
 export function AlbumDetailPageClient({ album, tracks }: AlbumDetailPageClientProps) {
+  const entityId = album.slug || album._id;
+
+  useEffect(() => {
+    sendContentAnalyticsEvent('album', entityId, 'view');
+  }, [entityId]);
+
   const releaseLabel = album.releaseDate
     ? new Date(album.releaseDate).toLocaleDateString(undefined, {
         month: 'long',

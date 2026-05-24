@@ -331,7 +331,7 @@ export interface IAdminUsersSearchRes {
   users: IAdminUserSearchItem[];
 }
 
-export type PublicContentEntityType = 'music' | 'video' | 'devotional' | 'news-article';
+export type PublicContentEntityType = 'music' | 'video' | 'devotional' | 'news-article' | 'album';
 
 export interface IPublicContentAnalyticsEventPayload {
   entityType: PublicContentEntityType;
