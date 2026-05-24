@@ -9,6 +9,7 @@ import {
   Settings,
   ShoppingBag,
   Store,
+  DiscAlbum,
   // User,
   Video,
   Heart,
@@ -36,6 +37,7 @@ export const USER_ACCOUNT_NAV: UserDashboardNavItem[] = [
 export const USER_ARTIST_NAV: UserDashboardNavItem[] = [
   { href: '/account/artist-portal', label: 'Overview', icon: LayoutDashboard, exact: true },
   { href: '/account/artist-portal/music', label: 'My Music', icon: Music2 },
+  { href: '/account/artist-portal/albums', label: 'My Albums', icon: DiscAlbum },
   { href: '/account/artist-portal/videos', label: 'My Videos', icon: Video },
   { href: '/account/artist-portal/upload', label: 'Submit content', icon: MessageCircle },
   { href: '/account/artist-portal/settings', label: 'Settings', icon: Settings },

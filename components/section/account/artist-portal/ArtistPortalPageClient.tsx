@@ -5,7 +5,15 @@ import { useRouter } from 'next/navigation';
 import { DashboardPageHeader, DashboardStatCard } from '@/components/layout/user-dashboard';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Music2, Video, MessageCircle, BarChart3, TrendingUp, Download } from 'lucide-react';
+import {
+  Music2,
+  Video,
+  MessageCircle,
+  BarChart3,
+  TrendingUp,
+  Download,
+  DiscAlbum,
+} from 'lucide-react';
 import type { IArtistDashboardStatsRes, IArtistMeRes } from '@/lib/constants/endpoints';
 import { cn } from '@/lib/utils';
 import { formatCompactNumber } from '@/lib/utils/general';
@@ -190,7 +198,7 @@ export function ArtistPortalPageClient({
         </div>
       </Card>
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
         <Card className="border-border/80 p-6 shadow-sm transition-shadow hover:shadow-md">
           <Music2 className="mb-3 h-8 w-8 text-primary" />
           <h3 className="font-semibold text-foreground">My music</h3>
@@ -205,6 +213,16 @@ export function ArtistPortalPageClient({
           <p className="mt-1 text-sm text-muted-foreground">Keep video content up to date.</p>
           <Button asChild variant="outline" className="mt-4 rounded-full">
             <Link href="/account/artist-portal/videos">Open videos</Link>
+          </Button>
+        </Card>
+        <Card className="border-border/80 p-6 shadow-sm transition-shadow hover:shadow-md">
+          <DiscAlbum className="mb-3 h-8 w-8 text-primary" />
+          <h3 className="font-semibold text-foreground">My albums</h3>
+          <p className="mt-1 text-sm text-muted-foreground">
+            View albums on the site and request changes via WhatsApp.
+          </p>
+          <Button asChild variant="outline" className="mt-4 rounded-full">
+            <Link href="/account/artist-portal/albums">Open albums</Link>
           </Button>
         </Card>
         <Card className="border-border/80 p-6 shadow-sm transition-shadow hover:shadow-md">

@@ -10,6 +10,7 @@ import { MultilineText } from '@/components/general/MultilineText';
 import type { PublicAlbumCard } from '@/lib/utils/publicApiMappers';
 import type { PublicAlbumTrackItem } from '@/lib/constants/endpoints';
 import { mapPublicAlbumTrackToMusicCardProps } from '@/lib/utils/publicApiMappers';
+import { AlbumManageButton } from './AlbumManageButton';
 
 interface AlbumDetailPageClientProps {
   album: PublicAlbumCard & { description?: string };
@@ -38,15 +39,24 @@ export function AlbumDetailPageClient({ album, tracks }: AlbumDetailPageClientPr
         <div className="absolute inset-0 bg-gradient-to-t from-foreground via-foreground/60 to-transparent" />
         <div className="absolute inset-0">
           <div className="container h-full flex flex-col justify-between px-6 pt-28 pb-8 mx-auto text-primary-foreground">
-            <Link href="/music/albums">
-              <Button
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <Link href="/music/albums">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="gap-2 bg-background/80 backdrop-blur-sm text-foreground hover:bg-background">
+                  <ArrowLeft className="w-4 h-4" />
+                  Back to Albums
+                </Button>
+              </Link>
+              <AlbumManageButton
+                albumArtistId={album.artist._id}
+                album={{ _id: album._id, title: album.title, slug: album.slug }}
+                artistName={album.artist.name}
                 variant="ghost"
-                size="sm"
-                className="gap-2 bg-background/80 backdrop-blur-sm text-foreground hover:bg-background">
-                <ArrowLeft className="w-4 h-4" />
-                Back to Albums
-              </Button>
-            </Link>
+                className="gap-2 bg-background/80 backdrop-blur-sm text-foreground hover:bg-background"
+              />
+            </div>
             <div className="max-w-3xl">
               <p className="text-sm uppercase tracking-wide opacity-80 mb-2 flex items-center gap-2">
                 <DiscAlbum className="w-4 h-4" />
