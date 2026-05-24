@@ -9,7 +9,9 @@ import Link from 'next/link';
 import { callApi } from '@/lib/services/callApi';
 import type { ArtistVideoListItem } from '@/lib/constants/endpoints';
 import type { ApiErrorResponse } from '@/lib/types/http';
-import { Video, Loader2, MessageCircle } from 'lucide-react';
+import { Video, Loader2, MessageCircle, Plus, Pencil } from 'lucide-react';
+import { ArtistVideoFormModalDynamic } from './ArtistVideoFormModalDynamic';
+import { ArtistContentMonetizationBadge } from './ArtistContentMonetizationBadge';
 import { EmptyState } from '@/components/section/news/EmptyState';
 
 const STATUS_FILTERS: Array<{ value: '' | 'draft' | 'published' | 'archived'; label: string }> = [
@@ -38,7 +40,23 @@ export function ArtistPortalVideosPageClient({
   const [status, setStatus] = useQueryState('status', parseAsString.withDefault(''));
   const [totalPages, setTotalPages] = useState(initialTotalPages);
   const [reloadIndex, setReloadIndex] = useState(0);
+  const [formOpen, setFormOpen] = useState(false);
+  const [editId, setEditId] = useState<string | null>(null);
   const didMountRef = useRef(false);
+
+  const openCreate = () => {
+    setEditId(null);
+    setFormOpen(true);
+  };
+
+  const openEdit = (id: string) => {
+    setEditId(id);
+    setFormOpen(true);
+  };
+
+  const handleFormSuccess = () => {
+    setReloadIndex(prev => prev + 1);
+  };
 
   useEffect(() => {
     if (!didMountRef.current) {
@@ -97,14 +115,30 @@ export function ArtistPortalVideosPageClient({
 
       <DashboardPageHeader
         title="My videos"
-        description="Videos go live after admins publish—submit files via the submit page">
-        <Button asChild className="rounded-full bg-primary hover:bg-primary/90 gap-2">
-          <Link href="/account/artist-portal/upload">
-            <MessageCircle className="h-4 w-4" />
-            Submit new video
-          </Link>
-        </Button>
+        description="Create drafts here or message the team for help publishing">
+        <div className="flex flex-wrap gap-2">
+          <Button
+            type="button"
+            className="rounded-full bg-primary hover:bg-primary/90 gap-2"
+            onClick={openCreate}>
+            <Plus className="h-4 w-4" />
+            Add video
+          </Button>
+          <Button asChild variant="outline" className="rounded-full gap-2">
+            <Link href="/account/artist-portal/upload">
+              <MessageCircle className="h-4 w-4" />
+              Message team
+            </Link>
+          </Button>
+        </div>
       </DashboardPageHeader>
+
+      <ArtistVideoFormModalDynamic
+        open={formOpen}
+        onOpenChange={setFormOpen}
+        editId={editId}
+        onSuccess={handleFormSuccess}
+      />
 
       {errorMessage && (
         <div className="rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive flex items-center justify-between gap-4">
@@ -134,10 +168,10 @@ export function ArtistPortalVideosPageClient({
       {videos.length === 0 ? (
         <EmptyState
           title="No videos yet"
-          description="Send your video files to our team on the submit page (WhatsApp or contact). Admins publish after review."
+          description="Add a draft from this page or message the team on the submit page. Admins publish after review."
           icon={<Video className="w-12 h-12 text-muted-foreground" />}
-          actionLabel="Submit a video"
-          actionHref="/account/artist-portal/upload"
+          actionLabel="Add video"
+          onAction={openCreate}
           showDefaultActions={false}
         />
       ) : (
@@ -153,7 +187,11 @@ export function ArtistPortalVideosPageClient({
                   {item.views ?? 0}
                 </p>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+                <ArtistContentMonetizationBadge
+                  isMonetizable={item.isMonetizable}
+                  price={item.price}
+                />
                 <span
                   className={`text-xs font-medium px-2 py-1 rounded-full ${
                     item.status === 'published'
@@ -164,8 +202,14 @@ export function ArtistPortalVideosPageClient({
                   }`}>
                   {item.status}
                 </span>
-                <Button asChild size="sm" variant="outline">
-                  <Link href="/account/artist-portal/upload">Request updates</Link>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  className="gap-1"
+                  onClick={() => openEdit(item._id)}>
+                  <Pencil className="h-3.5 w-3.5" />
+                  Edit
                 </Button>
               </div>
             </Card>

@@ -9,7 +9,9 @@ import Link from 'next/link';
 import { callApi } from '@/lib/services/callApi';
 import type { ArtistMusicListItem } from '@/lib/constants/endpoints';
 import type { ApiErrorResponse } from '@/lib/types/http';
-import { Loader2, MessageCircle } from 'lucide-react';
+import { Loader2, MessageCircle, Plus, Pencil } from 'lucide-react';
+import { ArtistMusicFormModalDynamic } from './ArtistMusicFormModalDynamic';
+import { ArtistContentMonetizationBadge } from './ArtistContentMonetizationBadge';
 
 const STATUS_FILTERS: Array<{ value: '' | 'draft' | 'published' | 'archived'; label: string }> = [
   { value: '', label: 'All' },
@@ -37,7 +39,23 @@ export function ArtistPortalMusicPageClient({
   const [status, setStatus] = useQueryState('status', parseAsString.withDefault(''));
   const [totalPages, setTotalPages] = useState(initialTotalPages);
   const [reloadIndex, setReloadIndex] = useState(0);
+  const [formOpen, setFormOpen] = useState(false);
+  const [editId, setEditId] = useState<string | null>(null);
   const didMountRef = useRef(false);
+
+  const openCreate = () => {
+    setEditId(null);
+    setFormOpen(true);
+  };
+
+  const openEdit = (id: string) => {
+    setEditId(id);
+    setFormOpen(true);
+  };
+
+  const handleFormSuccess = () => {
+    setReloadIndex(prev => prev + 1);
+  };
 
   useEffect(() => {
     if (!didMountRef.current) {
@@ -103,14 +121,30 @@ export function ArtistPortalMusicPageClient({
 
       <DashboardPageHeader
         title="My music"
-        description="Tracks published by our team after you submit via WhatsApp or contact">
-        <Button asChild className="rounded-full bg-primary hover:bg-primary/90 gap-2">
-          <Link href="/account/artist-portal/upload">
-            <MessageCircle className="h-4 w-4" />
-            Submit new track
-          </Link>
-        </Button>
+        description="Create drafts here or message the team for help publishing">
+        <div className="flex flex-wrap gap-2">
+          <Button
+            type="button"
+            className="rounded-full bg-primary hover:bg-primary/90 gap-2"
+            onClick={openCreate}>
+            <Plus className="h-4 w-4" />
+            Add track
+          </Button>
+          <Button asChild variant="outline" className="rounded-full gap-2">
+            <Link href="/account/artist-portal/upload">
+              <MessageCircle className="h-4 w-4" />
+              Message team
+            </Link>
+          </Button>
+        </div>
       </DashboardPageHeader>
+
+      <ArtistMusicFormModalDynamic
+        open={formOpen}
+        onOpenChange={setFormOpen}
+        editId={editId}
+        onSuccess={handleFormSuccess}
+      />
 
       {errorMessage && (
         <div className="rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive flex items-center justify-between gap-4">
@@ -140,15 +174,21 @@ export function ArtistPortalMusicPageClient({
       {music.length === 0 ? (
         <Card className="p-8 text-center">
           <p className="text-muted-foreground">
-            You do not have any tracks yet. Message our team on the submit page to send files for
-            admin publishing.
+            You do not have any tracks yet. Add a draft below or message our team on the submit
+            page.
           </p>
-          <Button asChild variant="outline" className="mt-4 gap-2">
-            <Link href="/account/artist-portal/upload">
-              <MessageCircle className="h-4 w-4" />
-              Submit a track
-            </Link>
-          </Button>
+          <div className="mt-4 flex flex-wrap justify-center gap-2">
+            <Button type="button" className="gap-2" onClick={openCreate}>
+              <Plus className="h-4 w-4" />
+              Add track
+            </Button>
+            <Button asChild variant="outline" className="gap-2">
+              <Link href="/account/artist-portal/upload">
+                <MessageCircle className="h-4 w-4" />
+                Message team
+              </Link>
+            </Button>
+          </div>
         </Card>
       ) : (
         <div className="space-y-3">
@@ -164,7 +204,11 @@ export function ArtistPortalMusicPageClient({
                   {'downloads' in item && typeof item.downloads === 'number' ? item.downloads : 0}
                 </p>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+                <ArtistContentMonetizationBadge
+                  isMonetizable={item.isMonetizable}
+                  price={item.price}
+                />
                 <span
                   className={`text-xs font-medium px-2 py-1 rounded-full ${
                     item.status === 'published'
@@ -175,8 +219,14 @@ export function ArtistPortalMusicPageClient({
                   }`}>
                   {item.status}
                 </span>
-                <Button asChild size="sm" variant="outline">
-                  <Link href="/account/artist-portal/upload">Request updates</Link>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  className="gap-1"
+                  onClick={() => openEdit(item._id)}>
+                  <Pencil className="h-3.5 w-3.5" />
+                  Edit
                 </Button>
               </div>
             </Card>

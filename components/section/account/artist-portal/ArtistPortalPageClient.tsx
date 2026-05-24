@@ -211,7 +211,7 @@ export function ArtistPortalPageClient({
           <MessageCircle className="mb-3 h-8 w-8 text-primary" />
           <h3 className="font-semibold text-foreground">Submit content</h3>
           <p className="mt-1 text-sm text-muted-foreground">
-            New music and videos are added by admins after you reach us on WhatsApp or contact.
+            Add drafts from My music or My videos, or message the team for publishing help.
           </p>
           <Button asChild className="mt-4 rounded-full bg-primary hover:bg-primary/90">
             <Link href="/account/artist-portal/upload">Open submit page</Link>
