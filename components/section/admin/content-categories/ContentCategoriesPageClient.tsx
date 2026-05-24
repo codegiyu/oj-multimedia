@@ -23,6 +23,7 @@ import { ApprovalModal } from '@/components/section/admin/shared';
 import { useInitContentCategoriesStore } from '@/lib/store/useContentCategoriesStore';
 import { CONTENT_CATEGORY_IS_ACTIVE_FILTER_SELECT_OPTIONS } from '@/lib/constants/adminSelectOptions';
 import { useAdminListSearch } from '@/lib/hooks/useAdminListSearch';
+import { DASHBOARD_INLINE_TABLE_HUG_CLASS } from '@/lib/utils/dataTableColumnMeta';
 
 const scopeOptions: SelectOption[] = [
   { text: 'All scopes', value: 'all' },
@@ -259,7 +260,7 @@ export function ContentCategoriesPageClient({
                 <th className="p-3 font-medium">Scope</th>
                 <th className="p-3 font-medium">Order</th>
                 <th className="p-3 font-medium">Active</th>
-                <th className="p-3 w-24" />
+                <th className={`p-3 ${DASHBOARD_INLINE_TABLE_HUG_CLASS}`} />
               </tr>
             </thead>
             <tbody>
@@ -279,7 +280,7 @@ export function ContentCategoriesPageClient({
                     </td>
                     <td className="p-3">{c.displayOrder ?? 0}</td>
                     <td className="p-3">{c.isActive === false ? 'No' : 'Yes'}</td>
-                    <td className="p-3">
+                    <td className={`p-3 ${DASHBOARD_INLINE_TABLE_HUG_CLASS}`}>
                       <div className="flex gap-1">
                         <RegularBtn
                           type="button"

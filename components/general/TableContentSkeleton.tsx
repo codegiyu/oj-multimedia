@@ -6,6 +6,10 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Tabs, TabsList } from '@/components/ui/tabs';
 import { useIsMobile } from '@/lib/hooks/use-mobile';
 import { cn } from '@/lib/utils';
+import {
+  getDataTableColumnWidthStyle,
+  getDataTableHugClassName,
+} from '@/lib/utils/dataTableColumnMeta';
 
 interface TableContentSkeletonProps<TData> {
   columns: DataTableColumn<TData, unknown>[];
@@ -25,9 +29,6 @@ export function TableContentSkeleton<TData>({
   rowCount = 6,
 }: TableContentSkeletonProps<TData>) {
   const isMobile = useIsMobile();
-
-  const getWidthStyle = (value?: string | number) =>
-    typeof value === 'number' ? { width: `${value}px` } : value ? { width: value } : undefined;
 
   return (
     <Card className="w-full h-full bg-sidebar/75 border-0 pb-0 overflow-hidden grid grid-rows-[auto_1fr]">
@@ -89,11 +90,12 @@ export function TableContentSkeleton<TData>({
                         key={colIndex}
                         className={cn(
                           'bg-sidebar/75 border-r border-foreground/7 last:border-r-0 py-2.5 px-4',
+                          getDataTableHugClassName(meta),
                           meta?.align === 'center' && 'text-center',
                           meta?.align === 'right' && 'text-right',
                           meta?.headerClassName
                         )}
-                        style={getWidthStyle(meta?.width)}>
+                        style={getDataTableColumnWidthStyle(meta)}>
                         <Skeleton className="h-4 w-20" />
                       </th>
                     );
@@ -110,11 +112,12 @@ export function TableContentSkeleton<TData>({
                           key={colIndex}
                           className={cn(
                             'bg-background border-r border-foreground/7 last:border-r-0 p-0',
+                            getDataTableHugClassName(meta),
                             meta?.align === 'center' && 'text-center',
                             meta?.align === 'right' && 'text-right',
                             meta?.cellClassName
                           )}
-                          style={getWidthStyle(meta?.width)}>
+                          style={getDataTableColumnWidthStyle(meta)}>
                           <Skeleton className="h-6 w-[80%]" />
                         </td>
                       );

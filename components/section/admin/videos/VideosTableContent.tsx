@@ -16,6 +16,7 @@ import type { ArtistVideoListItem } from '@/lib/constants/endpoints';
 import { VideosActionsMenu } from './VideosActionsMenu';
 import { Badge } from '@/components/ui/badge';
 import { dashboardThumbnailColumn } from '@/components/general/dashboardTableThumbnailColumn';
+import { dashboardTableActionsColumn } from '@/components/general/dashboardTableActionsColumn';
 
 function truncate(str: string, maxLen: number) {
   if (str.length <= maxLen) return str;
@@ -99,20 +100,15 @@ export function VideosTableContent({
       dashboardTableDateColumn({
         getValue: row => row.createdAt,
       }),
-      {
-        id: 'actions',
-        header: null,
-        meta: { width: '3rem' },
-        cell: row => (
-          <VideosActionsMenu
-            video={row}
-            onApprove={onApprove}
-            onReject={onReject}
-            onEdit={onEdit}
-            onDelete={onDelete}
-          />
-        ),
-      },
+      dashboardTableActionsColumn(row => (
+        <VideosActionsMenu
+          video={row}
+          onApprove={onApprove}
+          onReject={onReject}
+          onEdit={onEdit}
+          onDelete={onDelete}
+        />
+      )),
     ],
     [onApprove, onReject, onEdit, onDelete]
   );

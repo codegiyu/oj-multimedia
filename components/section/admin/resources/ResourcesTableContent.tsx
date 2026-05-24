@@ -12,6 +12,7 @@ import type { ResourceListItem } from '@/lib/types/community';
 import { ResourcesActionsMenu } from './ResourcesActionsMenu';
 import { Badge } from '@/components/ui/badge';
 import { dashboardThumbnailColumn } from '@/components/general/dashboardTableThumbnailColumn';
+import { dashboardTableActionsColumn } from '@/components/general/dashboardTableActionsColumn';
 
 function truncate(str: string, maxLen: number) {
   if (str.length <= maxLen) return str;
@@ -81,20 +82,15 @@ export function ResourcesTableContent({
         ),
       },
       dashboardDownloadsColumn(row => row.downloads),
-      {
-        id: 'actions',
-        header: null,
-        meta: { width: '3rem' },
-        cell: (row, _idx) => (
-          <ResourcesActionsMenu
-            resource={row}
-            onApprove={onApprove}
-            onReject={onReject}
-            onEdit={onEdit}
-            onDelete={onDelete}
-          />
-        ),
-      },
+      dashboardTableActionsColumn((row, _idx) => (
+        <ResourcesActionsMenu
+          resource={row}
+          onApprove={onApprove}
+          onReject={onReject}
+          onEdit={onEdit}
+          onDelete={onDelete}
+        />
+      )),
     ],
     [onApprove, onReject, onEdit, onDelete]
   );

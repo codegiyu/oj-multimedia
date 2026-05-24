@@ -10,6 +10,7 @@ import {
 } from '@/components/general/DataTable';
 import type { PollListItem } from '@/lib/types/community';
 import { PollsActionsMenu } from './PollsActionsMenu';
+import { dashboardTableActionsColumn } from '@/components/general/dashboardTableActionsColumn';
 import { Badge } from '@/components/ui/badge';
 
 function truncate(str: string, maxLen: number) {
@@ -87,20 +88,15 @@ export function PollsTableContent({
         meta: { width: '12rem' },
         cell: row => <DataTableCellWrapper text={row.timeAgo}>{row.timeAgo}</DataTableCellWrapper>,
       },
-      {
-        id: 'actions',
-        header: null,
-        meta: { width: '3rem' },
-        cell: (row, _idx) => (
-          <PollsActionsMenu
-            poll={row}
-            onOpen={onOpen}
-            onClose={onClose}
-            onEdit={onEdit}
-            onDelete={onDelete}
-          />
-        ),
-      },
+      dashboardTableActionsColumn((row, _idx) => (
+        <PollsActionsMenu
+          poll={row}
+          onOpen={onOpen}
+          onClose={onClose}
+          onEdit={onEdit}
+          onDelete={onDelete}
+        />
+      )),
     ],
     []
   );

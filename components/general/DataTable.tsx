@@ -23,9 +23,14 @@ import { CheckCheck, Copy, Inbox, RefreshCw } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/section/news/EmptyState';
 import { ADMIN_DASHBOARD_LIST_PAGE_SIZE } from '@/lib/constants/pagination';
+import {
+  getDataTableColumnWidthStyle,
+  getDataTableHugClassName,
+} from '@/lib/utils/dataTableColumnMeta';
 
 export interface DataTableColumnMeta {
   width?: number | string;
+  hug?: boolean;
   align?: 'left' | 'center' | 'right';
   headerClassName?: string;
   cellClassName?: string;
@@ -71,10 +76,6 @@ export interface DataTableProps<TData> {
 }
 
 export const DEFAULT_PAGE_SIZE = ADMIN_DASHBOARD_LIST_PAGE_SIZE;
-
-function getWidthStyle(value?: string | number) {
-  return typeof value === 'number' ? { width: `${value}px` } : value ? { width: value } : undefined;
-}
 
 export function DataTable<TData>({
   title,
@@ -234,11 +235,12 @@ export function DataTable<TData>({
                         key={col.id}
                         className={cn(
                           'bg-sidebar/75 border-r border-foreground/7 last:border-r-0',
+                          getDataTableHugClassName(meta),
                           meta?.align === 'center' && 'text-center',
                           meta?.align === 'right' && 'text-right',
                           meta?.headerClassName
                         )}
-                        style={getWidthStyle(meta?.width)}>
+                        style={getDataTableColumnWidthStyle(meta)}>
                         {col.header}
                       </TableHead>
                     );
@@ -256,11 +258,12 @@ export function DataTable<TData>({
                             key={colIndex}
                             className={cn(
                               'bg-background border-r border-foreground/7 last:border-r-0',
+                              getDataTableHugClassName(meta),
                               meta?.align === 'center' && 'text-center',
                               meta?.align === 'right' && 'text-right',
                               meta?.cellClassName
                             )}
-                            style={getWidthStyle(meta?.width)}>
+                            style={getDataTableColumnWidthStyle(meta)}>
                             <Skeleton className="h-6 w-[80%]" />
                           </TableCell>
                         );
@@ -312,11 +315,12 @@ export function DataTable<TData>({
                             key={col.id}
                             className={cn(
                               'bg-background border-r border-foreground/7 last:border-r-0',
+                              getDataTableHugClassName(meta),
                               meta?.align === 'center' && 'text-center',
                               meta?.align === 'right' && 'text-right',
                               meta?.cellClassName
                             )}
-                            style={getWidthStyle(meta?.width)}>
+                            style={getDataTableColumnWidthStyle(meta)}>
                             {col.cell(row, rowIndex)}
                           </TableCell>
                         );

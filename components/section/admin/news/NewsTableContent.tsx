@@ -12,6 +12,7 @@ import type { PublicNewsListItem } from '@/lib/constants/endpoints';
 import { NewsActionsMenu } from './NewsActionsMenu';
 import { Badge } from '@/components/ui/badge';
 import { dashboardThumbnailColumn } from '@/components/general/dashboardTableThumbnailColumn';
+import { dashboardTableActionsColumn } from '@/components/general/dashboardTableActionsColumn';
 
 function truncate(str: string, maxLen: number) {
   if (str.length <= maxLen) return str;
@@ -73,12 +74,9 @@ export function NewsTableContent({
       dashboardTableDateColumn({
         getValue: row => row.createdAt,
       }),
-      {
-        id: 'actions',
-        header: null,
-        meta: { width: '3rem' },
-        cell: row => <NewsActionsMenu newsItem={row} onEdit={onEdit} onDelete={onDelete} />,
-      },
+      dashboardTableActionsColumn(row => (
+        <NewsActionsMenu newsItem={row} onEdit={onEdit} onDelete={onDelete} />
+      )),
     ],
     [onEdit, onDelete]
   );

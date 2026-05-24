@@ -12,6 +12,7 @@ import type { AlbumListItem } from '@/lib/types/community';
 import { AlbumsActionsMenu } from './AlbumsActionsMenu';
 import { Badge } from '@/components/ui/badge';
 import { dashboardThumbnailColumn } from '@/components/general/dashboardTableThumbnailColumn';
+import { dashboardTableActionsColumn } from '@/components/general/dashboardTableActionsColumn';
 
 function truncate(str: string, maxLen: number) {
   if (str.length <= maxLen) return str;
@@ -107,12 +108,9 @@ export function AlbumsTableContent({
         header: 'Created',
         getValue: row => row.createdAt,
       }),
-      {
-        id: 'actions',
-        header: null,
-        meta: { width: '3rem' },
-        cell: row => <AlbumsActionsMenu album={row} onEdit={onEdit} onDelete={onDelete} />,
-      },
+      dashboardTableActionsColumn(row => (
+        <AlbumsActionsMenu album={row} onEdit={onEdit} onDelete={onDelete} />
+      )),
     ],
     [onEdit, onDelete]
   );
