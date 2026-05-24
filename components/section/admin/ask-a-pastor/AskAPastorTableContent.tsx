@@ -10,6 +10,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import type { QuestionListItem } from '@/lib/types/community';
 import { AskAPastorActionsMenu } from './AskAPastorActionsMenu';
+import { dashboardThumbnailColumn } from '@/components/general/dashboardTableThumbnailColumn';
 
 function truncate(str: string, maxLen: number) {
   if (str.length <= maxLen) return str;
@@ -36,6 +37,14 @@ interface AskAPastorTableContentProps {
   onDelete: (question: QuestionListItem) => void;
 }
 
+function pastorImage(row: QuestionListItem): string | undefined {
+  if (typeof row.pastor === 'object' && row.pastor && 'image' in row.pastor) {
+    return row.pastor.image;
+  }
+
+  return undefined;
+}
+
 export function AskAPastorTableContent({
   questions,
   loading,
@@ -52,6 +61,14 @@ export function AskAPastorTableContent({
 }: AskAPastorTableContentProps) {
   const columns = useMemo<DataTableColumn<QuestionListItem, unknown>[]>(
     () => [
+      dashboardThumbnailColumn(
+        row => pastorImage(row),
+        row => row.author,
+        {
+          header: 'Pastor',
+          rounded: 'full',
+        }
+      ),
       {
         id: 'question',
         header: <DataTableColumnHeader title="Question" />,

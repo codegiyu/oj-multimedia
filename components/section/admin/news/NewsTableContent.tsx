@@ -11,6 +11,7 @@ import {
 import type { PublicNewsListItem } from '@/lib/constants/endpoints';
 import { NewsActionsMenu } from './NewsActionsMenu';
 import { Badge } from '@/components/ui/badge';
+import { dashboardThumbnailColumn } from '@/components/general/dashboardTableThumbnailColumn';
 
 function truncate(str: string, maxLen: number) {
   if (str.length <= maxLen) return str;
@@ -47,6 +48,10 @@ export function NewsTableContent({
 }: NewsTableContentProps) {
   const columns = useMemo<DataTableColumn<PublicNewsListItem, unknown>[]>(
     () => [
+      dashboardThumbnailColumn(
+        row => row.coverImage,
+        row => row.title
+      ),
       {
         id: 'title',
         header: <DataTableColumnHeader title="Title" />,

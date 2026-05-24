@@ -8,6 +8,8 @@ import { format } from 'date-fns';
 import { Video, User, FileText, Calendar, Hash } from 'lucide-react';
 import type { ArtistVideoListItem } from '@/lib/constants/endpoints';
 import { InfoCard } from '@/components/general/InfoCard';
+import { DashboardThumbnail } from '@/components/general/DashboardThumbnail';
+import { DrawerMediaPreview } from '@/components/general/DrawerMediaPreview';
 
 function artistName(artist: ArtistVideoListItem['artist']): string {
   if (!artist) return '—';
@@ -21,7 +23,8 @@ function DetailsHeader({
 }) {
   const video = rowDetails.data;
   return (
-    <div className="flex gap-3 items-center">
+    <div className="flex gap-3 items-start">
+      <DashboardThumbnail src={video.thumbnail} alt={video.title} size={48} />
       <div className="grid gap-2 flex-1">
         <h2 className="text-[1.125rem] leading-none font-semibold -tracking-[0.36px] text-foreground/90">
           {video.title}
@@ -45,6 +48,7 @@ function DetailsReadOnly({
   const em = (video as { embedUrl?: string }).embedUrl;
   return (
     <div className="grid gap-4 p-4">
+      <DrawerMediaPreview src={video.thumbnail} alt={video.title} />
       <div className="grid gap-3">
         <InfoCard icon={Video} label="Title" value={video.title} />
         <InfoCard icon={User} label="Artist" value={artistName(video.artist)} />

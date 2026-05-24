@@ -8,6 +8,16 @@ import { FileText, User, Hash } from 'lucide-react';
 import type { QuestionListItem } from '@/lib/types/community';
 import { InfoCard } from '@/components/general/InfoCard';
 import { MultilineText } from '@/components/general/MultilineText';
+import { DashboardThumbnail } from '@/components/general/DashboardThumbnail';
+import { DrawerMediaPreview } from '@/components/general/DrawerMediaPreview';
+
+function pastorImage(q: QuestionListItem): string | undefined {
+  if (typeof q.pastor === 'object' && q.pastor && 'image' in q.pastor) {
+    return q.pastor.image;
+  }
+
+  return undefined;
+}
 
 function DetailsHeader({
   rowDetails,
@@ -18,7 +28,8 @@ function DetailsHeader({
   const status = (q as QuestionListItem & { status?: string }).status;
 
   return (
-    <div className="flex gap-3 items-center">
+    <div className="flex gap-3 items-start">
+      <DashboardThumbnail src={pastorImage(q)} alt={q.author} size={48} rounded="full" />
       <div className="grid gap-2 flex-1">
         <h2 className="text-[1.125rem] leading-none font-semibold -tracking-[0.36px] text-foreground/90">
           {truncateQuestion(q.question)}
@@ -52,6 +63,7 @@ function DetailsContent({
 
   return (
     <div className="grid gap-4 p-4">
+      <DrawerMediaPreview src={pastorImage(q)} alt={pastorName || q.author} size="sm" />
       <div className="grid gap-3">
         <InfoCard icon={FileText} label="Question" value={q.question} preserveParagraphs />
         <InfoCard icon={User} label="Author" value={q.author} />

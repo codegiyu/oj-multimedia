@@ -9,6 +9,8 @@ import { User, FileText, Hash, BarChart3 } from 'lucide-react';
 import type { ArtistListItem } from '@/lib/types/community';
 import type { PastorListItem } from '@/lib/types/community';
 import { InfoCard } from '@/components/general/InfoCard';
+import { DashboardThumbnail } from '@/components/general/DashboardThumbnail';
+import { DrawerMediaPreview } from '@/components/general/DrawerMediaPreview';
 import { callApi } from '@/lib/services/callApi';
 import type { IAdminArtistDashboardStatsRes } from '@/lib/constants/endpoints';
 
@@ -25,8 +27,15 @@ function ArtistDetails({
 }) {
   return (
     <div className="grid gap-4 p-4">
+      <DrawerMediaPreview src={data.image} alt={data.name} size="sm" />
       <div className="grid gap-3">
         <InfoCard icon={User} label="Name" value={data.name} />
+        <InfoCard
+          icon={FileText}
+          label="Image URL"
+          value={data.image ?? '—'}
+          className="[&_.line-clamp-1]:line-clamp-none"
+        />
         <InfoCard icon={FileText} label="Slug" value={data.slug} />
         <InfoCard icon={FileText} label="Genre" value={data.genre ?? '—'} />
         <InfoCard icon={Hash} label="ID" value={data._id} hasCopy copyValue={data._id} />
@@ -93,8 +102,15 @@ function ArtistDetails({
 function PastorDetails({ data }: { data: PastorListItem }) {
   return (
     <div className="grid gap-4 p-4">
+      <DrawerMediaPreview src={data.image} alt={data.name} size="sm" />
       <div className="grid gap-3">
         <InfoCard icon={User} label="Name" value={data.name} />
+        <InfoCard
+          icon={FileText}
+          label="Image URL"
+          value={data.image ?? '—'}
+          className="[&_.line-clamp-1]:line-clamp-none"
+        />
         <InfoCard icon={FileText} label="Title" value={data.title ?? '—'} />
         <InfoCard icon={FileText} label="Church" value={data.church ?? '—'} />
         <InfoCard icon={Hash} label="ID" value={data._id} hasCopy copyValue={data._id} />
@@ -170,7 +186,13 @@ export function ArtistsPastorsDetailsDrawer({
       showMeta={false}
       setShowMeta={() => {}}
       header={
-        <div className="flex gap-3 items-center">
+        <div className="flex gap-3 items-start">
+          <DashboardThumbnail
+            src={(data as ArtistListItem | PastorListItem).image}
+            alt={title}
+            size={48}
+            rounded="full"
+          />
           <div className="grid gap-2 flex-1">
             <h2 className="text-[1.125rem] leading-none font-semibold -tracking-[0.36px] text-foreground/90">
               {title}

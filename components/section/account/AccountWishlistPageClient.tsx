@@ -102,17 +102,12 @@ export function AccountWishlistPageClient({
                 !inStock && 'opacity-80'
               )}>
               <div className="relative aspect-square bg-muted">
-                {imageUrl ? (
-                  <FillImage
-                    src={imageUrl}
-                    alt={`${item.product.name} preview`}
-                    sizes="(max-width: 768px) 50vw, 280px"
-                  />
-                ) : (
-                  <div className="flex h-full items-center justify-center text-muted-foreground">
-                    <Heart className="h-10 w-10" />
-                  </div>
-                )}
+                <FillImage
+                  src={imageUrl ?? ''}
+                  alt={`${item.product.name} preview`}
+                  imageContext="dashboard"
+                  sizes="(max-width: 768px) 50vw, 280px"
+                />
                 <button
                   type="button"
                   className="absolute left-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-md"

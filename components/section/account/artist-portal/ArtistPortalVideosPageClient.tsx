@@ -12,6 +12,7 @@ import type { ApiErrorResponse } from '@/lib/types/http';
 import { Video, Loader2, MessageCircle, Plus, Pencil } from 'lucide-react';
 import { ArtistVideoFormModalDynamic } from './ArtistVideoFormModalDynamic';
 import { ArtistContentMonetizationBadge } from './ArtistContentMonetizationBadge';
+import { DashboardThumbnail } from '@/components/general/DashboardThumbnail';
 import { EmptyState } from '@/components/section/news/EmptyState';
 
 const STATUS_FILTERS: Array<{ value: '' | 'draft' | 'published' | 'archived'; label: string }> = [
@@ -180,12 +181,15 @@ export function ArtistPortalVideosPageClient({
             <Card
               key={item._id}
               className="p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <div>
-                <p className="font-semibold text-foreground">{item.title}</p>
-                <p className="text-xs text-muted-foreground">
-                  {item.createdAt ? new Date(item.createdAt).toLocaleDateString() : ''} · Views{' '}
-                  {item.views ?? 0}
-                </p>
+              <div className="flex items-center gap-4 min-w-0">
+                <DashboardThumbnail src={item.thumbnail} alt={item.title} />
+                <div>
+                  <p className="font-semibold text-foreground">{item.title}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {item.createdAt ? new Date(item.createdAt).toLocaleDateString() : ''} · Views{' '}
+                    {item.views ?? 0}
+                  </p>
+                </div>
               </div>
               <div className="flex flex-wrap items-center gap-2 sm:justify-end">
                 <ArtistContentMonetizationBadge

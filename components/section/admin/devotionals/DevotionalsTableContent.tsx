@@ -11,6 +11,7 @@ import {
 import type { DevotionalListItem } from '@/lib/types/community';
 import { DevotionalsActionsMenu } from './DevotionalsActionsMenu';
 import { Badge } from '@/components/ui/badge';
+import { dashboardThumbnailColumn } from '@/components/general/dashboardTableThumbnailColumn';
 
 function truncate(str: string, maxLen: number) {
   if (str.length <= maxLen) return str;
@@ -51,6 +52,10 @@ export function DevotionalsTableContent({
 }: DevotionalsTableContentProps) {
   const columns = useMemo<DataTableColumn<DevotionalListItem, unknown>[]>(
     () => [
+      dashboardThumbnailColumn(
+        row => (row as { coverImage?: string }).coverImage,
+        row => row.title
+      ),
       {
         id: 'title',
         header: <DataTableColumnHeader title="Title" />,

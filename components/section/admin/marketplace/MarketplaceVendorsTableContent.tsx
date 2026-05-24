@@ -12,6 +12,7 @@ import {
 import type { IMarketplaceVendor } from '@/lib/constants/endpoints';
 import { MarketplaceVendorsActionsMenu } from './MarketplaceVendorsActionsMenu';
 import { Badge } from '@/components/ui/badge';
+import { dashboardThumbnailColumn } from '@/components/general/dashboardTableThumbnailColumn';
 
 function truncate(str: string, maxLen: number) {
   if (str.length <= maxLen) return str;
@@ -65,6 +66,14 @@ export function MarketplaceVendorsTableContent({
 }: MarketplaceVendorsTableContentProps) {
   const columns = useMemo<DataTableColumn<IMarketplaceVendor, unknown>[]>(
     () => [
+      dashboardThumbnailColumn(
+        row => row.logo,
+        row => row.storeName,
+        {
+          header: 'Logo',
+          rounded: 'full',
+        }
+      ),
       {
         id: 'storeName',
         header: <DataTableColumnHeader title="Store" />,

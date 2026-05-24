@@ -8,6 +8,8 @@ import { format } from 'date-fns';
 import { FileText, User, Hash, Calendar } from 'lucide-react';
 import type { DevotionalListItem, DevotionalDetail } from '@/lib/types/community';
 import { InfoCard } from '@/components/general/InfoCard';
+import { DashboardThumbnail } from '@/components/general/DashboardThumbnail';
+import { DrawerMediaPreview } from '@/components/general/DrawerMediaPreview';
 
 function devotionalArtistLabel(d: DevotionalListItem | DevotionalDetail): string {
   const a = d.artist;
@@ -24,7 +26,12 @@ function DetailsHeader({
   const devotional = rowDetails.data;
   const status = devotional.status;
   return (
-    <div className="flex gap-3 items-center">
+    <div className="flex gap-3 items-start">
+      <DashboardThumbnail
+        src={(devotional as { coverImage?: string }).coverImage}
+        alt={devotional.title}
+        size={48}
+      />
       <div className="grid gap-2 flex-1">
         <h2 className="text-[1.125rem] leading-none font-semibold -tracking-[0.36px] text-foreground/90">
           {devotional.title}
@@ -48,6 +55,10 @@ function DetailsReadOnly({
 
   return (
     <div className="grid gap-4 p-4">
+      <DrawerMediaPreview
+        src={(devotional as { coverImage?: string }).coverImage}
+        alt={devotional.title}
+      />
       <div className="grid gap-3">
         <InfoCard icon={FileText} label="Title" value={devotional.title} />
         <InfoCard icon={User} label="Author" value={devotional.author ?? '—'} />

@@ -7,6 +7,8 @@ import {
 import { FileText, User, Hash } from 'lucide-react';
 import type { TestimonyListItem } from '@/lib/types/community';
 import { InfoCard } from '@/components/general/InfoCard';
+import { DashboardThumbnail } from '@/components/general/DashboardThumbnail';
+import { DrawerMediaPreview } from '@/components/general/DrawerMediaPreview';
 
 function DetailsHeader({
   rowDetails,
@@ -16,7 +18,8 @@ function DetailsHeader({
   const testimony = rowDetails.data;
   const status = (testimony as { status?: string }).status;
   return (
-    <div className="flex gap-3 items-center">
+    <div className="flex gap-3 items-start">
+      <DashboardThumbnail src={testimony.avatar} alt={testimony.author} size={48} rounded="full" />
       <div className="grid gap-2 flex-1">
         <h2 className="text-[1.125rem] leading-none font-semibold -tracking-[0.36px] text-foreground/90">
           Testimony by {testimony.author}
@@ -39,8 +42,15 @@ function DetailsContent({
 
   return (
     <div className="grid gap-4 p-4">
+      <DrawerMediaPreview src={testimony.avatar} alt={testimony.author} size="sm" />
       <div className="grid gap-3">
         <InfoCard icon={User} label="Author" value={testimony.author} />
+        <InfoCard
+          icon={FileText}
+          label="Avatar URL"
+          value={testimony.avatar ?? '—'}
+          className="[&_.line-clamp-1]:line-clamp-none"
+        />
         <InfoCard icon={FileText} label="Status" value={status ?? '—'} />
         <InfoCard icon={FileText} label="Category" value={testimony.category ?? '—'} />
         <InfoCard

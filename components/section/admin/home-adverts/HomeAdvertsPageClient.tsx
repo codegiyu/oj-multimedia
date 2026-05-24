@@ -300,13 +300,12 @@ export function HomeAdvertsPageClient({
                   <tr key={a._id} className="border-b border-border/60 hover:bg-muted/30">
                     <td className="p-3">
                       <div className="relative h-10 w-16 overflow-hidden rounded bg-muted">
-                        {a.imageUrl ? (
-                          <FillImage
-                            src={a.imageUrl}
-                            alt={`Home advert preview (${a.slot})`}
-                            sizes="64px"
-                          />
-                        ) : null}
+                        <FillImage
+                          src={a.imageUrl ?? ''}
+                          alt={`Home advert preview (${a.slot})`}
+                          imageContext="dashboard"
+                          sizes="64px"
+                        />
                       </div>
                     </td>
                     <td className="p-3">
