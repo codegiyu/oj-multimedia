@@ -10,8 +10,10 @@ Phases 4–7 (images, admin modals, backend, admin dashboard) are **done**. Rema
 | 5 | Image upload on six admin modals | oj-multimedia |
 | 6 | Album model, APIs, `Music.album` ref, search (backend) | oj-backend (+ minimal types) |
 | 7 | Admin albums dashboard (list, drawer, modal, nav) | oj-multimedia |
+| 8 | Public albums (list, detail, search, artist profile) | oj-multimedia |
+| 9 | Admin music ↔ album linking (picker, table, drawer) | oj-multimedia (+ admin music album populate) |
 
-## Phase 8 — Public albums (current)
+## Phase 8 — Public albums (done)
 
 **Goal:** Visitors can browse and open published albums; albums appear on the music hub, search, and artist profiles.
 
@@ -24,16 +26,16 @@ Phases 4–7 (images, admin modals, backend, admin dashboard) are **done**. Rema
 
 **Not in Phase 8:** artist portal submission, admin music album picker.
 
-## Phase 9 — Admin ↔ music linking (cross-cutting)
+## Phase 9 — Admin ↔ music linking (done)
 
 **Goal:** Admins can attach tracks to albums without raw IDs.
 
 - `CreateMusicModal`: album select (published albums for same artist)
-- Optional: show album on admin music table/drawer
+- Admin music table/drawer show linked album title
 
-**Risks:** Artist mismatch — backend already validates; UI should filter albums by resolved artist.
+**Risks:** Artist mismatch — backend already validates; UI filters albums by resolved artist.
 
-## Phase 10 — Public music ↔ album surfacing (cross-cutting)
+## Phase 10 — Public music ↔ album surfacing (current)
 
 **Goal:** Track pages and lists expose album context when `Music.album` is set.
 

@@ -42,6 +42,11 @@ import {
   PUBLISHABLE_STATUS_SELECT_OPTIONS,
   PUBLISHABLE_STATUS_VALUES,
 } from '@/lib/constants/adminSelectOptions';
+import {
+  ensureAlbumSelectContainsCurrent,
+  loadPublishedAlbumSelectOptions,
+  resolveContentArtistId,
+} from '@/lib/utils/adminMusicAlbumSelect';
 
 interface CreateMusicModalProps {
   open: boolean;
@@ -64,6 +69,7 @@ const defaultForm: IArtistCreateMusicPayload & { artistId: string; ownerUserId: 
   price: 0,
   artistId: '',
   ownerUserId: '',
+  albumId: '',
 };
 
 function artistName(artist: ArtistMusicListItem['artist']): string {
@@ -91,8 +97,16 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
   const [editListRow, setEditListRow] = useState<ArtistMusicListItem | null>(null);
   const [pendingCover, setPendingCover] = useState<File | null>(null);
   const [pendingAudio, setPendingAudio] = useState<File | null>(null);
+  const [albumOptions, setAlbumOptions] = useState<SelectOption[]>([
+    { text: 'No album', value: '' },
+  ]);
+  const [albumsLoading, setAlbumsLoading] = useState(false);
+  const [createOwnerArtistId, setCreateOwnerArtistId] = useState('');
 
   const isEdit = Boolean(editId);
+  const resolvedArtistId = isEdit
+    ? resolveContentArtistId(editListRow?.artist)
+    : form.artistId.trim() || createOwnerArtistId.trim() || null;
   const coverUpload = useFileUpload({
     entityType: 'music',
     entityId: editId ?? 'music-pending',
@@ -128,12 +142,52 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
   }, [open]);
 
   useEffect(() => {
+    if (!open || resolvedArtistId) return;
+    setForm(f => (f.albumId ? { ...f, albumId: '' } : f));
+  }, [open, resolvedArtistId]);
+
+  useEffect(() => {
+    if (!open) {
+      setAlbumOptions([{ text: 'No album', value: '' }]);
+      setCreateOwnerArtistId('');
+      return;
+    }
+
+    if (!resolvedArtistId) {
+      setAlbumOptions([{ text: 'No album', value: '' }]);
+      return;
+    }
+
+    let cancelled = false;
+    setAlbumsLoading(true);
+    void loadPublishedAlbumSelectOptions(resolvedArtistId)
+      .then(opts => {
+        if (cancelled) return;
+        setAlbumOptions(
+          ensureAlbumSelectContainsCurrent(
+            opts,
+            form.albumId ?? undefined,
+            editListRow?.album?.title
+          )
+        );
+      })
+      .finally(() => {
+        if (!cancelled) setAlbumsLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [open, resolvedArtistId, editListRow?.album?.title, form.albumId]);
+
+  useEffect(() => {
     if (!open) {
       setForm(defaultForm);
       setEditStatus('draft');
       setAssignOwnerUserId('');
       setOwnerMeta({ ownerLocked: false, ownerUserId: '', hasArtist: false });
       setEditListRow(null);
+      setCreateOwnerArtistId('');
       return;
     }
     if (!editId) {
@@ -142,6 +196,7 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
       setAssignOwnerUserId('');
       setOwnerMeta({ ownerLocked: false, ownerUserId: '', hasArtist: false });
       setEditListRow(null);
+      setCreateOwnerArtistId('');
       return;
     }
     let cancelled = false;
@@ -169,6 +224,7 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
           price: typeof m.price === 'number' ? m.price : Number(m.price) || 0,
           artistId: '',
           ownerUserId: '',
+          albumId: m.albumId ?? m.album?._id ?? '',
         });
         setEditStatus(normalizeEnumValue(m.status, PUBLISHABLE_STATUS_VALUES, 'draft'));
         const hasArtist = Boolean(m.artist);
@@ -248,6 +304,8 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
           payload.ownerUserId = assignOwnerUserId;
         }
 
+        payload.albumId = form.albumId?.trim() ? form.albumId.trim() : '';
+
         const res = await callApi('ADMIN_MUSIC_UPDATE', {
           query: `/${editId}` as `/${string}`,
           payload,
@@ -273,6 +331,8 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
         if (form.artistId) payload.artistId = form.artistId;
 
         if (form.ownerUserId) payload.ownerUserId = form.ownerUserId;
+
+        if (form.albumId?.trim()) payload.albumId = form.albumId.trim();
 
         const res = await callApi('ADMIN_MUSIC_CREATE', { payload });
 
@@ -335,6 +395,11 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
   };
 
   const categorySelectOptions = ensureSelectContainsSlug(categoryOptions, form.category);
+  const albumSelectOptions = ensureAlbumSelectContainsCurrent(
+    albumOptions,
+    form.albumId ?? undefined,
+    editListRow?.album?.title
+  );
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -354,22 +419,41 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
                 <RegularSelect
                   label="Artist profile (optional)"
                   value={form.artistId}
-                  onSelectChange={v => setForm(f => ({ ...f, artistId: v }))}
+                  onSelectChange={v => {
+                    setForm(f => ({ ...f, artistId: v, ...(v ? { albumId: '' } : {}) }));
+                    if (v) setCreateOwnerArtistId('');
+                  }}
                   options={artistOptions}
                   loading={artistsLoading}
                 />
                 <AdminUserAccountPicker
                   value={form.ownerUserId}
-                  onChange={(userId, _u) =>
+                  onChange={(userId, user) => {
+                    setCreateOwnerArtistId(user?.artistId ?? '');
                     setForm(f => ({
                       ...f,
                       ownerUserId: userId,
+                      albumId: '',
                       ...(userId ? { artistId: '' } : {}),
-                    }))
-                  }
+                    }));
+                  }}
                   description="If set, the server links this user to an artist profile (creating one if needed). Choosing a user clears the artist dropdown; use one linking method if your API rejects both."
                 />
               </>
+            )}
+            {resolvedArtistId ? (
+              <RegularSelect
+                label="Album (optional)"
+                value={form.albumId ?? ''}
+                onSelectChange={v => setForm(f => ({ ...f, albumId: v }))}
+                options={albumSelectOptions}
+                loading={albumsLoading}
+                subtext="Published albums for this track's artist. The server rejects albums that belong to a different artist."
+              />
+            ) : (
+              <p className="text-sm text-muted-foreground rounded-md border border-border px-3 py-2 bg-muted/20">
+                Link an artist profile to choose an album for this track.
+              </p>
             )}
             <RegularInput
               label="Title"

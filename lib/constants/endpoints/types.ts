@@ -5,6 +5,7 @@ import {
   IUser,
   IArtistProfile,
   IMusic,
+  MusicAlbumSummary,
   IVideo,
   INewsArticle,
   IGospelVerse,
@@ -402,9 +403,12 @@ export interface IArtistCreateMePayload {
   socials?: IArtistUpdateMePayload['socials'];
 }
 
+export type { MusicAlbumSummary };
+
 export type ArtistMusicListItem = Omit<ClientMusic, 'artist'> &
   ContentOwnerApiFields & {
     artist?: string | PopulatedArtistSummary;
+    album?: MusicAlbumSummary;
   };
 
 export type IArtistMusicListRes = GetListRes<ArtistMusicListItem, 'music'>;
@@ -426,6 +430,7 @@ export interface IArtistCreateMusicPayload {
   isMonetizable?: boolean;
   price?: number;
   status?: 'draft' | 'published' | 'archived';
+  albumId?: string | null;
 }
 
 export interface IArtistUpdateMusicPayload extends Partial<IArtistCreateMusicPayload> {

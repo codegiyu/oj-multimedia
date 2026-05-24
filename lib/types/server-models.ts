@@ -376,12 +376,19 @@ export interface IArtistProfile {
   updatedAt: string;
 }
 
+/** Populated album ref on music list/detail responses (admin and public). */
+export interface MusicAlbumSummary {
+  _id: string;
+  title: string;
+  slug?: string;
+}
+
 export interface IMusic {
   _id: string;
   title: string;
   slug: string;
   artist?: string;
-  album?: string;
+  /** Album link id; use `album` when the API populates summary fields. */
   albumId?: string;
   description?: string;
   lyrics?: string;

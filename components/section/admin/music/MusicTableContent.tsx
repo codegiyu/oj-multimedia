@@ -12,6 +12,7 @@ import type { ArtistMusicListItem } from '@/lib/constants/endpoints';
 import { MusicActionsMenu } from './MusicActionsMenu';
 import { Badge } from '@/components/ui/badge';
 import { dashboardThumbnailColumn } from '@/components/general/dashboardTableThumbnailColumn';
+import { musicAlbumLabel } from '@/lib/utils/adminMusicAlbumSelect';
 
 function truncate(str: string, maxLen: number) {
   if (str.length <= maxLen) return str;
@@ -72,7 +73,7 @@ export function MusicTableContent({
       {
         id: 'artist',
         header: <DataTableColumnHeader title="Artist" />,
-        meta: { width: '18%' },
+        meta: { width: '16%' },
         cell: row => (
           <DataTableCellWrapper text={artistName(row.artist)}>
             {truncate(artistName(row.artist), 25)}
@@ -80,9 +81,18 @@ export function MusicTableContent({
         ),
       },
       {
+        id: 'album',
+        header: <DataTableColumnHeader title="Album" />,
+        meta: { width: '14%' },
+        cell: row => {
+          const label = musicAlbumLabel(row);
+          return <DataTableCellWrapper text={label}>{truncate(label, 22)}</DataTableCellWrapper>;
+        },
+      },
+      {
         id: 'status',
         header: <DataTableColumnHeader title="Status" />,
-        meta: { width: '12%' },
+        meta: { width: '10%' },
         cell: row => (
           <DataTableCellWrapper>
             <StatusBadge status={row.status} />
