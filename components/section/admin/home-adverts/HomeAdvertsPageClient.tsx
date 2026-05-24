@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useQueryState, parseAsInteger, parseAsString } from 'nuqs';
+import { toast } from 'sonner';
 import { AdminDashboardListLayout } from '@/components/section/admin/AdminDashboardListLayout';
 import { callApi } from '@/lib/services/callApi';
 import type { IHomeAdvertItem } from '@/lib/constants/endpoints';
@@ -23,6 +24,7 @@ import { ApprovalModal } from '@/components/section/admin/shared';
 import { MediaUrlOrUploadField } from '@/components/general/MediaUrlOrUploadField';
 import { useFileUpload } from '@/lib/hooks/use-file-upload';
 import { FillImage } from '@/components/general/FillImage';
+import { hasHomeAdvertImage, resolveHomeAdvertImageUrl } from '@/lib/utils/homeAdvertForm';
 
 const slotFilterOptions: SelectOption[] = [
   { text: 'All slots', value: 'all' },
@@ -31,6 +33,22 @@ const slotFilterOptions: SelectOption[] = [
 ];
 
 const slotFormOptions = slotFilterOptions.filter(o => o.value !== 'all');
+
+function resetFormState(setters: {
+  setFormSlot: (v: IHomeAdvertItem['slot']) => void;
+  setFormImage: (v: string) => void;
+  setFormLink: (v: string) => void;
+  setFormOrder: (v: string) => void;
+  setFormActive: (v: string) => void;
+  setPendingImageFile: (v: File | null) => void;
+}) {
+  setters.setFormSlot('after_hero');
+  setters.setFormImage('');
+  setters.setFormLink('');
+  setters.setFormOrder('0');
+  setters.setFormActive('yes');
+  setters.setPendingImageFile(null);
+}
 
 export interface HomeAdvertsPageClientProps {
   pageTitle: string;
@@ -49,7 +67,6 @@ export function HomeAdvertsPageClient({
 }: HomeAdvertsPageClientProps) {
   const router = useRouter();
   const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1));
-  // const [pageSize] = useQueryState('pagesize', parseAsInteger.withDefault(DEFAULT_PAGE_SIZE));
   const [slotFilter, setSlotFilter] = useQueryState('slot', parseAsString.withDefault('all'));
 
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -69,16 +86,36 @@ export function HomeAdvertsPageClient({
     intent: 'image',
   });
 
+  const canSaveForm = useMemo(
+    () => hasHomeAdvertImage(formImage, pendingImageFile),
+    [formImage, pendingImageFile]
+  );
+
   const handleRefresh = () => router.refresh();
+
+  const closeDialog = () => {
+    setDialogOpen(false);
+    setEditTarget(null);
+    resetFormState({
+      setFormSlot,
+      setFormImage,
+      setFormLink,
+      setFormOrder,
+      setFormActive,
+      setPendingImageFile,
+    });
+  };
 
   const openCreate = () => {
     setEditTarget(null);
-    setFormSlot('after_hero');
-    setFormImage('');
-    setFormLink('');
-    setFormOrder('0');
-    setFormActive('yes');
-    setPendingImageFile(null);
+    resetFormState({
+      setFormSlot,
+      setFormImage,
+      setFormLink,
+      setFormOrder,
+      setFormActive,
+      setPendingImageFile,
+    });
     setDialogOpen(true);
   };
 
@@ -94,63 +131,49 @@ export function HomeAdvertsPageClient({
   };
 
   const handleSave = async () => {
-    if (!formImage.trim()) return;
+    if (!canSaveForm) {
+      toast.error('Add an image URL or upload an image file.');
+      return;
+    }
+
     setSaving(true);
     try {
+      const uploadEntityId =
+        editTarget?._id ?? `home-advert-draft-${globalThis.crypto?.randomUUID?.() ?? Date.now()}`;
+      const finalImageUrl = await resolveHomeAdvertImageUrl({
+        imageUrl: formImage,
+        pendingFile: pendingImageFile,
+        uploadFile: advertImageUpload.uploadFile,
+        entityId: uploadEntityId,
+      });
+
+      const payload = {
+        slot: formSlot,
+        imageUrl: finalImageUrl,
+        linkUrl: formLink.trim() || undefined,
+        displayOrder: Number(formOrder) || 0,
+        isActive: formActive === 'yes',
+      };
+
       if (editTarget) {
-        let finalImageUrl = formImage.trim();
-        if (pendingImageFile) {
-          const upload = await advertImageUpload.uploadFile({
-            file: pendingImageFile,
-            entityId: editTarget._id,
-          });
-          if (!upload?.url) throw new Error('Image upload failed');
-          finalImageUrl = upload.url;
-        }
         const res = await callApi('ADMIN_HOME_ADVERTS_UPDATE', {
           query: `/${editTarget._id}` as `/${string}`,
-          payload: {
-            slot: formSlot,
-            imageUrl: finalImageUrl,
-            linkUrl: formLink.trim() || undefined,
-            displayOrder: Number(formOrder) || 0,
-            isActive: formActive === 'yes',
-          },
+          payload,
         });
-        if (res.type !== 'success') throw new Error(res.error?.message ?? 'Failed');
+        if (res.type !== 'success')
+          throw new Error(res.error?.message ?? 'Failed to update advert');
+        toast.success('Home advert updated.');
       } else {
-        const res = await callApi('ADMIN_HOME_ADVERTS_CREATE', {
-          payload: {
-            slot: formSlot,
-            imageUrl: formImage.trim() || '',
-            linkUrl: formLink.trim() || undefined,
-            displayOrder: Number(formOrder) || 0,
-            isActive: formActive === 'yes',
-          },
-        });
-        if (res.type !== 'success') throw new Error(res.error?.message ?? 'Failed');
-        const createdId =
-          (res.data as { advert?: { _id?: string }; _id?: string } | undefined)?.advert?._id ??
-          (res.data as { _id?: string } | undefined)?._id;
-        if (createdId && pendingImageFile) {
-          const upload = await advertImageUpload.uploadFile({
-            file: pendingImageFile,
-            entityId: createdId,
-          });
-          if (!upload?.url) throw new Error('Image upload failed');
-          const patch = await callApi('ADMIN_HOME_ADVERTS_UPDATE', {
-            query: `/${createdId}` as `/${string}`,
-            payload: { imageUrl: upload.url },
-          });
-          if (patch.type !== 'success')
-            throw new Error(patch.error?.message ?? 'Failed to update image');
-        }
+        const res = await callApi('ADMIN_HOME_ADVERTS_CREATE', { payload });
+        if (res.type !== 'success')
+          throw new Error(res.error?.message ?? 'Failed to create advert');
+        toast.success('Home advert created.');
       }
-      setDialogOpen(false);
-      setEditTarget(null);
+
+      closeDialog();
       handleRefresh();
     } catch (e) {
-      console.error(e);
+      toast.error(e instanceof Error ? e.message : 'Unable to save home advert.');
     } finally {
       setSaving(false);
     }
@@ -163,11 +186,12 @@ export function HomeAdvertsPageClient({
       const res = await callApi('ADMIN_HOME_ADVERTS_DELETE', {
         query: `/${deleteTarget._id}` as `/${string}`,
       });
-      if (res.type !== 'success') throw new Error(res.error?.message ?? 'Failed');
+      if (res.type !== 'success') throw new Error(res.error?.message ?? 'Failed to delete advert');
+      toast.success('Home advert deleted.');
       setDeleteTarget(null);
       handleRefresh();
     } catch (e) {
-      console.error(e);
+      toast.error(e instanceof Error ? e.message : 'Unable to delete home advert.');
     } finally {
       setDeleting(false);
     }
@@ -197,9 +221,7 @@ export function HomeAdvertsPageClient({
       mainClassName="rounded-lg border border-border overflow-hidden flex flex-col min-h-0"
       extraContent={
         <>
-          <Dialog
-            open={dialogOpen}
-            onOpenChange={v => !v && (setDialogOpen(false), setEditTarget(null))}>
+          <Dialog open={dialogOpen} onOpenChange={v => !v && closeDialog()}>
             <DialogContent className="max-w-xl">
               <DialogHeader>
                 <DialogTitle>{editTarget ? 'Edit home advert' : 'New home advert'}</DialogTitle>
@@ -212,7 +234,7 @@ export function HomeAdvertsPageClient({
                   options={slotFormOptions}
                 />
                 <MediaUrlOrUploadField
-                  label="Image URL"
+                  label="Image"
                   value={formImage}
                   onChange={setFormImage}
                   entityType="resource"
@@ -233,6 +255,7 @@ export function HomeAdvertsPageClient({
                   label="Display order"
                   value={formOrder}
                   onChange={e => setFormOrder(e.target.value)}
+                  type="number"
                 />
                 <RegularSelect
                   label="Active"
@@ -249,13 +272,14 @@ export function HomeAdvertsPageClient({
                   type="button"
                   variant="ghost"
                   text="Cancel"
-                  onClick={() => setDialogOpen(false)}
+                  onClick={closeDialog}
+                  disabled={saving}
                 />
                 <RegularBtn
                   type="button"
                   text="Save"
                   loading={saving}
-                  disabled={saving || !formImage.trim()}
+                  disabled={saving || !canSaveForm}
                   onClick={() => void handleSave()}
                 />
               </DialogFooter>
