@@ -15,7 +15,7 @@ describe('formatCompactNumber', () => {
   });
 
   it('formats thousands and millions with compact suffixes', () => {
-    expect(formatCompactNumber(1145)).toBe('1.1K');
+    expect(formatCompactNumber(1145)).toBe('1.15K');
     expect(formatCompactNumber(2880000)).toBe('2.88M');
     expect(formatCompactNumber(1099)).toBe('1K');
   });
