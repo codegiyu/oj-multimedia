@@ -10,10 +10,7 @@ import {
   serverFetchAdminProductsList,
   serverFetchAdminVendorsList,
 } from '@/lib/services/adminDashboardServerData';
-import {
-  parseAdminContentListParams,
-  parseTabParam,
-} from '@/lib/utils/adminDashboardSearchParams';
+import { parseAdminContentListParams, parseTabParam } from '@/lib/utils/adminDashboardSearchParams';
 import { Metadata } from 'next';
 import { Suspense } from 'react';
 import { Loader2 } from 'lucide-react';
