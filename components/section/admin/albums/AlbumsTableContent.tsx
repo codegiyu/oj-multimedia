@@ -1,13 +1,13 @@
 'use client';
 
 import { useMemo } from 'react';
-import { format } from 'date-fns';
 import {
   DataTable,
   DataTableCellWrapper,
   DataTableColumnHeader,
   type DataTableColumn,
 } from '@/components/general/DataTable';
+import { dashboardTableDateColumn } from '@/components/general/dashboardTableColumns';
 import type { AlbumListItem } from '@/lib/types/community';
 import { AlbumsActionsMenu } from './AlbumsActionsMenu';
 import { Badge } from '@/components/ui/badge';
@@ -97,24 +97,16 @@ export function AlbumsTableContent({
           </DataTableCellWrapper>
         ),
       },
-      {
+      dashboardTableDateColumn({
         id: 'releaseDate',
-        header: <DataTableColumnHeader title="Release" />,
-        meta: { width: '10rem' },
-        cell: row => {
-          const value = row.releaseDate ? format(new Date(row.releaseDate), 'MMM d, yyyy') : '—';
-          return <DataTableCellWrapper text={value}>{value}</DataTableCellWrapper>;
-        },
-      },
-      {
+        header: 'Release',
+        getValue: row => row.releaseDate,
+      }),
+      dashboardTableDateColumn({
         id: 'created',
-        header: <DataTableColumnHeader title="Created" />,
-        meta: { width: '10rem' },
-        cell: row => {
-          const value = row.createdAt ? format(new Date(row.createdAt), 'MMM d, yyyy') : '—';
-          return <DataTableCellWrapper text={value}>{value}</DataTableCellWrapper>;
-        },
-      },
+        header: 'Created',
+        getValue: row => row.createdAt,
+      }),
       {
         id: 'actions',
         header: null,

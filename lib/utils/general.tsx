@@ -330,12 +330,22 @@ export function formatPopulation(num: number): string {
   return `${(num / 1_000_000_000).toFixed(num % 1_000_000_000 === 0 ? 0 : 1)}B+`;
 }
 
-/** Compact count for UI (plays, views, downloads): `1.2K`, `3.4M`. Falsy or NaN → `"0"`. */
+/** Compact count for UI (plays, views, downloads): `1.1K`, `2.88M`. Falsy or NaN → `"0"`. */
 export function formatCompactNumber(value?: number | null): string {
-  if (!value || Number.isNaN(value)) return '0';
-  if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`;
-  if (value >= 1_000) return `${(value / 1_000).toFixed(1)}K`;
-  return String(value);
+  if (value == null || Number.isNaN(value)) return '0';
+
+  const num = Math.round(value);
+  if (num < 1000) return String(num);
+
+  const formatScaled = (scaled: number, suffix: string): string => {
+    const abs = Math.abs(scaled);
+    const decimals = abs >= 100 ? 0 : abs >= 10 ? 1 : 2;
+    return `${scaled.toFixed(decimals).replace(/\.?0+$/, '')}${suffix}`;
+  };
+
+  if (num < 1_000_000) return formatScaled(num / 1000, 'K');
+  if (num < 1_000_000_000) return formatScaled(num / 1_000_000, 'M');
+  return formatScaled(num / 1_000_000_000, 'B');
 }
 
 export const scrollToSection = (id: string) => {

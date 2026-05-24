@@ -1,13 +1,17 @@
 'use client';
 
 import { useMemo } from 'react';
-import { format } from 'date-fns';
 import {
   DataTable,
   DataTableCellWrapper,
   DataTableColumnHeader,
   type DataTableColumn,
 } from '@/components/general/DataTable';
+import {
+  dashboardDownloadsColumn,
+  dashboardPlaysColumn,
+  dashboardTableDateColumn,
+} from '@/components/general/dashboardTableColumns';
 import type { ArtistVideoListItem } from '@/lib/constants/endpoints';
 import { VideosActionsMenu } from './VideosActionsMenu';
 import { Badge } from '@/components/ui/badge';
@@ -65,7 +69,7 @@ export function VideosTableContent({
       {
         id: 'title',
         header: <DataTableColumnHeader title="Title" />,
-        meta: { width: '22%' },
+        meta: { width: '20%' },
         cell: row => (
           <DataTableCellWrapper text={row.title}>{truncate(row.title, 35)}</DataTableCellWrapper>
         ),
@@ -73,7 +77,7 @@ export function VideosTableContent({
       {
         id: 'artist',
         header: <DataTableColumnHeader title="Artist" />,
-        meta: { width: '18%' },
+        meta: { width: '16%' },
         cell: row => (
           <DataTableCellWrapper text={artistName(row.artist)}>
             {truncate(artistName(row.artist), 25)}
@@ -83,22 +87,18 @@ export function VideosTableContent({
       {
         id: 'status',
         header: <DataTableColumnHeader title="Status" />,
-        meta: { width: '12%' },
+        meta: { width: '10%' },
         cell: row => (
           <DataTableCellWrapper>
             <StatusBadge status={row.status} />
           </DataTableCellWrapper>
         ),
       },
-      {
-        id: 'created',
-        header: <DataTableColumnHeader title="Created" />,
-        meta: { width: '12rem' },
-        cell: row => {
-          const value = row.createdAt ? format(new Date(row.createdAt), 'MMM d, yyyy') : '—';
-          return <DataTableCellWrapper text={value}>{value}</DataTableCellWrapper>;
-        },
-      },
+      dashboardDownloadsColumn(row => row.downloads),
+      dashboardPlaysColumn(row => row.plays),
+      dashboardTableDateColumn({
+        getValue: row => row.createdAt,
+      }),
       {
         id: 'actions',
         header: null,
