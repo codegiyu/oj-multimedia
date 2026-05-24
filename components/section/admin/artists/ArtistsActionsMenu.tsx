@@ -10,31 +10,41 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import type { ArtistListItem } from '@/lib/types/community';
-import type { PastorListItem } from '@/lib/types/community';
 
-interface ArtistsPastorsActionsMenuProps {
-  item: ArtistListItem | PastorListItem;
-  onEdit: (item: ArtistListItem | PastorListItem) => void;
-  onDelete: (item: ArtistListItem | PastorListItem) => void;
+interface ArtistsActionsMenuProps {
+  item: ArtistListItem;
+  onEdit: (item: ArtistListItem) => void;
+  onDelete: (item: ArtistListItem) => void;
+  onToggleActive: (item: ArtistListItem) => void;
+  onToggleFeatured: (item: ArtistListItem) => void;
 }
 
-export function ArtistsPastorsActionsMenu({
+export function ArtistsActionsMenu({
   item,
   onEdit,
   onDelete,
-}: ArtistsPastorsActionsMenuProps) {
-  const name = 'name' in item ? item.name : 'Unknown';
+  onToggleActive,
+  onToggleFeatured,
+}: ArtistsActionsMenuProps) {
+  const isActive = item.isActive !== false;
+  const isFeatured = item.isFeatured === true;
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="sm" onClick={e => e.stopPropagation()}>
           <MoreVertical className="h-4 w-4" />
-          <span className="sr-only">Open menu for {name}</span>
+          <span className="sr-only">Open menu for {item.name}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" onClick={e => e.stopPropagation()}>
         <DropdownMenuItem onClick={() => onEdit(item)}>Edit</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => onToggleActive(item)}>
+          {isActive ? 'Mark inactive' : 'Mark active'}
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => onToggleFeatured(item)}>
+          {isFeatured ? 'Remove featured' : 'Mark featured'}
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
           className="text-destructive focus:text-destructive"

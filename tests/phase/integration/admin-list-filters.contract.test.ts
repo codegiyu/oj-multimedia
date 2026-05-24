@@ -26,6 +26,8 @@ describe('admin list filters contract (phase 4)', () => {
     expect(adminListSupportsFilter('music', 'category')).toBe(true);
     expect(adminListSupportsFilter('music', 'artist')).toBe(true);
     expect(adminListSupportsFilter('marketplaceOrders', 'startDate')).toBe(true);
+    expect(adminListSupportsFilter('pastors', 'status')).toBe(true);
+    expect(adminListSupportsFilter('users', 'status')).toBe(true);
     expect(ADMIN_LIST_FILTER_FIELDS.emailLogs).toContain('tab');
   });
 

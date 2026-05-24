@@ -141,11 +141,12 @@ export function buildAdminListQuery(
       break;
     }
     case 'artists':
-    case 'pastors': {
+    case 'pastors':
+    case 'users': {
       const p = params as AdminStandardListParams;
       setPagination(query, p.page, p.pageSize, sort);
       if (p.search.trim()) query.set('search', p.search.trim());
-      if (resource === 'artists' && p.status && p.status !== ADMIN_FILTER_ALL) {
+      if (p.status && p.status !== ADMIN_FILTER_ALL) {
         query.set('status', p.status);
       }
       break;

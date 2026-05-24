@@ -196,6 +196,8 @@ export interface PastorListItem {
   expertise?: string[];
   questionsAnswered?: number;
   rating?: number;
+  isActive?: boolean;
+  isFeatured?: boolean;
 }
 
 export interface PastorDetail extends PastorListItem {
@@ -289,6 +291,8 @@ export interface ArtistListItem {
   followers?: number;
   verified?: boolean;
   songs?: number;
+  isActive?: boolean;
+  isFeatured?: boolean;
 }
 
 export interface ArtistDetail extends ArtistListItem {

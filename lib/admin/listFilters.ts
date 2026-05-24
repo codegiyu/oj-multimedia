@@ -15,6 +15,7 @@ export type AdminListResourceKey =
   | 'contactSubmissions'
   | 'artists'
   | 'pastors'
+  | 'users'
   | 'marketplaceWithVendor'
   | 'marketplaceOrders';
 
@@ -45,7 +46,8 @@ export const ADMIN_LIST_FILTER_FIELDS: Record<AdminListResourceKey, AdminListFil
   homeAdverts: ['slot', 'search', 'sort'],
   contactSubmissions: ['search', 'sort'],
   artists: ['search', 'status', 'sort'],
-  pastors: ['search', 'sort'],
+  pastors: ['search', 'status', 'sort'],
+  users: ['search', 'status', 'sort'],
   marketplaceWithVendor: ['search', 'status', 'sort', 'vendor', 'category'],
   marketplaceOrders: ['search', 'status', 'sort', 'vendor', 'startDate', 'endDate'],
 };

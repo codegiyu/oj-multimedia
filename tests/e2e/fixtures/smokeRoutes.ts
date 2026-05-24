@@ -82,6 +82,8 @@ export const ADMIN_PROTECTED_ROUTES: string[] = [
   '/admin/dashboard/testimonies',
   '/admin/dashboard/gospel-verses',
   '/admin/dashboard/marketplace',
+  '/admin/dashboard/artists',
+  '/admin/dashboard/pastors',
   '/admin/dashboard/artists-pastors',
 ];
 
