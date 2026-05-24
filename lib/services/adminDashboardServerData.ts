@@ -30,6 +30,7 @@ import {
   type AdminDocumentsListParams,
   type AdminEmailLogsListParams,
   type AdminContentListParams,
+  type AdminMusicListParams,
 } from '@/lib/utils/adminDashboardSearchParams';
 import { buildAdminListQuery } from '@/lib/admin/buildListQuery';
 import { callServerApi } from '@/lib/services/serverApi';
@@ -45,7 +46,7 @@ function toContentParams(p: AdminStandardListParams): AdminContentListParams {
 }
 
 export async function serverFetchAdminMusicList(
-  p: AdminStandardListParams | AdminContentListParams,
+  p: AdminStandardListParams | AdminContentListParams | AdminMusicListParams,
   sortKey: string
 ): Promise<AdminListPayload<ArtistMusicListItem>> {
   const content = 'category' in p ? p : toContentParams(p);
@@ -64,9 +65,10 @@ export async function serverFetchAdminMusicList(
 }
 
 export async function serverFetchAdminVideosList(
-  p: AdminStandardListParams
+  p: AdminStandardListParams | AdminContentListParams
 ): Promise<AdminListPayload<ArtistVideoListItem>> {
-  const params = buildAdminListQuery('content', toContentParams(p), { sort: '-createdAt' });
+  const content = 'category' in p ? p : toContentParams(p);
+  const params = buildAdminListQuery('content', content, { sort: '-createdAt' });
   const res = await callServerApi('ADMIN_VIDEOS_LIST', {
     query: `?${params.toString()}` as `?${string}`,
   });
@@ -81,9 +83,10 @@ export async function serverFetchAdminVideosList(
 }
 
 export async function serverFetchAdminNewsList(
-  p: AdminStandardListParams
+  p: AdminStandardListParams | AdminContentListParams
 ): Promise<AdminListPayload<PublicNewsListItem>> {
-  const params = buildAdminListQuery('content', toContentParams(p), { sort: '-createdAt' });
+  const content = 'category' in p ? p : toContentParams(p);
+  const params = buildAdminListQuery('content', content, { sort: '-createdAt' });
   const res = await callServerApi('ADMIN_NEWS_LIST', {
     query: `?${params.toString()}` as `?${string}`,
   });

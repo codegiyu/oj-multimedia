@@ -1,7 +1,7 @@
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { NewsPageClient } from '@/components/section/admin/news/NewsPageClient';
 import { serverFetchAdminNewsList } from '@/lib/services/adminDashboardServerData';
-import { parseAdminStandardListParams } from '@/lib/utils/adminDashboardSearchParams';
+import { parseAdminContentListParams } from '@/lib/utils/adminDashboardSearchParams';
 import { Metadata } from 'next';
 import { Suspense } from 'react';
 import { Loader2 } from 'lucide-react';
@@ -46,7 +46,7 @@ async function AdminNewsPageServer({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const raw = await searchParams;
-  const listParams = parseAdminStandardListParams(raw);
+  const listParams = parseAdminContentListParams(raw);
   const { items, totalPages, listError } = await serverFetchAdminNewsList(listParams);
   return (
     <NewsPageClient

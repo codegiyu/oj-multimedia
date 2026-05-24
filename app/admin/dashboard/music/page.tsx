@@ -1,10 +1,7 @@
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { MusicPageClient } from '@/components/section/admin/music/MusicPageClient';
 import { serverFetchAdminMusicList } from '@/lib/services/adminDashboardServerData';
-import {
-  parseAdminMusicSort,
-  parseAdminStandardListParams,
-} from '@/lib/utils/adminDashboardSearchParams';
+import { parseAdminMusicListParams } from '@/lib/utils/adminDashboardSearchParams';
 import { Metadata } from 'next';
 import { Suspense } from 'react';
 import { Loader2 } from 'lucide-react';
@@ -49,9 +46,11 @@ async function AdminMusicPageServer({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const raw = await searchParams;
-  const listParams = parseAdminStandardListParams(raw);
-  const sortKey = parseAdminMusicSort(raw);
-  const { items, totalPages, listError } = await serverFetchAdminMusicList(listParams, sortKey);
+  const listParams = parseAdminMusicListParams(raw);
+  const { items, totalPages, listError } = await serverFetchAdminMusicList(
+    listParams,
+    listParams.sort
+  );
   return (
     <MusicPageClient
       pageTitle="Music"

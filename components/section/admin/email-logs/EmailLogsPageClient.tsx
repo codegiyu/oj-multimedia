@@ -8,9 +8,7 @@ import type { IEmailLog } from '@/lib/constants/endpoints';
 import type { ClickedRowDetails } from '@/components/general/TableRowDetailsDrawer';
 import { EmailLogDetailsDrawer } from './EmailLogDetailsDrawer';
 import { EmailLogsTableContent } from './EmailLogsTableContent';
-import { EMAIL_LOG_STATUS_FILTER_SELECT_OPTIONS } from '@/lib/constants/adminSelectOptions';
-
-const STATUS_FILTER_LABEL = 'Status';
+import { useAdminListSearch } from '@/lib/hooks/useAdminListSearch';
 
 export interface EmailLogsPageClientProps {
   pageTitle: string;
@@ -29,15 +27,19 @@ export function EmailLogsPageClient({
 }: EmailLogsPageClientProps) {
   const router = useRouter();
   const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1));
-  // const [_pageSize] = useQueryState('pagesize', parseAsInteger.withDefault(DEFAULT_PAGE_SIZE));
+  const [searchQuery, setSearchQuery] = useQueryState('search', parseAsString.withDefault(''));
   const [tab, setTab] = useQueryState('tab', parseAsString.withDefault('all'));
-  const [filterStatus, setFilterStatus] = useQueryState('status', parseAsString.withDefault('all'));
+  const { onSearchChange, onSearchCommit } = useAdminListSearch(setSearchQuery, setPage);
 
   const [clickedRowDetails, setClickedRowDetails] = useState<
     ClickedRowDetails<IEmailLog, string> | undefined
   >(undefined);
 
   const handleRefresh = () => router.refresh();
+
+  const openEmailLog = (row: IEmailLog, index: number) => {
+    setClickedRowDetails({ data: row, index, tab });
+  };
 
   return (
     <AdminDashboardListLayout
@@ -46,19 +48,10 @@ export function EmailLogsPageClient({
       onRefresh={handleRefresh}
       listError={listError}
       filterableDataPageProps={{
-        searchPlaceholder: 'Search email logs...',
-        filters: [
-          {
-            label: STATUS_FILTER_LABEL,
-            value: filterStatus,
-            options: [...EMAIL_LOG_STATUS_FILTER_SELECT_OPTIONS],
-            onChange: value => {
-              setFilterStatus(value);
-              setPage(1);
-            },
-          },
-        ],
-        onApplyFilters: () => setPage(1),
+        searchPlaceholder: 'Search by to, from, or subject...',
+        searchValue: searchQuery,
+        onSearchChange,
+        onSearchCommit,
       }}
       extraContent={
         <EmailLogDetailsDrawer
@@ -72,17 +65,14 @@ export function EmailLogsPageClient({
         totalPages={totalPages}
         page={page}
         tab={tab}
-        filterStatus={filterStatus}
         onRefresh={handleRefresh}
         onPageChange={setPage}
         onTabChange={value => {
           setTab(value);
           setPage(1);
         }}
-        onRowClick={(row, index) => {
-          setClickedRowDetails({ data: row, index, tab });
-        }}
-        onViewEmail={() => {}}
+        onRowClick={openEmailLog}
+        onViewEmail={openEmailLog}
       />
     </AdminDashboardListLayout>
   );

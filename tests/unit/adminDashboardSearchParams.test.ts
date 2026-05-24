@@ -8,6 +8,7 @@ import {
   parseAdminMusicListParams,
   parseAdminStandardListParams,
   parsePositiveInt,
+  resolveEmailLogsFilterStatus,
 } from '@/lib/utils/adminDashboardSearchParams';
 
 describe('parseAdminStandardListParams', () => {
@@ -105,11 +106,20 @@ describe('parseAdminDocumentsListParams', () => {
   });
 });
 
+describe('resolveEmailLogsFilterStatus', () => {
+  it('prefers tab over status when tab is not all', () => {
+    expect(resolveEmailLogsFilterStatus({ tab: 'failed', status: 'sent' })).toBe('failed');
+  });
+
+  it('falls back to status when tab is all', () => {
+    expect(resolveEmailLogsFilterStatus({ tab: 'all', status: 'sent' })).toBe('sent');
+  });
+});
+
 describe('parseAdminEmailLogsListParams', () => {
-  it('parses email log filters', () => {
+  it('parses email log filters with tab-driven status', () => {
     expect(
       parseAdminEmailLogsListParams({
-        status: 'sent',
         search: 'user@example.com',
         type: 'transactional',
         tab: 'pending',
@@ -119,7 +129,7 @@ describe('parseAdminEmailLogsListParams', () => {
     ).toEqual({
       page: 1,
       pageSize: 12,
-      filterStatus: 'sent',
+      filterStatus: 'pending',
       search: 'user@example.com',
       type: 'transactional',
       tab: 'pending',

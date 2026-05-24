@@ -56,3 +56,23 @@ export const EMAIL_LOG_STATUS_FILTER_SELECT_OPTIONS: ReadonlyArray<SelectOption>
   { text: 'Failed', value: 'failed' },
   { text: 'Bounced', value: 'bounced' },
 ];
+
+export const DOCUMENT_ENTITY_TYPE_FILTER_SELECT_OPTIONS: ReadonlyArray<SelectOption> = [
+  { text: 'All entity types', value: 'all' },
+  { text: 'Vendor', value: 'vendor' },
+  { text: 'Product', value: 'product' },
+  { text: 'User', value: 'user' },
+  { text: 'Music', value: 'music' },
+  { text: 'Video', value: 'video' },
+  { text: 'Artist', value: 'artist' },
+];
+
+export const DOCUMENT_INTENT_FILTER_SELECT_OPTIONS: ReadonlyArray<SelectOption> = [
+  { text: 'All intents', value: 'all' },
+  { text: 'Avatar', value: 'avatar' },
+  { text: 'Logo', value: 'logo' },
+  { text: 'Card image', value: 'card-image' },
+  { text: 'Banner image', value: 'banner-image' },
+  { text: 'Image', value: 'image' },
+  { text: 'Other', value: 'other' },
+];

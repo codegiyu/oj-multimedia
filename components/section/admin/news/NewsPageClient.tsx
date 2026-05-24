@@ -16,6 +16,7 @@ import { Plus } from 'lucide-react';
 import { PUBLISHABLE_STATUS_FILTER_SELECT_OPTIONS } from '@/lib/constants/adminSelectOptions';
 import type { SelectOption } from '@/lib/types/general';
 import { loadAdminContentCategorySelectOptions } from '@/lib/utils/adminContentCategorySelect';
+import { useAdminListSearch } from '@/lib/hooks/useAdminListSearch';
 
 export interface NewsPageClientProps {
   pageTitle: string;
@@ -59,6 +60,7 @@ export function NewsPageClient({
   const [editNewsId, setEditNewsId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<PublicNewsListItem | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
+  const { onSearchChange, onSearchCommit } = useAdminListSearch(setSearchQuery, setPage);
 
   const handleRefresh = () => router.refresh();
 
@@ -108,8 +110,8 @@ export function NewsPageClient({
       filterableDataPageProps={{
         searchPlaceholder: 'Search news...',
         searchValue: searchQuery,
-        onSearchChange: setSearchQuery,
-        onSearchApply: () => setPage(1),
+        onSearchChange,
+        onSearchCommit,
         filters: [
           {
             label: 'Status',

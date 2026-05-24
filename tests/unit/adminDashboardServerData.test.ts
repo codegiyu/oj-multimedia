@@ -52,9 +52,13 @@ describe('buildAdminListQuery', () => {
     expect(params.has('status')).toBe(false);
   });
 
-  it('builds music query with category and sort key', () => {
-    const params = buildAdminListQuery('music', content, { sortKey: 'downloads' });
-    expect(params.get('category')).toBe('507f1f77bcf86cd799439011');
+  it('builds music query with category slug and sort key', () => {
+    const withCategory: AdminContentListParams = {
+      ...content,
+      category: 'worship',
+    };
+    const params = buildAdminListQuery('music', withCategory, { sortKey: 'downloads' });
+    expect(params.get('category')).toBe('worship');
     expect(params.get('sort')).toBe('-downloads');
   });
 
