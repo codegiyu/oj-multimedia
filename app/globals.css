@@ -784,3 +784,26 @@
     box-shadow: 0 0 40px hsl(16 90% 58% / 0.6);
   }
 }
+
+/* Media Chrome audio player — plain CSS (Tailwind layers strip custom-element selectors) */
+media-controller.audio-player {
+  --media-primary-color: hsl(var(--primary));
+  --media-secondary-color: hsl(var(--muted-foreground));
+  --media-range-bar-color: hsl(var(--primary));
+  --media-range-bar-buffer-color: hsl(var(--muted));
+  --media-range-bar-track-color: hsl(var(--muted));
+  --media-control-background: transparent;
+  --media-control-hover-background: hsl(var(--muted) / 0.5);
+}
+
+media-controller.audio-player media-play-button,
+media-controller.audio-player media-seek-backward-button,
+media-controller.audio-player media-seek-forward-button,
+media-controller.audio-player media-mute-button {
+  width: 2.5rem;
+  height: 2.5rem;
+  min-width: 2.5rem;
+  min-height: 2.5rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}

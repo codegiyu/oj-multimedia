@@ -19,8 +19,6 @@ describe('radixSelectValues', () => {
     const items = [{ value: 'Option' }, { value: 'Option' }, { value: 'Gospel' }];
 
     expect(resolveRadixSelectItemValue(items, 'Option')).toBe(toRadixSelectItemValue('Option', 0));
-    expect(resolveRadixSelectItemValue(items, 'Gospel')).toBe(
-      toRadixSelectItemValue('Gospel', 2)
-    );
+    expect(resolveRadixSelectItemValue(items, 'Gospel')).toBe(toRadixSelectItemValue('Gospel', 2));
   });
 });
