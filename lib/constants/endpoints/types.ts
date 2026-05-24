@@ -467,6 +467,41 @@ export interface IPublicMusicItemRes {
   music: PublicMusicListItem;
 }
 
+export type PublicAlbumListItem = {
+  _id: string;
+  title: string;
+  slug: string;
+  coverImage?: string;
+  excerpt?: string;
+  description?: string;
+  releaseDate?: string | null;
+  artist?: string | { _id: string; name: string; slug?: string; image?: string };
+  trackCount?: number;
+  views?: number;
+  plays?: number;
+  isFeatured?: boolean;
+  displayOrder?: number;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type PublicAlbumTrackItem = {
+  _id: string;
+  title: string;
+  slug: string;
+  coverImage?: string;
+  excerpt?: string;
+  displayOrder?: number;
+  plays?: number;
+  artist?: string | { _id: string; name?: string };
+};
+
+export type IPublicAlbumsListRes = GetListRes<PublicAlbumListItem, 'albums'>;
+export interface IPublicAlbumItemRes {
+  album: PublicAlbumListItem;
+  tracks: PublicAlbumTrackItem[];
+}
+
 export type PublicVideoListItem = ArtistVideoListItem;
 export type IPublicVideosListRes = GetListRes<PublicVideoListItem, 'videos'>;
 export interface IPublicVideoItemRes {
@@ -634,6 +669,7 @@ export interface ContactSubmission {
 // Search (public)
 export type SearchResultType =
   | 'music'
+  | 'album'
   | 'news'
   | 'video'
   | 'devotional'
@@ -1216,6 +1252,8 @@ export interface AllEndpoints {
   // Public (music, videos, news)
   PUBLIC_GET_MUSIC: EndpointDefinition<undefined, IPublicMusicListRes, `?${string}`>;
   PUBLIC_GET_MUSIC_ITEM: EndpointDefinition<undefined, IPublicMusicItemRes, `/${string}`>;
+  PUBLIC_GET_ALBUMS: EndpointDefinition<undefined, IPublicAlbumsListRes, `?${string}`>;
+  PUBLIC_GET_ALBUM_ITEM: EndpointDefinition<undefined, IPublicAlbumItemRes, `/${string}`>;
   PUBLIC_GET_VIDEOS: EndpointDefinition<undefined, IPublicVideosListRes, `?${string}`>;
   PUBLIC_GET_VIDEO_ITEM: EndpointDefinition<undefined, IPublicVideoItemRes, `/${string}`>;
   PUBLIC_GET_NEWS: EndpointDefinition<undefined, IPublicNewsListRes, `?${string}`>;

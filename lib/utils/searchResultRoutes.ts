@@ -20,6 +20,8 @@ export function getSearchResultDetailHref(type: SearchResultType, _id: string): 
   switch (type) {
     case 'music':
       return `/music/${enc}`;
+    case 'album':
+      return `/music/albums/${enc}`;
     case 'news':
       return `/news/story/${enc}`;
     case 'video':

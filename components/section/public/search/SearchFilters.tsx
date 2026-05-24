@@ -2,13 +2,14 @@
 
 import { useRef, useCallback } from 'react';
 import { useQueryState, parseAsString } from 'nuqs';
-import { Music, Newspaper, Video, Users, Filter } from 'lucide-react';
+import { Music, Newspaper, Video, Users, Filter, DiscAlbum } from 'lucide-react';
 
 const FILTER_DEBOUNCE_MS = 500;
 
 const typeFilters = [
   { value: 'all', label: 'All', icon: Filter },
   { value: 'music', label: 'Music', icon: Music },
+  { value: 'album', label: 'Albums', icon: DiscAlbum },
   { value: 'news', label: 'News', icon: Newspaper },
   { value: 'video', label: 'Videos', icon: Video },
   { value: 'community', label: 'Community', icon: Users },

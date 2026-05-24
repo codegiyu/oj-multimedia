@@ -1,12 +1,14 @@
 'use client';
 
 import { motion } from 'motion/react';
-import { ArrowLeft, Music, Video, Users, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Music, Video, Users, ExternalLink, DiscAlbum } from 'lucide-react';
 import Link from 'next/link';
 import { FillImage } from '@/components/general/FillImage';
 import { Button } from '@/components/ui/button';
 import { MusicCard } from '@/components/cards/MusicCard';
+import { AlbumCard } from '@/components/cards/AlbumCard';
 import { VideoCard } from '@/components/cards/VideoCard';
+import type { PublicAlbumCard } from '@/lib/utils/publicApiMappers';
 import type { ArtistProfile } from '@/lib/types/artist';
 import type { MusicItemWithArtist } from '@/lib/utils/music';
 import type { VideoItemWithCreator } from '@/lib/utils/videos';
@@ -15,6 +17,7 @@ interface ArtistDetailPageClientProps {
   artist: ArtistProfile;
   musicItems: MusicItemWithArtist[];
   videoItems: VideoItemWithCreator[];
+  albumItems: PublicAlbumCard[];
 }
 
 // const socialIcons: Record<string, React.ComponentType<{ className?: string }>> = {};
@@ -24,6 +27,7 @@ export function ArtistDetailPageClient({
   artist,
   musicItems,
   videoItems,
+  albumItems,
 }: ArtistDetailPageClientProps) {
   const hasSocials =
     artist.socials &&
@@ -105,10 +109,24 @@ export function ArtistDetailPageClient({
         </div>
       </section>
 
-      {(musicItems.length > 0 || videoItems.length > 0) && (
+      {(musicItems.length > 0 || videoItems.length > 0 || albumItems.length > 0) && (
         <section className="py-12">
           <div className="container mx-auto px-4">
             <div className="max-w-6xl mx-auto space-y-12">
+              {albumItems.length > 0 && (
+                <div>
+                  <h2 className="text-xl font-display font-bold mb-6 flex items-center gap-2">
+                    <DiscAlbum className="w-5 h-5 text-primary" />
+                    Albums
+                  </h2>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                    {albumItems.map(item => (
+                      <AlbumCard key={item._id} {...item} />
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {musicItems.length > 0 && (
                 <div>
                   <h2 className="text-xl font-display font-bold mb-6 flex items-center gap-2">

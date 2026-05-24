@@ -4,6 +4,12 @@ export const PUBLIC_ENDPOINTS: Record<string, EndpointDetails> = {
   // Public (music, videos, news)
   PUBLIC_GET_MUSIC: { path: '/api/v1/public/music', method: 'GET', isNotAuthenticated: true },
   PUBLIC_GET_MUSIC_ITEM: { path: '/api/v1/public/music', method: 'GET', isNotAuthenticated: true }, // /:idOrSlug
+  PUBLIC_GET_ALBUMS: { path: '/api/v1/public/albums', method: 'GET', isNotAuthenticated: true },
+  PUBLIC_GET_ALBUM_ITEM: {
+    path: '/api/v1/public/albums',
+    method: 'GET',
+    isNotAuthenticated: true,
+  }, // /:idOrSlug
   PUBLIC_GET_VIDEOS: { path: '/api/v1/public/videos', method: 'GET', isNotAuthenticated: true },
   PUBLIC_GET_VIDEO_ITEM: { path: '/api/v1/public/videos', method: 'GET', isNotAuthenticated: true }, // /:idOrSlug
   PUBLIC_GET_NEWS: { path: '/api/v1/public/news', method: 'GET', isNotAuthenticated: true },

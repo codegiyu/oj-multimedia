@@ -5,6 +5,8 @@
 
 import type {
   PublicMusicListItem,
+  PublicAlbumListItem,
+  PublicAlbumTrackItem,
   PublicVideoListItem,
   PublicNewsListItem,
 } from '@/lib/constants/endpoints';
@@ -410,4 +412,57 @@ export function mapPublicNewsToDetailItem(item: PublicNewsListItem): NewsDetailI
       ? { introduction: (item as { content?: string }).content }
       : undefined,
   } as NewsDetailItem;
+}
+
+export type PublicAlbumCard = {
+  _id: string;
+  slug: string;
+  title: string;
+  artist: { _id: string; name: string };
+  cover: string;
+  trackCount: number;
+  releaseDate?: string | null;
+  excerpt?: string;
+};
+
+function toAlbumArtistSummary(item: PublicAlbumListItem) {
+  const a = item.artist;
+  return a
+    ? {
+        _id: typeof a === 'string' ? a : typeof a._id === 'string' ? a._id : String(a._id),
+        name: typeof a === 'string' ? 'Unknown' : (a.name ?? 'Unknown'),
+      }
+    : { _id: '', name: 'Unknown' };
+}
+
+export function filterPublicAlbumList(items: PublicAlbumListItem[]): PublicAlbumListItem[] {
+  return items.filter(item => Boolean(item._id && item.title));
+}
+
+export function mapPublicAlbumToCard(item: PublicAlbumListItem): PublicAlbumCard {
+  return {
+    _id: String(item._id),
+    slug: item.slug,
+    title: item.title,
+    artist: toAlbumArtistSummary(item),
+    cover: item.coverImage ?? '',
+    trackCount: item.trackCount ?? 0,
+    releaseDate: item.releaseDate ?? null,
+    excerpt: item.excerpt,
+  };
+}
+
+export function mapPublicAlbumTrackToMusicCardProps(
+  track: PublicAlbumTrackItem,
+  albumArtist: PublicAlbumCard['artist']
+) {
+  return {
+    _id: String(track._id),
+    title: track.title,
+    artist: albumArtist,
+    cover: track.coverImage ?? '',
+    plays: String(track.plays ?? 0),
+    genre: 'Album track',
+    slug: track.slug,
+  };
 }

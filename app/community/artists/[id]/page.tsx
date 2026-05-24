@@ -12,7 +12,10 @@ import type {
   IPublicMusicListRes,
   IPublicVideosListRes,
   IPublicArtistItemRes,
+  IPublicAlbumsListRes,
 } from '@/lib/constants/endpoints';
+import { filterPublicAlbumList, mapPublicAlbumToCard } from '@/lib/utils/publicApiMappers';
+import type { PublicAlbumCard } from '@/lib/utils/publicApiMappers';
 
 interface ArtistDetailPageProps {
   params: Promise<{ id: string }>;
@@ -75,12 +78,15 @@ export default async function ArtistDetailPage({ params }: ArtistDetailPageProps
     socials: apiArtist.socials,
   };
 
-  const [musicRes, videoRes] = await Promise.all([
+  const [musicRes, videoRes, albumsRes] = await Promise.all([
     callPublicServerApi('PUBLIC_GET_MUSIC', {
       query: `?artist=${encodeURIComponent(artistId)}&status=published&page=1&limit=12`,
     }),
     callPublicServerApi('PUBLIC_GET_VIDEOS', {
       query: `?artist=${encodeURIComponent(artistId)}&status=published&page=1&limit=12`,
+    }),
+    callPublicServerApi('PUBLIC_GET_ALBUMS', {
+      query: `?artist=${encodeURIComponent(artistId)}&page=1&limit=12`,
     }),
   ]);
 
@@ -93,10 +99,21 @@ export default async function ArtistDetailPage({ params }: ArtistDetailPageProps
   const videoItems: VideoItemWithCreator[] = videoList.map(
     v => mapPublicVideoToDetailItem(v) as VideoItemWithCreator
   );
+  const albumItems: PublicAlbumCard[] =
+    albumsRes.type === 'success'
+      ? filterPublicAlbumList((albumsRes.data as IPublicAlbumsListRes)?.albums ?? []).map(
+          mapPublicAlbumToCard
+        )
+      : [];
 
   return (
     <MainLayout>
-      <ArtistDetailPageClient artist={artist} musicItems={musicItems} videoItems={videoItems} />
+      <ArtistDetailPageClient
+        artist={artist}
+        musicItems={musicItems}
+        videoItems={videoItems}
+        albumItems={albumItems}
+      />
     </MainLayout>
   );
 }

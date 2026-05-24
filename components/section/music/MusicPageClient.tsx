@@ -9,6 +9,8 @@ import { TrendingSongs, type TrendingSong } from './TrendingSongs';
 import { TopMusicCharts, type ChartSong } from './TopMusicCharts';
 import { RecentUploads, type RecentUpload } from './RecentUploads';
 import { FeaturedArtists, type FeaturedArtist } from './FeaturedArtists';
+import { FeaturedAlbums } from './FeaturedAlbums';
+import type { PublicAlbumCard } from '@/lib/utils/publicApiMappers';
 import { MusicUploadCTA } from '../shared/MusicUploadCTA';
 import { Music } from 'lucide-react';
 import type { CategoryNavItem } from '@/lib/utils/contentCategoryNav';
@@ -18,6 +20,7 @@ interface MusicPageClientProps {
   chartSongs: ChartSong[];
   recentUploads: RecentUpload[];
   featuredArtists: FeaturedArtist[];
+  featuredAlbums: PublicAlbumCard[];
   categoryOptions: CategoryNavItem[];
   initialErrorMessage?: string | null;
 }
@@ -27,6 +30,7 @@ export const MusicPageClient = ({
   chartSongs,
   recentUploads,
   featuredArtists,
+  featuredAlbums,
   categoryOptions,
   initialErrorMessage = null,
 }: MusicPageClientProps) => {
@@ -35,7 +39,8 @@ export const MusicPageClient = ({
     trendingSongs.length > 0 ||
     chartSongs.length > 0 ||
     recentUploads.length > 0 ||
-    featuredArtists.length > 0;
+    featuredArtists.length > 0 ||
+    featuredAlbums.length > 0;
 
   if (initialErrorMessage && !hasAnyContent) {
     return (
@@ -64,6 +69,7 @@ export const MusicPageClient = ({
         </div>
       )}
       <TrendingSongs songs={trendingSongs} />
+      <FeaturedAlbums albums={featuredAlbums} />
       <TopMusicCharts songs={chartSongs} />
       <RecentUploads uploads={recentUploads} />
       <FeaturedArtists artists={featuredArtists} />
