@@ -9,6 +9,7 @@ import type {
   PublicAlbumTrackItem,
   PublicVideoListItem,
   PublicNewsListItem,
+  MusicAlbumSummary,
 } from '@/lib/constants/endpoints';
 import type { TrendingSong } from '@/components/section/music/TrendingSongs';
 import type { ChartSong } from '@/components/section/music/TopMusicCharts';
@@ -36,6 +37,7 @@ import {
   isCompleteVideo,
 } from '@/lib/utils/contentCompleteness';
 import { resolveContentPrice } from '@/lib/services/contentDownload';
+import { resolvePublicMusicAlbum } from '@/lib/utils/publicMusicAlbum';
 
 function toArtistSummary(item: PublicMusicListItem) {
   const a = item.artist;
@@ -57,8 +59,21 @@ function toCreatorSummary(item: PublicVideoListItem) {
     : { _id: '', name: 'Unknown' };
 }
 
+function toMusicCardAlbum(item: PublicMusicListItem): MusicAlbumSummary | undefined {
+  return resolvePublicMusicAlbum(item);
+}
+
+function withMusicAlbum<T extends Record<string, unknown>>(
+  item: PublicMusicListItem,
+  mapped: T
+): T & { album?: MusicAlbumSummary } {
+  const album = toMusicCardAlbum(item);
+
+  return album ? { ...mapped, album } : mapped;
+}
+
 export function mapPublicMusicToTrendingSong(item: PublicMusicListItem): TrendingSong {
-  return {
+  return withMusicAlbum(item, {
     _id: String(item._id),
     title: item.title,
     artist: toArtistSummary(item),
@@ -67,11 +82,11 @@ export function mapPublicMusicToTrendingSong(item: PublicMusicListItem): Trendin
     duration: (item as { duration?: string }).duration ?? '0:00',
     isNew: false,
     category: item.category,
-  };
+  });
 }
 
 export function mapPublicMusicToChartSong(item: PublicMusicListItem, rank: number): ChartSong {
-  return {
+  return withMusicAlbum(item, {
     _id: String(item._id),
     rank,
     title: item.title,
@@ -81,11 +96,11 @@ export function mapPublicMusicToChartSong(item: PublicMusicListItem, rank: numbe
     trend: (item as { trend?: 'up' | 'down' | 'same' }).trend ?? 'same',
     change: (item as { change?: number }).change ?? 0,
     category: item.category,
-  };
+  });
 }
 
 export function mapPublicMusicToRecentUpload(item: PublicMusicListItem): RecentUpload {
-  return {
+  return withMusicAlbum(item, {
     _id: String(item._id),
     title: item.title,
     artist: toArtistSummary(item),
@@ -95,7 +110,7 @@ export function mapPublicMusicToRecentUpload(item: PublicMusicListItem): RecentU
         ? item.createdAt
         : ((item.createdAt as Date)?.toISOString?.() ?? ''),
     genre: item.category ?? 'Music',
-  };
+  });
 }
 
 export function mapPublicMusicToDetailItem(item: PublicMusicListItem): MusicItemWithArtist {
@@ -129,6 +144,7 @@ export function mapPublicMusicToDetailItem(item: PublicMusicListItem): MusicItem
     downloadPrice: price,
     duration: (item as { duration?: string }).duration,
     releaseDate,
+    album: toMusicCardAlbum(item),
   } as MusicItemWithArtist;
 }
 

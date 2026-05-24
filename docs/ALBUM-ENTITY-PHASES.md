@@ -12,6 +12,7 @@ Phases 4–7 (images, admin modals, backend, admin dashboard) are **done**. Rema
 | 7 | Admin albums dashboard (list, drawer, modal, nav) | oj-multimedia |
 | 8 | Public albums (list, detail, search, artist profile) | oj-multimedia |
 | 9 | Admin music ↔ album linking (picker, table, drawer) | oj-multimedia (+ admin music album populate) |
+| 10 | Public music album surfacing (API shaping, detail breadcrumb, card label) | oj-multimedia + oj-backend |
 
 ## Phase 8 — Public albums (done)
 
@@ -35,14 +36,12 @@ Phases 4–7 (images, admin modals, backend, admin dashboard) are **done**. Rema
 
 **Risks:** Artist mismatch — backend already validates; UI filters albums by resolved artist.
 
-## Phase 10 — Public music ↔ album surfacing (current)
+## Phase 10 — Public music ↔ album surfacing (done)
 
 **Goal:** Track pages and lists expose album context when `Music.album` is set.
 
-- Backend: include `album` (id, title, slug) on `shapeMusicListItem` / `shapeMusicDetail`
-- Frontend: breadcrumb / link on music detail; optional badge on cards
-
-**Defer if:** low traffic before Phase 9 admin linking is used.
+- Backend: include `album` (id, title, slug) on `shapeMusicListItem` / `shapeMusicDetail` (published albums only)
+- Frontend: breadcrumb / link on music detail; album label on `MusicCard`
 
 ## Phase 11 — Artist-submitted albums (out of scope)
 
@@ -52,7 +51,7 @@ Phases 4–7 (images, admin modals, backend, admin dashboard) are **done**. Rema
 
 Document this in admin-facing help/runbook when needed.
 
-## Phase 12 — Release & observability (cross-cutting)
+## Phase 12 — Release & observability (current)
 
 - E2E: `/music/albums`, album detail, search hit → detail
 - Smoke routes already include `/admin/dashboard/albums`

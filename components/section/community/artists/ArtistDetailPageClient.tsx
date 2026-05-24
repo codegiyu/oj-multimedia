@@ -144,6 +144,7 @@ export function ArtistDetailPageClient({
                         plays={item.plays ?? '0'}
                         genre={item.genre ?? item.category ?? ''}
                         isNew={item.isNew}
+                        album={item.album}
                       />
                     ))}
                   </div>

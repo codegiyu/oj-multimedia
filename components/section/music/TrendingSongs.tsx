@@ -6,6 +6,7 @@ import { useRef } from 'react';
 import { SectionComp } from '@/components/general/SectionComp';
 import { MusicCard } from '@/components/cards/MusicCard';
 import { EmptyState } from '../news/EmptyState';
+import type { MusicAlbumSummary } from '@/lib/constants/endpoints';
 
 export interface TrendingSong {
   _id: string;
@@ -16,6 +17,7 @@ export interface TrendingSong {
   duration: string;
   isNew: boolean;
   category?: string;
+  album?: MusicAlbumSummary;
 }
 
 interface TrendingSongsProps {
@@ -83,6 +85,7 @@ export const TrendingSongs = ({ songs: trendingSongs }: TrendingSongsProps) => {
               plays={song.plays}
               genre={song.category || 'Music'}
               isNew={song.isNew}
+              album={song.album}
             />
           </motion.div>
         ))}

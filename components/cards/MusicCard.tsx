@@ -10,6 +10,8 @@ import { MusicCardOptions } from '@/components/section/music/MusicCardOptions';
 import { MusicCardQuickMenu } from '@/components/section/music/MusicCardQuickMenu';
 import type { MusicItemWithArtist } from '@/lib/utils/music';
 import { toMusicDownloadInputFromCard } from '@/lib/utils/musicDownloadMappers';
+import type { MusicAlbumSummary } from '@/lib/constants/endpoints';
+import { publicMusicAlbumHref } from '@/lib/utils/publicMusicAlbum';
 
 interface MusicCardProps {
   _id: string;
@@ -20,6 +22,7 @@ interface MusicCardProps {
   genre: string;
   isNew?: boolean;
   slug?: string;
+  album?: MusicAlbumSummary;
   downloadUrl?: string;
   audioUrl?: string;
   isMonetizable?: boolean;
@@ -31,7 +34,7 @@ interface MusicCardProps {
 }
 
 export const MusicCard = (props: MusicCardProps) => {
-  const { _id, title, artist, cover, plays, genre, isNew, optionsItem } = props;
+  const { _id, title, artist, cover, plays, genre, isNew, optionsItem, album } = props;
   const artistName = typeof artist === 'string' ? artist : artist.name;
   const detailHref = `/music/${_id}`;
   const downloadInput = toMusicDownloadInputFromCard(props, 'card');
@@ -82,6 +85,14 @@ export const MusicCard = (props: MusicCardProps) => {
               {title}
             </h3>
             <p className="text-sm text-muted-foreground truncate">{artistName}</p>
+            {album ? (
+              <Link
+                href={publicMusicAlbumHref(album)}
+                onClick={e => e.stopPropagation()}
+                className="text-xs text-primary truncate block mt-1 hover:underline underline-offset-2">
+                {album.title}
+              </Link>
+            ) : null}
             <p className="text-xs text-muted-foreground mt-2">{plays} plays</p>
           </Link>
           {optionsItem ? (
