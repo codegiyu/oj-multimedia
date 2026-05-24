@@ -29,11 +29,14 @@ import {
   loadAdminContentCategorySelectOptions,
 } from '@/lib/utils/adminContentCategorySelect';
 import {
+  assertMonetizationPriceClient,
   normalizeEnumValue,
   normalizeOptionalHttpUrl,
   normalizeOptionalText,
   requireText,
+  resolveMonetizationFormPrice,
 } from '@/lib/utils/adminFormValidation';
+import { MonetizationFormFields } from '@/components/section/admin/shared/MonetizationFormFields';
 import { useFileUpload } from '@/lib/hooks/use-file-upload';
 import {
   PUBLISHABLE_STATUS_SELECT_OPTIONS,
@@ -55,6 +58,8 @@ const defaultForm: IArtistCreateVideoPayload & { artistId: string; ownerUserId: 
   videoFileUrl: '',
   embedUrl: '',
   category: '',
+  isMonetizable: false,
+  price: 0,
   artistId: '',
   ownerUserId: '',
 };
@@ -84,7 +89,6 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
   const [editListRow, setEditListRow] = useState<ArtistVideoListItem | null>(null);
   const [pendingThumbnail, setPendingThumbnail] = useState<File | null>(null);
   const [pendingVideoFile, setPendingVideoFile] = useState<File | null>(null);
-  const [pendingLegacyVideo, setPendingLegacyVideo] = useState<File | null>(null);
 
   const isEdit = Boolean(editId);
   const thumbnailUpload = useFileUpload({
@@ -93,11 +97,6 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
     intent: 'image',
   });
   const videoFileUpload = useFileUpload({
-    entityType: 'resource',
-    entityId: editId ?? 'video-pending',
-    intent: 'other',
-  });
-  const legacyVideoUpload = useFileUpload({
     entityType: 'resource',
     entityId: editId ?? 'video-pending',
     intent: 'other',
@@ -162,6 +161,8 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
           videoFileUrl: (v as { videoFileUrl?: string }).videoFileUrl ?? '',
           embedUrl: (v as { embedUrl?: string }).embedUrl ?? '',
           category: v.category ?? '',
+          isMonetizable: Boolean(v.isMonetizable),
+          price: typeof v.price === 'number' ? v.price : Number(v.price) || 0,
           artistId: '',
           ownerUserId: '',
         });
@@ -196,9 +197,14 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
       const videoFileUrl = normalizeOptionalHttpUrl(form.videoFileUrl ?? '', 'Video file URL');
       const embedUrl = normalizeOptionalHttpUrl(form.embedUrl ?? '', 'Embed URL');
       const category = normalizeOptionalText(form.category ?? '');
+
+      assertMonetizationPriceClient(form.isMonetizable, form.price);
+      const isMonetizable = Boolean(form.isMonetizable);
+      const price = resolveMonetizationFormPrice(isMonetizable, form.price);
+
       let finalThumbnail = thumbnail;
       let finalVideoFileUrl = videoFileUrl;
-      let finalVideoUrl = videoUrl;
+      const finalVideoUrl = videoUrl;
 
       if (editId) {
         if (pendingThumbnail) {
@@ -217,14 +223,6 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
           if (!upload?.url) throw new Error('Video file upload failed');
           finalVideoFileUrl = upload.url;
         }
-        if (pendingLegacyVideo) {
-          const upload = await legacyVideoUpload.uploadFile({
-            file: pendingLegacyVideo,
-            entityId: editId,
-          });
-          if (!upload?.url) throw new Error('Legacy video upload failed');
-          finalVideoUrl = upload.url;
-        }
         const payload: IAdminUpdateVideoPayload = {
           title,
           description: description || undefined,
@@ -233,6 +231,8 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
           videoFileUrl: finalVideoFileUrl,
           embedUrl,
           category,
+          isMonetizable,
+          price,
           status: editStatus,
         };
         const canAssignOwner = !ownerMeta.ownerLocked && !ownerMeta.hasArtist;
@@ -253,6 +253,8 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
           videoFileUrl: finalVideoFileUrl || '',
           embedUrl,
           category,
+          isMonetizable,
+          price,
           status: createStatus,
         };
         if (form.artistId) payload.artistId = form.artistId;
@@ -277,20 +279,12 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
             });
             if (upload?.url) finalVideoFileUrl = upload.url;
           }
-          if (pendingLegacyVideo) {
-            const upload = await legacyVideoUpload.uploadFile({
-              file: pendingLegacyVideo,
-              entityId: createdId,
-            });
-            if (upload?.url) finalVideoUrl = upload.url;
-          }
-          if (pendingThumbnail || pendingVideoFile || pendingLegacyVideo) {
+          if (pendingThumbnail || pendingVideoFile) {
             const patchRes = await callApi('ADMIN_VIDEO_UPDATE', {
               query: `/${createdId}` as `/${string}`,
               payload: {
                 thumbnail: finalThumbnail,
                 videoFileUrl: finalVideoFileUrl,
-                videoUrl: finalVideoUrl,
               },
             });
             if (patchRes.type !== 'success')
@@ -408,16 +402,19 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
               value={form.embedUrl ?? ''}
               onChange={e => setForm(f => ({ ...f, embedUrl: e.target.value }))}
             />
-            <MediaUrlOrUploadField
-              label="Legacy videoUrl"
-              value={form.videoUrl ?? ''}
-              onChange={value => setForm(f => ({ ...f, videoUrl: value }))}
-              entityType="resource"
-              entityId={editId}
-              fallbackEntityIdPrefix="video-legacy"
-              intent="other"
-              accept="video/*"
-              onPendingFileChange={setPendingLegacyVideo}
+            <MonetizationFormFields
+              idPrefix="admin-video"
+              isMonetizable={Boolean(form.isMonetizable)}
+              price={form.price ?? 0}
+              onMonetizableChange={value =>
+                setForm(f => ({
+                  ...f,
+                  isMonetizable: value,
+                  ...(value ? {} : { price: 0 }),
+                }))
+              }
+              onPriceChange={value => setForm(f => ({ ...f, price: value }))}
+              disabled={loading}
             />
             {isEdit &&
               (ownerMeta.ownerLocked || ownerMeta.hasArtist ? (

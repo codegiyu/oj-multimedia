@@ -29,11 +29,14 @@ import {
   loadAdminContentCategorySelectOptions,
 } from '@/lib/utils/adminContentCategorySelect';
 import {
+  assertMonetizationPriceClient,
   normalizeEnumValue,
   normalizeOptionalHttpUrl,
   normalizeOptionalText,
   requireText,
+  resolveMonetizationFormPrice,
 } from '@/lib/utils/adminFormValidation';
+import { MonetizationFormFields } from '@/components/section/admin/shared/MonetizationFormFields';
 import { useFileUpload } from '@/lib/hooks/use-file-upload';
 import {
   PUBLISHABLE_STATUS_SELECT_OPTIONS,
@@ -57,6 +60,8 @@ const defaultForm: IArtistCreateMusicPayload & { artistId: string; ownerUserId: 
   audioUrl: '',
   videoUrl: '',
   downloadUrl: '',
+  isMonetizable: false,
+  price: 0,
   artistId: '',
   ownerUserId: '',
 };
@@ -86,7 +91,6 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
   const [editListRow, setEditListRow] = useState<ArtistMusicListItem | null>(null);
   const [pendingCover, setPendingCover] = useState<File | null>(null);
   const [pendingAudio, setPendingAudio] = useState<File | null>(null);
-  const [pendingVideo, setPendingVideo] = useState<File | null>(null);
 
   const isEdit = Boolean(editId);
   const coverUpload = useFileUpload({
@@ -95,11 +99,6 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
     intent: 'image',
   });
   const audioUpload = useFileUpload({
-    entityType: 'music',
-    entityId: editId ?? 'music-pending',
-    intent: 'other',
-  });
-  const videoUpload = useFileUpload({
     entityType: 'music',
     entityId: editId ?? 'music-pending',
     intent: 'other',
@@ -166,6 +165,8 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
           audioUrl: m.audioUrl ?? '',
           videoUrl: m.videoUrl ?? '',
           downloadUrl: m.downloadUrl ?? '',
+          isMonetizable: Boolean(m.isMonetizable),
+          price: typeof m.price === 'number' ? m.price : Number(m.price) || 0,
           artistId: '',
           ownerUserId: '',
         });
@@ -203,9 +204,13 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
       const videoUrl = normalizeOptionalHttpUrl(form.videoUrl ?? '', 'Video URL');
       const downloadUrl = normalizeOptionalHttpUrl(form.downloadUrl ?? '', 'Download URL');
 
+      assertMonetizationPriceClient(form.isMonetizable, form.price);
+      const isMonetizable = Boolean(form.isMonetizable);
+      const price = resolveMonetizationFormPrice(isMonetizable, form.price);
+
       let finalCoverImage = coverImage;
       let finalAudioUrl = audioUrl;
-      let finalVideoUrl = videoUrl;
+      const finalVideoUrl = videoUrl;
 
       const finalDownloadUrl = downloadUrl;
 
@@ -222,12 +227,6 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
           finalAudioUrl = upload.url;
         }
 
-        if (pendingVideo) {
-          const upload = await videoUpload.uploadFile({ file: pendingVideo, entityId: editId });
-          if (!upload?.url) throw new Error('Video upload failed');
-          finalVideoUrl = upload.url;
-        }
-
         const payload: IAdminUpdateMusicPayload = {
           title,
           description: description || undefined,
@@ -238,6 +237,8 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
           audioUrl: finalAudioUrl,
           videoUrl: finalVideoUrl,
           downloadUrl: finalDownloadUrl,
+          isMonetizable,
+          price,
           status: editStatus,
         };
 
@@ -264,6 +265,8 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
           audioUrl: finalAudioUrl || undefined,
           videoUrl: finalVideoUrl || undefined,
           downloadUrl: finalDownloadUrl || undefined,
+          isMonetizable,
+          price,
           status: createStatus,
         };
 
@@ -298,22 +301,12 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
             if (upload?.url) finalAudioUrl = upload.url;
           }
 
-          if (pendingVideo) {
-            const upload = await videoUpload.uploadFile({
-              file: pendingVideo,
-              entityId: createdId,
-            });
-
-            if (upload?.url) finalVideoUrl = upload.url;
-          }
-
-          if (pendingCover || pendingAudio || pendingVideo) {
+          if (pendingCover || pendingAudio) {
             const patchRes = await callApi('ADMIN_MUSIC_UPDATE', {
               query: `/${createdId}` as `/${string}`,
               payload: {
                 coverImage: finalCoverImage,
                 audioUrl: finalAudioUrl,
-                videoUrl: finalVideoUrl,
               },
             });
 
@@ -445,16 +438,19 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
               accept="audio/*"
               onPendingFileChange={setPendingAudio}
             />
-            <MediaUrlOrUploadField
-              label="Video URL (legacy)"
-              value={form.videoUrl ?? ''}
-              onChange={value => setForm(f => ({ ...f, videoUrl: value }))}
-              entityType="music"
-              entityId={editId}
-              fallbackEntityIdPrefix="music-video"
-              intent="other"
-              accept="video/*"
-              onPendingFileChange={setPendingVideo}
+            <MonetizationFormFields
+              idPrefix="admin-music"
+              isMonetizable={Boolean(form.isMonetizable)}
+              price={form.price ?? 0}
+              onMonetizableChange={value =>
+                setForm(f => ({
+                  ...f,
+                  isMonetizable: value,
+                  ...(value ? {} : { price: 0 }),
+                }))
+              }
+              onPriceChange={value => setForm(f => ({ ...f, price: value }))}
+              disabled={loading}
             />
             <RegularInput
               label="Download URL"

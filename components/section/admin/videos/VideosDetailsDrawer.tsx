@@ -62,7 +62,20 @@ function DetailsReadOnly({
         <InfoCard icon={FileText} label="Thumbnail URL" value={video.thumbnail ?? '—'} />
         <InfoCard icon={FileText} label="Video file URL" value={vf ?? '—'} />
         <InfoCard icon={FileText} label="Embed URL" value={em ?? '—'} />
-        <InfoCard icon={FileText} label="Legacy videoUrl" value={video.videoUrl ?? '—'} />
+        <InfoCard
+          icon={FileText}
+          label="Premium download"
+          value={video.isMonetizable ? 'Yes' : 'No'}
+        />
+        <InfoCard
+          icon={FileText}
+          label="Price (NGN)"
+          value={
+            video.isMonetizable && typeof video.price === 'number' && video.price > 0
+              ? String(video.price)
+              : '—'
+          }
+        />
         <InfoCard
           icon={Calendar}
           label="Created"

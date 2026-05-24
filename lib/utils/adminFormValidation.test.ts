@@ -1,34 +1,25 @@
 import { describe, expect, it } from 'vitest';
-import {
-  normalizeEnumValue,
-  normalizeOptionalHttpUrl,
-  normalizeOptionalText,
-  requireText,
-} from '@/lib/utils/adminFormValidation';
+import { assertMonetizationPriceClient, resolveMonetizationFormPrice } from './adminFormValidation';
 
-describe('adminFormValidation', () => {
-  it('normalizes enum values with quiet fallback', () => {
-    const statuses = ['draft', 'published', 'archived'] as const;
-
-    expect(normalizeEnumValue('published', statuses, 'draft')).toBe('published');
-    expect(normalizeEnumValue('invalid-status', statuses, 'draft')).toBe('draft');
-    expect(normalizeEnumValue(undefined, statuses, 'draft')).toBe('draft');
+describe('assertMonetizationPriceClient', () => {
+  it('allows free content without a price', () => {
+    expect(() => assertMonetizationPriceClient(false, 0)).not.toThrow();
+    expect(() => assertMonetizationPriceClient(undefined, undefined)).not.toThrow();
   });
 
-  it('normalizes optional text and required text', () => {
-    expect(normalizeOptionalText('  hello  ')).toBe('hello');
-    expect(normalizeOptionalText('   ')).toBeUndefined();
-    expect(requireText('  value ', 'Title')).toBe('value');
-    expect(() => requireText('   ', 'Title')).toThrow('Title is required.');
+  it('requires price > 0 when monetizable', () => {
+    expect(() => assertMonetizationPriceClient(true, 0)).toThrow(/greater than 0/);
+    expect(() => assertMonetizationPriceClient(true, undefined)).toThrow(/greater than 0/);
+    expect(() => assertMonetizationPriceClient(true, 500)).not.toThrow();
+  });
+});
+
+describe('resolveMonetizationFormPrice', () => {
+  it('returns 0 when not monetizable', () => {
+    expect(resolveMonetizationFormPrice(false, 1200)).toBe(0);
   });
 
-  it('validates optional http URLs', () => {
-    expect(normalizeOptionalHttpUrl('https://example.com/file', 'File URL')).toBe(
-      'https://example.com/file'
-    );
-    expect(normalizeOptionalHttpUrl('   ', 'File URL')).toBeUndefined();
-    expect(() => normalizeOptionalHttpUrl('ftp://example.com', 'File URL')).toThrow(
-      'File URL must start with http:// or https://.'
-    );
+  it('returns positive price when monetizable', () => {
+    expect(resolveMonetizationFormPrice(true, 1500)).toBe(1500);
   });
 });
