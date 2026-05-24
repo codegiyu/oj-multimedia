@@ -8,6 +8,8 @@ import { format } from 'date-fns';
 import { Music, User, FileText, Calendar, Hash } from 'lucide-react';
 import type { ArtistMusicListItem } from '@/lib/constants/endpoints';
 import { InfoCard } from '@/components/general/InfoCard';
+import { DashboardThumbnail } from '@/components/general/DashboardThumbnail';
+import { DrawerMediaPreview } from '@/components/general/DrawerMediaPreview';
 
 function artistName(artist: ArtistMusicListItem['artist']): string {
   if (!artist) return '—';
@@ -21,7 +23,8 @@ function DetailsHeader({
 }) {
   const music = rowDetails.data;
   return (
-    <div className="flex gap-3 items-center">
+    <div className="flex gap-3 items-start">
+      <DashboardThumbnail src={music.coverImage} alt={music.title} size={48} />
       <div className="grid gap-2 flex-1">
         <h2 className="text-[1.125rem] leading-none font-semibold -tracking-[0.36px] text-foreground/90">
           {music.title}
@@ -43,6 +46,7 @@ function DetailsReadOnly({
   const music = rowDetails.data;
   return (
     <div className="grid gap-4 p-4">
+      <DrawerMediaPreview src={music.coverImage} alt={music.title} />
       <div className="grid gap-3">
         <InfoCard icon={Music} label="Title" value={music.title} />
         <InfoCard icon={User} label="Artist" value={artistName(music.artist)} />

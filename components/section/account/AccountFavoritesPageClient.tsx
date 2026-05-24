@@ -150,13 +150,12 @@ export function AccountFavoritesPageClient({
                     key={item._id}
                     className="gap-0 overflow-hidden border-border/80 py-0 shadow-sm">
                     <div className="relative aspect-square bg-muted">
-                      {item.image ? (
-                        <FillImage src={item.image} alt="" sizes="(max-width: 768px) 50vw, 280px" />
-                      ) : (
-                        <div className="flex h-full items-center justify-center text-muted-foreground">
-                          <Icon className="h-10 w-10" />
-                        </div>
-                      )}
+                      <FillImage
+                        src={item.image ?? ''}
+                        alt=""
+                        imageContext="dashboard"
+                        sizes="(max-width: 768px) 50vw, 280px"
+                      />
                       <button
                         type="button"
                         className="absolute left-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-md"

@@ -11,6 +11,7 @@ import {
 import type { ArtistVideoListItem } from '@/lib/constants/endpoints';
 import { VideosActionsMenu } from './VideosActionsMenu';
 import { Badge } from '@/components/ui/badge';
+import { dashboardThumbnailColumn } from '@/components/general/dashboardTableThumbnailColumn';
 
 function truncate(str: string, maxLen: number) {
   if (str.length <= maxLen) return str;
@@ -56,6 +57,11 @@ export function VideosTableContent({
 }: VideosTableContentProps) {
   const columns = useMemo<DataTableColumn<ArtistVideoListItem, unknown>[]>(
     () => [
+      dashboardThumbnailColumn(
+        row => row.thumbnail,
+        row => row.title,
+        { header: 'Thumb' }
+      ),
       {
         id: 'title',
         header: <DataTableColumnHeader title="Title" />,

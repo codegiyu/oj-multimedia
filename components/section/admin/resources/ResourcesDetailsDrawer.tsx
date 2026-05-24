@@ -7,6 +7,8 @@ import {
 import { FileText, Hash } from 'lucide-react';
 import type { ResourceListItem } from '@/lib/types/community';
 import { InfoCard } from '@/components/general/InfoCard';
+import { DashboardThumbnail } from '@/components/general/DashboardThumbnail';
+import { DrawerMediaPreview } from '@/components/general/DrawerMediaPreview';
 
 function DetailsHeader({
   rowDetails,
@@ -16,7 +18,8 @@ function DetailsHeader({
   const resource = rowDetails.data;
   const status = (resource as ResourceListItem & { status?: string }).status;
   return (
-    <div className="flex gap-3 items-center">
+    <div className="flex gap-3 items-start">
+      <DashboardThumbnail src={resource.coverImage} alt={resource.title} size={48} />
       <div className="grid gap-2 flex-1">
         <h2 className="text-[1.125rem] leading-none font-semibold -tracking-[0.36px] text-foreground/90">
           {resource.title}
@@ -39,6 +42,7 @@ function DetailsContent({
 
   return (
     <div className="grid gap-4 p-4">
+      <DrawerMediaPreview src={resource.coverImage} alt={resource.title} />
       <div className="grid gap-3">
         <InfoCard icon={FileText} label="Title" value={resource.title} />
         <InfoCard icon={FileText} label="Type" value={resource.type} />
@@ -50,6 +54,12 @@ function DetailsContent({
           preserveParagraphs
         />
         <InfoCard icon={FileText} label="Category" value={resource.category ?? '—'} />
+        <InfoCard
+          icon={FileText}
+          label="Cover URL"
+          value={resource.coverImage ?? '—'}
+          className="[&_.line-clamp-1]:line-clamp-none"
+        />
         <InfoCard icon={FileText} label="Downloads" value={String(resource.downloads ?? 0)} />
         <InfoCard icon={Hash} label="ID" value={resource._id} hasCopy copyValue={resource._id} />
       </div>

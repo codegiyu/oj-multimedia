@@ -8,6 +8,8 @@ import { format } from 'date-fns';
 import { Newspaper, FileText, Calendar, Hash } from 'lucide-react';
 import type { PublicNewsListItem } from '@/lib/constants/endpoints';
 import { InfoCard } from '@/components/general/InfoCard';
+import { DashboardThumbnail } from '@/components/general/DashboardThumbnail';
+import { DrawerMediaPreview } from '@/components/general/DrawerMediaPreview';
 
 function DetailsHeader({
   rowDetails,
@@ -16,7 +18,8 @@ function DetailsHeader({
 }) {
   const newsItem = rowDetails.data;
   return (
-    <div className="flex gap-3 items-center">
+    <div className="flex gap-3 items-start">
+      <DashboardThumbnail src={newsItem.coverImage} alt={newsItem.title} size={48} />
       <div className="grid gap-2 flex-1">
         <h2 className="text-[1.125rem] leading-none font-semibold -tracking-[0.36px] text-foreground/90">
           {newsItem.title}
@@ -38,6 +41,7 @@ function DetailsReadOnly({
   const n = rowDetails.data;
   return (
     <div className="grid gap-4 p-4">
+      <DrawerMediaPreview src={n.coverImage} alt={n.title} images={n.images} />
       <div className="grid gap-3">
         <InfoCard icon={Newspaper} label="Title" value={n.title} />
         <InfoCard icon={FileText} label="Author" value={n.author ?? '—'} />

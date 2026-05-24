@@ -6,6 +6,8 @@ import {
 } from '@/components/general/TableRowDetailsDrawer';
 import { FileText, Hash, Store, Package, ShoppingCart } from 'lucide-react';
 import { InfoCard } from '@/components/general/InfoCard';
+import { DashboardThumbnail } from '@/components/general/DashboardThumbnail';
+import { DrawerMediaPreview } from '@/components/general/DrawerMediaPreview';
 import type {
   IMarketplaceVendor,
   IMarketplaceProduct,
@@ -34,10 +36,17 @@ function formatDate(dateStr?: string) {
 function VendorDetails({ data }: { data: IMarketplaceVendor }) {
   return (
     <div className="grid gap-4 p-4">
+      <DrawerMediaPreview src={data.logo} alt={data.storeName} size="sm" />
       <div className="grid gap-3">
         <InfoCard icon={Store} label="Store Name" value={data.storeName} />
         <InfoCard icon={FileText} label="Name" value={data.name} />
         <InfoCard icon={FileText} label="Status" value={data.status} />
+        <InfoCard
+          icon={FileText}
+          label="Logo URL"
+          value={data.logo ?? '—'}
+          className="[&_.line-clamp-1]:line-clamp-none"
+        />
         <InfoCard
           icon={FileText}
           label="Store Description"
@@ -56,6 +65,7 @@ function VendorDetails({ data }: { data: IMarketplaceVendor }) {
 function ProductDetails({ data }: { data: IMarketplaceProduct }) {
   return (
     <div className="grid gap-4 p-4">
+      <DrawerMediaPreview src={data.images?.[0]} alt={data.name} images={data.images} />
       <div className="grid gap-3">
         <InfoCard icon={Package} label="Name" value={data.name} />
         <InfoCard icon={FileText} label="Vendor" value={data.vendorName ?? String(data.vendor)} />
@@ -141,8 +151,24 @@ function DetailsHeader({
           ? (data as PopulatedMarketplaceOrder).status
           : '';
 
+  const isVendor = 'storeName' in data;
+  const isProduct = 'vendor' in data && !('orderNumber' in data);
+  const thumbnailSrc = isVendor
+    ? (data as IMarketplaceVendor).logo
+    : isProduct
+      ? (data as IMarketplaceProduct).images?.[0]
+      : undefined;
+
   return (
-    <div className="flex gap-3 items-center">
+    <div className="flex gap-3 items-start">
+      {isVendor || isProduct ? (
+        <DashboardThumbnail
+          src={thumbnailSrc}
+          alt={title}
+          size={48}
+          rounded={isVendor ? 'full' : 'md'}
+        />
+      ) : null}
       <div className="grid gap-2 flex-1">
         <h2 className="text-[1.125rem] leading-none font-semibold -tracking-[0.36px] text-foreground/90">
           {title}

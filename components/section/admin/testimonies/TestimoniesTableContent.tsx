@@ -10,6 +10,7 @@ import {
 import type { TestimonyListItem } from '@/lib/types/community';
 import { TestimoniesActionsMenu } from './TestimoniesActionsMenu';
 import { Badge } from '@/components/ui/badge';
+import { dashboardThumbnailColumn } from '@/components/general/dashboardTableThumbnailColumn';
 
 function truncate(str: string, maxLen: number) {
   if (str.length <= maxLen) return str;
@@ -50,6 +51,14 @@ export function TestimoniesTableContent({
 }: TestimoniesTableContentProps) {
   const columns = useMemo<DataTableColumn<TestimonyListItem, unknown>[]>(
     () => [
+      dashboardThumbnailColumn(
+        row => row.avatar,
+        row => row.author,
+        {
+          header: 'Avatar',
+          rounded: 'full',
+        }
+      ),
       {
         id: 'author',
         header: <DataTableColumnHeader title="Author" />,

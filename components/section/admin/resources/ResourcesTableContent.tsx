@@ -10,6 +10,7 @@ import {
 import type { ResourceListItem } from '@/lib/types/community';
 import { ResourcesActionsMenu } from './ResourcesActionsMenu';
 import { Badge } from '@/components/ui/badge';
+import { dashboardThumbnailColumn } from '@/components/general/dashboardTableThumbnailColumn';
 
 function truncate(str: string, maxLen: number) {
   if (str.length <= maxLen) return str;
@@ -50,6 +51,10 @@ export function ResourcesTableContent({
 }: ResourcesTableContentProps) {
   const columns = useMemo<DataTableColumn<ResourceListItem, unknown>[]>(
     () => [
+      dashboardThumbnailColumn(
+        row => row.coverImage,
+        row => row.title
+      ),
       {
         id: 'title',
         header: <DataTableColumnHeader title="Title" />,

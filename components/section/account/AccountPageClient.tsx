@@ -112,13 +112,7 @@ export function AccountPageClient({
                       key={order._id}
                       className="flex items-center gap-3 bg-primary/[0.06] px-4 py-3 first:rounded-t-xl last:rounded-b-xl">
                       <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-muted">
-                        {thumb ? (
-                          <FillImage src={thumb} alt="" sizes="48px" />
-                        ) : (
-                          <div className="flex h-full items-center justify-center">
-                            <Package className="h-5 w-5 text-muted-foreground" />
-                          </div>
-                        )}
+                        <FillImage src={thumb ?? ''} alt="" imageContext="dashboard" sizes="48px" />
                       </div>
                       <div className="min-w-0 flex-1">
                         <p className="font-semibold text-foreground">{order.orderNumber}</p>
@@ -172,13 +166,12 @@ export function AccountPageClient({
                     key={item._id}
                     className="gap-0 overflow-hidden border-border/80 py-0 shadow-sm">
                     <div className="relative aspect-[4/5] bg-muted">
-                      {img ? (
-                        <FillImage src={img} alt="" sizes="(max-width: 768px) 50vw, 280px" />
-                      ) : (
-                        <div className="flex h-full items-center justify-center text-muted-foreground">
-                          <Heart className="h-8 w-8" />
-                        </div>
-                      )}
+                      <FillImage
+                        src={img ?? ''}
+                        alt=""
+                        imageContext="dashboard"
+                        sizes="(max-width: 768px) 50vw, 280px"
+                      />
                     </div>
                     <div className="space-y-1 p-3">
                       <p className="line-clamp-2 text-sm font-medium text-foreground">

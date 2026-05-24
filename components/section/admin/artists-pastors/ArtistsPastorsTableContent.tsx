@@ -12,6 +12,7 @@ import {
 import type { ArtistListItem } from '@/lib/types/community';
 import type { PastorListItem } from '@/lib/types/community';
 import { ArtistsPastorsActionsMenu } from './ArtistsPastorsActionsMenu';
+import { dashboardThumbnailColumn } from '@/components/general/dashboardTableThumbnailColumn';
 
 function truncate(str: string, maxLen: number) {
   if (str.length <= maxLen) return str;
@@ -62,6 +63,14 @@ export function ArtistsPastorsTableContent(props: ArtistsPastorsTableContentProp
 
   const artistColumns = useMemo<DataTableColumn<ArtistListItem, unknown>[]>(
     () => [
+      dashboardThumbnailColumn(
+        row => row.image,
+        row => row.name,
+        {
+          header: 'Photo',
+          rounded: 'full',
+        }
+      ),
       {
         id: 'name',
         header: <DataTableColumnHeader title="Name" />,
@@ -98,6 +107,14 @@ export function ArtistsPastorsTableContent(props: ArtistsPastorsTableContentProp
 
   const pastorColumns = useMemo<DataTableColumn<PastorListItem, unknown>[]>(
     () => [
+      dashboardThumbnailColumn(
+        row => row.image,
+        row => row.name,
+        {
+          header: 'Photo',
+          rounded: 'full',
+        }
+      ),
       {
         id: 'name',
         header: <DataTableColumnHeader title="Name" />,
