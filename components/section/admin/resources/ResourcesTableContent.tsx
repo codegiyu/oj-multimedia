@@ -7,6 +7,7 @@ import {
   DataTableColumnHeader,
   type DataTableColumn,
 } from '@/components/general/DataTable';
+import { dashboardDownloadsColumn } from '@/components/general/dashboardTableColumns';
 import type { ResourceListItem } from '@/lib/types/community';
 import { ResourcesActionsMenu } from './ResourcesActionsMenu';
 import { Badge } from '@/components/ui/badge';
@@ -58,7 +59,7 @@ export function ResourcesTableContent({
       {
         id: 'title',
         header: <DataTableColumnHeader title="Title" />,
-        meta: { width: '22%' },
+        meta: { width: '24%' },
         cell: row => (
           <DataTableCellWrapper text={row.title}>{truncate(row.title, 35)}</DataTableCellWrapper>
         ),
@@ -79,16 +80,7 @@ export function ResourcesTableContent({
           </DataTableCellWrapper>
         ),
       },
-      {
-        id: 'downloads',
-        header: <DataTableColumnHeader title="Downloads" />,
-        meta: { width: '10%' },
-        cell: row => (
-          <DataTableCellWrapper text={String(row.downloads ?? 0)}>
-            {row.downloads ?? 0}
-          </DataTableCellWrapper>
-        ),
-      },
+      dashboardDownloadsColumn(row => row.downloads),
       {
         id: 'actions',
         header: null,

@@ -13,19 +13,11 @@ import type { IMarketplaceVendor } from '@/lib/constants/endpoints';
 import { MarketplaceVendorsActionsMenu } from './MarketplaceVendorsActionsMenu';
 import { Badge } from '@/components/ui/badge';
 import { dashboardThumbnailColumn } from '@/components/general/dashboardTableThumbnailColumn';
+import { dashboardTableDateColumn } from '@/components/general/dashboardTableColumns';
 
 function truncate(str: string, maxLen: number) {
   if (str.length <= maxLen) return str;
   return str.slice(0, maxLen).trim() + '…';
-}
-
-function formatDate(dateStr?: string) {
-  if (!dateStr) return '—';
-  try {
-    return new Date(dateStr).toLocaleDateString();
-  } catch {
-    return dateStr;
-  }
 }
 
 function StatusBadge({ status }: { status?: string }) {
@@ -102,16 +94,10 @@ export function MarketplaceVendorsTableContent({
           </DataTableCellWrapper>
         ),
       },
-      {
+      dashboardTableDateColumn({
         id: 'createdAt',
-        header: <DataTableColumnHeader title="Created" />,
-        meta: { width: '14%' },
-        cell: row => (
-          <DataTableCellWrapper text={formatDate(row.createdAt)}>
-            {formatDate(row.createdAt)}
-          </DataTableCellWrapper>
-        ),
-      },
+        getValue: row => row.createdAt,
+      }),
       {
         id: 'actions',
         header: null,

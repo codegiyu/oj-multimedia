@@ -9,6 +9,8 @@ type DashboardThumbnailProps = {
   size?: number;
   className?: string;
   rounded?: 'md' | 'full';
+  /** `contain` shows the full image inside the cell; `cover` crops to fill. */
+  objectFit?: 'cover' | 'contain';
 };
 
 /** Compact table-cell thumbnail with dashboard placeholder fallback. */
@@ -18,6 +20,7 @@ export function DashboardThumbnail({
   size = 40,
   className,
   rounded = 'md',
+  objectFit = 'contain',
 }: DashboardThumbnailProps) {
   return (
     <div
@@ -33,7 +36,7 @@ export function DashboardThumbnail({
         width={size}
         height={size}
         imageContext="dashboard"
-        className="h-full w-full object-cover"
+        className={cn('h-full w-full', objectFit === 'contain' ? 'object-contain' : 'object-cover')}
       />
     </div>
   );

@@ -1,13 +1,13 @@
 'use client';
 
 import { useMemo } from 'react';
-import { format } from 'date-fns';
 import {
   DataTable,
   DataTableCellWrapper,
   DataTableColumnHeader,
   type DataTableColumn,
 } from '@/components/general/DataTable';
+import { dashboardTableDateColumn } from '@/components/general/dashboardTableColumns';
 import { Badge } from '@/components/ui/badge';
 import type { IGospelVerse } from '@/lib/types/server-models';
 
@@ -53,15 +53,11 @@ export function GospelVersesTableContent({
           <DataTableCellWrapper text={row.verse}>{truncate(row.verse, 120)}</DataTableCellWrapper>
         ),
       },
-      {
+      dashboardTableDateColumn({
         id: 'date',
-        header: <DataTableColumnHeader title="Verse date" />,
-        meta: { width: '12rem' },
-        cell: row => {
-          const value = row.date ? format(new Date(row.date), 'MMM d, yyyy') : '—';
-          return <DataTableCellWrapper text={value}>{value}</DataTableCellWrapper>;
-        },
-      },
+        header: 'Verse date',
+        getValue: row => row.date,
+      }),
       {
         id: 'active',
         header: <DataTableColumnHeader title="Active" />,
@@ -74,15 +70,11 @@ export function GospelVersesTableContent({
           </DataTableCellWrapper>
         ),
       },
-      {
+      dashboardTableDateColumn({
         id: 'updated',
-        header: <DataTableColumnHeader title="Updated" />,
-        meta: { width: '11rem' },
-        cell: row => {
-          const value = row.updatedAt ? format(new Date(row.updatedAt), 'MMM d, yyyy') : '—';
-          return <DataTableCellWrapper text={value}>{value}</DataTableCellWrapper>;
-        },
-      },
+        header: 'Updated',
+        getValue: row => row.updatedAt,
+      }),
     ],
     []
   );

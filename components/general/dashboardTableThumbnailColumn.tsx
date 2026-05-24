@@ -29,6 +29,7 @@ export function dashboardThumbnailColumn<T>(
           alt={getAlt(row)}
           size={options?.size ?? 40}
           rounded={options?.rounded ?? 'md'}
+          objectFit="contain"
         />
       </DataTableCellWrapper>
     ),

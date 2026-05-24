@@ -1,18 +1,21 @@
 'use client';
 
 import { useMemo } from 'react';
-import { format } from 'date-fns';
 import {
   DataTable,
   DataTableCellWrapper,
   DataTableColumnHeader,
   type DataTableColumn,
 } from '@/components/general/DataTable';
+import {
+  dashboardDownloadsColumn,
+  dashboardPlaysColumn,
+  dashboardTableDateColumn,
+} from '@/components/general/dashboardTableColumns';
 import type { ArtistMusicListItem } from '@/lib/constants/endpoints';
 import { MusicActionsMenu } from './MusicActionsMenu';
 import { Badge } from '@/components/ui/badge';
 import { dashboardThumbnailColumn } from '@/components/general/dashboardTableThumbnailColumn';
-import { musicAlbumLabel } from '@/lib/utils/adminMusicAlbumSelect';
 
 function truncate(str: string, maxLen: number) {
   if (str.length <= maxLen) return str;
@@ -65,7 +68,7 @@ export function MusicTableContent({
       {
         id: 'title',
         header: <DataTableColumnHeader title="Title" />,
-        meta: { width: '22%' },
+        meta: { width: '26%' },
         cell: row => (
           <DataTableCellWrapper text={row.title}>{truncate(row.title, 35)}</DataTableCellWrapper>
         ),
@@ -73,21 +76,12 @@ export function MusicTableContent({
       {
         id: 'artist',
         header: <DataTableColumnHeader title="Artist" />,
-        meta: { width: '16%' },
+        meta: { width: '18%' },
         cell: row => (
           <DataTableCellWrapper text={artistName(row.artist)}>
             {truncate(artistName(row.artist), 25)}
           </DataTableCellWrapper>
         ),
-      },
-      {
-        id: 'album',
-        header: <DataTableColumnHeader title="Album" />,
-        meta: { width: '14%' },
-        cell: row => {
-          const label = musicAlbumLabel(row);
-          return <DataTableCellWrapper text={label}>{truncate(label, 22)}</DataTableCellWrapper>;
-        },
       },
       {
         id: 'status',
@@ -99,33 +93,11 @@ export function MusicTableContent({
           </DataTableCellWrapper>
         ),
       },
-      {
-        id: 'downloads',
-        header: <DataTableColumnHeader title="Downloads" />,
-        meta: { width: '6rem' },
-        cell: row => {
-          const n = (row as { downloads?: number }).downloads ?? 0;
-          return <DataTableCellWrapper text={String(n)}>{n}</DataTableCellWrapper>;
-        },
-      },
-      {
-        id: 'plays',
-        header: <DataTableColumnHeader title="Plays" />,
-        meta: { width: '6rem' },
-        cell: row => {
-          const n = row.plays ?? 0;
-          return <DataTableCellWrapper text={String(n)}>{n}</DataTableCellWrapper>;
-        },
-      },
-      {
-        id: 'created',
-        header: <DataTableColumnHeader title="Created" />,
-        meta: { width: '12rem' },
-        cell: row => {
-          const value = row.createdAt ? format(new Date(row.createdAt), 'MMM d, yyyy') : '—';
-          return <DataTableCellWrapper text={value}>{value}</DataTableCellWrapper>;
-        },
-      },
+      dashboardDownloadsColumn(row => (row as { downloads?: number }).downloads),
+      dashboardPlaysColumn(row => row.plays),
+      dashboardTableDateColumn({
+        getValue: row => row.createdAt,
+      }),
       {
         id: 'actions',
         header: null,

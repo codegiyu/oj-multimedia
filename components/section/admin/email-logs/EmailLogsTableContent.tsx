@@ -1,13 +1,13 @@
 'use client';
 
 import { useMemo } from 'react';
-import { format } from 'date-fns';
 import {
   DataTable,
   DataTableCellWrapper,
   DataTableColumnHeader,
   type DataTableColumn,
 } from '@/components/general/DataTable';
+import { formatAdminTableDate } from '@/lib/utils/adminTableFormat';
 import { Badge } from '@/components/ui/badge';
 import type { IEmailLog } from '@/lib/constants/endpoints';
 import { EmailLogActionsMenu } from './EmailLogActionsMenu';
@@ -126,10 +126,10 @@ export function EmailLogsTableContent({
       {
         id: 'created',
         header: <DataTableColumnHeader title="Created" />,
-        meta: { width: '10rem' },
+        meta: { width: '10.5rem' },
         cell: row => {
           const value = row.createdAt
-            ? format(new Date(row.createdAt), 'MMM d, yyyy HH:mm')
+            ? formatAdminTableDate(row.createdAt, { dateTime: true })
             : 'N/A';
           return (
             <DataTableCellWrapper text={value} hasCopy copyValue={value}>

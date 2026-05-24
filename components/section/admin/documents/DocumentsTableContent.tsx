@@ -1,13 +1,13 @@
 'use client';
 
 import { useMemo } from 'react';
-import { format } from 'date-fns';
 import {
   DataTable,
   DataTableCellWrapper,
   DataTableColumnHeader,
   type DataTableColumn,
 } from '@/components/general/DataTable';
+import { dashboardTableDateColumn } from '@/components/general/dashboardTableColumns';
 import type { AdminDocument } from './DocumentsPageClient';
 import { Badge } from '@/components/ui/badge';
 
@@ -66,15 +66,10 @@ export function DocumentsTableContent({
           </DataTableCellWrapper>
         ),
       },
-      {
-        id: 'created',
-        header: <DataTableColumnHeader title="Created" />,
-        meta: { width: '14rem' },
-        cell: row => {
-          const value = row.createdAt ? format(new Date(row.createdAt), 'MMM d, yyyy HH:mm') : '—';
-          return <DataTableCellWrapper text={value}>{value}</DataTableCellWrapper>;
-        },
-      },
+      dashboardTableDateColumn({
+        getValue: row => row.createdAt,
+        dateTime: true,
+      }),
     ],
     []
   );
