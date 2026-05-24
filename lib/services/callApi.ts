@@ -2,19 +2,17 @@ import axios, { type AxiosRequestConfig, type AxiosResponse } from 'axios';
 import type { ApiErrorResponse, ApiSuccessResponse, ResponseMessage } from '../types/http';
 import { getDataFromRequest, getQueryParam } from '../utils/general';
 import { base64UrlEncode } from './storage';
-import { AUTH_TOKEN_HEADERS, type AllEndpoints, ENDPOINTS } from '../constants/endpoints';
+import { type AllEndpoints, ENDPOINTS } from '../constants/endpoints';
 import { getRouter } from '../utils/navigation';
 import { useInitAuthStore } from '../store/useAuthStore';
 import {
+  buildAuthRequestHeaders,
   clearClientAuthTokens,
-  getClientAuthTokens,
   syncClientAuthTokensFromHeaders,
 } from './clientAuthTokens';
 
 // Base URL for API routes - using relative path since we're using Next.js API routes
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://api.ojmultimedia.com';
-const ACCESS_HEADER = AUTH_TOKEN_HEADERS.access;
-const REFRESH_HEADER = AUTH_TOKEN_HEADERS.refresh;
 
 export const api = axios.create({
   baseURL: BASE_URL,
@@ -65,11 +63,9 @@ export const callApi = async <T extends keyof AllEndpoints>(
       headers: {},
     };
 
-    const tokens = getClientAuthTokens();
     requestConfig.headers = {
       ...(requestConfig.headers ?? {}),
-      [ACCESS_HEADER]: tokens.access,
-      [REFRESH_HEADER]: tokens.refresh,
+      ...buildAuthRequestHeaders(),
     };
 
     if (options.payload) {

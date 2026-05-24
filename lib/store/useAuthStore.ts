@@ -54,6 +54,16 @@ export const useInitAuthStore = create<AuthStore>()((set, get) => ({
         initLoading,
         pauseNavigatingAwayFromAuth,
       });
+
+      if (!user?._id) {
+        useInitFavoritesStore.getState().actions.reset();
+        return;
+      }
+
+      // Favorites require client-access; customer accounts only (not admin console users).
+      if ('phoneNumber' in user) {
+        void useInitFavoritesStore.getState().actions.hydrateFromServer();
+      }
     },
     setPermissions: permissions => {
       set({ permissions });
@@ -79,7 +89,6 @@ export const useInitAuthStore = create<AuthStore>()((set, get) => ({
         }
 
         setUser(data.user);
-        void useInitFavoritesStore.getState().actions.hydrateFromServer();
       } catch (error) {
         void error;
         clearSession();
@@ -110,7 +119,6 @@ export const useInitAuthStore = create<AuthStore>()((set, get) => ({
         setUser(data.user, {
           pauseNavigatingAwayFromAuth: false,
         });
-        void useInitFavoritesStore.getState().actions.hydrateFromServer();
 
         return { success: true };
       } catch (error) {
@@ -142,7 +150,6 @@ export const useInitAuthStore = create<AuthStore>()((set, get) => ({
         setUser(data.user, {
           pauseNavigatingAwayFromAuth: true,
         });
-        void useInitFavoritesStore.getState().actions.hydrateFromServer();
 
         return { success: true };
       } catch (error) {
