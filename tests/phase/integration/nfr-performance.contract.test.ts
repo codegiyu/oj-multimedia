@@ -6,6 +6,7 @@ import {
   newsCategoryNavFallback,
   videoCategoryNavFallback,
 } from '../../../lib/constants/categoryNavFallbacks';
+import { ADMIN_LIST_API_P95_TARGET_MS } from '../../../lib/constants/adminListPerformance';
 
 describe('NFR performance contract', () => {
   it('defines bundle and Lighthouse budget files', () => {
@@ -18,6 +19,10 @@ describe('NFR performance contract', () => {
         (row: { metric: string }) => row.metric === 'largest-contentful-paint'
       )
     ).toBe(true);
+  });
+
+  it('defines admin list API P95 budget for filtered lists', () => {
+    expect(ADMIN_LIST_API_P95_TARGET_MS).toBe(300);
   });
 
   it('ships server category nav fallbacks for music, video, and news', () => {
