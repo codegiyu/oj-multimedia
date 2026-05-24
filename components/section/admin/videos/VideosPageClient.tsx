@@ -17,6 +17,7 @@ import { PUBLISHABLE_STATUS_FILTER_SELECT_OPTIONS } from '@/lib/constants/adminS
 import type { SelectOption } from '@/lib/types/general';
 import { loadAdminContentCategorySelectOptions } from '@/lib/utils/adminContentCategorySelect';
 import { useAdminListSearch } from '@/lib/hooks/useAdminListSearch';
+import { useAdminArtistFilterOptions } from '@/lib/hooks/useAdminArtistFilterOptions';
 
 export interface VideosPageClientProps {
   pageTitle: string;
@@ -42,6 +43,8 @@ export function VideosPageClient({
     'category',
     parseAsString.withDefault('all')
   );
+  const [filterArtist, setFilterArtist] = useQueryState('artist', parseAsString.withDefault('all'));
+  const artistOptions = useAdminArtistFilterOptions();
   const [categoryOptions, setCategoryOptions] = useState<SelectOption[]>([
     { text: 'All', value: 'all' },
   ]);
@@ -168,8 +171,16 @@ export function VideosPageClient({
               setPage(1);
             },
           },
+          {
+            label: 'Artist',
+            value: filterArtist,
+            options: artistOptions,
+            onChange: v => {
+              setFilterArtist(v);
+              setPage(1);
+            },
+          },
         ],
-        onApplyFilters: () => setPage(1),
       }}
       extraContent={
         <>

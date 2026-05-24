@@ -59,6 +59,23 @@ describe('parseAdminContentListParams', () => {
       category: 'all',
       artist: 'all',
       vendor: 'all',
+      type: 'all',
+      startDate: '',
+      endDate: '',
+    });
+  });
+
+  it('parses type and date range', () => {
+    expect(
+      parseAdminContentListParams({
+        type: 'ebook',
+        startDate: '2026-01-01',
+        endDate: '2026-01-31',
+      })
+    ).toMatchObject({
+      type: 'ebook',
+      startDate: '2026-01-01',
+      endDate: '2026-01-31',
     });
   });
 });
@@ -73,6 +90,9 @@ describe('parseAdminMusicListParams', () => {
       category: 'c1',
       artist: 'all',
       vendor: 'all',
+      type: 'all',
+      startDate: '',
+      endDate: '',
       sort: 'downloads',
     });
   });
@@ -143,6 +163,12 @@ describe('parseAdminCategoriesListParams', () => {
   it('keeps scope parsing', () => {
     expect(parseAdminCategoriesListParams({ scope: 'music' })).toMatchObject({
       scope: 'music',
+    });
+  });
+
+  it('parses isActive filter', () => {
+    expect(parseAdminCategoriesListParams({ isActive: 'inactive' })).toMatchObject({
+      isActive: 'inactive',
     });
   });
 });

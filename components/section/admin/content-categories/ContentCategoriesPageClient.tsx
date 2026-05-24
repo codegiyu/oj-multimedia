@@ -21,6 +21,8 @@ import type { SelectOption } from '@/lib/types/general';
 import { Badge } from '@/components/ui/badge';
 import { ApprovalModal } from '@/components/section/admin/shared';
 import { useInitContentCategoriesStore } from '@/lib/store/useContentCategoriesStore';
+import { CONTENT_CATEGORY_IS_ACTIVE_FILTER_SELECT_OPTIONS } from '@/lib/constants/adminSelectOptions';
+import { useAdminListSearch } from '@/lib/hooks/useAdminListSearch';
 
 const scopeOptions: SelectOption[] = [
   { text: 'All scopes', value: 'all' },
@@ -52,6 +54,11 @@ export function ContentCategoriesPageClient({
   // const [pageSize] = useQueryState('pagesize', parseAsInteger.withDefault(DEFAULT_PAGE_SIZE));
   const [searchQuery, setSearchQuery] = useQueryState('search', parseAsString.withDefault(''));
   const [scopeFilter, setScopeFilter] = useQueryState('scope', parseAsString.withDefault('all'));
+  const [isActiveFilter, setIsActiveFilter] = useQueryState(
+    'isActive',
+    parseAsString.withDefault('all')
+  );
+  const { onSearchChange, onSearchCommit } = useAdminListSearch(setSearchQuery, setPage);
 
   const [createOpen, setCreateOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<IContentCategoryItem | null>(null);
@@ -150,8 +157,8 @@ export function ContentCategoriesPageClient({
       filterableDataPageProps={{
         searchPlaceholder: 'Search categories...',
         searchValue: searchQuery,
-        onSearchChange: setSearchQuery,
-        onSearchApply: () => setPage(1),
+        onSearchChange,
+        onSearchCommit,
         filters: [
           {
             label: 'Scope',
@@ -162,8 +169,16 @@ export function ContentCategoriesPageClient({
               setPage(1);
             },
           },
+          {
+            label: 'Active',
+            value: isActiveFilter,
+            options: [...CONTENT_CATEGORY_IS_ACTIVE_FILTER_SELECT_OPTIONS],
+            onChange: v => {
+              setIsActiveFilter(v);
+              setPage(1);
+            },
+          },
         ],
-        onApplyFilters: () => setPage(1),
       }}
       mainClassName="rounded-lg border border-border overflow-hidden flex flex-col min-h-0"
       extraContent={

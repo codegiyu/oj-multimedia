@@ -25,6 +25,7 @@ import { MediaUrlOrUploadField } from '@/components/general/MediaUrlOrUploadFiel
 import { useFileUpload } from '@/lib/hooks/use-file-upload';
 import { FillImage } from '@/components/general/FillImage';
 import { hasHomeAdvertImage, saveHomeAdvert } from '@/lib/utils/homeAdvertForm';
+import { useAdminListSearch } from '@/lib/hooks/useAdminListSearch';
 
 const slotFilterOptions: SelectOption[] = [
   { text: 'All slots', value: 'all' },
@@ -67,7 +68,9 @@ export function HomeAdvertsPageClient({
 }: HomeAdvertsPageClientProps) {
   const router = useRouter();
   const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1));
+  const [searchQuery, setSearchQuery] = useQueryState('search', parseAsString.withDefault(''));
   const [slotFilter, setSlotFilter] = useQueryState('slot', parseAsString.withDefault('all'));
+  const { onSearchChange, onSearchCommit } = useAdminListSearch(setSearchQuery, setPage);
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<IHomeAdvertItem | null>(null);
@@ -187,6 +190,10 @@ export function HomeAdvertsPageClient({
       pageHeaderActions={<RegularBtn LeftIcon={Plus} text="New advert" onClick={openCreate} />}
       listError={listError}
       filterableDataPageProps={{
+        searchPlaceholder: 'Search by link URL...',
+        searchValue: searchQuery,
+        onSearchChange,
+        onSearchCommit,
         filters: [
           {
             label: 'Slot',
@@ -198,7 +205,6 @@ export function HomeAdvertsPageClient({
             },
           },
         ],
-        onApplyFilters: () => setPage(1),
       }}
       mainClassName="rounded-lg border border-border overflow-hidden flex flex-col min-h-0"
       extraContent={

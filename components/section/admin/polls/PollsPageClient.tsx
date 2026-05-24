@@ -14,6 +14,8 @@ import { callApi } from '@/lib/services/callApi';
 import { RegularBtn } from '@/components/atoms/RegularBtn';
 import { Plus } from 'lucide-react';
 import { POLL_STATUS_FILTER_SELECT_OPTIONS } from '@/lib/constants/adminSelectOptions';
+import { useAdminListSearch } from '@/lib/hooks/useAdminListSearch';
+import { useAdminCategoryFilterOptions } from '@/lib/hooks/useAdminCategoryFilterOptions';
 
 export interface PollsPageClientProps {
   pageTitle: string;
@@ -35,6 +37,12 @@ export function PollsPageClient({
   // const [pageSize] = useQueryState('pagesize', parseAsInteger.withDefault(DEFAULT_PAGE_SIZE));
   const [searchQuery, setSearchQuery] = useQueryState('search', parseAsString.withDefault(''));
   const [filterStatus, setFilterStatus] = useQueryState('status', parseAsString.withDefault('all'));
+  const [filterCategory, setFilterCategory] = useQueryState(
+    'category',
+    parseAsString.withDefault('all')
+  );
+  const categoryOptions = useAdminCategoryFilterOptions('poll');
+  const { onSearchChange, onSearchCommit } = useAdminListSearch(setSearchQuery, setPage);
 
   const [clickedRowDetails, setClickedRowDetails] = useState<
     ClickedRowDetails<PollListItem, string> | undefined
@@ -131,8 +139,8 @@ export function PollsPageClient({
       filterableDataPageProps={{
         searchPlaceholder: 'Search polls...',
         searchValue: searchQuery,
-        onSearchChange: setSearchQuery,
-        onSearchApply: () => setPage(1),
+        onSearchChange,
+        onSearchCommit,
         filters: [
           {
             label: 'Status',
@@ -143,8 +151,16 @@ export function PollsPageClient({
               setPage(1);
             },
           },
+          {
+            label: 'Category',
+            value: filterCategory,
+            options: categoryOptions,
+            onChange: v => {
+              setFilterCategory(v);
+              setPage(1);
+            },
+          },
         ],
-        onApplyFilters: () => setPage(1),
       }}
       extraContent={
         <>

@@ -48,6 +48,7 @@ function appendContentFilters(params: URLSearchParams, p: AdminContentListParams
   if (p.category && p.category !== ADMIN_FILTER_ALL) params.set('category', p.category);
   if (p.artist && p.artist !== ADMIN_FILTER_ALL) params.set('artist', p.artist);
   if (p.vendor && p.vendor !== ADMIN_FILTER_ALL) params.set('vendor', p.vendor);
+  if (p.type && p.type !== ADMIN_FILTER_ALL) params.set('type', p.type);
 }
 
 export type BuildAdminListQueryOptions = {
@@ -81,6 +82,7 @@ export function buildAdminListQuery(
     }
     case 'content':
     case 'marketplaceWithVendor':
+    case 'marketplaceOrders':
     case 'standard': {
       const p = params as AdminContentListParams | AdminStandardListParams;
       setPagination(query, p.page, p.pageSize, sort);
@@ -88,6 +90,11 @@ export function buildAdminListQuery(
         appendStandardFilters(query, p as AdminStandardListParams);
       } else {
         appendContentFilters(query, p as AdminContentListParams);
+        if (resource === 'marketplaceOrders') {
+          const orders = p as AdminContentListParams;
+          if (orders.startDate) query.set('startDate', orders.startDate);
+          if (orders.endDate) query.set('endDate', orders.endDate);
+        }
       }
       break;
     }
@@ -117,12 +124,14 @@ export function buildAdminListQuery(
       setPagination(query, p.page, p.pageSize, sort);
       if (p.search.trim()) query.set('search', p.search.trim());
       if (p.scope && p.scope !== ADMIN_FILTER_ALL) query.set('scope', p.scope);
+      if (p.isActive && p.isActive !== ADMIN_FILTER_ALL) query.set('isActive', p.isActive);
       break;
     }
     case 'homeAdverts': {
       const p = params as AdminHomeAdvertsListParams;
       setPagination(query, p.page, p.pageSize, sort);
       if (p.slot && p.slot !== ADMIN_FILTER_ALL) query.set('slot', p.slot);
+      if (p.search.trim()) query.set('search', p.search.trim());
       break;
     }
     case 'contactSubmissions': {

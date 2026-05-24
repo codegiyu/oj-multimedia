@@ -14,6 +14,8 @@ import { callApi } from '@/lib/services/callApi';
 import { RegularBtn } from '@/components/atoms/RegularBtn';
 import { Plus } from 'lucide-react';
 import { PUBLISHABLE_STATUS_FILTER_SELECT_OPTIONS } from '@/lib/constants/adminSelectOptions';
+import { useAdminListSearch } from '@/lib/hooks/useAdminListSearch';
+import { useAdminArtistFilterOptions } from '@/lib/hooks/useAdminArtistFilterOptions';
 
 export interface AlbumsPageClientProps {
   pageTitle: string;
@@ -34,6 +36,9 @@ export function AlbumsPageClient({
   const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1));
   const [searchQuery, setSearchQuery] = useQueryState('search', parseAsString.withDefault(''));
   const [filterStatus, setFilterStatus] = useQueryState('status', parseAsString.withDefault('all'));
+  const [filterArtist, setFilterArtist] = useQueryState('artist', parseAsString.withDefault('all'));
+  const artistOptions = useAdminArtistFilterOptions();
+  const { onSearchChange, onSearchCommit } = useAdminListSearch(setSearchQuery, setPage);
 
   const [clickedRowDetails, setClickedRowDetails] = useState<
     ClickedRowDetails<AlbumListItem, string> | undefined
@@ -92,8 +97,8 @@ export function AlbumsPageClient({
       filterableDataPageProps={{
         searchPlaceholder: 'Search albums...',
         searchValue: searchQuery,
-        onSearchChange: setSearchQuery,
-        onSearchApply: () => setPage(1),
+        onSearchChange,
+        onSearchCommit,
         filters: [
           {
             label: 'Status',
@@ -104,8 +109,16 @@ export function AlbumsPageClient({
               setPage(1);
             },
           },
+          {
+            label: 'Artist',
+            value: filterArtist,
+            options: artistOptions,
+            onChange: v => {
+              setFilterArtist(v);
+              setPage(1);
+            },
+          },
         ],
-        onApplyFilters: () => setPage(1),
       }}
       extraContent={
         <>

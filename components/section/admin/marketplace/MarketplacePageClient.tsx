@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useQueryState, parseAsInteger, parseAsString } from 'nuqs';
 import { AdminDashboardListLayout } from '@/components/section/admin/AdminDashboardListLayout';
@@ -21,6 +21,11 @@ import { callApi } from '@/lib/services/callApi';
 import { RegularBtn } from '@/components/atoms/RegularBtn';
 import { Plus } from 'lucide-react';
 import type { DataTableTab } from '@/components/general/DataTable';
+import { RegularInput } from '@/components/atoms/RegularInput';
+import type { SelectOption } from '@/lib/types/general';
+import { useAdminListSearch } from '@/lib/hooks/useAdminListSearch';
+import { useAdminVendorFilterOptions } from '@/lib/hooks/useAdminVendorFilterOptions';
+import { loadMarketplaceCategorySelectOptions } from '@/lib/utils/adminEntitySelect';
 
 const TAB_VENDORS = 'vendors';
 const TAB_PRODUCTS = 'products';
@@ -86,6 +91,25 @@ export function MarketplacePageClient({
   // const [pageSize] = useQueryState('pagesize', parseAsInteger.withDefault(DEFAULT_PAGE_SIZE));
   const [searchQuery, setSearchQuery] = useQueryState('search', parseAsString.withDefault(''));
   const [filterStatus, setFilterStatus] = useQueryState('status', parseAsString.withDefault('all'));
+  const [filterVendor, setFilterVendor] = useQueryState('vendor', parseAsString.withDefault('all'));
+  const [filterCategory, setFilterCategory] = useQueryState(
+    'category',
+    parseAsString.withDefault('all')
+  );
+  const [startDate, setStartDate] = useQueryState('startDate', parseAsString.withDefault(''));
+  const [endDate, setEndDate] = useQueryState('endDate', parseAsString.withDefault(''));
+  const vendorOptions = useAdminVendorFilterOptions();
+  const { onSearchChange, onSearchCommit } = useAdminListSearch(setSearchQuery, setPage);
+  const [productCategoryOptions, setProductCategoryOptions] = useState<SelectOption[]>([
+    { text: 'All categories', value: 'all' },
+  ]);
+
+  useEffect(() => {
+    if (activeTab !== TAB_PRODUCTS) return;
+    void loadMarketplaceCategorySelectOptions().then(options => {
+      setProductCategoryOptions([{ text: 'All categories', value: 'all' }, ...options]);
+    });
+  }, [activeTab]);
 
   const [clickedRowDetails, setClickedRowDetails] = useState<
     ClickedRowDetails<MarketplaceRowData, MarketplaceTabType> | undefined
@@ -204,7 +228,63 @@ export function MarketplacePageClient({
     setActiveTab(v);
     setPage(1);
     setFilterStatus('all');
+    setFilterVendor('all');
+    setFilterCategory('all');
+    setStartDate('');
+    setEndDate('');
   };
+
+  const listFilters = useMemo(() => {
+    const filters = [
+      {
+        label: 'Status',
+        value: filterStatus,
+        options: statusOptions,
+        onChange: (v: string) => {
+          setFilterStatus(v);
+          setPage(1);
+        },
+      },
+    ];
+
+    if (activeTab === TAB_PRODUCTS || activeTab === TAB_ORDERS) {
+      filters.push({
+        label: 'Vendor',
+        value: filterVendor,
+        options: vendorOptions,
+        onChange: (v: string) => {
+          setFilterVendor(v);
+          setPage(1);
+        },
+      });
+    }
+
+    if (activeTab === TAB_PRODUCTS) {
+      filters.push({
+        label: 'Category',
+        value: filterCategory,
+        options: productCategoryOptions,
+        onChange: (v: string) => {
+          setFilterCategory(v);
+          setPage(1);
+        },
+      });
+    }
+
+    return filters;
+  }, [
+    activeTab,
+    filterStatus,
+    filterVendor,
+    filterCategory,
+    statusOptions,
+    vendorOptions,
+    productCategoryOptions,
+    setFilterStatus,
+    setFilterVendor,
+    setFilterCategory,
+    setPage,
+  ]);
 
   return (
     <AdminDashboardListLayout
@@ -221,23 +301,38 @@ export function MarketplacePageClient({
         ) : null
       }
       listError={listError}
+      toolbarBeforeFilters={
+        activeTab === TAB_ORDERS ? (
+          <div className="flex flex-wrap items-end gap-3">
+            <RegularInput
+              label="From"
+              type="date"
+              value={startDate}
+              onChange={e => {
+                setStartDate(e.target.value);
+                setPage(1);
+              }}
+              className="w-[160px]"
+            />
+            <RegularInput
+              label="To"
+              type="date"
+              value={endDate}
+              onChange={e => {
+                setEndDate(e.target.value);
+                setPage(1);
+              }}
+              className="w-[160px]"
+            />
+          </div>
+        ) : null
+      }
       filterableDataPageProps={{
         searchPlaceholder,
         searchValue: searchQuery,
-        onSearchChange: setSearchQuery,
-        onSearchApply: () => setPage(1),
-        filters: [
-          {
-            label: 'Status',
-            value: filterStatus,
-            options: statusOptions,
-            onChange: v => {
-              setFilterStatus(v);
-              setPage(1);
-            },
-          },
-        ],
-        onApplyFilters: () => setPage(1),
+        onSearchChange,
+        onSearchCommit,
+        filters: listFilters,
       }}
       extraContent={
         <>

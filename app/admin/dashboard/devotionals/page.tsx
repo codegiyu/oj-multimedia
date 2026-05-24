@@ -1,7 +1,7 @@
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { DevotionalsPageClient } from '@/components/section/admin/devotionals/DevotionalsPageClient';
 import { serverFetchAdminDevotionalsList } from '@/lib/services/adminDashboardServerData';
-import { parseAdminStandardListParams } from '@/lib/utils/adminDashboardSearchParams';
+import { parseAdminContentListParams } from '@/lib/utils/adminDashboardSearchParams';
 import { Metadata } from 'next';
 import { Suspense } from 'react';
 import { Loader2 } from 'lucide-react';
@@ -46,7 +46,7 @@ async function AdminDevotionalsPageServer({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const raw = await searchParams;
-  const listParams = parseAdminStandardListParams(raw);
+  const listParams = parseAdminContentListParams(raw);
   const { items, totalPages, listError } = await serverFetchAdminDevotionalsList(listParams);
   return (
     <DevotionalsPageClient

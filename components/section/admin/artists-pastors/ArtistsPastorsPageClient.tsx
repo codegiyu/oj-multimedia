@@ -15,6 +15,8 @@ import { ApprovalModal } from '@/components/section/admin/shared';
 import { callApi } from '@/lib/services/callApi';
 import { RegularBtn } from '@/components/atoms/RegularBtn';
 import { Plus } from 'lucide-react';
+import { ARTIST_STATUS_FILTER_SELECT_OPTIONS } from '@/lib/constants/adminSelectOptions';
+import { useAdminListSearch } from '@/lib/hooks/useAdminListSearch';
 
 const TAB_ARTISTS = 'artists';
 // const TAB_PASTORS = 'pastors';
@@ -41,6 +43,8 @@ export function ArtistsPastorsPageClient({
   const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1));
   // const [pageSize] = useQueryState('pagesize', parseAsInteger.withDefault(DEFAULT_PAGE_SIZE));
   const [searchQuery, setSearchQuery] = useQueryState('search', parseAsString.withDefault(''));
+  const [filterStatus, setFilterStatus] = useQueryState('status', parseAsString.withDefault('all'));
+  const { onSearchChange, onSearchCommit } = useAdminListSearch(setSearchQuery, setPage);
 
   const [clickedRowDetails, setClickedRowDetails] = useState<
     ClickedRowDetails<ArtistListItem | PastorListItem, string> | undefined
@@ -122,8 +126,22 @@ export function ArtistsPastorsPageClient({
       filterableDataPageProps={{
         searchPlaceholder: activeTab === TAB_ARTISTS ? 'Search artists...' : 'Search pastors...',
         searchValue: searchQuery,
-        onSearchChange: setSearchQuery,
-        onSearchApply: () => setPage(1),
+        onSearchChange,
+        onSearchCommit,
+        filters:
+          activeTab === TAB_ARTISTS
+            ? [
+                {
+                  label: 'Status',
+                  value: filterStatus,
+                  options: [...ARTIST_STATUS_FILTER_SELECT_OPTIONS],
+                  onChange: v => {
+                    setFilterStatus(v);
+                    setPage(1);
+                  },
+                },
+              ]
+            : undefined,
       }}
       extraContent={
         <>

@@ -21,6 +21,9 @@ const content: AdminContentListParams = {
   category: '507f1f77bcf86cd799439011',
   artist: 'all',
   vendor: 'all',
+  type: 'all',
+  startDate: '',
+  endDate: '',
 };
 
 describe('musicSortParam', () => {
@@ -104,6 +107,7 @@ describe('buildAdminListQuery', () => {
       search: 'worship',
       scope: 'music',
       status: 'all',
+      isActive: 'all',
     };
     const params = buildAdminListQuery('categories', catParams, { sort: 'displayOrder' });
     expect(params.get('scope')).toBe('music');
@@ -115,6 +119,7 @@ describe('buildAdminListQuery', () => {
       page: 1,
       pageSize: 12,
       slot: 'after_hero',
+      search: '',
     };
     const params = buildAdminListQuery('homeAdverts', advertParams, { sort: 'displayOrder' });
     expect(params.get('slot')).toBe('after_hero');
@@ -124,13 +129,58 @@ describe('buildAdminListQuery', () => {
     const params = buildAdminListQuery(
       'marketplaceWithVendor',
       {
-        ...standard,
-        category: 'all',
-        artist: 'all',
+        ...content,
+        category: '507f1f77bcf86cd799439011',
         vendor: '507f1f77bcf86cd799439012',
       },
       { sort: '-createdAt' }
     );
     expect(params.get('vendor')).toBe('507f1f77bcf86cd799439012');
+    expect(params.get('category')).toBe('507f1f77bcf86cd799439011');
+  });
+
+  it('builds marketplace orders query with date range', () => {
+    const params = buildAdminListQuery(
+      'marketplaceOrders',
+      {
+        ...content,
+        vendor: '507f1f77bcf86cd799439012',
+        startDate: '2026-01-01',
+        endDate: '2026-01-31',
+      },
+      { sort: '-createdAt' }
+    );
+    expect(params.get('vendor')).toBe('507f1f77bcf86cd799439012');
+    expect(params.get('startDate')).toBe('2026-01-01');
+    expect(params.get('endDate')).toBe('2026-01-31');
+  });
+
+  it('builds content query with resource type', () => {
+    const params = buildAdminListQuery('content', { ...content, type: 'ebook' });
+    expect(params.get('type')).toBe('ebook');
+  });
+
+  it('builds categories query with isActive', () => {
+    const catParams: AdminCategoriesListParams = {
+      page: 1,
+      pageSize: 12,
+      search: '',
+      scope: 'all',
+      status: 'all',
+      isActive: 'active',
+    };
+    const params = buildAdminListQuery('categories', catParams, { sort: 'displayOrder' });
+    expect(params.get('isActive')).toBe('active');
+  });
+
+  it('builds home adverts query with search', () => {
+    const advertParams: AdminHomeAdvertsListParams = {
+      page: 1,
+      pageSize: 12,
+      slot: 'all',
+      search: 'https://example.com',
+    };
+    const params = buildAdminListQuery('homeAdverts', advertParams, { sort: 'displayOrder' });
+    expect(params.get('search')).toBe('https://example.com');
   });
 });
