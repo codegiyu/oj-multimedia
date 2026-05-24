@@ -5,11 +5,12 @@ import {
   type ClickedRowDetails,
 } from '@/components/general/TableRowDetailsDrawer';
 import { format } from 'date-fns';
-import { Music, User, FileText, Calendar, Hash } from 'lucide-react';
+import { Music, User, FileText, Calendar, Hash, DiscAlbum } from 'lucide-react';
 import type { ArtistMusicListItem } from '@/lib/constants/endpoints';
 import { InfoCard } from '@/components/general/InfoCard';
 import { DashboardThumbnail } from '@/components/general/DashboardThumbnail';
 import { DrawerMediaPreview } from '@/components/general/DrawerMediaPreview';
+import { musicAlbumLabel } from '@/lib/utils/adminMusicAlbumSelect';
 
 function artistName(artist: ArtistMusicListItem['artist']): string {
   if (!artist) return '—';
@@ -50,6 +51,7 @@ function DetailsReadOnly({
       <div className="grid gap-3">
         <InfoCard icon={Music} label="Title" value={music.title} />
         <InfoCard icon={User} label="Artist" value={artistName(music.artist)} />
+        <InfoCard icon={DiscAlbum} label="Album" value={musicAlbumLabel(music)} />
         <InfoCard icon={FileText} label="Status" value={music.status ?? '—'} />
         <InfoCard icon={FileText} label="Category" value={music.category ?? '—'} />
         <InfoCard icon={FileText} label="Views" value={String(music.views ?? 0)} />
