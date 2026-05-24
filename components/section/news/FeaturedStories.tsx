@@ -62,6 +62,7 @@ export const FeaturedStories = ({ stories: featuredStories }: FeaturedStoriesPro
             transition={{ duration: 0.3 }}
             className="h-full group relative md:h-[500px] rounded-2xl overflow-hidden cursor-pointer">
             <FillImage
+              imageContext="public"
               src={featuredStories[0].image}
               alt={featuredStories[0].title}
               sizes="(max-width: 768px) 100vw, 600px"
@@ -126,6 +127,7 @@ export const FeaturedStories = ({ stories: featuredStories }: FeaturedStoriesPro
                 className="h-full group flex gap-4 bg-card rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all cursor-pointer">
                 <div className="relative w-[140px] min-h-[120px] overflow-hidden shrink-0">
                   <FillImage
+                    imageContext="public"
                     src={story.image}
                     alt={story.title}
                     sizes="200px"

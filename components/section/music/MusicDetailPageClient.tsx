@@ -4,7 +4,7 @@ import { useEffect, useCallback } from 'react';
 import { motion } from 'motion/react';
 import { ArrowLeft, Clock, Eye, Calendar, Share2, Bookmark, Music } from 'lucide-react';
 import Link from 'next/link';
-import Image from 'next/image';
+import { FillImage } from '@/components/general/FillImage';
 import { Button } from '@/components/ui/button';
 import type { MusicItemWithArtist } from '@/lib/utils/music';
 import { AudioPlayerDynamic } from './AudioPlayerDynamic';
@@ -53,7 +53,13 @@ export const MusicDetailPageClient = ({ musicItem, relatedSongs }: MusicDetailPa
     <article className="min-h-screen">
       {/* Hero Section with Cover Image */}
       <section className="relative h-[400px] md:h-[500px] lg:h-[600px] overflow-hidden">
-        <Image src={musicItem.cover} alt={musicItem.title} fill className="object-cover" priority />
+        <FillImage
+          src={musicItem.cover}
+          alt={musicItem.title}
+          imageContext="public"
+          priority
+          sizes="100vw"
+        />
         <div className="absolute inset-0 bg-gradient-to-t from-foreground via-foreground/60 to-transparent" />
 
         {/* Content Overlay */}

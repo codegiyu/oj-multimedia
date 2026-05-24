@@ -4,7 +4,7 @@ import { SectionContainer } from '@/components/general/SectionContainer';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ProductCard } from './ProductCard';
-import { Store, ChevronRight, MessageCircle, Package } from 'lucide-react';
+import { ChevronRight, MessageCircle, Package } from 'lucide-react';
 import Link from 'next/link';
 import { EmptyState } from '@/components/section/news/EmptyState';
 import type { IMarketplaceVendor, IMarketplaceProduct } from '@/lib/constants/endpoints';
@@ -49,12 +49,13 @@ export function VendorStorePageClient({ vendor, products = [] }: VendorStorePage
 
           <Card className="p-8 mb-12">
             <div className="flex flex-col md:flex-row gap-8 items-center md:items-start">
-              <div className="relative w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden shrink-0">
-                {vendor.logo ? (
-                  <FillImage src={vendor.logo} alt={vendor.storeName} sizes="96px" />
-                ) : (
-                  <Store className="w-12 h-12 text-primary" />
-                )}
+              <div className="relative w-24 h-24 rounded-full bg-primary/10 overflow-hidden shrink-0">
+                <FillImage
+                  src={vendor.logo ?? ''}
+                  alt={vendor.storeName}
+                  imageContext="public"
+                  sizes="96px"
+                />
               </div>
               <div className="flex-1 text-center md:text-left">
                 <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">

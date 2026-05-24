@@ -1,9 +1,10 @@
 'use client';
 
 import { motion } from 'motion/react';
-import { Image as ImageIcon, Download } from 'lucide-react';
+import { ImageIcon, Download } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { SectionComp } from '@/components/general/SectionComp';
+import { FillImage } from '@/components/general/FillImage';
 import type { Wallpaper } from './ResourcesPageClient';
 import { ResourceDownloadButton } from '@/components/section/shared/ResourceDownloadButton';
 
@@ -30,8 +31,13 @@ export const ChristianWallpapers = ({ wallpapers }: ChristianWallpapersProps) =>
             transition={{ delay: index * 0.1 }}>
             <Card className="card-interactive">
               <CardContent className="p-0">
-                <div className="aspect-[9/16] bg-gradient-to-br from-primary/20 via-secondary/20 to-accent/20 rounded-t-xl flex items-center justify-center relative overflow-hidden">
-                  <ImageIcon className="w-16 h-16 text-primary/30" aria-hidden />
+                <div className="aspect-[9/16] relative bg-muted rounded-t-xl overflow-hidden">
+                  <FillImage
+                    src={wallpaper.cover ?? ''}
+                    alt={wallpaper.title}
+                    imageContext="public"
+                    sizes="(max-width: 768px) 50vw, 280px"
+                  />
                   <div className="absolute top-3 right-3">
                     <span className="px-2 py-1 bg-primary/20 text-primary text-xs font-medium rounded-full">
                       {wallpaper.category}

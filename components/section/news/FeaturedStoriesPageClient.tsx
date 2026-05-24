@@ -95,6 +95,7 @@ export const FeaturedStoriesPageClient = ({
                     className="h-full group bg-card rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer">
                     <div className="relative aspect-[16/10] overflow-hidden">
                       <FillImage
+                        imageContext="public"
                         src={story.image}
                         alt={story.title}
                         sizes="(max-width: 768px) 50vw, 400px"

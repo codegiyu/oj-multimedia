@@ -51,15 +51,14 @@ export function DevotionalsRail({ items }: DevotionalsRailProps) {
               <Link
                 href={`/community/devotionals/${encodeURIComponent(d.slug || d._id)}`}
                 className="block rounded-2xl border border-border/60 bg-card overflow-hidden hover:border-primary/40 transition-colors shadow-sm">
-                {d.coverImage ? (
-                  <div className="aspect-[16/10] relative bg-muted">
-                    <FillImage src={d.coverImage} alt="" sizes="(max-width: 768px) 50vw, 400px" />
-                  </div>
-                ) : (
-                  <div className="aspect-[16/10] bg-muted flex items-center justify-center">
-                    <BookOpen className="w-10 h-10 text-muted-foreground" />
-                  </div>
-                )}
+                <div className="aspect-[16/10] relative bg-muted">
+                  <FillImage
+                    src={d.coverImage ?? ''}
+                    alt=""
+                    imageContext="public"
+                    sizes="(max-width: 768px) 50vw, 400px"
+                  />
+                </div>
                 <div className="p-4">
                   <h3 className="font-semibold text-foreground line-clamp-2">{d.title}</h3>
                   {d.excerpt && (

@@ -46,27 +46,20 @@ export const SearchResults = ({ results }: SearchResultsProps) => {
             whileHover={{ y: -4 }}
             className="group bg-card rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all cursor-pointer">
             {/* Image */}
-            <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-primary/20 to-accent/20">
-              {result.image ? (
-                <FillImage
-                  src={typeof result.image === 'string' ? result.image : result.image.src}
-                  alt={result.title}
-                  sizes="(max-width: 768px) 50vw, 280px"
-                  className="transition-transform duration-500 group-hover:scale-110"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center">
-                  <span className="text-4xl opacity-30">
-                    {result.type === 'devotional' && '📖'}
-                    {result.type === 'testimony' && '❤️'}
-                    {result.type === 'prayer-request' && '🙏'}
-                    {result.type === 'question' && '❓'}
-                    {result.type === 'poll' && '📊'}
-                    {result.type === 'resource' && '📁'}
-                    {result.type === 'artist' && '🎤'}
-                  </span>
-                </div>
-              )}
+            <div className="relative aspect-square overflow-hidden bg-muted">
+              <FillImage
+                src={
+                  result.image
+                    ? typeof result.image === 'string'
+                      ? result.image
+                      : result.image.src
+                    : ''
+                }
+                alt={result.title}
+                imageContext="public"
+                sizes="(max-width: 768px) 50vw, 280px"
+                className="transition-transform duration-500 group-hover:scale-110"
+              />
               <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
 
               {/* Type Badge */}

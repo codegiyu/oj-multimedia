@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Package, MessageCircle, ShoppingCart } from 'lucide-react';
+import { MessageCircle, ShoppingCart } from 'lucide-react';
 import type { MarketplaceProduct } from '@/lib/utils/marketplace';
 import { formatPrice } from '@/lib/utils/marketplace';
 import { useCartStore } from '@/lib/store/cartStore';
@@ -55,18 +55,13 @@ export function ProductCard({
       }`}>
       <Link href={`/marketplace/products/${product.slug}`} className="block">
         <div className="relative aspect-square bg-muted rounded-t-xl overflow-hidden">
-          {imageUrl ? (
-            <FillImage
-              src={imageUrl}
-              alt={product.name}
-              sizes="(max-width: 768px) 50vw, 280px"
-              className="transition-transform duration-300 group-hover:scale-105"
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center">
-              <Package className="w-12 h-12 text-muted-foreground" />
-            </div>
-          )}
+          <FillImage
+            src={imageUrl ?? ''}
+            alt={product.name}
+            imageContext="public"
+            sizes="(max-width: 768px) 50vw, 280px"
+            className="transition-transform duration-300 group-hover:scale-105"
+          />
           {isOutOfStock && (
             <div className="absolute inset-0 bg-black/20 flex items-start justify-end p-2">
               <span className="rounded-full bg-destructive text-destructive-foreground text-[10px] font-semibold px-2 py-1">

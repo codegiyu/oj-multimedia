@@ -98,6 +98,7 @@ export const AllTestimonies = ({ testimonies, pagination = null }: AllTestimonie
                   <div className="flex items-center justify-between pt-4 border-t border-border">
                     <div className="flex items-center gap-3">
                       <FixedImage
+                        imageContext="public"
                         src={testimony.avatar}
                         alt={testimony.author}
                         width={40}

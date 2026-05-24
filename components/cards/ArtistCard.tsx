@@ -21,6 +21,7 @@ export function ArtistCard({ _id, name, image, genre, followers, verified }: Art
       className="group p-4 rounded-2xl bg-muted/50 hover:bg-muted transition-colors cursor-pointer text-center">
       <div className="relative w-16 h-16 rounded-full overflow-hidden mx-auto mb-3">
         <FixedImage
+          imageContext="public"
           src={image}
           alt={name}
           width={64}

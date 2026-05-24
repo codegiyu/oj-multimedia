@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'motion/react';
 import { Flame, ArrowRight, Clock, Eye, TrendingUp, Newspaper } from 'lucide-react';
-import Image from 'next/image';
+import { FillImage } from '@/components/general/FillImage';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { SectionContainer } from '@/components/general/SectionContainer';
@@ -96,34 +96,33 @@ export const TrendingStoriesPageClient = ({
                   <Link
                     href={`/news/story/${story._id}`}
                     className="block bg-card rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 border border-border/50 hover:border-primary/20">
-                    {story.image && (
-                      <div className="relative w-full h-56 sm:h-80 md:h-64 overflow-hidden bg-muted">
-                        <Image
-                          src={story.image}
-                          alt={story.title}
-                          fill
-                          className="object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                        <div className="absolute top-3 left-3">
-                          <div
-                            className={`w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm ${
-                              story.rank <= 3
-                                ? 'bg-primary text-primary-foreground'
-                                : 'bg-background/90 text-foreground'
-                            }`}>
-                            {story.rank <= 3 && <TrendingUp className="w-4 h-4 mr-1" />}
-                            {story.rank}
+                    <div className="relative w-full h-56 sm:h-80 md:h-64 overflow-hidden bg-muted">
+                      <FillImage
+                        src={story.image ?? ''}
+                        alt={story.title}
+                        imageContext="public"
+                        sizes="(max-width: 768px) 100vw, 600px"
+                        className="group-hover:scale-105 transition-transform duration-300"
+                      />
+                      <div className="absolute top-3 left-3">
+                        <div
+                          className={`w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm ${
+                            story.rank <= 3
+                              ? 'bg-primary text-primary-foreground'
+                              : 'bg-background/90 text-foreground'
+                          }`}>
+                          {story.rank <= 3 && <TrendingUp className="w-4 h-4 mr-1" />}
+                          {story.rank}
+                        </div>
+                      </div>
+                      {story.rank <= 3 && (
+                        <div className="absolute top-3 right-3">
+                          <div className="w-8 h-8 rounded-full bg-primary/20 backdrop-blur-sm flex items-center justify-center">
+                            <Flame className="w-4 h-4 text-primary" />
                           </div>
                         </div>
-                        {story.rank <= 3 && (
-                          <div className="absolute top-3 right-3">
-                            <div className="w-8 h-8 rounded-full bg-primary/20 backdrop-blur-sm flex items-center justify-center">
-                              <Flame className="w-4 h-4 text-primary" />
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    )}
+                      )}
+                    </div>
                     <div className="p-5">
                       <div className="flex items-center gap-2 text-xs text-muted-foreground mb-3">
                         <span className="px-2 py-1 rounded-md bg-primary/10 text-primary font-medium">

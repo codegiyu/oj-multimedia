@@ -13,7 +13,7 @@ import {
   Bookmark,
 } from 'lucide-react';
 import Link from 'next/link';
-import Image from 'next/image';
+import { FillImage } from '@/components/general/FillImage';
 import type { NewsItem } from '@/lib/constants/news';
 import { MultilineText } from '@/components/general/MultilineText';
 import { NewsDownloadButton } from '@/components/section/news/NewsDownloadButton';
@@ -42,7 +42,13 @@ export const NewsDetailPageClient = ({ newsItem, relatedStories }: NewsDetailPag
     <article className="min-h-screen">
       {/* Hero Section with Image */}
       <section className="relative h-[400px] md:h-[500px] lg:h-[600px] overflow-hidden">
-        <Image src={newsItem.image} alt={newsItem.title} fill className="object-cover" priority />
+        <FillImage
+          src={newsItem.image}
+          alt={newsItem.title}
+          imageContext="public"
+          priority
+          sizes="100vw"
+        />
         <div className="absolute inset-0 bg-gradient-to-t from-foreground via-foreground/60 to-transparent" />
 
         {/* Back Button */}
@@ -320,11 +326,12 @@ export const NewsDetailPageClient = ({ newsItem, relatedStories }: NewsDetailPag
                   className="group bg-card rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all cursor-pointer">
                   <Link href={`/news/story/${story._id}`}>
                     <div className="relative aspect-[16/10] overflow-hidden">
-                      <Image
+                      <FillImage
                         src={story.image}
                         alt={story.title}
-                        fill
-                        className="object-cover transition-transform duration-500 group-hover:scale-110"
+                        imageContext="public"
+                        sizes="(max-width: 768px) 100vw, 400px"
+                        className="transition-transform duration-500 group-hover:scale-110"
                       />
                       <span className="absolute bottom-3 left-3 px-2.5 py-1 rounded-full bg-primary text-primary-foreground text-xs font-medium">
                         {story.category}

@@ -122,13 +122,12 @@ export function CartPageClient() {
                 key={item.sku ? `${item.productId}-${item.sku}` : item.productId}
                 className="p-4 flex flex-col sm:flex-row gap-4">
                 <div className="relative w-full sm:w-24 h-24 bg-muted rounded-lg overflow-hidden shrink-0">
-                  {item.image ? (
-                    <FillImage src={item.image} alt={item.name} sizes="96px" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <ShoppingCart className="w-8 h-8 text-muted-foreground" />
-                    </div>
-                  )}
+                  <FillImage
+                    src={item.image ?? ''}
+                    alt={item.name}
+                    imageContext="public"
+                    sizes="96px"
+                  />
                 </div>
                 <div className="flex-1 min-w-0">
                   <Link
@@ -224,6 +223,7 @@ export function CartPageClient() {
                                   alt={vendor.vendorName}
                                   width={24}
                                   height={24}
+                                  imageContext="public"
                                   className="h-full w-full object-cover"
                                 />
                               </span>
