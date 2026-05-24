@@ -2,6 +2,7 @@ import { Suspense } from 'react';
 import { ArtistPortalVideosPageClient } from '@/components/section/account/artist-portal/ArtistPortalVideosPageClient';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { Metadata } from 'next';
+import { buildAccountArtistContentQuery } from '@/lib/account/accountListFilters';
 import { callServerApi } from '@/lib/services/serverApi';
 import type { ApiErrorResponse } from '@/lib/types/http';
 
@@ -27,15 +28,21 @@ function ArtistVideosPageSkeleton() {
 export default function ArtistPortalVideosPage({
   searchParams,
 }: {
-  searchParams?: { page?: string; pagesize?: string; status?: string };
+  searchParams?: { page?: string; pagesize?: string; status?: string; search?: string };
 }) {
   const page = Number(searchParams?.page ?? 1) || 1;
   const pageSize = Number(searchParams?.pagesize ?? 10) || 10;
   const status = searchParams?.status ?? '';
+  const search = searchParams?.search ?? '';
 
   return (
     <Suspense fallback={<ArtistVideosPageSkeleton />}>
-      <ArtistVideosPageClientServer page={page} pageSize={pageSize} status={status} />
+      <ArtistVideosPageClientServer
+        page={page}
+        pageSize={pageSize}
+        status={status}
+        search={search}
+      />
     </Suspense>
   );
 }
@@ -44,16 +51,15 @@ async function ArtistVideosPageClientServer({
   page,
   pageSize,
   status,
+  search,
 }: {
   page: number;
   pageSize: number;
   status: string;
+  search: string;
 }) {
-  const params = new URLSearchParams();
-  params.set('page', String(page));
-  params.set('limit', String(pageSize));
-  if (status) params.set('status', status);
-  const query = `?${params.toString()}` as const;
+  const query =
+    `?${buildAccountArtistContentQuery({ page, pageSize, status, search }).toString()}` as const;
 
   const res = await callServerApi('ARTIST_GET_VIDEOS', { query });
 

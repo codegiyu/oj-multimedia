@@ -14,6 +14,12 @@ import { ArtistVideoFormModalDynamic } from './ArtistVideoFormModalDynamic';
 import { ArtistContentMonetizationBadge } from './ArtistContentMonetizationBadge';
 import { DashboardThumbnail } from '@/components/general/DashboardThumbnail';
 import { EmptyState } from '@/components/section/news/EmptyState';
+import { FilterableDataPage } from '@/components/general/FilterableDataPage';
+import {
+  buildAccountArtistContentQuery,
+  isAccountListUnfiltered,
+} from '@/lib/account/accountListFilters';
+import { useAccountListSearch } from '@/lib/hooks/useAccountListSearch';
 
 const STATUS_FILTERS: Array<{ value: '' | 'draft' | 'published' | 'archived'; label: string }> = [
   { value: '', label: 'All' },
@@ -39,6 +45,8 @@ export function ArtistPortalVideosPageClient({
   const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1));
   const [pageSize] = useQueryState('pagesize', parseAsInteger.withDefault(10));
   const [status, setStatus] = useQueryState('status', parseAsString.withDefault(''));
+  const [searchQuery, setSearchQuery] = useQueryState('search', parseAsString.withDefault(''));
+  const { onSearchChange, onSearchCommit } = useAccountListSearch(setSearchQuery, setPage);
   const [totalPages, setTotalPages] = useState(initialTotalPages);
   const [reloadIndex, setReloadIndex] = useState(0);
   const [formOpen, setFormOpen] = useState(false);
@@ -69,11 +77,12 @@ export function ArtistPortalVideosPageClient({
 
     const loadVideos = async () => {
       setLoading(true);
-      const params = new URLSearchParams();
-      params.set('page', String(page));
-      params.set('limit', String(pageSize));
-      if (status) params.set('status', status);
-      const query = `?${params.toString()}` as const;
+      const query = `?${buildAccountArtistContentQuery({
+        page,
+        pageSize,
+        search: searchQuery,
+        status,
+      }).toString()}` as const;
 
       const { data, error, message } = await callApi('ARTIST_GET_VIDEOS', {
         query,
@@ -104,7 +113,9 @@ export function ArtistPortalVideosPageClient({
     return () => {
       cancelled = true;
     };
-  }, [page, pageSize, status, reloadIndex]);
+  }, [page, pageSize, status, searchQuery, reloadIndex]);
+
+  const showOnboardingEmpty = isAccountListUnfiltered(searchQuery, status);
 
   return (
     <div className="relative space-y-6">
@@ -154,27 +165,43 @@ export function ArtistPortalVideosPageClient({
         </div>
       )}
 
+      <FilterableDataPage
+        searchPlaceholder="Search videos..."
+        searchValue={searchQuery}
+        onSearchChange={onSearchChange}
+        onSearchCommit={onSearchCommit}
+      />
+
       <div className="flex flex-wrap gap-2">
         {STATUS_FILTERS.map(f => (
           <Button
             key={f.label}
             variant={status === f.value ? 'default' : 'outline'}
             size="sm"
-            onClick={() => setStatus(f.value)}>
+            onClick={() => {
+              setStatus(f.value);
+              setPage(1);
+            }}>
             {f.label}
           </Button>
         ))}
       </div>
 
       {videos.length === 0 ? (
-        <EmptyState
-          title="No videos yet"
-          description="Add a draft from this page or message the team on the submit page. Admins publish after review."
-          icon={<Video className="w-12 h-12 text-muted-foreground" />}
-          actionLabel="Add video"
-          onAction={openCreate}
-          showDefaultActions={false}
-        />
+        showOnboardingEmpty ? (
+          <EmptyState
+            title="No videos yet"
+            description="Add a draft from this page or message the team on the submit page. Admins publish after review."
+            icon={<Video className="w-12 h-12 text-muted-foreground" />}
+            actionLabel="Add video"
+            onAction={openCreate}
+            showDefaultActions={false}
+          />
+        ) : (
+          <Card className="p-8 text-center text-sm text-muted-foreground">
+            No videos match your search or filters.
+          </Card>
+        )
       ) : (
         <div className="space-y-3">
           {videos.map(item => (

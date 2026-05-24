@@ -15,6 +15,9 @@ import type { IVendorOrdersRes } from '@/lib/constants/endpoints';
 import { formatPrice } from '@/lib/utils/marketplace';
 import type { ApiErrorResponse } from '@/lib/types/http';
 import { cn } from '@/lib/utils';
+import { FilterableDataPage } from '@/components/general/FilterableDataPage';
+import { buildAccountOrdersQuery, isAccountListUnfiltered } from '@/lib/account/accountListFilters';
+import { useAccountListSearch } from '@/lib/hooks/useAccountListSearch';
 
 const STATUS_OPTIONS = [
   { value: '', label: 'All' },
@@ -36,7 +39,11 @@ function statusBadgeClass(status: string) {
 interface VendorOrdersListProps {
   orders: IVendorOrdersRes['orders'];
   statusFilter: string;
+  searchQuery: string;
   onStatusFilterChange: (value: string | null) => void;
+  searchValue: string;
+  onSearchChange: (value: string) => void;
+  onSearchCommit: () => void;
   page: number;
   totalPages: number;
   onPreviousPage: () => void;
@@ -47,13 +54,19 @@ interface VendorOrdersListProps {
 function VendorOrdersList({
   orders,
   statusFilter,
+  searchQuery,
   onStatusFilterChange,
+  searchValue,
+  onSearchChange,
+  onSearchCommit,
   page,
   totalPages,
   onPreviousPage,
   onNextPage,
   loading,
 }: VendorOrdersListProps) {
+  const showOnboardingEmpty = isAccountListUnfiltered(searchQuery, statusFilter);
+
   const pageStats = useMemo(() => {
     const pending = orders.filter(o =>
       ['pending', 'processing', 'confirmed'].includes(o.status)
@@ -72,6 +85,13 @@ function VendorOrdersList({
       ) : null}
 
       <DashboardPageHeader title="Orders" description="View and manage customer orders" />
+
+      <FilterableDataPage
+        searchPlaceholder="Search by order number or customer..."
+        searchValue={searchValue}
+        onSearchChange={onSearchChange}
+        onSearchCommit={onSearchCommit}
+      />
 
       <div>
         <p className="mb-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">
@@ -119,7 +139,9 @@ function VendorOrdersList({
         <Card className="border-border/80 py-16 text-center shadow-sm">
           <ShoppingBag className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
           <p className="text-muted-foreground">
-            No orders match your filter. Try selecting a different status.
+            {showOnboardingEmpty
+              ? 'No orders yet. Orders will appear here when customers purchase.'
+              : 'No orders match your search or filters.'}
           </p>
         </Card>
       ) : (
@@ -246,11 +268,14 @@ export function VendorOrdersPageClient({
   initialErrorMessage,
 }: VendorOrdersPageClientProps) {
   const [statusFilter, setStatusFilter] = useQueryState('status', parseAsString.withDefault(''));
+  const [searchQuery, setSearchQuery] = useQueryState('search', parseAsString.withDefault(''));
+  const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1));
+  const [pageSize] = useQueryState('pagesize', parseAsInteger.withDefault(10));
+
+  const { onSearchChange, onSearchCommit } = useAccountListSearch(setSearchQuery, setPage);
   const [orders, setOrders] = useState<IVendorOrdersRes['orders']>(initialOrders);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(initialErrorMessage);
-  const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1));
-  const [pageSize] = useQueryState('pagesize', parseAsInteger.withDefault(10));
   const [totalPages, setTotalPages] = useState(initialTotalPages);
   const [reloadIndex, setReloadIndex] = useState(0);
   const didMountRef = useRef(false);
@@ -266,15 +291,15 @@ export function VendorOrdersPageClient({
     const loadOrders = async () => {
       setLoading(true);
 
-      const searchParams = new URLSearchParams();
-      searchParams.set('page', String(page));
-      searchParams.set('limit', String(pageSize));
-      if (statusFilter) {
-        searchParams.set('status', statusFilter);
-      }
+      const query = `?${buildAccountOrdersQuery({
+        page,
+        pageSize,
+        search: searchQuery,
+        status: statusFilter,
+      }).toString()}` as const;
 
       const { data, error, message } = await callApi('VENDOR_GET_ORDERS', {
-        query: `?${searchParams.toString()}`,
+        query,
       });
 
       if (cancelled) return;
@@ -304,7 +329,7 @@ export function VendorOrdersPageClient({
     return () => {
       cancelled = true;
     };
-  }, [statusFilter, page, pageSize, reloadIndex]);
+  }, [statusFilter, searchQuery, page, pageSize, reloadIndex]);
 
   return (
     <div className="space-y-4">
@@ -323,6 +348,10 @@ export function VendorOrdersPageClient({
       <VendorOrdersList
         orders={orders}
         statusFilter={statusFilter}
+        searchQuery={searchQuery}
+        searchValue={searchQuery}
+        onSearchChange={onSearchChange}
+        onSearchCommit={onSearchCommit}
         onStatusFilterChange={value => {
           setStatusFilter(value);
           setPage(1);
