@@ -13,6 +13,7 @@ import type { IMarketplaceVendor } from '@/lib/constants/endpoints';
 import { MarketplaceVendorsActionsMenu } from './MarketplaceVendorsActionsMenu';
 import { Badge } from '@/components/ui/badge';
 import { dashboardThumbnailColumn } from '@/components/general/dashboardTableThumbnailColumn';
+import { dashboardTableActionsColumn } from '@/components/general/dashboardTableActionsColumn';
 import { dashboardTableDateColumn } from '@/components/general/dashboardTableColumns';
 
 function truncate(str: string, maxLen: number) {
@@ -98,19 +99,14 @@ export function MarketplaceVendorsTableContent({
         id: 'createdAt',
         getValue: row => row.createdAt,
       }),
-      {
-        id: 'actions',
-        header: null,
-        meta: { width: '3rem' },
-        cell: (row, _idx) => (
-          <MarketplaceVendorsActionsMenu
-            vendor={row}
-            onApprove={onApprove}
-            onReject={onReject}
-            onDelete={onDelete}
-          />
-        ),
-      },
+      dashboardTableActionsColumn((row, _idx) => (
+        <MarketplaceVendorsActionsMenu
+          vendor={row}
+          onApprove={onApprove}
+          onReject={onReject}
+          onDelete={onDelete}
+        />
+      )),
     ],
     []
   );

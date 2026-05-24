@@ -11,6 +11,7 @@ import { formatAdminTableDate } from '@/lib/utils/adminTableFormat';
 import { Badge } from '@/components/ui/badge';
 import type { IEmailLog } from '@/lib/constants/endpoints';
 import { EmailLogActionsMenu } from './EmailLogActionsMenu';
+import { dashboardTableActionsColumn } from '@/components/general/dashboardTableActionsColumn';
 
 function getStatusVariant(status: string): 'default' | 'secondary' | 'destructive' | 'outline' {
   switch (status) {
@@ -128,15 +129,8 @@ export function EmailLogsTableContent({
           );
         },
       },
-      {
-        id: 'actions',
-        header: (
-          <DataTableColumnHeader title="Actions">
-            <span className="sr-only">Actions</span>
-          </DataTableColumnHeader>
-        ),
-        meta: { align: 'center', width: '3.5rem', headerClassName: 'text-right' },
-        cell: (row, index) => (
+      dashboardTableActionsColumn(
+        (row, index) => (
           <DataTableCellWrapper text="Actions" className="py-0 px-0">
             <EmailLogActionsMenu
               emailLog={row}
@@ -145,7 +139,16 @@ export function EmailLogsTableContent({
             />
           </DataTableCellWrapper>
         ),
-      },
+        {
+          align: 'center',
+          header: (
+            <DataTableColumnHeader title="Actions">
+              <span className="sr-only">Actions</span>
+            </DataTableColumnHeader>
+          ),
+          headerClassName: 'text-right',
+        }
+      ),
     ],
     [onRefresh, onViewEmail]
   );

@@ -161,7 +161,7 @@ function VendorOrdersList({
                     <th className="px-4 py-3">Amount</th>
                     <th className="px-4 py-3">Status</th>
                     <th className="px-4 py-3">Date</th>
-                    <th className="px-4 py-3 text-right">Actions</th>
+                    <th className={`px-4 py-3 w-0 whitespace-nowrap text-right`}>Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border/60">
@@ -206,7 +206,7 @@ function VendorOrdersList({
                         <td className="px-4 py-3 text-muted-foreground tabular-nums">
                           {new Date(order.createdAt).toLocaleDateString()}
                         </td>
-                        <td className="px-4 py-3 text-right">
+                        <td className="px-4 py-3 w-0 whitespace-nowrap text-right">
                           <Button
                             type="button"
                             variant="ghost"

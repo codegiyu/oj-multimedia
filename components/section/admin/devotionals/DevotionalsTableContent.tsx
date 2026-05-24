@@ -12,6 +12,7 @@ import type { DevotionalListItem } from '@/lib/types/community';
 import { DevotionalsActionsMenu } from './DevotionalsActionsMenu';
 import { Badge } from '@/components/ui/badge';
 import { dashboardThumbnailColumn } from '@/components/general/dashboardTableThumbnailColumn';
+import { dashboardTableActionsColumn } from '@/components/general/dashboardTableActionsColumn';
 
 function truncate(str: string, maxLen: number) {
   if (str.length <= maxLen) return str;
@@ -87,20 +88,15 @@ export function DevotionalsTableContent({
       dashboardTableDateColumn({
         getValue: row => row.createdAt,
       }),
-      {
-        id: 'actions',
-        header: null,
-        meta: { width: '3rem' },
-        cell: (row, _idx) => (
-          <DevotionalsActionsMenu
-            devotional={row}
-            onApprove={onApprove}
-            onReject={onReject}
-            onEdit={onEdit}
-            onDelete={onDelete}
-          />
-        ),
-      },
+      dashboardTableActionsColumn((row, _idx) => (
+        <DevotionalsActionsMenu
+          devotional={row}
+          onApprove={onApprove}
+          onReject={onReject}
+          onEdit={onEdit}
+          onDelete={onDelete}
+        />
+      )),
     ],
     [onApprove, onReject, onEdit, onDelete]
   );

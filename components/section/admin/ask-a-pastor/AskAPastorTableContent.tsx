@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import type { QuestionListItem } from '@/lib/types/community';
 import { AskAPastorActionsMenu } from './AskAPastorActionsMenu';
 import { dashboardThumbnailColumn } from '@/components/general/dashboardTableThumbnailColumn';
+import { dashboardTableActionsColumn } from '@/components/general/dashboardTableActionsColumn';
 
 function truncate(str: string, maxLen: number) {
   if (str.length <= maxLen) return str;
@@ -118,21 +119,16 @@ export function AskAPastorTableContent({
         meta: { width: '10rem' },
         cell: row => <DataTableCellWrapper text={row.timeAgo}>{row.timeAgo}</DataTableCellWrapper>,
       },
-      {
-        id: 'actions',
-        header: null,
-        meta: { width: '3rem' },
-        cell: row => (
-          <AskAPastorActionsMenu
-            question={row}
-            onAnswer={onAnswer}
-            onAssign={onAssign}
-            onEdit={onEdit}
-            onReject={onReject}
-            onDelete={onDelete}
-          />
-        ),
-      },
+      dashboardTableActionsColumn(row => (
+        <AskAPastorActionsMenu
+          question={row}
+          onAnswer={onAnswer}
+          onAssign={onAssign}
+          onEdit={onEdit}
+          onReject={onReject}
+          onDelete={onDelete}
+        />
+      )),
     ],
     [onAnswer, onAssign, onEdit, onReject, onDelete]
   );

@@ -13,6 +13,7 @@ import type { ArtistListItem } from '@/lib/types/community';
 import type { PastorListItem } from '@/lib/types/community';
 import { ArtistsPastorsActionsMenu } from './ArtistsPastorsActionsMenu';
 import { dashboardThumbnailColumn } from '@/components/general/dashboardTableThumbnailColumn';
+import { dashboardTableActionsColumn } from '@/components/general/dashboardTableActionsColumn';
 
 function truncate(str: string, maxLen: number) {
   if (str.length <= maxLen) return str;
@@ -95,12 +96,9 @@ export function ArtistsPastorsTableContent(props: ArtistsPastorsTableContentProp
           <DataTableCellWrapper text={row.slug}>{truncate(row.slug, 25)}</DataTableCellWrapper>
         ),
       },
-      {
-        id: 'actions',
-        header: null,
-        meta: { width: '3rem' },
-        cell: row => <ArtistsPastorsActionsMenu item={row} onEdit={onEdit} onDelete={onDelete} />,
-      },
+      dashboardTableActionsColumn(row => (
+        <ArtistsPastorsActionsMenu item={row} onEdit={onEdit} onDelete={onDelete} />
+      )),
     ],
     []
   );
@@ -141,12 +139,9 @@ export function ArtistsPastorsTableContent(props: ArtistsPastorsTableContentProp
           </DataTableCellWrapper>
         ),
       },
-      {
-        id: 'actions',
-        header: null,
-        meta: { width: '3rem' },
-        cell: row => <ArtistsPastorsActionsMenu item={row} onEdit={onEdit} onDelete={onDelete} />,
-      },
+      dashboardTableActionsColumn(row => (
+        <ArtistsPastorsActionsMenu item={row} onEdit={onEdit} onDelete={onDelete} />
+      )),
     ],
     []
   );

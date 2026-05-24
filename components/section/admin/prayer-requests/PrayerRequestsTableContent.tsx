@@ -9,6 +9,7 @@ import {
 } from '@/components/general/DataTable';
 import type { PrayerRequestListItem } from '@/lib/types/community';
 import { PrayerRequestsActionsMenu } from './PrayerRequestsActionsMenu';
+import { dashboardTableActionsColumn } from '@/components/general/dashboardTableActionsColumn';
 import { Badge } from '@/components/ui/badge';
 
 function truncate(str: string, maxLen: number) {
@@ -80,19 +81,14 @@ export function PrayerRequestsTableContent({
         meta: { width: '12rem' },
         cell: row => <DataTableCellWrapper text={row.timeAgo}>{row.timeAgo}</DataTableCellWrapper>,
       },
-      {
-        id: 'actions',
-        header: null,
-        meta: { width: '3rem' },
-        cell: (row, _idx) => (
-          <PrayerRequestsActionsMenu
-            prayerRequest={row}
-            onAnswer={onAnswer}
-            onEdit={onEdit}
-            onDelete={onDelete}
-          />
-        ),
-      },
+      dashboardTableActionsColumn((row, _idx) => (
+        <PrayerRequestsActionsMenu
+          prayerRequest={row}
+          onAnswer={onAnswer}
+          onEdit={onEdit}
+          onDelete={onDelete}
+        />
+      )),
     ],
     [onAnswer, onEdit, onDelete]
   );

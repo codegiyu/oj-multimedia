@@ -26,6 +26,7 @@ import { useFileUpload } from '@/lib/hooks/use-file-upload';
 import { FillImage } from '@/components/general/FillImage';
 import { hasHomeAdvertImage, saveHomeAdvert } from '@/lib/utils/homeAdvertForm';
 import { useAdminListSearch } from '@/lib/hooks/useAdminListSearch';
+import { DASHBOARD_INLINE_TABLE_HUG_CLASS } from '@/lib/utils/dataTableColumnMeta';
 
 const slotFilterOptions: SelectOption[] = [
   { text: 'All slots', value: 'all' },
@@ -292,12 +293,12 @@ export function HomeAdvertsPageClient({
           <table className="w-full text-sm">
             <thead className="bg-muted/50 sticky top-0">
               <tr className="text-left border-b border-border">
-                <th className="p-3 font-medium w-24">Preview</th>
+                <th className={`p-3 font-medium ${DASHBOARD_INLINE_TABLE_HUG_CLASS}`}>Preview</th>
                 <th className="p-3 font-medium">Slot</th>
                 <th className="p-3 font-medium">Link</th>
                 <th className="p-3 font-medium">Order</th>
                 <th className="p-3 font-medium">Active</th>
-                <th className="p-3 w-24" />
+                <th className={`p-3 ${DASHBOARD_INLINE_TABLE_HUG_CLASS}`} />
               </tr>
             </thead>
             <tbody>
@@ -310,7 +311,7 @@ export function HomeAdvertsPageClient({
               ) : (
                 adverts.map(a => (
                   <tr key={a._id} className="border-b border-border/60 hover:bg-muted/30">
-                    <td className="p-3">
+                    <td className={`p-3 ${DASHBOARD_INLINE_TABLE_HUG_CLASS}`}>
                       <div className="relative h-10 w-16 overflow-hidden rounded bg-muted">
                         <FillImage
                           src={a.imageUrl ?? ''}
@@ -328,7 +329,7 @@ export function HomeAdvertsPageClient({
                     </td>
                     <td className="p-3">{a.displayOrder ?? 0}</td>
                     <td className="p-3">{a.isActive === false ? 'No' : 'Yes'}</td>
-                    <td className="p-3">
+                    <td className={`p-3 ${DASHBOARD_INLINE_TABLE_HUG_CLASS}`}>
                       <div className="flex gap-1">
                         <RegularBtn
                           type="button"
