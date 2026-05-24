@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { isPathActive } from '@/lib/utils/isPathActive';
 import { type ReactNode, useMemo } from 'react';
 
 interface NavLinkProps {
@@ -31,7 +32,7 @@ export function NavLink({
 
   const isActive = useMemo(() => {
     if (!pathname) return false;
-    return exact ? pathname === href : pathname.startsWith(href);
+    return isPathActive(pathname, href, exact);
   }, [pathname, href, exact]);
 
   const combinedClassName = `${className} ${isActive ? activeClassName : ''}`.trim();
