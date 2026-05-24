@@ -10,15 +10,24 @@ vi.mock('next/image', () => ({
     fill,
     width,
     height,
+    onError,
   }: {
     src: string;
     alt: string;
     fill?: boolean;
     width?: number;
     height?: number;
+    onError?: () => void;
   }) => (
     // eslint-disable-next-line @next/next/no-img-element
-    <img src={src} alt={alt} data-fill={fill ? 'true' : undefined} width={width} height={height} />
+    <img
+      src={src}
+      alt={alt}
+      data-fill={fill ? 'true' : undefined}
+      width={width}
+      height={height}
+      onError={onError}
+    />
   ),
 }));
 
@@ -77,6 +86,101 @@ describe('FillImage', () => {
     const img = container.querySelector('img');
     expect(img?.getAttribute('src')).toBe('https://cdn.example.com/cover.jpg');
   });
+
+  it('swaps to the public default when the primary URL fails to load', async () => {
+    await renderFillImage({
+      src: 'https://cdn.example.com/broken.jpg',
+      alt: 'Cover',
+      imageContext: 'public',
+    });
+
+    const img = container.querySelector('img');
+    expect(img?.getAttribute('src')).toBe('https://cdn.example.com/broken.jpg');
+
+    await act(async () => {
+      img?.dispatchEvent(new Event('error', { bubbles: true }));
+    });
+
+    expect(container.querySelector('img')?.getAttribute('src')).toBe('/images/album-1.jpg');
+  });
+
+  it('swaps to the dashboard default when the primary URL fails to load', async () => {
+    await renderFillImage({
+      src: 'https://cdn.example.com/broken.jpg',
+      alt: 'Cover',
+      imageContext: 'dashboard',
+    });
+
+    await act(async () => {
+      container.querySelector('img')?.dispatchEvent(new Event('error', { bubbles: true }));
+    });
+
+    expect(container.querySelector('img')?.getAttribute('src')).toBe('/placeholder.svg');
+  });
+
+  it('does not swap src on error when imageContext is not set', async () => {
+    await renderFillImage({
+      src: 'https://cdn.example.com/broken.jpg',
+      alt: 'Cover',
+    });
+
+    await act(async () => {
+      container.querySelector('img')?.dispatchEvent(new Event('error', { bubbles: true }));
+    });
+
+    expect(container.querySelector('img')?.getAttribute('src')).toBe(
+      'https://cdn.example.com/broken.jpg'
+    );
+  });
+
+  it('does not retry fallback when the default image also fails to load', async () => {
+    await renderFillImage({
+      src: 'https://cdn.example.com/broken.jpg',
+      alt: 'Cover',
+      imageContext: 'dashboard',
+    });
+
+    await act(async () => {
+      container.querySelector('img')?.dispatchEvent(new Event('error', { bubbles: true }));
+    });
+    expect(container.querySelector('img')?.getAttribute('src')).toBe('/placeholder.svg');
+
+    await act(async () => {
+      container.querySelector('img')?.dispatchEvent(new Event('error', { bubbles: true }));
+    });
+    expect(container.querySelector('img')?.getAttribute('src')).toBe('/placeholder.svg');
+  });
+
+  it('resets display src when the src prop changes', async () => {
+    container = document.createElement('div');
+    document.body.appendChild(container);
+    root = createRoot(container);
+
+    await act(async () => {
+      root.render(
+        <div style={{ position: 'relative', width: 200, height: 200 }}>
+          <FillImage src="https://cdn.example.com/first.jpg" alt="Cover" imageContext="public" />
+        </div>
+      );
+    });
+
+    await act(async () => {
+      container.querySelector('img')?.dispatchEvent(new Event('error', { bubbles: true }));
+    });
+    expect(container.querySelector('img')?.getAttribute('src')).toBe('/images/album-1.jpg');
+
+    await act(async () => {
+      root.render(
+        <div style={{ position: 'relative', width: 200, height: 200 }}>
+          <FillImage src="https://cdn.example.com/second.jpg" alt="Cover" imageContext="public" />
+        </div>
+      );
+    });
+
+    expect(container.querySelector('img')?.getAttribute('src')).toBe(
+      'https://cdn.example.com/second.jpg'
+    );
+  });
 });
 
 describe('FixedImage', () => {
@@ -101,5 +205,29 @@ describe('FixedImage', () => {
 
     const img = container.querySelector('img');
     expect(img?.getAttribute('src')).toBe('/placeholder.svg');
+  });
+
+  it('swaps to the dashboard default when the primary URL fails to load', async () => {
+    container = document.createElement('div');
+    document.body.appendChild(container);
+    root = createRoot(container);
+
+    await act(async () => {
+      root.render(
+        <FixedImage
+          src="https://cdn.example.com/broken.jpg"
+          alt="Logo"
+          width={40}
+          height={40}
+          imageContext="dashboard"
+        />
+      );
+    });
+
+    await act(async () => {
+      container.querySelector('img')?.dispatchEvent(new Event('error', { bubbles: true }));
+    });
+
+    expect(container.querySelector('img')?.getAttribute('src')).toBe('/placeholder.svg');
   });
 });

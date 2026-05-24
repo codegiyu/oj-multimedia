@@ -9,14 +9,16 @@ vi.mock('next/image', () => ({
     alt,
     width,
     height,
+    onError,
   }: {
     src: string;
     alt: string;
     width?: number;
     height?: number;
+    onError?: () => void;
   }) => (
     // eslint-disable-next-line @next/next/no-img-element
-    <img src={src} alt={alt} width={width} height={height} />
+    <img src={src} alt={alt} width={width} height={height} onError={onError} />
   ),
 }));
 
@@ -55,5 +57,23 @@ describe('DashboardThumbnail', () => {
 
     const img = container.querySelector('img');
     expect(img?.getAttribute('src')).toBe('/uploads/cover.jpg');
+  });
+
+  it('swaps to the dashboard placeholder when the primary URL fails to load', async () => {
+    container = document.createElement('div');
+    document.body.appendChild(container);
+    root = createRoot(container);
+
+    await act(async () => {
+      root.render(
+        <DashboardThumbnail src="https://cdn.example.com/broken.jpg" alt="Music cover" />
+      );
+    });
+
+    await act(async () => {
+      container.querySelector('img')?.dispatchEvent(new Event('error', { bubbles: true }));
+    });
+
+    expect(container.querySelector('img')?.getAttribute('src')).toBe('/placeholder.svg');
   });
 });

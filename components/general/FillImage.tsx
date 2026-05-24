@@ -1,8 +1,10 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import {
+  CONTENT_IMAGE_DEFAULTS,
   resolveContentImage,
   type ContentImageContext,
 } from '@/lib/constants/contentImageDefaults';
@@ -17,6 +19,23 @@ function resolveImageSrc(src: string, imageContext?: ContentImageContext): strin
   }
 
   return src.trim();
+}
+
+function useRecoverableImageSrc(resolvedSrc: string, imageContext?: ContentImageContext) {
+  const fallbackSrc = imageContext ? CONTENT_IMAGE_DEFAULTS[imageContext] : null;
+  const [displaySrc, setDisplaySrc] = useState(resolvedSrc);
+
+  useEffect(() => {
+    setDisplaySrc(resolvedSrc);
+  }, [resolvedSrc]);
+
+  function handleError() {
+    if (!fallbackSrc) return;
+
+    setDisplaySrc(current => (current !== fallbackSrc ? fallbackSrc : current));
+  }
+
+  return { displaySrc, handleError };
 }
 
 type FillImageProps = {
@@ -38,17 +57,19 @@ export function FillImage({
   imageContext,
 }: FillImageProps) {
   const resolvedSrc = resolveImageSrc(src, imageContext);
+  const { displaySrc, handleError } = useRecoverableImageSrc(resolvedSrc, imageContext);
 
   if (!resolvedSrc) return null;
 
   return (
     <Image
-      src={resolvedSrc}
+      src={displaySrc}
       alt={alt}
       fill
       sizes={sizes}
       priority={priority}
-      unoptimized={shouldUseUnoptimized(resolvedSrc)}
+      unoptimized={shouldUseUnoptimized(displaySrc)}
+      onError={handleError}
       className={cn('object-cover', className)}
     />
   );
@@ -75,17 +96,19 @@ export function FixedImage({
   imageContext,
 }: FixedImageProps) {
   const resolvedSrc = resolveImageSrc(src, imageContext);
+  const { displaySrc, handleError } = useRecoverableImageSrc(resolvedSrc, imageContext);
 
   if (!resolvedSrc) return null;
 
   return (
     <Image
-      src={resolvedSrc}
+      src={displaySrc}
       alt={alt}
       width={width}
       height={height}
       priority={priority}
-      unoptimized={shouldUseUnoptimized(resolvedSrc)}
+      unoptimized={shouldUseUnoptimized(displaySrc)}
+      onError={handleError}
       className={className}
     />
   );
