@@ -261,6 +261,7 @@ export const ENTITY_TYPES = [
   'gospel-verse',
   'artist',
   'music',
+  'album',
   'pastor',
   'devotional',
   'news-article',
@@ -380,6 +381,8 @@ export interface IMusic {
   title: string;
   slug: string;
   artist?: string;
+  album?: string;
+  albumId?: string;
   description?: string;
   lyrics?: string;
   meaning?: string;
@@ -406,6 +409,33 @@ export interface IMusic {
     metaDescription?: string;
     keywords?: string[];
   };
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface IAlbum {
+  _id: string;
+  title: string;
+  slug: string;
+  artist?: string | { _id: string; name?: string; slug?: string; image?: string };
+  description?: string;
+  excerpt?: string;
+  coverImage?: string;
+  releaseDate?: string | null;
+  status: 'draft' | 'published' | 'archived';
+  isFeatured: boolean;
+  displayOrder: number;
+  views?: number;
+  plays?: number;
+  trackCount?: number;
+  tracks?: Array<{
+    _id: string;
+    title: string;
+    slug: string;
+    coverImage?: string;
+    displayOrder?: number;
+    plays?: number;
+  }>;
   createdAt: string;
   updatedAt: string;
 }
