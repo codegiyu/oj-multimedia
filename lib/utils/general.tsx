@@ -337,13 +337,16 @@ export function formatCompactNumber(value?: number | null): string {
   const num = Math.round(value);
   if (num < 1000) return String(num);
 
-  const formatScaled = (scaled: number, suffix: string): string => {
+  const formatScaled = (scaled: number, suffix: string, forceDecimals?: number): string => {
     const abs = Math.abs(scaled);
-    const decimals = abs >= 100 ? 0 : abs >= 10 ? 1 : 2;
+    const decimals = forceDecimals ?? (abs >= 100 ? 0 : abs >= 10 ? 1 : 2);
     return `${scaled.toFixed(decimals).replace(/\.?0+$/, '')}${suffix}`;
   };
 
-  if (num < 1_000_000) return formatScaled(num / 1000, 'K');
+  if (num < 1_000_000) {
+    const remainder = num % 1000;
+    return formatScaled(num / 1000, 'K', remainder < 100 ? 0 : undefined);
+  }
   if (num < 1_000_000_000) return formatScaled(num / 1_000_000, 'M');
   return formatScaled(num / 1_000_000_000, 'B');
 }
