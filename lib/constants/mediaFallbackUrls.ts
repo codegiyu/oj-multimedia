@@ -1,5 +1,7 @@
+import { CONTENT_IMAGE_DEFAULTS } from '@/lib/constants/contentImageDefaults';
+
 export const MEDIA_FALLBACK_URLS = {
-  image: 'https://picsum.photos/800/600', // random real image
+  image: CONTENT_IMAGE_DEFAULTS.dashboard,
   audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
   video: 'https://samplelib.com/lib/preview/mp4/sample-5s.mp4',
   file: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
