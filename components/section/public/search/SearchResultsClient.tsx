@@ -37,6 +37,7 @@ export const SearchResultsClient = ({ results, errorMessage = null }: SearchResu
   // Counts from current result set (only meaningful when type is 'all')
   const resultsByType = [
     { value: 'music', count: results.filter(r => r.type === 'music').length },
+    { value: 'album', count: results.filter(r => r.type === 'album').length },
     { value: 'news', count: results.filter(r => r.type === 'news').length },
     { value: 'video', count: results.filter(r => r.type === 'video').length },
     {

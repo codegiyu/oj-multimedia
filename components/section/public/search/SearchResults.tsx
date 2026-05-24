@@ -18,6 +18,7 @@ export interface SearchResultItem {
 
 const typeColors: Record<string, string> = {
   music: 'bg-primary/10 text-primary',
+  album: 'bg-secondary/10 text-secondary',
   news: 'bg-accent/10 text-accent',
   video: 'bg-secondary/10 text-secondary',
   community: 'bg-muted text-muted-foreground',
@@ -69,7 +70,7 @@ export const SearchResults = ({ results }: SearchResultsProps) => {
               </span>
 
               {/* Play icon (for music/video) - decorative inside link */}
-              {(result.type === 'music' || result.type === 'video') && (
+              {(result.type === 'music' || result.type === 'video' || result.type === 'album') && (
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                   <motion.span
                     aria-hidden

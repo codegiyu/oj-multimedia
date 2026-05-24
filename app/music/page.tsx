@@ -16,11 +16,14 @@ import { fetchPublicCategoryNav } from '@/lib/utils/contentCategoryNav';
 import { musicCategoryNavFallback } from '@/lib/constants/categoryNavFallbacks';
 import {
   filterPublicMusicList,
+  filterPublicAlbumList,
   mapPublicMusicToTrendingSong,
   mapPublicMusicToChartSong,
   mapPublicMusicToRecentUpload,
   mapPublicArtistToFeaturedArtist,
+  mapPublicAlbumToCard,
 } from '@/lib/utils/publicApiMappers';
+import type { IPublicAlbumsListRes } from '@/lib/constants/endpoints';
 
 export const metadata: Metadata = {
   title: 'Music - Latest Songs & Downloads',
@@ -33,7 +36,7 @@ async function fetchMusicSections(category: string, period: string) {
     category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';
   const baseQuery = `?limit=12&page=1&status=published${categoryParam}`;
 
-  const [trendingRes, chartsRes, recentRes, artistsRes] = await Promise.all([
+  const [trendingRes, chartsRes, recentRes, artistsRes, albumsRes] = await Promise.all([
     callPublicServerApi('PUBLIC_GET_MUSIC', {
       query: `${baseQuery}&type=${MUSIC_TYPES.trending}` as `?${string}`,
     }),
@@ -44,6 +47,9 @@ async function fetchMusicSections(category: string, period: string) {
       query: `${baseQuery}&type=${MUSIC_TYPES.recent}` as `?${string}`,
     }),
     callPublicServerApi('PUBLIC_GET_ARTISTS', { query: '?page=1&limit=6' as `?${string}` }),
+    callPublicServerApi('PUBLIC_GET_ALBUMS', {
+      query: '?limit=12&page=1&type=featured' as `?${string}`,
+    }),
   ]);
 
   let errorMessage: string | null = null;
@@ -83,11 +89,19 @@ async function fetchMusicSections(category: string, period: string) {
     .slice(0, 6)
     .map(a => mapPublicArtistToFeaturedArtist(a as unknown as Record<string, unknown>));
 
+  const featuredAlbums =
+    albumsRes.type === 'success'
+      ? filterPublicAlbumList((albumsRes.data as IPublicAlbumsListRes)?.albums ?? []).map(
+          mapPublicAlbumToCard
+        )
+      : [];
+
   return {
     trendingSongs,
     chartSongs,
     recentUploads,
     featuredArtists,
+    featuredAlbums,
     initialErrorMessage: errorMessage,
   };
 }

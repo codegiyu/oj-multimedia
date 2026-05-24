@@ -10,6 +10,7 @@ export type SmokeRoute = {
 export const PUBLIC_CONTENT_ROUTES: SmokeRoute[] = [
   { path: '/', titlePattern: /Home/i },
   { path: '/music', titlePattern: /Music/i },
+  { path: '/music/albums', titlePattern: /Albums/i },
   { path: '/music/trending', titlePattern: /Trending/i },
   { path: '/music/top-charts', titlePattern: /Charts|Top/i },
   { path: '/videos', titlePattern: /Videos/i },
