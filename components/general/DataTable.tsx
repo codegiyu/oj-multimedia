@@ -255,7 +255,7 @@ export function DataTable<TData>({
                           <TableCell
                             key={colIndex}
                             className={cn(
-                              'bg-background border-r border-foreground/7 last:border-r-0 py-2.5 px-4',
+                              'bg-background border-r border-foreground/7 last:border-r-0',
                               meta?.align === 'center' && 'text-center',
                               meta?.align === 'right' && 'text-right',
                               meta?.cellClassName
