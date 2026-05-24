@@ -41,7 +41,7 @@ export function ArtistPortalUploadPageClient({
     <div className="mx-auto max-w-2xl space-y-6">
       <DashboardPageHeader
         title="Submit content"
-        description="Only admins can publish on the site. Send tracks, videos, and artwork via WhatsApp (or the contact page if WhatsApp is not set up). The team reviews and publishes when ready."
+        description="You can add music and video drafts from My music or My videos. For large files or publishing help, message the team on WhatsApp (or use the contact page if WhatsApp is not configured)."
       />
 
       {initialLoadError && (
@@ -51,6 +51,21 @@ export function ArtistPortalUploadPageClient({
       )}
 
       <Card className="p-6 md:p-8 space-y-6">
+        <p className="text-sm text-muted-foreground">
+          Self-service: add drafts from{' '}
+          <Link
+            href="/account/artist-portal/music"
+            className="text-primary underline underline-offset-2">
+            My music
+          </Link>{' '}
+          or{' '}
+          <Link
+            href="/account/artist-portal/videos"
+            className="text-primary underline underline-offset-2">
+            My videos
+          </Link>
+          .
+        </p>
         {waHref ? (
           <>
             <p className="text-sm text-muted-foreground">
