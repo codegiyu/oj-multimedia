@@ -4,11 +4,11 @@ import { describe, expect, it } from 'vitest';
 
 const adminModals = [
   {
-    file: 'components/section/admin/artists-pastors/CreateArtistModal.tsx',
+    file: 'components/section/admin/artists/CreateArtistModal.tsx',
     fields: ['image', 'coverImage'],
   },
   {
-    file: 'components/section/admin/artists-pastors/CreatePastorModal.tsx',
+    file: 'components/section/admin/pastors/CreatePastorModal.tsx',
     fields: ['image'],
   },
   {

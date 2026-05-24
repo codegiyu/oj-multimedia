@@ -183,4 +183,10 @@ describe('buildAdminListQuery', () => {
     const params = buildAdminListQuery('homeAdverts', advertParams, { sort: 'displayOrder' });
     expect(params.get('search')).toBe('https://example.com');
   });
+
+  it('builds artists and pastors queries with status filter', () => {
+    const listParams = { page: 1, pageSize: 12, search: '', status: 'inactive' };
+    expect(buildAdminListQuery('artists', listParams).get('status')).toBe('inactive');
+    expect(buildAdminListQuery('pastors', listParams).get('status')).toBe('inactive');
+  });
 });

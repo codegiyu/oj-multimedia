@@ -6,7 +6,6 @@ import {
   BookOpen,
   Newspaper,
   FileText,
-  Users,
   LogOut,
   ShoppingCart,
   Heart,
@@ -20,6 +19,8 @@ import {
   Tags,
   ImageIcon,
   DiscAlbum,
+  Mic2,
+  UserRound,
 } from 'lucide-react';
 import type { ISidebarLinkGroup } from '@/lib/types/general';
 
@@ -109,9 +110,14 @@ export const sidebarLinksData: ISidebarLinkGroup[] = [
         path: { prefix: '/admin', suffix: '/dashboard/marketplace' },
       },
       {
-        LucideIcon: Users,
-        page: 'Artists & Pastors',
-        path: { prefix: '/admin', suffix: '/dashboard/artists-pastors' },
+        LucideIcon: Mic2,
+        page: 'Artists',
+        path: { prefix: '/admin', suffix: '/dashboard/artists' },
+      },
+      {
+        LucideIcon: UserRound,
+        page: 'Pastors',
+        path: { prefix: '/admin', suffix: '/dashboard/pastors' },
       },
       {
         LucideIcon: TrendingUp,

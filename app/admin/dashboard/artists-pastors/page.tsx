@@ -1,89 +1,27 @@
-import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import { ArtistsPastorsPageClient } from '@/components/section/admin/artists-pastors/ArtistsPastorsPageClient';
-import {
-  serverFetchAdminArtistsList,
-  serverFetchAdminPastorsList,
-} from '@/lib/services/adminDashboardServerData';
-import {
-  parseAdminStandardListParams,
-  parseTabParam,
-} from '@/lib/utils/adminDashboardSearchParams';
-import type { ArtistListItem } from '@/lib/types/community';
-import type { PastorListItem } from '@/lib/types/community';
-import { Metadata } from 'next';
-import { Suspense } from 'react';
-import { Loader2 } from 'lucide-react';
+import { redirect } from 'next/navigation';
+import { firstSearchParam } from '@/lib/utils/adminDashboardSearchParams';
 
-export const metadata: Metadata = {
-  title: 'Artists & Pastors',
-  description: 'Manage artists and pastors',
-};
-
-const TAB_ARTISTS = 'artists';
-
-function ArtistsPastorsPageFallback() {
-  return (
-    <div className="flex items-center justify-center min-h-[400px]">
-      <div className="flex flex-col items-center gap-4">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <p className="text-sm text-muted-foreground">Loading...</p>
-      </div>
-    </div>
-  );
-}
-
-interface ArtistsPastorsPageProps {
+interface ArtistsPastorsLegacyRedirectProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
-export default function ArtistsPastorsPage({ searchParams }: ArtistsPastorsPageProps) {
-  return (
-    <DashboardLayout>
-      <section className="h-full overflow-hidden">
-        <section className="h-full space-y-6 overflow-auto sleek-scrollbar">
-          <Suspense fallback={<ArtistsPastorsPageFallback />}>
-            <AdminArtistsPastorsPageServer searchParams={searchParams} />
-          </Suspense>
-        </section>
-      </section>
-    </DashboardLayout>
-  );
-}
-
-async function AdminArtistsPastorsPageServer({
+/** Legacy combined route — redirects to dedicated artists or pastors dashboard. */
+export default async function ArtistsPastorsLegacyRedirect({
   searchParams,
-}: {
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
-}) {
+}: ArtistsPastorsLegacyRedirectProps) {
   const raw = await searchParams;
-  const tab = parseTabParam(raw, 'tab', TAB_ARTISTS);
-  const listParams = parseAdminStandardListParams(raw);
+  const tab = firstSearchParam(raw.tab);
+  const base = tab === 'pastors' ? '/admin/dashboard/pastors' : '/admin/dashboard/artists';
 
-  let artists: ArtistListItem[] = [];
-  let pastors: PastorListItem[] = [];
-  let totalPages = 1;
-  let listError: string | null = null;
+  const q = new URLSearchParams();
+  const page = firstSearchParam(raw.page);
+  const search = firstSearchParam(raw.search);
+  const status = firstSearchParam(raw.status);
 
-  if (tab === TAB_ARTISTS) {
-    const r = await serverFetchAdminArtistsList(listParams);
-    artists = r.items;
-    totalPages = r.totalPages;
-    listError = r.listError;
-  } else {
-    const r = await serverFetchAdminPastorsList(listParams);
-    pastors = r.items;
-    totalPages = r.totalPages;
-    listError = r.listError;
-  }
+  if (page) q.set('page', page);
+  if (search) q.set('search', search);
+  if (status) q.set('status', status);
 
-  return (
-    <ArtistsPastorsPageClient
-      pageTitle="Artists & Pastors"
-      pageDescription="Manage artists and pastors"
-      artists={artists}
-      pastors={pastors}
-      totalPages={totalPages}
-      listError={listError}
-    />
-  );
+  const qs = q.toString();
+  redirect(qs ? `${base}?${qs}` : base);
 }

@@ -73,6 +73,12 @@ export const ARTIST_STATUS_FILTER_SELECT_OPTIONS: ReadonlyArray<SelectOption> = 
   { text: 'Inactive', value: 'inactive' },
 ];
 
+export const PASTOR_STATUS_FILTER_SELECT_OPTIONS: ReadonlyArray<SelectOption> = [
+  { text: 'All', value: 'all' },
+  { text: 'Active', value: 'active' },
+  { text: 'Inactive', value: 'inactive' },
+];
+
 export const CONTENT_CATEGORY_IS_ACTIVE_FILTER_SELECT_OPTIONS: ReadonlyArray<SelectOption> = [
   { text: 'All', value: 'all' },
   { text: 'Active', value: 'active' },
