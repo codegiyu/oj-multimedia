@@ -569,6 +569,20 @@ export interface IAdminContentCategoryUpdatePayload {
 export interface IHomeAdvertMutationRes {
   advert: IHomeAdvertItem;
 }
+export interface IAdminHomeAdvertCreatePayload {
+  slot: IHomeAdvertItem['slot'];
+  imageUrl: string;
+  linkUrl?: string;
+  displayOrder?: number;
+  isActive?: boolean;
+}
+export interface IAdminHomeAdvertUpdatePayload {
+  slot?: IHomeAdvertItem['slot'];
+  imageUrl?: string;
+  linkUrl?: string;
+  displayOrder?: number;
+  isActive?: boolean;
+}
 export type IPublicContentCategoriesRes = { categories: IContentCategoryItem[] };
 export type IPublicHomeAdvertsRes = { adverts: IHomeAdvertItem[] };
 
@@ -1131,12 +1145,12 @@ export interface AllEndpoints {
 
   ADMIN_HOME_ADVERTS_LIST: EndpointDefinition<undefined, IHomeAdvertsListRes, `?${string}`>;
   ADMIN_HOME_ADVERTS_CREATE: EndpointDefinition<
-    Record<string, unknown>,
+    IAdminHomeAdvertCreatePayload,
     IHomeAdvertMutationRes,
     undefined
   >;
   ADMIN_HOME_ADVERTS_UPDATE: EndpointDefinition<
-    Record<string, unknown>,
+    IAdminHomeAdvertUpdatePayload,
     IHomeAdvertMutationRes,
     `/${string}`
   >;

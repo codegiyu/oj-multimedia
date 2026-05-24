@@ -24,7 +24,7 @@ import { ApprovalModal } from '@/components/section/admin/shared';
 import { MediaUrlOrUploadField } from '@/components/general/MediaUrlOrUploadField';
 import { useFileUpload } from '@/lib/hooks/use-file-upload';
 import { FillImage } from '@/components/general/FillImage';
-import { hasHomeAdvertImage, resolveHomeAdvertImageUrl } from '@/lib/utils/homeAdvertForm';
+import { hasHomeAdvertImage, saveHomeAdvert } from '@/lib/utils/homeAdvertForm';
 
 const slotFilterOptions: SelectOption[] = [
   { text: 'All slots', value: 'all' },
@@ -82,7 +82,7 @@ export function HomeAdvertsPageClient({
   const [deleting, setDeleting] = useState(false);
   const advertImageUpload = useFileUpload({
     entityType: 'resource',
-    entityId: editTarget?._id ?? 'home-advert-pending',
+    entityId: editTarget?._id ?? '',
     intent: 'image',
   });
 
@@ -138,38 +138,20 @@ export function HomeAdvertsPageClient({
 
     setSaving(true);
     try {
-      const uploadEntityId =
-        editTarget?._id ?? `home-advert-draft-${globalThis.crypto?.randomUUID?.() ?? Date.now()}`;
-      const finalImageUrl = await resolveHomeAdvertImageUrl({
-        imageUrl: formImage,
+      await saveHomeAdvert({
+        editId: editTarget?._id ?? null,
+        fields: {
+          slot: formSlot,
+          imageUrl: formImage,
+          linkUrl: formLink,
+          displayOrder: Number(formOrder) || 0,
+          isActive: formActive === 'yes',
+        },
         pendingFile: pendingImageFile,
         uploadFile: advertImageUpload.uploadFile,
-        entityId: uploadEntityId,
       });
 
-      const payload = {
-        slot: formSlot,
-        imageUrl: finalImageUrl,
-        linkUrl: formLink.trim() || undefined,
-        displayOrder: Number(formOrder) || 0,
-        isActive: formActive === 'yes',
-      };
-
-      if (editTarget) {
-        const res = await callApi('ADMIN_HOME_ADVERTS_UPDATE', {
-          query: `/${editTarget._id}` as `/${string}`,
-          payload,
-        });
-        if (res.type !== 'success')
-          throw new Error(res.error?.message ?? 'Failed to update advert');
-        toast.success('Home advert updated.');
-      } else {
-        const res = await callApi('ADMIN_HOME_ADVERTS_CREATE', { payload });
-        if (res.type !== 'success')
-          throw new Error(res.error?.message ?? 'Failed to create advert');
-        toast.success('Home advert created.');
-      }
-
+      toast.success(editTarget ? 'Home advert updated.' : 'Home advert created.');
       closeDialog();
       handleRefresh();
     } catch (e) {
