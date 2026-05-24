@@ -422,6 +422,7 @@ export interface IArtistCreateMusicPayload {
   downloadUrl?: string;
   category?: string;
   isMonetizable?: boolean;
+  price?: number;
   status?: 'draft' | 'published' | 'archived';
 }
 
@@ -449,6 +450,7 @@ export interface IArtistCreateVideoPayload {
   embedUrl?: string;
   category?: string;
   isMonetizable?: boolean;
+  price?: number;
   status?: 'draft' | 'published' | 'archived';
 }
 

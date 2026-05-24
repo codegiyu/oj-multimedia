@@ -94,6 +94,20 @@ function DetailsReadOnly({
           className="[&_.line-clamp-1]:line-clamp-none"
         />
         <InfoCard
+          icon={FileText}
+          label="Premium download"
+          value={music.isMonetizable ? 'Yes' : 'No'}
+        />
+        <InfoCard
+          icon={FileText}
+          label="Price (NGN)"
+          value={
+            music.isMonetizable && typeof music.price === 'number' && music.price > 0
+              ? String(music.price)
+              : '—'
+          }
+        />
+        <InfoCard
           icon={Calendar}
           label="Created"
           value={music.createdAt ? format(new Date(music.createdAt), 'MMM d, yyyy HH:mm:ss') : '—'}
