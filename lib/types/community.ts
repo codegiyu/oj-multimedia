@@ -74,6 +74,48 @@ export interface DevotionalsListData {
   pagination: Pagination;
 }
 
+export interface AlbumListItem {
+  _id: string;
+  title: string;
+  slug: string;
+  excerpt?: string;
+  description?: string;
+  coverImage?: string;
+  releaseDate?: string | null;
+  artist?: string | { _id: string; name: string; slug?: string; image?: string };
+  ownerLocked?: boolean;
+  ownerUserId?: string;
+  status?: string;
+  isFeatured?: boolean;
+  displayOrder?: number;
+  views?: number;
+  plays?: number;
+  trackCount?: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface AlbumDetail extends AlbumListItem {
+  tracks?: Array<{
+    _id: string;
+    title: string;
+    slug: string;
+    coverImage?: string;
+    displayOrder?: number;
+    plays?: number;
+    artist?: string | { _id: string; name?: string };
+  }>;
+}
+
+export interface AlbumsListData {
+  albums: AlbumListItem[];
+  pagination: Pagination;
+}
+
+export interface AlbumDetailData {
+  album: AlbumDetail;
+}
+
 export interface DevotionalDetailData {
   devotional: DevotionalDetail;
   relatedDevotionals?: DevotionalListItem[];

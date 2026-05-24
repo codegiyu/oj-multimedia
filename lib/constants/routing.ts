@@ -19,6 +19,7 @@ import {
   FileCheck,
   Tags,
   ImageIcon,
+  DiscAlbum,
 } from 'lucide-react';
 import type { ISidebarLinkGroup } from '@/lib/types/general';
 
@@ -46,6 +47,11 @@ export const sidebarLinksData: ISidebarLinkGroup[] = [
         LucideIcon: Music,
         page: 'Music',
         path: { prefix: '/admin', suffix: '/dashboard/music' },
+      },
+      {
+        LucideIcon: DiscAlbum,
+        page: 'Albums',
+        path: { prefix: '/admin', suffix: '/dashboard/albums' },
       },
       {
         LucideIcon: Video,

@@ -71,6 +71,12 @@ export const ADMIN_ENDPOINTS: Record<string, EndpointDetails> = {
   ADMIN_MUSIC_APPROVE: { path: '/api/v1/admin/music', method: 'POST' },
   ADMIN_MUSIC_REJECT: { path: '/api/v1/admin/music', method: 'POST' },
 
+  ADMIN_ALBUMS_LIST: { path: '/api/v1/admin/albums', method: 'GET' },
+  ADMIN_ALBUM_ITEM: { path: '/api/v1/admin/albums', method: 'GET' },
+  ADMIN_ALBUM_CREATE: { path: '/api/v1/admin/albums', method: 'POST' },
+  ADMIN_ALBUM_UPDATE: { path: '/api/v1/admin/albums', method: 'PATCH' },
+  ADMIN_ALBUM_DELETE: { path: '/api/v1/admin/albums', method: 'DELETE' },
+
   ADMIN_VIDEOS_LIST: { path: '/api/v1/admin/videos', method: 'GET' },
   ADMIN_VIDEO_ITEM: { path: '/api/v1/admin/videos', method: 'GET' },
   ADMIN_VIDEO_CREATE: { path: '/api/v1/admin/videos', method: 'POST' },

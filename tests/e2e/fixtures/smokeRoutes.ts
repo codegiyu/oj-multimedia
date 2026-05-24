@@ -72,6 +72,7 @@ export const ADMIN_UNPROTECTED_ROUTES: SmokeRoute[] = [
 export const ADMIN_PROTECTED_ROUTES: string[] = [
   '/admin/dashboard/home',
   '/admin/dashboard/music',
+  '/admin/dashboard/albums',
   '/admin/dashboard/videos',
   '/admin/dashboard/devotionals',
   '/admin/dashboard/news',
