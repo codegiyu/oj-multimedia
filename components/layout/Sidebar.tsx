@@ -18,6 +18,7 @@ import { NavLink } from '../atoms/NavLink';
 import { ISidebarLink } from '@/lib/types/general';
 import { usePathname } from 'next/navigation';
 import { bottomBarLinks, sidebarLinksData } from '@/lib/constants/routing';
+import { isPathActive } from '@/lib/utils/isPathActive';
 import { GhostBtn } from '../atoms/GhostBtn';
 import Link from 'next/link';
 import { FixedImage } from '@/components/general/FillImage';
@@ -76,10 +77,7 @@ export const SidebarLinkGroup = ({
 }) => {
   const currentPath = usePathname();
 
-  const isActive = (path: string) => {
-    if (path === '/') return currentPath === '/';
-    return currentPath.startsWith(path);
-  };
+  const isActive = (path: string) => isPathActive(currentPath, path);
 
   const getNavClassName = (path?: string | undefined) => {
     return path && isActive(path)
