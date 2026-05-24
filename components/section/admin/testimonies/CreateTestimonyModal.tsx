@@ -13,8 +13,10 @@ import { RegularBtn } from '@/components/atoms/RegularBtn';
 import { RegularInput } from '@/components/atoms/RegularInput';
 import { RegularTextarea } from '@/components/atoms/RegularTextarea';
 import { RegularSelect } from '@/components/atoms/RegularSelect';
+import { MediaUrlOrUploadField } from '@/components/general/MediaUrlOrUploadField';
 import type { SelectOption } from '@/lib/types/general';
 import { callApi } from '@/lib/services/callApi';
+import { useFileUpload } from '@/lib/hooks/use-file-upload';
 import { toast } from 'sonner';
 import { TESTIMONY_CATEGORY_SELECT_OPTIONS } from '@/lib/constants/communityCategorySelectOptions';
 import {
@@ -24,6 +26,7 @@ import {
 import { ensureSelectContainsSlug } from '@/lib/utils/adminContentCategorySelect';
 import {
   normalizeEnumValue,
+  normalizeOptionalHttpUrl,
   normalizeOptionalText,
   requireText,
 } from '@/lib/utils/adminFormValidation';
@@ -40,6 +43,7 @@ const defaultForm = {
   content: '',
   category: '',
   status: 'draft' as 'draft' | 'published' | 'archived',
+  avatar: '',
 };
 
 const baseCategoryOptions: SelectOption[] = [
@@ -57,18 +61,26 @@ export function CreateTestimonyModal({
   const [loading, setLoading] = useState(false);
   const [detailLoading, setDetailLoading] = useState(false);
   const [categoryOptions, setCategoryOptions] = useState<SelectOption[]>(baseCategoryOptions);
+  const [pendingAvatar, setPendingAvatar] = useState<File | null>(null);
 
   const isEdit = Boolean(editId);
+  const avatarUpload = useFileUpload({
+    entityType: 'testimony',
+    entityId: editId ?? 'testimony-pending',
+    intent: 'image',
+  });
 
   useEffect(() => {
     if (!open) {
       setForm(defaultForm);
       setCategoryOptions(baseCategoryOptions);
+      setPendingAvatar(null);
       return;
     }
     if (!editId) {
       setForm(defaultForm);
       setCategoryOptions(baseCategoryOptions);
+      setPendingAvatar(null);
       return;
     }
     let cancelled = false;
@@ -87,6 +99,7 @@ export function CreateTestimonyModal({
           content: t.content ?? '',
           category: t.category ?? '',
           status: normalizeEnumValue(st, PUBLISHABLE_STATUS_VALUES, 'draft'),
+          avatar: t.avatar ?? '',
         });
       } finally {
         if (!cancelled) setDetailLoading(false);
@@ -107,8 +120,15 @@ export function CreateTestimonyModal({
       const author = requireText(form.author, 'Author');
       const content = requireText(form.content, 'Content');
       const category = normalizeOptionalText(form.category);
+      let finalAvatar = normalizeOptionalHttpUrl(form.avatar, 'Avatar URL');
 
       if (editId) {
+        if (pendingAvatar) {
+          const upload = await avatarUpload.uploadFile({ file: pendingAvatar, entityId: editId });
+          if (!upload?.url) throw new Error('Avatar upload failed');
+          finalAvatar = upload.url;
+        }
+
         const res = await callApi('ADMIN_TESTIMONY_UPDATE', {
           query: `/${editId}` as `/${string}`,
           payload: {
@@ -116,21 +136,45 @@ export function CreateTestimonyModal({
             content,
             category,
             status: form.status,
+            avatar: finalAvatar,
           },
         });
         if (res.type !== 'success') throw new Error(res.error?.message ?? 'Update failed');
       } else {
-        const { error } = await callApi('ADMIN_TESTIMONY_CREATE', {
+        const res = await callApi('ADMIN_TESTIMONY_CREATE', {
           payload: {
             author,
             content,
             category,
             status: createStatus,
+            avatar: finalAvatar || undefined,
           },
         });
-        if (error) throw new Error(error.message);
+        if (res.type !== 'success') throw new Error(res.error?.message ?? 'Create failed');
+
+        const createdId =
+          (res.data as { testimony?: { _id?: string } } | undefined)?.testimony?._id ??
+          (res.data as { _id?: string } | undefined)?._id;
+
+        if (createdId && pendingAvatar) {
+          const upload = await avatarUpload.uploadFile({
+            file: pendingAvatar,
+            entityId: createdId,
+          });
+          if (!upload?.url) throw new Error('Avatar upload failed');
+          finalAvatar = upload.url;
+
+          const patchRes = await callApi('ADMIN_TESTIMONY_UPDATE', {
+            query: `/${createdId}` as `/${string}`,
+            payload: { avatar: finalAvatar },
+          });
+          if (patchRes.type !== 'success') {
+            throw new Error(patchRes.error?.message ?? 'Post-create media update failed');
+          }
+        }
       }
       setForm(defaultForm);
+      setPendingAvatar(null);
       onOpenChange(false);
       onSuccess();
       toast.success(isEdit ? 'Testimony updated.' : 'Testimony created.');
@@ -143,7 +187,10 @@ export function CreateTestimonyModal({
   };
 
   const handleOpenChange = (val: boolean) => {
-    if (!val) setForm(defaultForm);
+    if (!val) {
+      setForm(defaultForm);
+      setPendingAvatar(null);
+    }
     onOpenChange(val);
   };
 
@@ -195,6 +242,18 @@ export function CreateTestimonyModal({
               placeholder="Enter testimony content"
               rows={6}
               required
+            />
+            <MediaUrlOrUploadField
+              label="Avatar"
+              value={form.avatar}
+              onChange={value => setForm(f => ({ ...f, avatar: value }))}
+              entityType="testimony"
+              entityId={editId}
+              fallbackEntityIdPrefix="testimony-avatar"
+              intent="image"
+              accept="image/*"
+              defaultMode="upload"
+              onPendingFileChange={setPendingAvatar}
             />
             <DialogFooter>
               <RegularBtn

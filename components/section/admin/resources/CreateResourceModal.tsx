@@ -13,8 +13,10 @@ import { RegularBtn } from '@/components/atoms/RegularBtn';
 import { RegularInput } from '@/components/atoms/RegularInput';
 import { RegularTextarea } from '@/components/atoms/RegularTextarea';
 import { RegularSelect } from '@/components/atoms/RegularSelect';
+import { MediaUrlOrUploadField } from '@/components/general/MediaUrlOrUploadField';
 import type { SelectOption } from '@/lib/types/general';
 import { callApi } from '@/lib/services/callApi';
+import { useFileUpload } from '@/lib/hooks/use-file-upload';
 import { toast } from 'sonner';
 import { RESOURCE_TYPES } from '@/lib/types/community';
 import {
@@ -27,6 +29,7 @@ import {
 } from '@/lib/utils/adminContentCategorySelect';
 import {
   normalizeEnumValue,
+  normalizeOptionalHttpUrl,
   normalizeOptionalText,
   requireText,
 } from '@/lib/utils/adminFormValidation';
@@ -44,6 +47,7 @@ const defaultForm = {
   type: 'ebook' as (typeof RESOURCE_TYPES)[number],
   category: '',
   status: 'draft' as 'draft' | 'published' | 'archived',
+  coverImage: '',
 };
 
 const typeOptions: SelectOption[] = RESOURCE_TYPES.map(t => ({ text: t, value: t }));
@@ -61,8 +65,14 @@ export function CreateResourceModal({
     { text: 'None', value: '' },
   ]);
   const [categoriesLoading, setCategoriesLoading] = useState(false);
+  const [pendingCoverImage, setPendingCoverImage] = useState<File | null>(null);
 
   const isEdit = Boolean(editId);
+  const coverUpload = useFileUpload({
+    entityType: 'resource',
+    entityId: editId ?? 'resource-pending',
+    intent: 'image',
+  });
 
   useEffect(() => {
     if (!open) return;
@@ -75,10 +85,12 @@ export function CreateResourceModal({
   useEffect(() => {
     if (!open) {
       setForm(defaultForm);
+      setPendingCoverImage(null);
       return;
     }
     if (!editId) {
       setForm(defaultForm);
+      setPendingCoverImage(null);
       return;
     }
     let cancelled = false;
@@ -97,6 +109,7 @@ export function CreateResourceModal({
           type: normalizeEnumValue(r.type, RESOURCE_TYPES, 'ebook'),
           category: r.category ?? '',
           status: normalizeEnumValue(st, PUBLISHABLE_STATUS_VALUES, 'draft'),
+          coverImage: r.coverImage ?? '',
         });
         setCategoryOptions(prev => ensureSelectContainsSlug(prev, r.category ?? undefined));
       } finally {
@@ -118,8 +131,18 @@ export function CreateResourceModal({
       const title = requireText(form.title, 'Title');
       const description = form.description.trim();
       const category = normalizeOptionalText(form.category);
+      let finalCoverImage = normalizeOptionalHttpUrl(form.coverImage, 'Cover image URL');
 
       if (editId) {
+        if (pendingCoverImage) {
+          const upload = await coverUpload.uploadFile({
+            file: pendingCoverImage,
+            entityId: editId,
+          });
+          if (!upload?.url) throw new Error('Cover image upload failed');
+          finalCoverImage = upload.url;
+        }
+
         const res = await callApi('ADMIN_RESOURCE_UPDATE', {
           query: `/${editId}` as `/${string}`,
           payload: {
@@ -128,22 +151,46 @@ export function CreateResourceModal({
             type: form.type,
             category,
             status: form.status,
+            coverImage: finalCoverImage,
           },
         });
         if (res.type !== 'success') throw new Error(res.error?.message ?? 'Update failed');
       } else {
-        const { error } = await callApi('ADMIN_RESOURCE_CREATE', {
+        const res = await callApi('ADMIN_RESOURCE_CREATE', {
           payload: {
             title,
             description,
             type: form.type,
             category,
             status: createStatus,
+            coverImage: finalCoverImage || undefined,
           },
         });
-        if (error) throw new Error(error.message);
+        if (res.type !== 'success') throw new Error(res.error?.message ?? 'Create failed');
+
+        const createdId =
+          (res.data as { resource?: { _id?: string } } | undefined)?.resource?._id ??
+          (res.data as { _id?: string } | undefined)?._id;
+
+        if (createdId && pendingCoverImage) {
+          const upload = await coverUpload.uploadFile({
+            file: pendingCoverImage,
+            entityId: createdId,
+          });
+          if (!upload?.url) throw new Error('Cover image upload failed');
+          finalCoverImage = upload.url;
+
+          const patchRes = await callApi('ADMIN_RESOURCE_UPDATE', {
+            query: `/${createdId}` as `/${string}`,
+            payload: { coverImage: finalCoverImage },
+          });
+          if (patchRes.type !== 'success') {
+            throw new Error(patchRes.error?.message ?? 'Post-create media update failed');
+          }
+        }
       }
       setForm(defaultForm);
+      setPendingCoverImage(null);
       onOpenChange(false);
       onSuccess();
       toast.success(isEdit ? 'Resource updated.' : 'Resource created.');
@@ -156,7 +203,10 @@ export function CreateResourceModal({
   };
 
   const handleOpenChange = (val: boolean) => {
-    if (!val) setForm(defaultForm);
+    if (!val) {
+      setForm(defaultForm);
+      setPendingCoverImage(null);
+    }
     onOpenChange(val);
   };
 
@@ -216,6 +266,18 @@ export function CreateResourceModal({
               onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
               placeholder="Enter description"
               rows={4}
+            />
+            <MediaUrlOrUploadField
+              label="Cover image"
+              value={form.coverImage}
+              onChange={value => setForm(f => ({ ...f, coverImage: value }))}
+              entityType="resource"
+              entityId={editId}
+              fallbackEntityIdPrefix="resource-cover"
+              intent="image"
+              accept="image/*"
+              defaultMode="upload"
+              onPendingFileChange={setPendingCoverImage}
             />
             <DialogFooter>
               <RegularBtn
