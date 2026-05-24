@@ -150,13 +150,22 @@ export interface AdminEmailLogsListParams {
   endDate: string;
 }
 
+/** Tab selection maps to API status when not "all". */
+export function resolveEmailLogsFilterStatus(
+  raw: Record<string, string | string[] | undefined>
+): string {
+  const tab = firstSearchParam(raw.tab) ?? ADMIN_FILTER_ALL;
+  if (tab !== ADMIN_FILTER_ALL) return tab;
+  return firstSearchParam(raw.status) ?? ADMIN_FILTER_ALL;
+}
+
 export function parseAdminEmailLogsListParams(
   raw: Record<string, string | string[] | undefined>
 ): AdminEmailLogsListParams {
   return {
     page: parsePositiveInt(firstSearchParam(raw.page), 1),
     pageSize: parsePositiveInt(firstListPageSizeParam(raw), ADMIN_DASHBOARD_LIST_PAGE_SIZE),
-    filterStatus: firstSearchParam(raw.status) ?? ADMIN_FILTER_ALL,
+    filterStatus: resolveEmailLogsFilterStatus(raw),
     search: firstSearchParam(raw.search) ?? '',
     type: firstSearchParam(raw.type) ?? ADMIN_FILTER_ALL,
     tab: firstSearchParam(raw.tab) ?? ADMIN_FILTER_ALL,

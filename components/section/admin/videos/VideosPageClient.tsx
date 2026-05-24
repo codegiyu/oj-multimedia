@@ -16,6 +16,7 @@ import { Plus } from 'lucide-react';
 import { PUBLISHABLE_STATUS_FILTER_SELECT_OPTIONS } from '@/lib/constants/adminSelectOptions';
 import type { SelectOption } from '@/lib/types/general';
 import { loadAdminContentCategorySelectOptions } from '@/lib/utils/adminContentCategorySelect';
+import { useAdminListSearch } from '@/lib/hooks/useAdminListSearch';
 
 export interface VideosPageClientProps {
   pageTitle: string;
@@ -61,6 +62,7 @@ export function VideosPageClient({
   const [rejectTarget, setRejectTarget] = useState<ArtistVideoListItem | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<ArtistVideoListItem | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
+  const { onSearchChange, onSearchCommit } = useAdminListSearch(setSearchQuery, setPage);
 
   const handleRefresh = () => router.refresh();
 
@@ -145,8 +147,8 @@ export function VideosPageClient({
       filterableDataPageProps={{
         searchPlaceholder: 'Search videos...',
         searchValue: searchQuery,
-        onSearchChange: setSearchQuery,
-        onSearchApply: () => setPage(1),
+        onSearchChange,
+        onSearchCommit,
         filters: [
           {
             label: 'Status',

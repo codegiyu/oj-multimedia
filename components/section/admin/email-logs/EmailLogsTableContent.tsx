@@ -41,12 +41,11 @@ interface EmailLogsTableContentProps {
   totalPages: number;
   page: number;
   tab: string;
-  filterStatus: string;
   onRefresh: () => void;
   onPageChange: (page: number) => void;
   onTabChange: (value: string) => void;
   onRowClick: (row: IEmailLog, index: number) => void;
-  onViewEmail: (emailLog: IEmailLog) => void;
+  onViewEmail: (emailLog: IEmailLog, index: number) => void;
 }
 
 export function EmailLogsTableContent({
@@ -54,21 +53,12 @@ export function EmailLogsTableContent({
   totalPages,
   page,
   tab,
-  filterStatus,
   onRefresh,
   onPageChange,
   onTabChange,
   onRowClick,
   onViewEmail,
 }: EmailLogsTableContentProps) {
-  const filteredEmailLogs = useMemo(() => {
-    return emailLogs.filter(log => {
-      const tabMatch = tab === 'all' || log.status === tab;
-      const statusMatch = filterStatus === 'all' || log.status === filterStatus;
-      return tabMatch && statusMatch;
-    });
-  }, [emailLogs, tab, filterStatus]);
-
   const columns = useMemo<DataTableColumn<IEmailLog, unknown>[]>(
     () => [
       {
@@ -146,9 +136,13 @@ export function EmailLogsTableContent({
           </DataTableColumnHeader>
         ),
         meta: { align: 'center', width: '3.5rem', headerClassName: 'text-right' },
-        cell: row => (
+        cell: (row, index) => (
           <DataTableCellWrapper text="Actions" className="py-0 px-0">
-            <EmailLogActionsMenu emailLog={row} onResend={onRefresh} onViewEmail={onViewEmail} />
+            <EmailLogActionsMenu
+              emailLog={row}
+              onResend={onRefresh}
+              onViewEmail={() => onViewEmail(row, index)}
+            />
           </DataTableCellWrapper>
         ),
       },
@@ -161,7 +155,7 @@ export function EmailLogsTableContent({
       tabs={tabs}
       activeTab={tab}
       onTabChange={onTabChange}
-      data={filteredEmailLogs}
+      data={emailLogs}
       columns={columns}
       loading={false}
       onRefresh={onRefresh}

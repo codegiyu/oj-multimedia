@@ -7,7 +7,12 @@ import { AdminDashboardListLayout } from '@/components/section/admin/AdminDashbo
 import type { ClickedRowDetails } from '@/components/general/TableRowDetailsDrawer';
 import { DocumentsTableContent } from './DocumentsTableContent';
 import { DocumentsDetailsDrawer } from './DocumentsDetailsDrawer';
-import { DOCUMENT_STATUS_FILTER_SELECT_OPTIONS } from '@/lib/constants/adminSelectOptions';
+import {
+  DOCUMENT_ENTITY_TYPE_FILTER_SELECT_OPTIONS,
+  DOCUMENT_INTENT_FILTER_SELECT_OPTIONS,
+  DOCUMENT_STATUS_FILTER_SELECT_OPTIONS,
+} from '@/lib/constants/adminSelectOptions';
+import { useAdminListSearch } from '@/lib/hooks/useAdminListSearch';
 
 export interface AdminDocument {
   _id: string;
@@ -38,8 +43,14 @@ export function DocumentsPageClient({
 }: DocumentsPageClientProps) {
   const router = useRouter();
   const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1));
-  // const [pageSize] = useQueryState('pagesize', parseAsInteger.withDefault(DEFAULT_PAGE_SIZE));
+  const [searchQuery, setSearchQuery] = useQueryState('search', parseAsString.withDefault(''));
   const [filterStatus, setFilterStatus] = useQueryState('status', parseAsString.withDefault('all'));
+  const [filterEntityType, setFilterEntityType] = useQueryState(
+    'entityType',
+    parseAsString.withDefault('all')
+  );
+  const [filterIntent, setFilterIntent] = useQueryState('intent', parseAsString.withDefault('all'));
+  const { onSearchChange, onSearchCommit } = useAdminListSearch(setSearchQuery, setPage);
 
   const [clickedRowDetails, setClickedRowDetails] = useState<
     ClickedRowDetails<AdminDocument, string> | undefined
@@ -58,7 +69,10 @@ export function DocumentsPageClient({
       onRefresh={handleRefresh}
       listError={listError}
       filterableDataPageProps={{
-        searchPlaceholder: 'Filter by entity type...',
+        searchPlaceholder: 'Search documents...',
+        searchValue: searchQuery,
+        onSearchChange,
+        onSearchCommit,
         filters: [
           {
             label: 'Status',
@@ -69,8 +83,25 @@ export function DocumentsPageClient({
               setPage(1);
             },
           },
+          {
+            label: 'Entity type',
+            value: filterEntityType,
+            options: [...DOCUMENT_ENTITY_TYPE_FILTER_SELECT_OPTIONS],
+            onChange: v => {
+              setFilterEntityType(v);
+              setPage(1);
+            },
+          },
+          {
+            label: 'Intent',
+            value: filterIntent,
+            options: [...DOCUMENT_INTENT_FILTER_SELECT_OPTIONS],
+            onChange: v => {
+              setFilterIntent(v);
+              setPage(1);
+            },
+          },
         ],
-        onApplyFilters: () => setPage(1),
       }}
       extraContent={
         <DocumentsDetailsDrawer
