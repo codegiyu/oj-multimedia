@@ -3,9 +3,8 @@
 import { useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay, EffectFade } from 'swiper/modules';
+import { Autoplay } from 'swiper/modules';
 import 'swiper/css';
-import 'swiper/css/effect-fade';
 import { FillImage } from '@/components/general/FillImage';
 import type { IHomeAdvertItem } from '@/lib/constants/endpoints';
 import { sortHomeAdverts } from '@/lib/utils/sortHomeAdverts';
@@ -14,6 +13,7 @@ const ADVERT_FRAME_CLASS =
   'relative w-full h-[500px] md:h-[600px] overflow-hidden rounded-2xl border border-border/50 bg-card shadow-sm';
 
 const AUTOPLAY_DELAY_MS = 5000;
+const SLIDE_TRANSITION_MS = 700;
 
 function subscribePrefersReducedMotion(onStoreChange: () => void): () => void {
   const media = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -78,13 +78,12 @@ function HomeAdvertCarousel({
       aria-roledescription="carousel"
       aria-label="Home advertisements">
       <Swiper
-        modules={[Autoplay, EffectFade]}
-        effect="fade"
-        fadeEffect={{ crossFade: true }}
+        modules={[Autoplay]}
         slidesPerView={1}
         loop
+        speed={SLIDE_TRANSITION_MS}
         autoplay={reduceMotion ? false : { delay: AUTOPLAY_DELAY_MS, disableOnInteraction: false }}
-        className="h-full w-full">
+        className="h-full w-full overflow-hidden">
         {adverts.map(ad => (
           <SwiperSlide key={ad._id} className="!h-full">
             <HomeAdvertSlideContent ad={ad} />
