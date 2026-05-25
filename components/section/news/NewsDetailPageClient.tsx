@@ -135,16 +135,12 @@ export const NewsDetailPageClient = ({ newsItem, relatedStories }: NewsDetailPag
         <div className="max-w-4xl mx-auto">
           {/* Excerpt */}
           {newsItem.excerpt && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="mb-8">
-              <MultilineText
-                text={newsItem.excerpt}
-                paragraphClassName="text-xl text-muted-foreground font-medium leading-relaxed"
-              />
-            </motion.div>
+            <MultilineText
+              animate
+              text={newsItem.excerpt}
+              className="mb-8"
+              paragraphClassName="text-xl text-muted-foreground font-medium leading-relaxed"
+            />
           )}
 
           {newsItem.audioUrl && (
@@ -179,14 +175,7 @@ export const NewsDetailPageClient = ({ newsItem, relatedStories }: NewsDetailPag
           )}
 
           {/* Full Story Content */}
-          {newsItem.fullStory && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}>
-              <StructuredProseContent content={newsItem.fullStory} />
-            </motion.div>
-          )}
+          {newsItem.fullStory && <StructuredProseContent animate content={newsItem.fullStory} />}
 
           {newsItem.youtubeEmbedUrl && (
             <motion.div
