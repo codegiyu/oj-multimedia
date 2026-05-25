@@ -108,6 +108,14 @@ export function ArtistsDetailsDrawer({
           />
           <InfoCard icon={FileText} label="Slug" value={data.slug} />
           <InfoCard icon={FileText} label="Genre" value={data.genre ?? '—'} />
+          <InfoCard
+            icon={FileText}
+            label="Bio"
+            value={(data as { bio?: string }).bio ?? '—'}
+            preserveParagraphs
+            hideIfEmpty
+            className="[&_.line-clamp-1]:line-clamp-none"
+          />
           <InfoCard icon={Hash} label="ID" value={data._id} hasCopy copyValue={data._id} />
         </div>
         <div className="rounded-lg border border-border/80 bg-muted/20 p-4">

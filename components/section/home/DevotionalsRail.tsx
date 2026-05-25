@@ -6,6 +6,7 @@ import { motion } from 'motion/react';
 import { BookOpen } from 'lucide-react';
 import { SectionComp } from '@/components/general/SectionComp';
 import { EmptyState } from '@/components/section/news/EmptyState';
+import { MultilinePreview } from '@/components/general/MultilinePreview';
 
 export interface HomeDevotionalCard {
   _id: string;
@@ -62,7 +63,10 @@ export function DevotionalsRail({ items }: DevotionalsRailProps) {
                 <div className="p-4">
                   <h3 className="font-semibold text-foreground line-clamp-2">{d.title}</h3>
                   {d.excerpt && (
-                    <p className="text-sm text-muted-foreground line-clamp-2 mt-2">{d.excerpt}</p>
+                    <MultilinePreview
+                      text={d.excerpt}
+                      className="text-sm text-muted-foreground line-clamp-2 mt-2"
+                    />
                   )}
                 </div>
               </Link>

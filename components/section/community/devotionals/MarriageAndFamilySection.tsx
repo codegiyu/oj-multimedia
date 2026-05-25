@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { SectionComp } from '@/components/general/SectionComp';
 import type { MarriageFamily } from './DevotionalsPageClient';
+import { MultilinePreview } from '@/components/general/MultilinePreview';
 
 interface MarriageAndFamilySectionProps {
   content: MarriageFamily[];
@@ -57,7 +58,10 @@ export const MarriageAndFamilySection = ({ content }: MarriageAndFamilySectionPr
                 </div>
 
                 <div className="p-5">
-                  <p className="text-sm text-muted-foreground mb-4 line-clamp-3">{item.excerpt}</p>
+                  <MultilinePreview
+                    text={item.excerpt}
+                    className="text-sm text-muted-foreground mb-4 line-clamp-3"
+                  />
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-muted-foreground">
                       {item.articles} articles available

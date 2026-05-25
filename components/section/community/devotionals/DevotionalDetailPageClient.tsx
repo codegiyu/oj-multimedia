@@ -7,6 +7,8 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/atoms/Toast';
 import type { DevotionalItem } from '@/lib/constants/community/devotionals';
+import { MultilineText } from '@/components/general/MultilineText';
+import { StructuredProseContent } from '@/components/general/StructuredProseContent';
 import { RelatedDevotionals } from './RelatedDevotionals';
 import { sendContentAnalyticsEvent } from '@/lib/services/contentAnalytics';
 
@@ -117,44 +119,23 @@ export const DevotionalDetailPageClient = ({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="text-xl text-muted-foreground font-medium mb-8 leading-relaxed">
-              {devotional.excerpt}
+              className="mb-8">
+              <MultilineText
+                text={devotional.excerpt}
+                paragraphClassName="text-xl text-muted-foreground font-medium leading-relaxed"
+              />
             </motion.div>
           )}
 
-          {/* Full Content */}
-          {devotional.fullContent && (
+          {/* Full Content — API may send structured object or plain content string */}
+          {(devotional.fullContent || (devotional as { content?: string }).content) && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="prose prose-lg max-w-none">
-              {devotional.fullContent.introduction && (
-                <p className="text-lg text-foreground leading-relaxed mb-6">
-                  {devotional.fullContent.introduction}
-                </p>
-              )}
-
-              {devotional.fullContent.sections?.map((section, sectionIndex) => (
-                <div key={sectionIndex} className="mb-8">
-                  {section.heading && (
-                    <h2 className="text-2xl font-display font-bold text-foreground mb-4 mt-8">
-                      {section.heading}
-                    </h2>
-                  )}
-                  {section.paragraphs.map((paragraph, paraIndex) => (
-                    <p key={paraIndex} className="text-base text-foreground leading-relaxed mb-4">
-                      {paragraph}
-                    </p>
-                  ))}
-                </div>
-              ))}
-
-              {devotional.fullContent.conclusion && (
-                <p className="text-lg text-foreground leading-relaxed mt-8 font-medium">
-                  {devotional.fullContent.conclusion}
-                </p>
-              )}
+              transition={{ duration: 0.5, delay: 0.1 }}>
+              <StructuredProseContent
+                content={devotional.fullContent ?? (devotional as { content?: string }).content}
+              />
             </motion.div>
           )}
 
@@ -169,8 +150,12 @@ export const DevotionalDetailPageClient = ({
               <ul className="space-y-2">
                 {devotional.prayerPoints.map((point, index) => (
                   <li key={index} className="flex items-start gap-2">
-                    <span className="text-primary mt-1">•</span>
-                    <span className="text-foreground">{point}</span>
+                    <span className="text-primary mt-1 shrink-0">•</span>
+                    <MultilineText
+                      text={point}
+                      className="space-y-1 flex-1"
+                      paragraphClassName="text-foreground"
+                    />
                   </li>
                 ))}
               </ul>

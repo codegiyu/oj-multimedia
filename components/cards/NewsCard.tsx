@@ -4,6 +4,7 @@ import { motion } from 'motion/react';
 import { Clock, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { FillImage } from '@/components/general/FillImage';
+import { MultilinePreview } from '@/components/general/MultilinePreview';
 
 interface NewsCardProps {
   _id: string;
@@ -47,7 +48,10 @@ export const NewsCard = ({
           <h3 className="text-2xl font-display font-bold mb-2 group-hover:text-primary-glow transition-colors">
             {title}
           </h3>
-          <p className="text-primary-foreground/80 text-sm line-clamp-2 mb-4">{excerpt}</p>
+          <MultilinePreview
+            text={excerpt}
+            className="text-primary-foreground/80 text-sm line-clamp-2 mb-4"
+          />
           <div className="flex items-center justify-between">
             <span className="text-xs text-primary-foreground/60 flex items-center gap-1">
               <Clock className="w-3 h-3" />
@@ -93,7 +97,10 @@ export const NewsCard = ({
         <h3 className="font-semibold line-clamp-2 group-hover:text-primary transition-colors mb-2">
           {title}
         </h3>
-        <p className="text-sm text-muted-foreground line-clamp-2 mb-3">{excerpt}</p>
+        <MultilinePreview
+          text={excerpt}
+          className="text-sm text-muted-foreground line-clamp-2 mb-3"
+        />
         <span className="text-xs text-muted-foreground flex items-center gap-1">
           <Clock className="w-3 h-3" />
           {time}

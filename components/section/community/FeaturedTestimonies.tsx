@@ -5,6 +5,7 @@ import { Heart, MessageSquare, Quote } from 'lucide-react';
 import Link from 'next/link';
 import { FixedImage } from '@/components/general/FillImage';
 import { SectionComp } from '@/components/general/SectionComp';
+import { MultilinePreview } from '@/components/general/MultilinePreview';
 
 export interface Testimony {
   _id: string;
@@ -41,7 +42,10 @@ export const FeaturedTestimonies = ({ testimonies }: FeaturedTestimoniesProps) =
             className="bg-card rounded-2xl p-6 shadow-sm border border-border/50 hover:shadow-md transition-all cursor-pointer">
             <Link href={`/community/testimonies/${testimony._id}`}>
               <Quote className="w-8 h-8 text-primary/20 mb-4" />
-              <p className="text-muted-foreground mb-6 line-clamp-4">{testimony.content}</p>
+              <MultilinePreview
+                text={testimony.content}
+                className="text-muted-foreground mb-6 line-clamp-4"
+              />
 
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">

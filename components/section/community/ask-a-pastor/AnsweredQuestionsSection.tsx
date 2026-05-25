@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { useState } from 'react';
 import { SectionComp } from '@/components/general/SectionComp';
 import type { AnsweredQuestion } from './AskAPastorPageClient';
+import { MultilinePreview } from '@/components/general/MultilinePreview';
 
 interface AnsweredQuestionsSectionProps {
   questions: AnsweredQuestion[];
@@ -70,7 +71,10 @@ export const AnsweredQuestionsSection = ({ questions }: AnsweredQuestionsSection
                   <BookOpen className="w-4 h-4 text-primary" />
                   <span className="text-sm font-medium text-primary">{question.pastor}</span>
                 </div>
-                <p className="text-sm text-foreground line-clamp-4">{question.answer}</p>
+                <MultilinePreview
+                  text={question.answer}
+                  className="text-sm text-foreground line-clamp-4"
+                />
               </div>
 
               <div className="flex items-center justify-between pt-4 border-t border-border/50">

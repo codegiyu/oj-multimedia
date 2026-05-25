@@ -14,6 +14,7 @@ import { FillImage } from '@/components/general/FillImage';
 import { NewsletterCTA } from '../shared';
 import { EmptyState } from './EmptyState';
 import { SectionComp } from '@/components/general/SectionComp';
+import { MultilinePreview } from '@/components/general/MultilinePreview';
 import type { FeaturedStory } from './FeaturedStories';
 
 interface FeaturedStoriesPageClientProps {
@@ -115,9 +116,10 @@ export const FeaturedStoriesPageClient = ({
                       <h3 className="font-semibold text-foreground line-clamp-2 group-hover:text-primary transition-colors mb-2">
                         {story.title}
                       </h3>
-                      <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
-                        {story.excerpt}
-                      </p>
+                      <MultilinePreview
+                        text={story.excerpt}
+                        className="text-sm text-muted-foreground line-clamp-2 mb-4"
+                      />
                       <div className="flex items-center gap-4 text-xs text-muted-foreground">
                         <span className="flex items-center gap-1">
                           <Clock className="w-3 h-3" />

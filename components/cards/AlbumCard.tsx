@@ -5,6 +5,7 @@ import { DiscAlbum } from 'lucide-react';
 import Link from 'next/link';
 import { FillImage } from '@/components/general/FillImage';
 import type { PublicAlbumCard } from '@/lib/utils/publicApiMappers';
+import { MultilinePreview } from '@/components/general/MultilinePreview';
 
 type AlbumCardProps = PublicAlbumCard;
 
@@ -49,7 +50,10 @@ export function AlbumCard({
           </h3>
           <p className="text-sm text-muted-foreground truncate">{artist.name}</p>
           {excerpt ? (
-            <p className="text-xs text-muted-foreground mt-2 line-clamp-2">{excerpt}</p>
+            <MultilinePreview
+              text={excerpt}
+              className="text-xs text-muted-foreground mt-2 line-clamp-2"
+            />
           ) : null}
           <p className="text-xs text-muted-foreground mt-2">
             {trackCount} track{trackCount === 1 ? '' : 's'}

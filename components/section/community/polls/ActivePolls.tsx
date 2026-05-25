@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { SectionComp } from '@/components/general/SectionComp';
 import type { Poll } from './PollsPageClient';
+import { MultilinePreview } from '@/components/general/MultilinePreview';
 
 interface ActivePollsProps {
   polls: Poll[];
@@ -62,7 +63,10 @@ export const ActivePolls = ({ polls }: ActivePollsProps) => {
 
                 <h3 className="font-bold text-foreground mb-2">{poll.question}</h3>
                 {poll.description && (
-                  <p className="text-sm text-muted-foreground mb-6">{poll.description}</p>
+                  <MultilinePreview
+                    text={poll.description}
+                    className="text-sm text-muted-foreground mb-6 line-clamp-3"
+                  />
                 )}
 
                 <div className="space-y-3 mb-6">

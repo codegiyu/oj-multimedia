@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  firstParagraphPreview,
   normalizeMultilineInput,
   splitIntoParagraphs,
   splitParagraphLines,
@@ -38,6 +39,20 @@ describe('multilineText', () => {
 
     it('normalizes CRLF before splitting', () => {
       expect(splitIntoParagraphs('First\r\n\r\nSecond')).toEqual(['First', 'Second']);
+    });
+  });
+
+  describe('firstParagraphPreview', () => {
+    it('returns first paragraph with internal newlines collapsed to spaces', () => {
+      expect(firstParagraphPreview('Line1\nLine2\n\nLine3')).toBe('Line1 Line2');
+    });
+
+    it('truncates when maxLength is set', () => {
+      expect(firstParagraphPreview('Hello world', 5)).toBe('Hello…');
+    });
+
+    it('returns empty string for empty input', () => {
+      expect(firstParagraphPreview('')).toBe('');
     });
   });
 

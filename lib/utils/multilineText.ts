@@ -35,3 +35,17 @@ export function splitIntoParagraphs(text?: string | null): string[] {
 export function splitParagraphLines(paragraph: string): string[] {
   return paragraph.split('\n');
 }
+
+/** First paragraph as a single line for list/card previews (optional max length). */
+export function firstParagraphPreview(text?: string | null, maxLength = 0): string {
+  const paragraphs = splitIntoParagraphs(text);
+  const first = (paragraphs[0] ?? '').replace(/\n/g, ' ').trim();
+
+  if (!first) return '';
+
+  if (maxLength > 0 && first.length > maxLength) {
+    return `${first.slice(0, maxLength).trimEnd()}…`;
+  }
+
+  return first;
+}

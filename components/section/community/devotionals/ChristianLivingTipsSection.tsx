@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { SectionComp } from '@/components/general/SectionComp';
 import type { LivingTip } from './DevotionalsPageClient';
+import { MultilinePreview } from '@/components/general/MultilinePreview';
 
 interface ChristianLivingTipsSectionProps {
   tips: LivingTip[];
@@ -54,7 +55,10 @@ export const ChristianLivingTipsSection = ({ tips }: ChristianLivingTipsSectionP
               </div>
 
               <div className="p-5">
-                <p className="text-sm text-muted-foreground mb-4 line-clamp-3">{tip.excerpt}</p>
+                <MultilinePreview
+                  text={tip.excerpt}
+                  className="text-sm text-muted-foreground mb-4 line-clamp-3"
+                />
                 <div className="flex items-center justify-between">
                   <span className="flex items-center gap-1 text-xs text-muted-foreground">
                     <Users className="w-3 h-3" />

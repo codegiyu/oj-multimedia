@@ -16,6 +16,8 @@ import Link from 'next/link';
 import { FillImage } from '@/components/general/FillImage';
 import type { NewsItem } from '@/lib/constants/news';
 import { MultilineText } from '@/components/general/MultilineText';
+import { StructuredProseContent } from '@/components/general/StructuredProseContent';
+import { MultilinePreview } from '@/components/general/MultilinePreview';
 import { NewsDownloadButton } from '@/components/section/news/NewsDownloadButton';
 import { Button } from '@/components/ui/button';
 
@@ -181,44 +183,8 @@ export const NewsDetailPageClient = ({ newsItem, relatedStories }: NewsDetailPag
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="prose prose-lg max-w-none">
-              {/* Introduction */}
-              {newsItem.fullStory.introduction && (
-                <MultilineText
-                  text={newsItem.fullStory.introduction}
-                  className="mb-6"
-                  paragraphClassName="text-lg text-foreground leading-relaxed"
-                />
-              )}
-
-              {/* Sections */}
-              {newsItem.fullStory.sections?.map((section, sectionIndex) => (
-                <div key={sectionIndex} className="mb-8">
-                  {section.heading && (
-                    <h2 className="text-2xl font-display font-bold text-foreground mb-4 mt-8">
-                      {section.heading}
-                    </h2>
-                  )}
-                  {section.paragraphs.map((paragraph, paraIndex) => (
-                    <MultilineText
-                      key={paraIndex}
-                      text={paragraph}
-                      className="mb-4"
-                      paragraphClassName="text-base text-foreground leading-relaxed"
-                    />
-                  ))}
-                </div>
-              ))}
-
-              {/* Conclusion */}
-              {newsItem.fullStory.conclusion && (
-                <MultilineText
-                  text={newsItem.fullStory.conclusion}
-                  className="mt-8"
-                  paragraphClassName="text-lg text-foreground leading-relaxed font-medium"
-                />
-              )}
+              transition={{ duration: 0.5, delay: 0.1 }}>
+              <StructuredProseContent content={newsItem.fullStory} />
             </motion.div>
           )}
 
@@ -342,9 +308,10 @@ export const NewsDetailPageClient = ({ newsItem, relatedStories }: NewsDetailPag
                         {story.title}
                       </h3>
                       {story.excerpt && (
-                        <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
-                          {story.excerpt}
-                        </p>
+                        <MultilinePreview
+                          text={story.excerpt}
+                          className="text-sm text-muted-foreground line-clamp-2 mb-3"
+                        />
                       )}
                       <div className="flex items-center gap-3 text-xs text-muted-foreground">
                         {story.author && (

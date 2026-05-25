@@ -12,6 +12,7 @@ import type { PublicAlbumCard } from '@/lib/utils/publicApiMappers';
 import type { ArtistProfile } from '@/lib/types/artist';
 import type { MusicItemWithArtist } from '@/lib/utils/music';
 import type { VideoItemWithCreator } from '@/lib/utils/videos';
+import { MultilineText } from '@/components/general/MultilineText';
 
 interface ArtistDetailPageClientProps {
   artist: ArtistProfile;
@@ -83,7 +84,11 @@ export function ArtistDetailPageClient({
                   )}
                 </div>
                 {artist.bio && (
-                  <p className="text-muted-foreground mb-6 leading-relaxed">{artist.bio}</p>
+                  <MultilineText
+                    text={artist.bio}
+                    className="mb-6"
+                    paragraphClassName="text-muted-foreground leading-relaxed"
+                  />
                 )}
                 {hasSocials && artist.socials && (
                   <div className="flex flex-wrap gap-2">
