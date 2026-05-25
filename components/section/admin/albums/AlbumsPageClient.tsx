@@ -15,6 +15,8 @@ import { RegularBtn } from '@/components/atoms/RegularBtn';
 import { Plus } from 'lucide-react';
 import { PUBLISHABLE_STATUS_FILTER_SELECT_OPTIONS } from '@/lib/constants/adminSelectOptions';
 import { useAdminListSearch } from '@/lib/hooks/useAdminListSearch';
+import { serializeAdminListUrlKey } from '@/lib/admin/adminListUrl';
+import { useAdminListUrlRefresh } from '@/lib/hooks/useAdminListUrlRefresh';
 import { useAdminArtistFilterOptions } from '@/lib/hooks/useAdminArtistFilterOptions';
 
 export interface AlbumsPageClientProps {
@@ -39,6 +41,14 @@ export function AlbumsPageClient({
   const [filterArtist, setFilterArtist] = useQueryState('artist', parseAsString.withDefault('all'));
   const artistOptions = useAdminArtistFilterOptions();
   const { onSearchChange, onSearchCommit } = useAdminListSearch(setSearchQuery, setPage);
+  useAdminListUrlRefresh(
+    serializeAdminListUrlKey({
+      page,
+      search: searchQuery,
+      status: filterStatus,
+      artist: filterArtist,
+    })
+  );
 
   const [clickedRowDetails, setClickedRowDetails] = useState<
     ClickedRowDetails<AlbumListItem, string> | undefined

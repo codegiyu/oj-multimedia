@@ -8,6 +8,9 @@ import type { ContactSubmission } from '@/lib/constants/endpoints';
 import type { ClickedRowDetails } from '@/components/general/TableRowDetailsDrawer';
 import { ContactSubmissionDetailsDrawer } from './ContactSubmissionDetailsDrawer';
 import { ContactSubmissionsTableContent } from './ContactSubmissionsTableContent';
+import { useAdminListSearch } from '@/lib/hooks/useAdminListSearch';
+import { serializeAdminListUrlKey } from '@/lib/admin/adminListUrl';
+import { useAdminListUrlRefresh } from '@/lib/hooks/useAdminListUrlRefresh';
 
 export interface ContactSubmissionsPageClientProps {
   pageTitle: string;
@@ -28,6 +31,8 @@ export function ContactSubmissionsPageClient({
   const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1));
   // const [pageSize] = useQueryState('pagesize', parseAsInteger.withDefault(DEFAULT_PAGE_SIZE));
   const [searchQuery, setSearchQuery] = useQueryState('search', parseAsString.withDefault(''));
+  const { onSearchChange, onSearchCommit } = useAdminListSearch(setSearchQuery, setPage);
+  useAdminListUrlRefresh(serializeAdminListUrlKey({ page, search: searchQuery }));
 
   const [clickedRowDetails, setClickedRowDetails] = useState<
     ClickedRowDetails<ContactSubmission, string> | undefined
@@ -48,8 +53,8 @@ export function ContactSubmissionsPageClient({
       filterableDataPageProps={{
         searchPlaceholder: 'Search contact submissions...',
         searchValue: searchQuery,
-        onSearchChange: setSearchQuery,
-        onSearchApply: () => setPage(1),
+        onSearchChange,
+        onSearchCommit,
       }}
       extraContent={
         <ContactSubmissionDetailsDrawer

@@ -17,6 +17,8 @@ import { PUBLISHABLE_STATUS_FILTER_SELECT_OPTIONS } from '@/lib/constants/adminS
 import type { SelectOption } from '@/lib/types/general';
 import { loadAdminContentCategorySelectOptions } from '@/lib/utils/adminContentCategorySelect';
 import { useAdminListSearch } from '@/lib/hooks/useAdminListSearch';
+import { serializeAdminListUrlKey } from '@/lib/admin/adminListUrl';
+import { useAdminListUrlRefresh } from '@/lib/hooks/useAdminListUrlRefresh';
 import { useAdminArtistFilterOptions } from '@/lib/hooks/useAdminArtistFilterOptions';
 
 export interface MusicPageClientProps {
@@ -67,6 +69,16 @@ export function MusicPageClient({
   const [deleteTarget, setDeleteTarget] = useState<ArtistMusicListItem | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
   const { onSearchChange, onSearchCommit } = useAdminListSearch(setSearchQuery, setPage);
+  useAdminListUrlRefresh(
+    serializeAdminListUrlKey({
+      page,
+      search: searchQuery,
+      status: filterStatus,
+      category: filterCategory,
+      artist: filterArtist,
+      sort: sortKey,
+    })
+  );
 
   const handleRefresh = () => router.refresh();
 

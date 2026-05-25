@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useQueryState, parseAsInteger, parseAsString } from 'nuqs';
 import { toast } from 'sonner';
 import { AdminDashboardListLayout } from '@/components/section/admin/AdminDashboardListLayout';
 import type { UserListItem } from '@/lib/types/adminUsers';
@@ -14,6 +13,8 @@ import { ApprovalModal } from '@/components/section/admin/shared';
 import { callApi } from '@/lib/services/callApi';
 import { USER_ACCOUNT_STATUS_FILTER_SELECT_OPTIONS } from '@/lib/constants/adminSelectOptions';
 import { useAdminListSearch } from '@/lib/hooks/useAdminListSearch';
+import { useAdminListQueryStates } from '@/lib/hooks/useAdminListQueryStates';
+import { useAdminListUrlRefresh } from '@/lib/hooks/useAdminListUrlRefresh';
 
 export interface UsersPageClientProps {
   pageTitle: string;
@@ -31,10 +32,13 @@ export function UsersPageClient({
   listError,
 }: UsersPageClientProps) {
   const router = useRouter();
-  const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1));
-  const [searchQuery, setSearchQuery] = useQueryState('search', parseAsString.withDefault(''));
-  const [filterStatus, setFilterStatus] = useQueryState('status', parseAsString.withDefault('all'));
-  const { onSearchChange, onSearchCommit } = useAdminListSearch(setSearchQuery, setPage);
+  const { state, setters, refreshKey } = useAdminListQueryStates('users');
+  useAdminListUrlRefresh(refreshKey);
+  const page = Number(state.page) || 1;
+  const searchQuery = String(state.search ?? '');
+  const filterStatus = String(state.status ?? 'all');
+  const setPage = setters.page;
+  const { onSearchChange, onSearchCommit } = useAdminListSearch(setters.search, setPage);
 
   const [clickedRowDetails, setClickedRowDetails] = useState<
     ClickedRowDetails<UserListItem, string> | undefined
@@ -107,8 +111,7 @@ export function UsersPageClient({
             value: filterStatus,
             options: [...USER_ACCOUNT_STATUS_FILTER_SELECT_OPTIONS],
             onChange: v => {
-              setFilterStatus(v);
-              setPage(1);
+              setters.set({ status: v, page: 1 });
             },
           },
         ],

@@ -14,6 +14,8 @@ import { ApprovalModal } from '@/components/section/admin/shared';
 import { callApi } from '@/lib/services/callApi';
 import { PRAYER_REQUEST_STATUS_FILTER_SELECT_OPTIONS } from '@/lib/constants/adminSelectOptions';
 import { useAdminListSearch } from '@/lib/hooks/useAdminListSearch';
+import { serializeAdminListUrlKey } from '@/lib/admin/adminListUrl';
+import { useAdminListUrlRefresh } from '@/lib/hooks/useAdminListUrlRefresh';
 import { useAdminCategoryFilterOptions } from '@/lib/hooks/useAdminCategoryFilterOptions';
 
 export interface PrayerRequestsPageClientProps {
@@ -42,6 +44,14 @@ export function PrayerRequestsPageClient({
   );
   const categoryOptions = useAdminCategoryFilterOptions('prayer-request');
   const { onSearchChange, onSearchCommit } = useAdminListSearch(setSearchQuery, setPage);
+  useAdminListUrlRefresh(
+    serializeAdminListUrlKey({
+      page,
+      search: searchQuery,
+      status: filterStatus,
+      category: filterCategory,
+    })
+  );
 
   const [clickedRowDetails, setClickedRowDetails] = useState<
     ClickedRowDetails<PrayerRequestListItem, string> | undefined

@@ -15,6 +15,8 @@ import { RegularBtn } from '@/components/atoms/RegularBtn';
 import { Plus } from 'lucide-react';
 import { PUBLISHABLE_STATUS_FILTER_SELECT_OPTIONS } from '@/lib/constants/adminSelectOptions';
 import { useAdminListSearch } from '@/lib/hooks/useAdminListSearch';
+import { serializeAdminListUrlKey } from '@/lib/admin/adminListUrl';
+import { useAdminListUrlRefresh } from '@/lib/hooks/useAdminListUrlRefresh';
 import { useAdminCategoryFilterOptions } from '@/lib/hooks/useAdminCategoryFilterOptions';
 import { useAdminArtistFilterOptions } from '@/lib/hooks/useAdminArtistFilterOptions';
 
@@ -46,6 +48,15 @@ export function DevotionalsPageClient({
   const categoryOptions = useAdminCategoryFilterOptions('devotional');
   const artistOptions = useAdminArtistFilterOptions();
   const { onSearchChange, onSearchCommit } = useAdminListSearch(setSearchQuery, setPage);
+  useAdminListUrlRefresh(
+    serializeAdminListUrlKey({
+      page,
+      search: searchQuery,
+      status: filterStatus,
+      category: filterCategory,
+      artist: filterArtist,
+    })
+  );
 
   const [clickedRowDetails, setClickedRowDetails] = useState<
     ClickedRowDetails<DevotionalListItem, string> | undefined

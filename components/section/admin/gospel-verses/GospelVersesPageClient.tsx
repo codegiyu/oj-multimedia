@@ -9,6 +9,9 @@ import type { ClickedRowDetails } from '@/components/general/TableRowDetailsDraw
 import { GospelVerseDetailsDrawer } from './GospelVerseDetailsDrawer';
 import { GospelVersesTableContent } from './GospelVersesTableContent';
 import { GOSPEL_VERSE_STATUS_FILTER_SELECT_OPTIONS } from '@/lib/constants/adminSelectOptions';
+import { useAdminListSearch } from '@/lib/hooks/useAdminListSearch';
+import { serializeAdminListUrlKey } from '@/lib/admin/adminListUrl';
+import { useAdminListUrlRefresh } from '@/lib/hooks/useAdminListUrlRefresh';
 
 export interface GospelVersesPageClientProps {
   pageTitle: string;
@@ -29,6 +32,10 @@ export function GospelVersesPageClient({
   const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1));
   const [searchQuery, setSearchQuery] = useQueryState('search', parseAsString.withDefault(''));
   const [filterStatus, setFilterStatus] = useQueryState('status', parseAsString.withDefault('all'));
+  const { onSearchChange, onSearchCommit } = useAdminListSearch(setSearchQuery, setPage);
+  useAdminListUrlRefresh(
+    serializeAdminListUrlKey({ page, search: searchQuery, status: filterStatus })
+  );
 
   const [clickedRowDetails, setClickedRowDetails] = useState<
     ClickedRowDetails<IGospelVerse, string> | undefined
@@ -49,8 +56,8 @@ export function GospelVersesPageClient({
       filterableDataPageProps={{
         searchPlaceholder: 'Search by reference or verse text...',
         searchValue: searchQuery,
-        onSearchChange: setSearchQuery,
-        onSearchApply: () => setPage(1),
+        onSearchChange,
+        onSearchCommit,
         filters: [
           {
             label: 'Status',

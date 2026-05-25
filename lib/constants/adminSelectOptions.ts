@@ -48,6 +48,13 @@ export const DOCUMENT_STATUS_FILTER_SELECT_OPTIONS: ReadonlyArray<SelectOption> 
   { text: 'Rejected', value: 'rejected' },
 ];
 
+export const EMAIL_LOG_TYPE_FILTER_SELECT_OPTIONS: ReadonlyArray<SelectOption> = [
+  { text: 'All types', value: 'all' },
+  { text: 'Transactional', value: 'transactional' },
+  { text: 'Marketing', value: 'marketing' },
+  { text: 'System', value: 'system' },
+];
+
 export const EMAIL_LOG_STATUS_FILTER_SELECT_OPTIONS: ReadonlyArray<SelectOption> = [
   { text: 'All Statuses', value: 'all' },
   { text: 'Pending', value: 'pending' },

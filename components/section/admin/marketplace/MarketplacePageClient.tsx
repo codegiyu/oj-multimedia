@@ -24,6 +24,8 @@ import type { DataTableTab } from '@/components/general/DataTable';
 import { RegularInput } from '@/components/atoms/RegularInput';
 import type { SelectOption } from '@/lib/types/general';
 import { useAdminListSearch } from '@/lib/hooks/useAdminListSearch';
+import { serializeAdminListUrlKey } from '@/lib/admin/adminListUrl';
+import { useAdminListUrlRefresh } from '@/lib/hooks/useAdminListUrlRefresh';
 import { useAdminVendorFilterOptions } from '@/lib/hooks/useAdminVendorFilterOptions';
 import { loadMarketplaceCategorySelectOptions } from '@/lib/utils/adminEntitySelect';
 
@@ -100,6 +102,18 @@ export function MarketplacePageClient({
   const [endDate, setEndDate] = useQueryState('endDate', parseAsString.withDefault(''));
   const vendorOptions = useAdminVendorFilterOptions();
   const { onSearchChange, onSearchCommit } = useAdminListSearch(setSearchQuery, setPage);
+  useAdminListUrlRefresh(
+    serializeAdminListUrlKey({
+      page,
+      search: searchQuery,
+      status: filterStatus,
+      tab: activeTab,
+      vendor: filterVendor,
+      category: filterCategory,
+      startDate,
+      endDate,
+    })
+  );
   const [productCategoryOptions, setProductCategoryOptions] = useState<SelectOption[]>([
     { text: 'All categories', value: 'all' },
   ]);

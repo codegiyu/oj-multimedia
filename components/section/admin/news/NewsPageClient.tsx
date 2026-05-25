@@ -17,6 +17,8 @@ import { PUBLISHABLE_STATUS_FILTER_SELECT_OPTIONS } from '@/lib/constants/adminS
 import type { SelectOption } from '@/lib/types/general';
 import { loadAdminContentCategorySelectOptions } from '@/lib/utils/adminContentCategorySelect';
 import { useAdminListSearch } from '@/lib/hooks/useAdminListSearch';
+import { serializeAdminListUrlKey } from '@/lib/admin/adminListUrl';
+import { useAdminListUrlRefresh } from '@/lib/hooks/useAdminListUrlRefresh';
 
 export interface NewsPageClientProps {
   pageTitle: string;
@@ -61,6 +63,14 @@ export function NewsPageClient({
   const [deleteTarget, setDeleteTarget] = useState<PublicNewsListItem | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
   const { onSearchChange, onSearchCommit } = useAdminListSearch(setSearchQuery, setPage);
+  useAdminListUrlRefresh(
+    serializeAdminListUrlKey({
+      page,
+      search: searchQuery,
+      status: filterStatus,
+      category: filterCategory,
+    })
+  );
 
   const handleRefresh = () => router.refresh();
 
