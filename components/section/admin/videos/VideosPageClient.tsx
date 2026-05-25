@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { useQueryState, parseAsInteger, parseAsString } from 'nuqs';
 import { AdminDashboardListLayout } from '@/components/section/admin/AdminDashboardListLayout';
 import type { ArtistVideoListItem } from '@/lib/constants/endpoints';
-import type { ClickedRowDetails } from '@/components/general/TableRowDetailsDrawer';
 import { VideosDetailsDrawer } from './VideosDetailsDrawer';
 import { VideosTableContent } from './VideosTableContent';
 import { CreateVideoModalDynamic } from './CreateVideoModalDynamic';
@@ -19,6 +18,8 @@ import { loadAdminContentCategorySelectOptions } from '@/lib/utils/adminContentC
 import { useAdminListSearch } from '@/lib/hooks/useAdminListSearch';
 import { serializeAdminListUrlKey } from '@/lib/admin/adminListUrl';
 import { useAdminListUrlRefresh } from '@/lib/hooks/useAdminListUrlRefresh';
+import { useAdminListRecordId } from '@/lib/hooks/useAdminListRecordId';
+import { useAdminRecordIdDrawer } from '@/lib/hooks/useAdminRecordIdDrawer';
 import { useAdminArtistFilterOptions } from '@/lib/hooks/useAdminArtistFilterOptions';
 
 export interface VideosPageClientProps {
@@ -57,10 +58,6 @@ export function VideosPageClient({
     });
   }, []);
 
-  const [clickedRowDetails, setClickedRowDetails] = useState<
-    ClickedRowDetails<ArtistVideoListItem, string> | undefined
-  >(undefined);
-
   const [createOpen, setCreateOpen] = useState(false);
   const [editVideoId, setEditVideoId] = useState<string | null>(null);
   const [approveTarget, setApproveTarget] = useState<ArtistVideoListItem | null>(null);
@@ -77,12 +74,15 @@ export function VideosPageClient({
       artist: filterArtist,
     })
   );
+  const { recordId, setRecordId, clearRecordId } = useAdminListRecordId();
+  const { clickedRowDetails, setClickedRowDetails, handleRowClick } = useAdminRecordIdDrawer({
+    rows: videos,
+    recordId,
+    setRecordId,
+    clearRecordId,
+  });
 
   const handleRefresh = () => router.refresh();
-
-  const handleRowClick = (row: ArtistVideoListItem, index: number) => {
-    setClickedRowDetails({ data: row, index, tab: undefined });
-  };
 
   const handleApprove = async () => {
     if (!approveTarget) return;

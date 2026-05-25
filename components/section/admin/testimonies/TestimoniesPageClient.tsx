@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { useQueryState, parseAsInteger, parseAsString } from 'nuqs';
 import { AdminDashboardListLayout } from '@/components/section/admin/AdminDashboardListLayout';
 import type { TestimonyListItem } from '@/lib/types/community';
-import type { ClickedRowDetails } from '@/components/general/TableRowDetailsDrawer';
 import { TestimoniesDetailsDrawer } from './TestimoniesDetailsDrawer';
 import { TestimoniesTableContent } from './TestimoniesTableContent';
 import { CreateTestimonyModal } from './CreateTestimonyModal';
@@ -17,6 +16,8 @@ import { PUBLISHABLE_STATUS_FILTER_SELECT_OPTIONS } from '@/lib/constants/adminS
 import { useAdminListSearch } from '@/lib/hooks/useAdminListSearch';
 import { serializeAdminListUrlKey } from '@/lib/admin/adminListUrl';
 import { useAdminListUrlRefresh } from '@/lib/hooks/useAdminListUrlRefresh';
+import { useAdminListRecordId } from '@/lib/hooks/useAdminListRecordId';
+import { useAdminRecordIdDrawer } from '@/lib/hooks/useAdminRecordIdDrawer';
 import { useAdminCategoryFilterOptions } from '@/lib/hooks/useAdminCategoryFilterOptions';
 
 export interface TestimoniesPageClientProps {
@@ -53,10 +54,13 @@ export function TestimoniesPageClient({
       category: filterCategory,
     })
   );
-
-  const [clickedRowDetails, setClickedRowDetails] = useState<
-    ClickedRowDetails<TestimonyListItem, string> | undefined
-  >(undefined);
+  const { recordId, setRecordId, clearRecordId } = useAdminListRecordId();
+  const { clickedRowDetails, setClickedRowDetails, handleRowClick } = useAdminRecordIdDrawer({
+    rows: testimonies,
+    recordId,
+    setRecordId,
+    clearRecordId,
+  });
 
   const [createOpen, setCreateOpen] = useState(false);
   const [editTestimonyId, setEditTestimonyId] = useState<string | null>(null);
@@ -66,10 +70,6 @@ export function TestimoniesPageClient({
   const [actionLoading, setActionLoading] = useState(false);
 
   const handleRefresh = () => router.refresh();
-
-  const handleRowClick = (row: TestimonyListItem, index: number) => {
-    setClickedRowDetails({ data: row, index, tab: undefined });
-  };
 
   const handleApprove = async () => {
     if (!approveTarget) return;

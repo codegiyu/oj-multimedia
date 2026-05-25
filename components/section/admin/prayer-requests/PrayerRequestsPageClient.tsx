@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { useQueryState, parseAsInteger, parseAsString } from 'nuqs';
 import { AdminDashboardListLayout } from '@/components/section/admin/AdminDashboardListLayout';
 import type { PrayerRequestListItem } from '@/lib/types/community';
-import type { ClickedRowDetails } from '@/components/general/TableRowDetailsDrawer';
 import { PrayerRequestsDetailsDrawer } from './PrayerRequestsDetailsDrawer';
 import { PrayerRequestsTableContent } from './PrayerRequestsTableContent';
 import { AnswerPrayerRequestModal } from './AnswerPrayerRequestModal';
@@ -16,6 +15,8 @@ import { PRAYER_REQUEST_STATUS_FILTER_SELECT_OPTIONS } from '@/lib/constants/adm
 import { useAdminListSearch } from '@/lib/hooks/useAdminListSearch';
 import { serializeAdminListUrlKey } from '@/lib/admin/adminListUrl';
 import { useAdminListUrlRefresh } from '@/lib/hooks/useAdminListUrlRefresh';
+import { useAdminListRecordId } from '@/lib/hooks/useAdminListRecordId';
+import { useAdminRecordIdDrawer } from '@/lib/hooks/useAdminRecordIdDrawer';
 import { useAdminCategoryFilterOptions } from '@/lib/hooks/useAdminCategoryFilterOptions';
 
 export interface PrayerRequestsPageClientProps {
@@ -52,10 +53,13 @@ export function PrayerRequestsPageClient({
       category: filterCategory,
     })
   );
-
-  const [clickedRowDetails, setClickedRowDetails] = useState<
-    ClickedRowDetails<PrayerRequestListItem, string> | undefined
-  >(undefined);
+  const { recordId, setRecordId, clearRecordId } = useAdminListRecordId();
+  const { clickedRowDetails, setClickedRowDetails, handleRowClick } = useAdminRecordIdDrawer({
+    rows: prayerRequests,
+    recordId,
+    setRecordId,
+    clearRecordId,
+  });
 
   const [answerTarget, setAnswerTarget] = useState<PrayerRequestListItem | null>(null);
   const [editPrayerId, setEditPrayerId] = useState<string | null>(null);
@@ -64,10 +68,6 @@ export function PrayerRequestsPageClient({
   const [actionLoading, setActionLoading] = useState(false);
 
   const handleRefresh = () => router.refresh();
-
-  const handleRowClick = (row: PrayerRequestListItem, index: number) => {
-    setClickedRowDetails({ data: row, index, tab: undefined });
-  };
 
   const handleDelete = async () => {
     if (!deleteTarget) return;

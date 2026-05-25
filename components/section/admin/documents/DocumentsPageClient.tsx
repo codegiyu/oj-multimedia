@@ -1,10 +1,8 @@
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useQueryState, parseAsInteger, parseAsString } from 'nuqs';
 import { AdminDashboardListLayout } from '@/components/section/admin/AdminDashboardListLayout';
-import type { ClickedRowDetails } from '@/components/general/TableRowDetailsDrawer';
 import { DocumentsTableContent } from './DocumentsTableContent';
 import { DocumentsDetailsDrawer } from './DocumentsDetailsDrawer';
 import {
@@ -15,6 +13,8 @@ import {
 import { useAdminListSearch } from '@/lib/hooks/useAdminListSearch';
 import { serializeAdminListUrlKey } from '@/lib/admin/adminListUrl';
 import { useAdminListUrlRefresh } from '@/lib/hooks/useAdminListUrlRefresh';
+import { useAdminListRecordId } from '@/lib/hooks/useAdminListRecordId';
+import { useAdminRecordIdDrawer } from '@/lib/hooks/useAdminRecordIdDrawer';
 
 export interface AdminDocument {
   _id: string;
@@ -62,16 +62,15 @@ export function DocumentsPageClient({
       intent: filterIntent,
     })
   );
-
-  const [clickedRowDetails, setClickedRowDetails] = useState<
-    ClickedRowDetails<AdminDocument, string> | undefined
-  >(undefined);
+  const { recordId, setRecordId, clearRecordId } = useAdminListRecordId();
+  const { clickedRowDetails, setClickedRowDetails, handleRowClick } = useAdminRecordIdDrawer({
+    rows: documents,
+    recordId,
+    setRecordId,
+    clearRecordId,
+  });
 
   const handleRefresh = () => router.refresh();
-
-  const handleRowClick = (row: AdminDocument, index: number) => {
-    setClickedRowDetails({ data: row, index, tab: undefined });
-  };
 
   return (
     <AdminDashboardListLayout

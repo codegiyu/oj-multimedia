@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { useQueryState, parseAsInteger, parseAsString } from 'nuqs';
 import { AdminDashboardListLayout } from '@/components/section/admin/AdminDashboardListLayout';
 import type { ArtistMusicListItem } from '@/lib/constants/endpoints';
-import type { ClickedRowDetails } from '@/components/general/TableRowDetailsDrawer';
 import { MusicDetailsDrawer } from './MusicDetailsDrawer';
 import { MusicTableContent } from './MusicTableContent';
 import { CreateMusicModalDynamic } from './CreateMusicModalDynamic';
@@ -19,6 +18,8 @@ import { loadAdminContentCategorySelectOptions } from '@/lib/utils/adminContentC
 import { useAdminListSearch } from '@/lib/hooks/useAdminListSearch';
 import { serializeAdminListUrlKey } from '@/lib/admin/adminListUrl';
 import { useAdminListUrlRefresh } from '@/lib/hooks/useAdminListUrlRefresh';
+import { useAdminListRecordId } from '@/lib/hooks/useAdminListRecordId';
+import { useAdminRecordIdDrawer } from '@/lib/hooks/useAdminRecordIdDrawer';
 import { useAdminArtistFilterOptions } from '@/lib/hooks/useAdminArtistFilterOptions';
 
 export interface MusicPageClientProps {
@@ -58,10 +59,6 @@ export function MusicPageClient({
     });
   }, []);
 
-  const [clickedRowDetails, setClickedRowDetails] = useState<
-    ClickedRowDetails<ArtistMusicListItem, string> | undefined
-  >(undefined);
-
   const [createOpen, setCreateOpen] = useState(false);
   const [editMusicId, setEditMusicId] = useState<string | null>(null);
   const [approveTarget, setApproveTarget] = useState<ArtistMusicListItem | null>(null);
@@ -79,12 +76,15 @@ export function MusicPageClient({
       sort: sortKey,
     })
   );
+  const { recordId, setRecordId, clearRecordId } = useAdminListRecordId();
+  const { clickedRowDetails, setClickedRowDetails, handleRowClick } = useAdminRecordIdDrawer({
+    rows: music,
+    recordId,
+    setRecordId,
+    clearRecordId,
+  });
 
   const handleRefresh = () => router.refresh();
-
-  const handleRowClick = (row: ArtistMusicListItem, index: number) => {
-    setClickedRowDetails({ data: row, index, tab: undefined });
-  };
 
   const handleApprove = async () => {
     if (!approveTarget) return;

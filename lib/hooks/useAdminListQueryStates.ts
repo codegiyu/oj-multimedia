@@ -20,10 +20,11 @@ export function useAdminListQueryStates(resource: AdminListResourceKey) {
   const parsers = useMemo(() => buildAdminListNuqsParsers(resource), [resource]);
   const [state, setState] = useQueryStates(parsers, { history: 'replace', shallow: false });
 
-  const refreshKey = useMemo(
-    () => serializeAdminListUrlKey(state as Record<string, unknown>),
-    [state]
-  );
+  const refreshKey = useMemo(() => {
+    const listState = { ...(state as Record<string, unknown>) };
+    delete listState.id;
+    return serializeAdminListUrlKey(listState);
+  }, [state]);
 
   const setters: AdminListQuerySetters = useMemo(
     () => ({

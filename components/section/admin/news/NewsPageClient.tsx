@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { useQueryState, parseAsInteger, parseAsString } from 'nuqs';
 import { AdminDashboardListLayout } from '@/components/section/admin/AdminDashboardListLayout';
 import type { PublicNewsListItem } from '@/lib/constants/endpoints';
-import type { ClickedRowDetails } from '@/components/general/TableRowDetailsDrawer';
 import { NewsDetailsDrawer } from './NewsDetailsDrawer';
 import { NewsTableContent } from './NewsTableContent';
 import { CreateNewsModal } from './CreateNewsModal';
@@ -19,6 +18,8 @@ import { loadAdminContentCategorySelectOptions } from '@/lib/utils/adminContentC
 import { useAdminListSearch } from '@/lib/hooks/useAdminListSearch';
 import { serializeAdminListUrlKey } from '@/lib/admin/adminListUrl';
 import { useAdminListUrlRefresh } from '@/lib/hooks/useAdminListUrlRefresh';
+import { useAdminListRecordId } from '@/lib/hooks/useAdminListRecordId';
+import { useAdminRecordIdDrawer } from '@/lib/hooks/useAdminRecordIdDrawer';
 
 export interface NewsPageClientProps {
   pageTitle: string;
@@ -54,10 +55,6 @@ export function NewsPageClient({
     });
   }, []);
 
-  const [clickedRowDetails, setClickedRowDetails] = useState<
-    ClickedRowDetails<PublicNewsListItem, string> | undefined
-  >(undefined);
-
   const [createOpen, setCreateOpen] = useState(false);
   const [editNewsId, setEditNewsId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<PublicNewsListItem | null>(null);
@@ -71,12 +68,15 @@ export function NewsPageClient({
       category: filterCategory,
     })
   );
+  const { recordId, setRecordId, clearRecordId } = useAdminListRecordId();
+  const { clickedRowDetails, setClickedRowDetails, handleRowClick } = useAdminRecordIdDrawer({
+    rows: news,
+    recordId,
+    setRecordId,
+    clearRecordId,
+  });
 
   const handleRefresh = () => router.refresh();
-
-  const handleRowClick = (row: PublicNewsListItem, index: number) => {
-    setClickedRowDetails({ data: row, index, tab: undefined });
-  };
 
   const handleDelete = async () => {
     if (!deleteTarget) return;

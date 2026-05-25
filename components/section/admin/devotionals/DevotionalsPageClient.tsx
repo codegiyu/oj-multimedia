@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { useQueryState, parseAsInteger, parseAsString } from 'nuqs';
 import { AdminDashboardListLayout } from '@/components/section/admin/AdminDashboardListLayout';
 import type { DevotionalListItem } from '@/lib/types/community';
-import type { ClickedRowDetails } from '@/components/general/TableRowDetailsDrawer';
 import { DevotionalsDetailsDrawer } from './DevotionalsDetailsDrawer';
 import { DevotionalsTableContent } from './DevotionalsTableContent';
 import { CreateDevotionalModal } from './CreateDevotionalModal';
@@ -17,6 +16,8 @@ import { PUBLISHABLE_STATUS_FILTER_SELECT_OPTIONS } from '@/lib/constants/adminS
 import { useAdminListSearch } from '@/lib/hooks/useAdminListSearch';
 import { serializeAdminListUrlKey } from '@/lib/admin/adminListUrl';
 import { useAdminListUrlRefresh } from '@/lib/hooks/useAdminListUrlRefresh';
+import { useAdminListRecordId } from '@/lib/hooks/useAdminListRecordId';
+import { useAdminRecordIdDrawer } from '@/lib/hooks/useAdminRecordIdDrawer';
 import { useAdminCategoryFilterOptions } from '@/lib/hooks/useAdminCategoryFilterOptions';
 import { useAdminArtistFilterOptions } from '@/lib/hooks/useAdminArtistFilterOptions';
 
@@ -57,10 +58,13 @@ export function DevotionalsPageClient({
       artist: filterArtist,
     })
   );
-
-  const [clickedRowDetails, setClickedRowDetails] = useState<
-    ClickedRowDetails<DevotionalListItem, string> | undefined
-  >(undefined);
+  const { recordId, setRecordId, clearRecordId } = useAdminListRecordId();
+  const { clickedRowDetails, setClickedRowDetails, handleRowClick } = useAdminRecordIdDrawer({
+    rows: devotionals,
+    recordId,
+    setRecordId,
+    clearRecordId,
+  });
 
   const [createOpen, setCreateOpen] = useState(false);
   const [editDevotionalId, setEditDevotionalId] = useState<string | null>(null);
@@ -70,10 +74,6 @@ export function DevotionalsPageClient({
   const [actionLoading, setActionLoading] = useState(false);
 
   const handleRefresh = () => router.refresh();
-
-  const handleRowClick = (row: DevotionalListItem, index: number) => {
-    setClickedRowDetails({ data: row, index, tab: undefined });
-  };
 
   const handleApprove = async () => {
     if (!approveTarget) return;

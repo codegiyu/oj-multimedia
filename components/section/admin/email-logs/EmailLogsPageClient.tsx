@@ -1,15 +1,14 @@
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AdminDashboardListLayout } from '@/components/section/admin/AdminDashboardListLayout';
 import type { IEmailLog } from '@/lib/constants/endpoints';
-import type { ClickedRowDetails } from '@/components/general/TableRowDetailsDrawer';
 import { EmailLogDetailsDrawer } from './EmailLogDetailsDrawer';
 import { EmailLogsTableContent } from './EmailLogsTableContent';
 import { useAdminListSearch } from '@/lib/hooks/useAdminListSearch';
 import { useAdminListQueryStates } from '@/lib/hooks/useAdminListQueryStates';
 import { useAdminListUrlRefresh } from '@/lib/hooks/useAdminListUrlRefresh';
+import { useAdminRecordIdDrawer } from '@/lib/hooks/useAdminRecordIdDrawer';
 import {
   EMAIL_LOG_STATUS_FILTER_SELECT_OPTIONS,
   EMAIL_LOG_TYPE_FILTER_SELECT_OPTIONS,
@@ -32,7 +31,7 @@ export function EmailLogsPageClient({
   listError,
 }: EmailLogsPageClientProps) {
   const router = useRouter();
-  const { state, setters, refreshKey } = useAdminListQueryStates('emailLogs');
+  const { state, setters, refreshKey, recordId } = useAdminListQueryStates('emailLogs');
   useAdminListUrlRefresh(refreshKey);
 
   const page = Number(state.page) || 1;
@@ -46,15 +45,19 @@ export function EmailLogsPageClient({
 
   const { onSearchChange, onSearchCommit } = useAdminListSearch(setters.search, setPage);
 
-  const [clickedRowDetails, setClickedRowDetails] = useState<
-    ClickedRowDetails<IEmailLog, string> | undefined
-  >(undefined);
+  const {
+    clickedRowDetails,
+    setClickedRowDetails,
+    handleRowClick: openEmailLog,
+  } = useAdminRecordIdDrawer({
+    rows: emailLogs,
+    recordId,
+    setRecordId: setters.setRecordId,
+    clearRecordId: setters.clearRecordId,
+    getTab: () => tab,
+  });
 
   const handleRefresh = () => router.refresh();
-
-  const openEmailLog = (row: IEmailLog, index: number) => {
-    setClickedRowDetails({ data: row, index, tab });
-  };
 
   return (
     <AdminDashboardListLayout
@@ -117,8 +120,8 @@ export function EmailLogsPageClient({
         onTabChange={value => {
           setters.set({ tab: value, page: 1 });
         }}
-        onRowClick={openEmailLog}
-        onViewEmail={openEmailLog}
+        onRowClick={(row, index) => openEmailLog(row, index, tab)}
+        onViewEmail={(row, index) => openEmailLog(row, index, tab)}
       />
     </AdminDashboardListLayout>
   );
