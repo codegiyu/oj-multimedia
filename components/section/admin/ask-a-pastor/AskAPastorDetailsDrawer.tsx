@@ -13,7 +13,6 @@ import { DrawerMediaPreview } from '@/components/general/DrawerMediaPreview';
 import {
   AdminContentCategoryFieldLink,
   AdminPastorFieldLink,
-  questionPastorLabel,
 } from '@/components/section/admin/shared/AdminEntityFieldLinks';
 
 function pastorImage(q: QuestionListItem): string | undefined {

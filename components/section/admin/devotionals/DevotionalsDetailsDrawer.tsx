@@ -6,7 +6,7 @@ import {
 } from '@/components/general/TableRowDetailsDrawer';
 import { format } from 'date-fns';
 import { FileText, User, Hash, Calendar } from 'lucide-react';
-import type { DevotionalListItem, DevotionalDetail } from '@/lib/types/community';
+import type { DevotionalListItem } from '@/lib/types/community';
 import { InfoCard } from '@/components/general/InfoCard';
 import { DashboardThumbnail } from '@/components/general/DashboardThumbnail';
 import { DrawerMediaPreview } from '@/components/general/DrawerMediaPreview';
@@ -14,13 +14,6 @@ import {
   AdminArtistFieldLink,
   AdminContentCategoryFieldLink,
 } from '@/components/section/admin/shared';
-
-function devotionalArtistLabel(d: DevotionalListItem | DevotionalDetail): string {
-  const a = d.artist;
-  if (!a) return '—';
-  if (typeof a === 'string') return a;
-  return a.name ?? '—';
-}
 
 function DetailsHeader({
   rowDetails,
