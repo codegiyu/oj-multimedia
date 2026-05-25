@@ -14,6 +14,10 @@ import type {
   PopulatedMarketplaceOrder,
 } from '@/lib/constants/endpoints';
 import type { MarketplaceTabType } from './MarketplacePageClient';
+import {
+  AdminProductFieldLink,
+  AdminVendorFieldLink,
+} from '@/components/section/admin/shared/AdminEntityFieldLinks';
 
 function formatPrice(price: number) {
   return new Intl.NumberFormat('en-NG', {
@@ -68,7 +72,12 @@ function ProductDetails({ data }: { data: IMarketplaceProduct }) {
       <DrawerMediaPreview src={data.images?.[0]} alt={data.name} images={data.images} />
       <div className="grid gap-3">
         <InfoCard icon={Package} label="Name" value={data.name} />
-        <InfoCard icon={FileText} label="Vendor" value={data.vendorName ?? String(data.vendor)} />
+        <InfoCard icon={FileText} label="Vendor">
+          <AdminVendorFieldLink
+            vendor={data.vendorPopulated ?? data.vendor}
+            vendorName={data.vendorName}
+          />
+        </InfoCard>
         <InfoCard icon={FileText} label="Status" value={data.status} />
         <InfoCard icon={FileText} label="Price" value={formatPrice(data.price)} />
         <InfoCard
@@ -90,8 +99,6 @@ function OrderDetails({ data }: { data: PopulatedMarketplaceOrder }) {
   const customerName = customer?.name ?? '—';
   const customerEmail = customer?.email ?? '—';
   const customerPhone = customer?.phone ?? '—';
-  const vendorName = typeof data.vendor === 'object' ? data.vendor?.storeName : data.vendor;
-
   return (
     <div className="grid gap-4 p-4">
       <div className="grid gap-3">
@@ -99,7 +106,9 @@ function OrderDetails({ data }: { data: PopulatedMarketplaceOrder }) {
         <InfoCard icon={FileText} label="Status" value={data.status} />
         <InfoCard icon={FileText} label="Payment Status" value={data.paymentStatus} />
         <InfoCard icon={FileText} label="Total Amount" value={formatPrice(data.totalAmount)} />
-        <InfoCard icon={FileText} label="Vendor" value={vendorName ?? '—'} />
+        <InfoCard icon={FileText} label="Vendor">
+          <AdminVendorFieldLink vendor={data.vendor} vendorName={data.vendor?.storeName} />
+        </InfoCard>
         <InfoCard icon={FileText} label="Customer Name" value={customerName} />
         <InfoCard icon={FileText} label="Customer Email" value={customerEmail} />
         <InfoCard icon={FileText} label="Customer Phone" value={customerPhone} />
@@ -108,14 +117,24 @@ function OrderDetails({ data }: { data: PopulatedMarketplaceOrder }) {
           <div className="space-y-2">
             <p className="text-sm font-medium text-foreground/90">Items</p>
             <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
-              {data.items.map((item, idx) => (
-                <li key={idx}>
-                  {typeof item.product === 'object'
+              {data.items.map((item, idx) => {
+                const productName =
+                  typeof item.product === 'object'
                     ? item.product?.name
-                    : (item.productName ?? 'Product')}{' '}
-                  × {item.quantity} — {formatPrice(item.totalPrice)}
-                </li>
-              ))}
+                    : (item.productName ?? 'Product');
+                const productId =
+                  typeof item.product === 'object' ? item.product?._id : item.product;
+
+                return (
+                  <li key={idx}>
+                    <AdminProductFieldLink
+                      productId={productId}
+                      productName={productName ?? 'Product'}
+                    />{' '}
+                    × {item.quantity} — {formatPrice(item.totalPrice)}
+                  </li>
+                );
+              })}
             </ul>
           </div>
         ) : null}

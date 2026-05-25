@@ -11,6 +11,7 @@ import { InfoCard } from '@/components/general/InfoCard';
 import { RegularBtn } from '@/components/atoms/RegularBtn';
 import { callApi } from '@/lib/services/callApi';
 import type { AdminDocument } from './DocumentsPageClient';
+import { AdminDocumentEntityFieldLink } from '@/components/section/admin/shared';
 
 interface DocumentsDetailsDrawerProps {
   clickedRowDetails: ClickedRowDetails<AdminDocument, string> | undefined;
@@ -86,6 +87,12 @@ export function DocumentsDetailsDrawer({
       <div className="grid gap-4 p-4">
         <div className="grid gap-3">
           <InfoCard icon={FileText} label="Entity Type" value={doc.entityType ?? '—'} />
+          <InfoCard icon={Hash} label="Entity ID">
+            <AdminDocumentEntityFieldLink
+              entityType={doc.entityType}
+              entityId={typeof doc.entityId === 'string' ? doc.entityId : undefined}
+            />
+          </InfoCard>
           <InfoCard icon={FileText} label="Intent" value={doc.intent ?? '—'} />
           <InfoCard icon={FileText} label="Status" value={doc.status ?? '—'} />
           <InfoCard

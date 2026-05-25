@@ -10,6 +10,11 @@ import { InfoCard } from '@/components/general/InfoCard';
 import { MultilineText } from '@/components/general/MultilineText';
 import { DashboardThumbnail } from '@/components/general/DashboardThumbnail';
 import { DrawerMediaPreview } from '@/components/general/DrawerMediaPreview';
+import {
+  AdminContentCategoryFieldLink,
+  AdminPastorFieldLink,
+  questionPastorLabel,
+} from '@/components/section/admin/shared/AdminEntityFieldLinks';
 
 function pastorImage(q: QuestionListItem): string | undefined {
   if (typeof q.pastor === 'object' && q.pastor && 'image' in q.pastor) {
@@ -68,8 +73,14 @@ function DetailsContent({
         <InfoCard icon={FileText} label="Question" value={q.question} preserveParagraphs />
         <InfoCard icon={User} label="Author" value={q.author} />
         <InfoCard icon={FileText} label="Status" value={status ?? '—'} />
-        <InfoCard icon={FileText} label="Category" value={q.category ?? '—'} />
-        {pastorName ? <InfoCard icon={User} label="Assigned pastor" value={pastorName} /> : null}
+        <InfoCard icon={FileText} label="Category">
+          <AdminContentCategoryFieldLink category={q.category} />
+        </InfoCard>
+        {pastorName && pastorName !== '—' ? (
+          <InfoCard icon={User} label="Assigned pastor">
+            <AdminPastorFieldLink pastor={q.pastor} />
+          </InfoCard>
+        ) : null}
         {q.answer ? (
           <div className="grid gap-1">
             <p className="text-xs font-medium text-muted-foreground">Answer</p>

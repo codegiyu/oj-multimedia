@@ -10,12 +10,12 @@ import type { ArtistMusicListItem } from '@/lib/constants/endpoints';
 import { InfoCard } from '@/components/general/InfoCard';
 import { DashboardThumbnail } from '@/components/general/DashboardThumbnail';
 import { DrawerMediaPreview } from '@/components/general/DrawerMediaPreview';
-import { musicAlbumLabel } from '@/lib/utils/adminMusicAlbumSelect';
-
-function artistName(artist: ArtistMusicListItem['artist']): string {
-  if (!artist) return '—';
-  return typeof artist === 'string' ? artist : ((artist as { name?: string }).name ?? '—');
-}
+import { artistDisplayLabel } from '@/components/section/admin/shared/AdminEntityFieldLinks';
+import {
+  AdminArtistFieldLink,
+  AdminContentCategoryFieldLink,
+  AdminMusicAlbumFieldLink,
+} from '@/components/section/admin/shared';
 
 function DetailsHeader({
   rowDetails,
@@ -31,7 +31,7 @@ function DetailsHeader({
           {music.title}
         </h2>
         <p className="text-sm text-muted-foreground">
-          {artistName(music.artist)} · {music.status ?? '—'} ·{' '}
+          {artistDisplayLabel(music.artist)} · {music.status ?? '—'} ·{' '}
           {music.createdAt ? format(new Date(music.createdAt), 'MMM d, yyyy') : '—'}
         </p>
       </div>
@@ -50,10 +50,16 @@ function DetailsReadOnly({
       <DrawerMediaPreview src={music.coverImage} alt={music.title} />
       <div className="grid gap-3">
         <InfoCard icon={Music} label="Title" value={music.title} />
-        <InfoCard icon={User} label="Artist" value={artistName(music.artist)} />
-        <InfoCard icon={DiscAlbum} label="Album" value={musicAlbumLabel(music)} />
+        <InfoCard icon={User} label="Artist">
+          <AdminArtistFieldLink artist={music.artist} />
+        </InfoCard>
+        <InfoCard icon={DiscAlbum} label="Album">
+          <AdminMusicAlbumFieldLink music={music} />
+        </InfoCard>
         <InfoCard icon={FileText} label="Status" value={music.status ?? '—'} />
-        <InfoCard icon={FileText} label="Category" value={music.category ?? '—'} />
+        <InfoCard icon={FileText} label="Category">
+          <AdminContentCategoryFieldLink category={music.category} />
+        </InfoCard>
         <InfoCard icon={FileText} label="Views" value={String(music.views ?? 0)} />
         <InfoCard icon={FileText} label="Plays" value={String(music.plays ?? 0)} />
         <InfoCard

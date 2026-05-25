@@ -70,18 +70,21 @@ describe('phase 9 admin music album linking', () => {
     }
 
     if (file.endsWith('MusicTableContent.tsx')) {
-      expect(source).toContain('musicAlbumLabel');
+      expect(source).toContain('AdminMusicAlbumFieldLink');
+      expect(source).toContain('AdminArtistFieldLink');
       expect(source).toContain('title="Album"');
     }
 
     if (file.endsWith('MusicDetailsDrawer.tsx')) {
-      expect(source).toContain('musicAlbumLabel');
+      expect(source).toContain('AdminMusicAlbumFieldLink');
+      expect(source).toContain('AdminArtistFieldLink');
       expect(source).toContain('DiscAlbum');
     }
 
     if (file.endsWith('adminMusicAlbumSelect.ts')) {
       expect(source).toContain("params.set('status', 'published')");
       expect(source).toContain("params.set('artist', artistId)");
+      expect(source).toContain('musicAlbumRecordId');
     }
   });
 });

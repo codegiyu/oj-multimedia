@@ -12,6 +12,7 @@ import { InfoCard } from '@/components/general/InfoCard';
 import { DashboardThumbnail } from '@/components/general/DashboardThumbnail';
 import { DrawerMediaPreview } from '@/components/general/DrawerMediaPreview';
 import { callApi } from '@/lib/services/callApi';
+import { AdminArtistFieldLink } from '@/components/section/admin/shared';
 
 function albumArtistLabel(album: AlbumListItem | AlbumDetail): string {
   const a = album.artist;
@@ -56,7 +57,9 @@ function DetailsReadOnly({
       <DrawerMediaPreview src={album.coverImage} alt={album.title} />
       <div className="grid gap-3">
         <InfoCard icon={DiscAlbum} label="Title" value={album.title} />
-        <InfoCard icon={User} label="Artist" value={albumArtistLabel(album)} />
+        <InfoCard icon={User} label="Artist">
+          <AdminArtistFieldLink artist={album.artist} />
+        </InfoCard>
         <InfoCard icon={FileText} label="Status" value={album.status ?? '—'} />
         <InfoCard
           icon={ListMusic}

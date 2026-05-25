@@ -13,6 +13,10 @@ import { UsersActionsMenu } from './UsersActionsMenu';
 import { Badge } from '@/components/ui/badge';
 import { dashboardThumbnailColumn } from '@/components/general/dashboardTableThumbnailColumn';
 import { dashboardTableActionsColumn } from '@/components/general/dashboardTableActionsColumn';
+import {
+  AdminUserLinkedArtistFieldLink,
+  AdminUserLinkedVendorFieldLink,
+} from '@/components/section/admin/shared';
 
 function truncate(str: string, maxLen: number) {
   if (str.length <= maxLen) return str;
@@ -115,7 +119,15 @@ export function UsersTableContent({
         meta: { width: '14%' },
         cell: row => (
           <DataTableCellWrapper text={row.linkedArtistName ?? '—'}>
-            {row.linkedArtistName ? truncate(row.linkedArtistName, 22) : '—'}
+            {row.artistId ? (
+              <AdminUserLinkedArtistFieldLink
+                artistId={row.artistId}
+                artistName={row.linkedArtistName}
+                className="line-clamp-1"
+              />
+            ) : (
+              '—'
+            )}
           </DataTableCellWrapper>
         ),
       },
@@ -125,7 +137,15 @@ export function UsersTableContent({
         meta: { width: '14%' },
         cell: row => (
           <DataTableCellWrapper text={row.linkedVendorName ?? '—'}>
-            {row.linkedVendorName ? truncate(row.linkedVendorName, 22) : '—'}
+            {row.vendorId ? (
+              <AdminUserLinkedVendorFieldLink
+                vendorId={row.vendorId}
+                vendorName={row.linkedVendorName}
+                className="line-clamp-1"
+              />
+            ) : (
+              '—'
+            )}
           </DataTableCellWrapper>
         ),
       },

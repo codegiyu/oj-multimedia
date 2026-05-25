@@ -10,6 +10,10 @@ import type { DevotionalListItem, DevotionalDetail } from '@/lib/types/community
 import { InfoCard } from '@/components/general/InfoCard';
 import { DashboardThumbnail } from '@/components/general/DashboardThumbnail';
 import { DrawerMediaPreview } from '@/components/general/DrawerMediaPreview';
+import {
+  AdminArtistFieldLink,
+  AdminContentCategoryFieldLink,
+} from '@/components/section/admin/shared';
 
 function devotionalArtistLabel(d: DevotionalListItem | DevotionalDetail): string {
   const a = d.artist;
@@ -62,7 +66,9 @@ function DetailsReadOnly({
       <div className="grid gap-3">
         <InfoCard icon={FileText} label="Title" value={devotional.title} />
         <InfoCard icon={User} label="Author" value={devotional.author ?? '—'} />
-        <InfoCard icon={User} label="Linked artist" value={devotionalArtistLabel(devotional)} />
+        <InfoCard icon={User} label="Linked artist">
+          <AdminArtistFieldLink artist={devotional.artist} />
+        </InfoCard>
         <InfoCard icon={FileText} label="Views" value={String(devotional.views ?? 0)} />
         <InfoCard icon={FileText} label="Plays" value={String(devotional.plays ?? 0)} />
         <InfoCard icon={FileText} label="Status" value={status ?? '—'} />
@@ -72,7 +78,9 @@ function DetailsReadOnly({
           value={devotional.excerpt ?? '—'}
           preserveParagraphs
         />
-        <InfoCard icon={FileText} label="Category" value={devotional.category ?? '—'} />
+        <InfoCard icon={FileText} label="Category">
+          <AdminContentCategoryFieldLink category={devotional.category} />
+        </InfoCard>
         <InfoCard
           icon={FileText}
           label="Cover image"

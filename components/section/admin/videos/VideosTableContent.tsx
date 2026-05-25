@@ -17,6 +17,7 @@ import { VideosActionsMenu } from './VideosActionsMenu';
 import { Badge } from '@/components/ui/badge';
 import { dashboardThumbnailColumn } from '@/components/general/dashboardTableThumbnailColumn';
 import { dashboardTableActionsColumn } from '@/components/general/dashboardTableActionsColumn';
+import { AdminArtistFieldLink } from '@/components/section/admin/shared';
 
 function truncate(str: string, maxLen: number) {
   if (str.length <= maxLen) return str;
@@ -81,7 +82,7 @@ export function VideosTableContent({
         meta: { width: '16%' },
         cell: row => (
           <DataTableCellWrapper text={artistName(row.artist)}>
-            {truncate(artistName(row.artist), 25)}
+            <AdminArtistFieldLink artist={row.artist} className="line-clamp-1" />
           </DataTableCellWrapper>
         ),
       },
