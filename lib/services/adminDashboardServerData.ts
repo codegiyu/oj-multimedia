@@ -23,6 +23,7 @@ import type {
   ArtistListItem,
 } from '@/lib/types/community';
 import type { PastorListItem } from '@/lib/types/community';
+import type { UserListItem } from '@/lib/types/adminUsers';
 import {
   type AdminStandardListParams,
   type AdminCategoriesListParams,
@@ -370,6 +371,23 @@ export async function serverFetchAdminPastorsList(
   }
   return {
     items: res.data.pastors ?? [],
+    totalPages: res.data.pagination?.totalPages ?? 1,
+    listError: null,
+  };
+}
+
+export async function serverFetchAdminUsersList(
+  p: AdminStandardListParams
+): Promise<AdminListPayload<UserListItem>> {
+  const params = buildAdminListQuery('users', p, { sort: '-createdAt' });
+  const res = await callServerApi('ADMIN_USERS_LIST', {
+    query: `?${params.toString()}` as `?${string}`,
+  });
+  if (res.type === 'error') {
+    return { items: [], totalPages: 1, listError: res.message ?? 'Failed to load users' };
+  }
+  return {
+    items: res.data.users ?? [],
     totalPages: res.data.pagination?.totalPages ?? 1,
     listError: null,
   };

@@ -21,6 +21,7 @@ import {
   DiscAlbum,
   Mic2,
   UserRound,
+  Users,
 } from 'lucide-react';
 import type { ISidebarLinkGroup } from '@/lib/types/general';
 
@@ -118,6 +119,11 @@ export const sidebarLinksData: ISidebarLinkGroup[] = [
         LucideIcon: UserRound,
         page: 'Pastors',
         path: { prefix: '/admin', suffix: '/dashboard/pastors' },
+      },
+      {
+        LucideIcon: Users,
+        page: 'Users',
+        path: { prefix: '/admin', suffix: '/dashboard/users' },
       },
       {
         LucideIcon: TrendingUp,

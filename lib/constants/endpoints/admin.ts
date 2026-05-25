@@ -62,6 +62,11 @@ export const ADMIN_ENDPOINTS: Record<string, EndpointDetails> = {
   ADMIN_CONTACT_SUBMISSIONS_LIST: { path: '/api/v1/admin/contact-submissions', method: 'GET' },
 
   ADMIN_USERS_SEARCH: { path: '/api/v1/admin/users', method: 'GET' },
+  ADMIN_USERS_LIST: { path: '/api/v1/admin/users', method: 'GET' },
+  ADMIN_USER_ITEM: { path: '/api/v1/admin/users', method: 'GET' },
+  ADMIN_USER_UPDATE: { path: '/api/v1/admin/users', method: 'PATCH' },
+  ADMIN_USER_APPROVE_DELETION: { path: '/api/v1/admin/users', method: 'POST' },
+  ADMIN_USER_REJECT_DELETION: { path: '/api/v1/admin/users', method: 'POST' },
 
   ADMIN_MUSIC_LIST: { path: '/api/v1/admin/music', method: 'GET' },
   ADMIN_MUSIC_ITEM: { path: '/api/v1/admin/music', method: 'GET' },

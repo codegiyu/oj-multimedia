@@ -37,6 +37,7 @@ import type {
   TestimonyListItem,
   PollListItem,
 } from '@/lib/types/community';
+import type { UsersListData, UserDetailData } from '@/lib/types/adminUsers';
 import type {
   FeaturedOptionsRes,
   PromotionPricingOptionsRes,
@@ -879,6 +880,19 @@ export interface AllEndpoints {
   >;
 
   ADMIN_USERS_SEARCH: EndpointDefinition<undefined, IAdminUsersSearchRes, `?${string}`>;
+  ADMIN_USERS_LIST: EndpointDefinition<undefined, UsersListData, `?${string}`>;
+  ADMIN_USER_ITEM: EndpointDefinition<undefined, UserDetailData, `/${string}`>;
+  ADMIN_USER_UPDATE: EndpointDefinition<
+    {
+      accountStatus?: string;
+      artistId?: string | null;
+      vendorId?: string | null;
+    },
+    UserDetailData,
+    `/${string}`
+  >;
+  ADMIN_USER_APPROVE_DELETION: EndpointDefinition<undefined, { success: boolean }, `/${string}`>;
+  ADMIN_USER_REJECT_DELETION: EndpointDefinition<undefined, UserDetailData, `/${string}`>;
 
   // Admin content - Music
   ADMIN_MUSIC_LIST: EndpointDefinition<
