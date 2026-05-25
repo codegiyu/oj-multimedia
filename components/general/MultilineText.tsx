@@ -2,6 +2,11 @@
 
 import { Fragment } from 'react';
 import { cn } from '@/lib/utils';
+import {
+  normalizeMultilineInput,
+  splitIntoParagraphs,
+  splitParagraphLines,
+} from '@/lib/utils/multilineText';
 
 interface MultilineTextProps {
   text?: string | null;
@@ -15,16 +20,16 @@ interface MultilineTextProps {
  * - Single newlines inside a paragraph become <br />
  */
 export function MultilineText({ text, className, paragraphClassName }: MultilineTextProps) {
-  const normalized = (text ?? '').replace(/\r\n/g, '\n').trim();
+  const normalized = normalizeMultilineInput(text);
 
   if (!normalized) return null;
 
-  const paragraphs = normalized.split(/\n{2,}/).filter(Boolean);
+  const paragraphs = splitIntoParagraphs(text);
 
   return (
     <div className={cn('space-y-4', className)}>
       {paragraphs.map((paragraph, paragraphIndex) => {
-        const lines = paragraph.split('\n');
+        const lines = splitParagraphLines(paragraph);
         return (
           <p key={paragraphIndex} className={paragraphClassName}>
             {lines.map((line, lineIndex) => (
