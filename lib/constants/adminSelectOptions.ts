@@ -79,6 +79,22 @@ export const PASTOR_STATUS_FILTER_SELECT_OPTIONS: ReadonlyArray<SelectOption> = 
   { text: 'Inactive', value: 'inactive' },
 ];
 
+export const USER_ACCOUNT_STATUS_FILTER_SELECT_OPTIONS: ReadonlyArray<SelectOption> = [
+  { text: 'All', value: 'all' },
+  { text: 'Active', value: 'active' },
+  { text: 'Unverified', value: 'unverified' },
+  { text: 'Suspended', value: 'suspended' },
+  { text: 'Blacklisted', value: 'blacklisted' },
+  { text: 'Deletion pending', value: 'deletion-pending' },
+];
+
+export const USER_ACCOUNT_STATUS_SELECT_OPTIONS: ReadonlyArray<SelectOption> = [
+  { text: 'Unverified', value: 'unverified' },
+  { text: 'Active', value: 'active' },
+  { text: 'Suspended', value: 'suspended' },
+  { text: 'Blacklisted', value: 'blacklisted' },
+];
+
 export const CONTENT_CATEGORY_IS_ACTIVE_FILTER_SELECT_OPTIONS: ReadonlyArray<SelectOption> = [
   { text: 'All', value: 'all' },
   { text: 'Active', value: 'active' },

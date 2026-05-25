@@ -184,9 +184,10 @@ describe('buildAdminListQuery', () => {
     expect(params.get('search')).toBe('https://example.com');
   });
 
-  it('builds artists and pastors queries with status filter', () => {
+  it('builds artists, pastors, and users queries with status filter', () => {
     const listParams = { page: 1, pageSize: 12, search: '', status: 'inactive' };
     expect(buildAdminListQuery('artists', listParams).get('status')).toBe('inactive');
     expect(buildAdminListQuery('pastors', listParams).get('status')).toBe('inactive');
+    expect(buildAdminListQuery('users', listParams).get('status')).toBe('inactive');
   });
 });
