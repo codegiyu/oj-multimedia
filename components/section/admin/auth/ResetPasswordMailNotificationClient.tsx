@@ -9,6 +9,7 @@ import { callApi } from '@/lib/services/callApi';
 import { toast } from '@/components/atoms/Toast';
 import { RegularBtn } from '@/components/atoms/RegularBtn';
 import { Mail, CheckCircle2 } from 'lucide-react';
+import { RESET_LINK_EXPIRATION_MINUTES } from '@/lib/constants/authLinks';
 
 export function ResetPasswordMailNotificationClient() {
   const [email] = useQueryState('email', parseAsString.withDefault(''));
@@ -67,7 +68,8 @@ export function ResetPasswordMailNotificationClient() {
               <Mail className="h-8 w-8 text-primary" />
             </div>
             <p className="text-center text-sm text-muted-foreground">
-              Click the link in the email to reset your password. The link will expire in 1 hour.
+              Click the link in the email to reset your password. The link will expire in{' '}
+              {RESET_LINK_EXPIRATION_MINUTES} minutes.
             </p>
           </div>
           <div className="space-y-4">
