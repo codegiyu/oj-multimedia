@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useQueryState, parseAsInteger, parseAsString } from 'nuqs';
 import { AdminDashboardListLayout } from '@/components/section/admin/AdminDashboardListLayout';
@@ -9,7 +9,6 @@ import type {
   IMarketplaceProduct,
   PopulatedMarketplaceOrder,
 } from '@/lib/constants/endpoints';
-import type { ClickedRowDetails } from '@/components/general/TableRowDetailsDrawer';
 import { MarketplaceVendorsTableContent } from './MarketplaceVendorsTableContent';
 import { MarketplaceProductsTableContent } from './MarketplaceProductsTableContent';
 import { MarketplaceOrdersTableContent } from './MarketplaceOrdersTableContent';
@@ -26,6 +25,8 @@ import type { SelectOption } from '@/lib/types/general';
 import { useAdminListSearch } from '@/lib/hooks/useAdminListSearch';
 import { serializeAdminListUrlKey } from '@/lib/admin/adminListUrl';
 import { useAdminListUrlRefresh } from '@/lib/hooks/useAdminListUrlRefresh';
+import { useAdminListRecordId } from '@/lib/hooks/useAdminListRecordId';
+import { findRowIndexById, useAdminRecordIdDrawer } from '@/lib/hooks/useAdminRecordIdDrawer';
 import { useAdminVendorFilterOptions } from '@/lib/hooks/useAdminVendorFilterOptions';
 import { loadMarketplaceCategorySelectOptions } from '@/lib/utils/adminEntitySelect';
 
@@ -125,9 +126,59 @@ export function MarketplacePageClient({
     });
   }, [activeTab]);
 
-  const [clickedRowDetails, setClickedRowDetails] = useState<
-    ClickedRowDetails<MarketplaceRowData, MarketplaceTabType> | undefined
-  >(undefined);
+  const { recordId, setRecordId, clearRecordId } = useAdminListRecordId();
+
+  const resolveMarketplaceRecord = useCallback(
+    (id: string) => {
+      let index = findRowIndexById(vendors, id, row => row._id);
+      if (index >= 0) {
+        return { row: vendors[index], index, tab: TAB_VENDORS as MarketplaceTabType };
+      }
+
+      index = findRowIndexById(products, id, row => row._id);
+      if (index >= 0) {
+        return { row: products[index], index, tab: TAB_PRODUCTS as MarketplaceTabType };
+      }
+
+      index = findRowIndexById(orders, id, row => row._id);
+      if (index >= 0) {
+        return { row: orders[index], index, tab: TAB_ORDERS as MarketplaceTabType };
+      }
+
+      return null;
+    },
+    [vendors, products, orders]
+  );
+
+  useEffect(() => {
+    if (!recordId) {
+      return;
+    }
+
+    const resolved = resolveMarketplaceRecord(recordId);
+    if (resolved?.tab && resolved.tab !== activeTab) {
+      void setActiveTab(resolved.tab);
+    }
+  }, [recordId, resolveMarketplaceRecord, activeTab, setActiveTab]);
+
+  const marketplaceRows = useMemo((): MarketplaceRowData[] => {
+    if (activeTab === TAB_VENDORS) {
+      return vendors;
+    }
+    if (activeTab === TAB_PRODUCTS) {
+      return products;
+    }
+
+    return orders;
+  }, [activeTab, vendors, products, orders]);
+
+  const { clickedRowDetails, setClickedRowDetails, handleRowClick } = useAdminRecordIdDrawer({
+    rows: marketplaceRows,
+    recordId,
+    setRecordId,
+    clearRecordId,
+    resolveRecord: resolveMarketplaceRecord,
+  });
 
   const [createVendorOpen, setCreateVendorOpen] = useState(false);
   const [createProductOpen, setCreateProductOpen] = useState(false);
@@ -137,9 +188,6 @@ export function MarketplacePageClient({
   const [actionLoading, setActionLoading] = useState(false);
 
   const handleRefresh = () => router.refresh();
-  const handleRowClick = (row: MarketplaceRowData, _index: number, tab: MarketplaceTabType) => {
-    setClickedRowDetails({ data: row, index: 0, tab });
-  };
 
   const handleApprove = async () => {
     if (!approveTarget) return;

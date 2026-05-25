@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { useQueryState, parseAsInteger, parseAsString } from 'nuqs';
 import { AdminDashboardListLayout } from '@/components/section/admin/AdminDashboardListLayout';
 import type { AlbumListItem } from '@/lib/types/community';
-import type { ClickedRowDetails } from '@/components/general/TableRowDetailsDrawer';
 import { AlbumsDetailsDrawer } from './AlbumsDetailsDrawer';
 import { AlbumsTableContent } from './AlbumsTableContent';
 import { CreateAlbumModal } from './CreateAlbumModal';
@@ -17,6 +16,8 @@ import { PUBLISHABLE_STATUS_FILTER_SELECT_OPTIONS } from '@/lib/constants/adminS
 import { useAdminListSearch } from '@/lib/hooks/useAdminListSearch';
 import { serializeAdminListUrlKey } from '@/lib/admin/adminListUrl';
 import { useAdminListUrlRefresh } from '@/lib/hooks/useAdminListUrlRefresh';
+import { useAdminListRecordId } from '@/lib/hooks/useAdminListRecordId';
+import { useAdminRecordIdDrawer } from '@/lib/hooks/useAdminRecordIdDrawer';
 import { useAdminArtistFilterOptions } from '@/lib/hooks/useAdminArtistFilterOptions';
 
 export interface AlbumsPageClientProps {
@@ -49,10 +50,13 @@ export function AlbumsPageClient({
       artist: filterArtist,
     })
   );
-
-  const [clickedRowDetails, setClickedRowDetails] = useState<
-    ClickedRowDetails<AlbumListItem, string> | undefined
-  >(undefined);
+  const { recordId, setRecordId, clearRecordId } = useAdminListRecordId();
+  const { clickedRowDetails, setClickedRowDetails, handleRowClick } = useAdminRecordIdDrawer({
+    rows: albums,
+    recordId,
+    setRecordId,
+    clearRecordId,
+  });
 
   const [createOpen, setCreateOpen] = useState(false);
   const [editAlbumId, setEditAlbumId] = useState<string | null>(null);
@@ -60,10 +64,6 @@ export function AlbumsPageClient({
   const [actionLoading, setActionLoading] = useState(false);
 
   const handleRefresh = () => router.refresh();
-
-  const handleRowClick = (row: AlbumListItem, index: number) => {
-    setClickedRowDetails({ data: row, index, tab: undefined });
-  };
 
   const handleDelete = async () => {
     if (!deleteTarget) return;

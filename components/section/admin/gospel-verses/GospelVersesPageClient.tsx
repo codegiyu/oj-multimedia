@@ -1,17 +1,17 @@
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useQueryState, parseAsInteger, parseAsString } from 'nuqs';
 import { AdminDashboardListLayout } from '@/components/section/admin/AdminDashboardListLayout';
 import type { IGospelVerse } from '@/lib/types/server-models';
-import type { ClickedRowDetails } from '@/components/general/TableRowDetailsDrawer';
 import { GospelVerseDetailsDrawer } from './GospelVerseDetailsDrawer';
 import { GospelVersesTableContent } from './GospelVersesTableContent';
 import { GOSPEL_VERSE_STATUS_FILTER_SELECT_OPTIONS } from '@/lib/constants/adminSelectOptions';
 import { useAdminListSearch } from '@/lib/hooks/useAdminListSearch';
 import { serializeAdminListUrlKey } from '@/lib/admin/adminListUrl';
 import { useAdminListUrlRefresh } from '@/lib/hooks/useAdminListUrlRefresh';
+import { useAdminListRecordId } from '@/lib/hooks/useAdminListRecordId';
+import { useAdminRecordIdDrawer } from '@/lib/hooks/useAdminRecordIdDrawer';
 
 export interface GospelVersesPageClientProps {
   pageTitle: string;
@@ -36,16 +36,15 @@ export function GospelVersesPageClient({
   useAdminListUrlRefresh(
     serializeAdminListUrlKey({ page, search: searchQuery, status: filterStatus })
   );
-
-  const [clickedRowDetails, setClickedRowDetails] = useState<
-    ClickedRowDetails<IGospelVerse, string> | undefined
-  >(undefined);
+  const { recordId, setRecordId, clearRecordId } = useAdminListRecordId();
+  const { clickedRowDetails, setClickedRowDetails, handleRowClick } = useAdminRecordIdDrawer({
+    rows: gospelVerses,
+    recordId,
+    setRecordId,
+    clearRecordId,
+  });
 
   const handleRefresh = () => router.refresh();
-
-  const handleRowClick = (row: IGospelVerse, index: number) => {
-    setClickedRowDetails({ data: row, index, tab: undefined });
-  };
 
   return (
     <AdminDashboardListLayout

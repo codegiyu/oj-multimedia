@@ -1,4 +1,4 @@
-import { appendAdminListRecordId, buildAdminDashboardHref } from '@/lib/admin/adminListUrl';
+import { buildAdminDashboardHref } from '@/lib/admin/adminListUrl';
 
 /** Admin dashboard record types that support `?id=` deep links. */
 export type AdminEntityRecordType =

@@ -1,16 +1,16 @@
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useQueryState, parseAsInteger, parseAsString } from 'nuqs';
 import { AdminDashboardListLayout } from '@/components/section/admin/AdminDashboardListLayout';
 import type { ContactSubmission } from '@/lib/constants/endpoints';
-import type { ClickedRowDetails } from '@/components/general/TableRowDetailsDrawer';
 import { ContactSubmissionDetailsDrawer } from './ContactSubmissionDetailsDrawer';
 import { ContactSubmissionsTableContent } from './ContactSubmissionsTableContent';
 import { useAdminListSearch } from '@/lib/hooks/useAdminListSearch';
 import { serializeAdminListUrlKey } from '@/lib/admin/adminListUrl';
 import { useAdminListUrlRefresh } from '@/lib/hooks/useAdminListUrlRefresh';
+import { useAdminListRecordId } from '@/lib/hooks/useAdminListRecordId';
+import { useAdminRecordIdDrawer } from '@/lib/hooks/useAdminRecordIdDrawer';
 
 export interface ContactSubmissionsPageClientProps {
   pageTitle: string;
@@ -33,16 +33,15 @@ export function ContactSubmissionsPageClient({
   const [searchQuery, setSearchQuery] = useQueryState('search', parseAsString.withDefault(''));
   const { onSearchChange, onSearchCommit } = useAdminListSearch(setSearchQuery, setPage);
   useAdminListUrlRefresh(serializeAdminListUrlKey({ page, search: searchQuery }));
-
-  const [clickedRowDetails, setClickedRowDetails] = useState<
-    ClickedRowDetails<ContactSubmission, string> | undefined
-  >(undefined);
+  const { recordId, setRecordId, clearRecordId } = useAdminListRecordId();
+  const { clickedRowDetails, setClickedRowDetails, handleRowClick } = useAdminRecordIdDrawer({
+    rows: submissions,
+    recordId,
+    setRecordId,
+    clearRecordId,
+  });
 
   const handleRefresh = () => router.refresh();
-
-  const handleRowClick = (row: ContactSubmission, index: number) => {
-    setClickedRowDetails({ data: row, index, tab: undefined });
-  };
 
   return (
     <AdminDashboardListLayout

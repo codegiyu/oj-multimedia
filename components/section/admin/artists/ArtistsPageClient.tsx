@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { AdminDashboardListLayout } from '@/components/section/admin/AdminDashboardListLayout';
 import type { ArtistListItem } from '@/lib/types/community';
-import type { ClickedRowDetails } from '@/components/general/TableRowDetailsDrawer';
 import { ArtistsTableContent } from './ArtistsTableContent';
 import { ArtistsDetailsDrawer } from './ArtistsDetailsDrawer';
 import { CreateArtistModal } from './CreateArtistModal';
@@ -17,6 +16,7 @@ import { ARTIST_STATUS_FILTER_SELECT_OPTIONS } from '@/lib/constants/adminSelect
 import { useAdminListSearch } from '@/lib/hooks/useAdminListSearch';
 import { useAdminListQueryStates } from '@/lib/hooks/useAdminListQueryStates';
 import { useAdminListUrlRefresh } from '@/lib/hooks/useAdminListUrlRefresh';
+import { useAdminRecordIdDrawer } from '@/lib/hooks/useAdminRecordIdDrawer';
 
 export interface ArtistsPageClientProps {
   pageTitle: string;
@@ -34,17 +34,19 @@ export function ArtistsPageClient({
   listError,
 }: ArtistsPageClientProps) {
   const router = useRouter();
-  const { state, setters, refreshKey } = useAdminListQueryStates('artists');
+  const { state, setters, refreshKey, recordId } = useAdminListQueryStates('artists');
   useAdminListUrlRefresh(refreshKey);
+  const { clickedRowDetails, setClickedRowDetails, handleRowClick } = useAdminRecordIdDrawer({
+    rows: artists,
+    recordId,
+    setRecordId: setters.setRecordId,
+    clearRecordId: setters.clearRecordId,
+  });
   const page = Number(state.page) || 1;
   const searchQuery = String(state.search ?? '');
   const filterStatus = String(state.status ?? 'all');
   const setPage = setters.page;
   const { onSearchChange, onSearchCommit } = useAdminListSearch(setters.search, setPage);
-
-  const [clickedRowDetails, setClickedRowDetails] = useState<
-    ClickedRowDetails<ArtistListItem, string> | undefined
-  >(undefined);
 
   const [createOpen, setCreateOpen] = useState(false);
   const [editArtistId, setEditArtistId] = useState<string | null>(null);
@@ -52,10 +54,6 @@ export function ArtistsPageClient({
   const [actionLoading, setActionLoading] = useState(false);
 
   const handleRefresh = () => router.refresh();
-
-  const handleRowClick = (row: ArtistListItem) => {
-    setClickedRowDetails({ data: row, index: 0, tab: undefined });
-  };
 
   const patchArtist = async (
     row: ArtistListItem,

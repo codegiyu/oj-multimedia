@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { AdminDashboardListLayout } from '@/components/section/admin/AdminDashboardListLayout';
 import type { UserListItem } from '@/lib/types/adminUsers';
-import type { ClickedRowDetails } from '@/components/general/TableRowDetailsDrawer';
 import { UsersTableContent } from './UsersTableContent';
 import { UsersDetailsDrawer } from './UsersDetailsDrawer';
 import { ManageUserModal } from './ManageUserModal';
@@ -15,6 +14,7 @@ import { USER_ACCOUNT_STATUS_FILTER_SELECT_OPTIONS } from '@/lib/constants/admin
 import { useAdminListSearch } from '@/lib/hooks/useAdminListSearch';
 import { useAdminListQueryStates } from '@/lib/hooks/useAdminListQueryStates';
 import { useAdminListUrlRefresh } from '@/lib/hooks/useAdminListUrlRefresh';
+import { useAdminRecordIdDrawer } from '@/lib/hooks/useAdminRecordIdDrawer';
 
 export interface UsersPageClientProps {
   pageTitle: string;
@@ -32,27 +32,26 @@ export function UsersPageClient({
   listError,
 }: UsersPageClientProps) {
   const router = useRouter();
-  const { state, setters, refreshKey } = useAdminListQueryStates('users');
+  const { state, setters, refreshKey, recordId } = useAdminListQueryStates('users');
   useAdminListUrlRefresh(refreshKey);
+  const { clickedRowDetails, setClickedRowDetails, handleRowClick } = useAdminRecordIdDrawer({
+    rows: users,
+    recordId,
+    setRecordId: setters.setRecordId,
+    clearRecordId: setters.clearRecordId,
+  });
   const page = Number(state.page) || 1;
   const searchQuery = String(state.search ?? '');
   const filterStatus = String(state.status ?? 'all');
   const setPage = setters.page;
   const { onSearchChange, onSearchCommit } = useAdminListSearch(setters.search, setPage);
 
-  const [clickedRowDetails, setClickedRowDetails] = useState<
-    ClickedRowDetails<UserListItem, string> | undefined
-  >(undefined);
   const [manageTarget, setManageTarget] = useState<UserListItem | null>(null);
   const [approveTarget, setApproveTarget] = useState<UserListItem | null>(null);
   const [rejectTarget, setRejectTarget] = useState<UserListItem | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
 
   const handleRefresh = () => router.refresh();
-
-  const handleRowClick = (row: UserListItem) => {
-    setClickedRowDetails({ data: row, index: 0, tab: undefined });
-  };
 
   const handleApproveDeletion = async () => {
     if (!approveTarget) return;
