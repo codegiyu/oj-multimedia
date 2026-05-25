@@ -18,6 +18,22 @@ export function resolveContentArtistId(
   return id?.trim() || null;
 }
 
+export function musicAlbumRecordId(
+  music: Pick<ArtistMusicListItem, 'album' | 'albumId'>
+): string | null {
+  if (music.album && typeof music.album === 'object' && music.album._id) {
+    const id = String(music.album._id).trim();
+    return id || null;
+  }
+
+  if (music.albumId) {
+    const id = String(music.albumId).trim();
+    return id || null;
+  }
+
+  return null;
+}
+
 export function musicAlbumLabel(music: Pick<ArtistMusicListItem, 'album' | 'albumId'>): string {
   if (music.album && typeof music.album === 'object' && music.album.title) {
     return music.album.title;

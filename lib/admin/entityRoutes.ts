@@ -154,6 +154,20 @@ export function buildAdminEntityFilterHref(
 }
 
 /** Document rows store `entityType` + `entityId`; map type to a record href when known. */
+/** Open content-categories list filtered by search (category is usually a slug/name string). */
+export function buildAdminContentCategorySearchHref(label: string): string {
+  const params = new URLSearchParams();
+  const trimmed = label.trim();
+
+  if (trimmed) {
+    params.set('search', trimmed);
+  }
+
+  const qs = params.toString();
+
+  return qs ? `/admin/dashboard/content-categories?${qs}` : '/admin/dashboard/content-categories';
+}
+
 export function buildAdminDocumentEntityHref(
   documentEntityType: string,
   entityId: string

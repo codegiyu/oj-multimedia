@@ -14,6 +14,7 @@ import { Badge } from '@/components/ui/badge';
 import { dashboardThumbnailColumn } from '@/components/general/dashboardTableThumbnailColumn';
 import { dashboardTableActionsColumn } from '@/components/general/dashboardTableActionsColumn';
 import { dashboardTableDateColumn } from '@/components/general/dashboardTableColumns';
+import { AdminVendorFieldLink } from '@/components/section/admin/shared';
 
 function truncate(str: string, maxLen: number) {
   if (str.length <= maxLen) return str;
@@ -84,8 +85,12 @@ export function MarketplaceProductsTableContent({
         header: <DataTableColumnHeader title="Vendor" />,
         meta: { width: '18%' },
         cell: row => (
-          <DataTableCellWrapper text={row.vendorName ?? row.vendor}>
-            {truncate(row.vendorName ?? String(row.vendor), 25)}
+          <DataTableCellWrapper text={row.vendorName ?? String(row.vendor)}>
+            <AdminVendorFieldLink
+              vendor={row.vendorPopulated ?? row.vendor}
+              vendorName={row.vendorName}
+              className="line-clamp-1"
+            />
           </DataTableCellWrapper>
         ),
       },

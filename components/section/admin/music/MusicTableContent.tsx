@@ -17,15 +17,11 @@ import { MusicActionsMenu } from './MusicActionsMenu';
 import { Badge } from '@/components/ui/badge';
 import { dashboardThumbnailColumn } from '@/components/general/dashboardTableThumbnailColumn';
 import { dashboardTableActionsColumn } from '@/components/general/dashboardTableActionsColumn';
+import { AdminArtistFieldLink, AdminMusicAlbumFieldLink } from '@/components/section/admin/shared';
 
 function truncate(str: string, maxLen: number) {
   if (str.length <= maxLen) return str;
   return str.slice(0, maxLen).trim() + '…';
-}
-
-function artistName(artist: ArtistMusicListItem['artist']): string {
-  if (!artist) return '—';
-  return typeof artist === 'string' ? artist : ((artist as { name?: string }).name ?? '—');
 }
 
 function StatusBadge({ status }: { status?: string }) {
@@ -79,8 +75,18 @@ export function MusicTableContent({
         header: <DataTableColumnHeader title="Artist" />,
         meta: { width: '18%' },
         cell: row => (
-          <DataTableCellWrapper text={artistName(row.artist)}>
-            {truncate(artistName(row.artist), 25)}
+          <DataTableCellWrapper text={row.artist ? String(row.artist) : '—'}>
+            <AdminArtistFieldLink artist={row.artist} className="line-clamp-1" />
+          </DataTableCellWrapper>
+        ),
+      },
+      {
+        id: 'album',
+        header: <DataTableColumnHeader title="Album" />,
+        meta: { width: '16%' },
+        cell: row => (
+          <DataTableCellWrapper text={row.albumId ?? ''}>
+            <AdminMusicAlbumFieldLink music={row} className="line-clamp-1" />
           </DataTableCellWrapper>
         ),
       },

@@ -10,6 +10,11 @@ import type { ArtistVideoListItem } from '@/lib/constants/endpoints';
 import { InfoCard } from '@/components/general/InfoCard';
 import { DashboardThumbnail } from '@/components/general/DashboardThumbnail';
 import { DrawerMediaPreview } from '@/components/general/DrawerMediaPreview';
+import { artistDisplayLabel } from '@/components/section/admin/shared/AdminEntityFieldLinks';
+import {
+  AdminArtistFieldLink,
+  AdminContentCategoryFieldLink,
+} from '@/components/section/admin/shared';
 
 function artistName(artist: ArtistVideoListItem['artist']): string {
   if (!artist) return '—';
@@ -30,7 +35,7 @@ function DetailsHeader({
           {video.title}
         </h2>
         <p className="text-sm text-muted-foreground">
-          {artistName(video.artist)} · {video.status ?? '—'} ·{' '}
+          {artistDisplayLabel(video.artist)} · {video.status ?? '—'} ·{' '}
           {video.createdAt ? format(new Date(video.createdAt), 'MMM d, yyyy') : '—'}
         </p>
       </div>
@@ -51,12 +56,16 @@ function DetailsReadOnly({
       <DrawerMediaPreview src={video.thumbnail} alt={video.title} />
       <div className="grid gap-3">
         <InfoCard icon={Video} label="Title" value={video.title} />
-        <InfoCard icon={User} label="Artist" value={artistName(video.artist)} />
+        <InfoCard icon={User} label="Artist">
+          <AdminArtistFieldLink artist={video.artist} />
+        </InfoCard>
         <InfoCard icon={FileText} label="Views" value={String(video.views ?? 0)} />
         <InfoCard icon={FileText} label="Plays" value={String(video.plays ?? 0)} />
         <InfoCard icon={FileText} label="Downloads" value={String(video.downloads ?? 0)} />
         <InfoCard icon={FileText} label="Status" value={video.status ?? '—'} />
-        <InfoCard icon={FileText} label="Category" value={video.category ?? '—'} />
+        <InfoCard icon={FileText} label="Category">
+          <AdminContentCategoryFieldLink category={video.category} />
+        </InfoCard>
         <InfoCard
           icon={FileText}
           label="Description"

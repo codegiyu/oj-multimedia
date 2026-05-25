@@ -13,6 +13,7 @@ import { AlbumsActionsMenu } from './AlbumsActionsMenu';
 import { Badge } from '@/components/ui/badge';
 import { dashboardThumbnailColumn } from '@/components/general/dashboardTableThumbnailColumn';
 import { dashboardTableActionsColumn } from '@/components/general/dashboardTableActionsColumn';
+import { AdminArtistFieldLink } from '@/components/section/admin/shared';
 
 function truncate(str: string, maxLen: number) {
   if (str.length <= maxLen) return str;
@@ -74,7 +75,7 @@ export function AlbumsTableContent({
         meta: { width: '16%' },
         cell: row => (
           <DataTableCellWrapper text={albumArtistLabel(row)}>
-            {truncate(albumArtistLabel(row), 25)}
+            <AdminArtistFieldLink artist={row.artist} className="line-clamp-1" />
           </DataTableCellWrapper>
         ),
       },

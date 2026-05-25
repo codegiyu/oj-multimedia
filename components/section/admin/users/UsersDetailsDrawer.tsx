@@ -11,6 +11,10 @@ import { InfoCard } from '@/components/general/InfoCard';
 import { DashboardThumbnail } from '@/components/general/DashboardThumbnail';
 import { callApi } from '@/lib/services/callApi';
 import { Badge } from '@/components/ui/badge';
+import {
+  AdminUserLinkedArtistFieldLink,
+  AdminUserLinkedVendorFieldLink,
+} from '@/components/section/admin/shared';
 
 function formatName(data: Pick<UserListItem, 'firstName' | 'lastName' | 'email'>) {
   return [data.firstName, data.lastName].filter(Boolean).join(' ').trim() || data.email;
@@ -119,16 +123,18 @@ export function UsersDetailsDrawer({
               : '—'
           }
         />
-        <InfoCard
-          icon={Mic2}
-          label="Linked artist"
-          value={data.linkedArtistName || (detail?.linkedArtist?.name ?? '') || 'Not linked'}
-        />
-        <InfoCard
-          icon={Store}
-          label="Linked vendor"
-          value={data.linkedVendorName || (detail?.linkedVendor?.storeName ?? '') || 'Not linked'}
-        />
+        <InfoCard icon={Mic2} label="Linked artist">
+          <AdminUserLinkedArtistFieldLink
+            artistId={detail?.linkedArtist?._id ?? data.artistId}
+            artistName={data.linkedArtistName || detail?.linkedArtist?.name}
+          />
+        </InfoCard>
+        <InfoCard icon={Store} label="Linked vendor">
+          <AdminUserLinkedVendorFieldLink
+            vendorId={detail?.linkedVendor?._id ?? data.vendorId}
+            vendorName={data.linkedVendorName || detail?.linkedVendor?.storeName}
+          />
+        </InfoCard>
       </div>
 
       {data.deleteRequestedAt ? (
