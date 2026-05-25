@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { SectionComp } from '@/components/general/SectionComp';
 import type { PrayerPoint } from './DevotionalsPageClient';
+import { MultilinePreview } from '@/components/general/MultilinePreview';
 
 interface PrayerPointsSectionProps {
   prayerPoints: PrayerPoint[];
@@ -59,7 +60,10 @@ export const PrayerPointsSection = ({ prayerPoints }: PrayerPointsSectionProps) 
                 </span>
               </div>
 
-              <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{prayer.excerpt}</p>
+              <MultilinePreview
+                text={prayer.excerpt}
+                className="text-sm text-muted-foreground mb-4 line-clamp-2"
+              />
 
               <Button variant="outline" size="sm" className="w-full" asChild>
                 <Link href={`/community/devotionals/${prayer._id}`}>Read Full Prayer</Link>

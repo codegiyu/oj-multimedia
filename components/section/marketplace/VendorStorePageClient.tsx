@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { EmptyState } from '@/components/section/news/EmptyState';
 import type { IMarketplaceVendor, IMarketplaceProduct } from '@/lib/constants/endpoints';
 import { FillImage } from '@/components/general/FillImage';
+import { MultilineText } from '@/components/general/MultilineText';
 
 export interface VendorStorePageClientProps {
   vendor: IMarketplaceVendor | null;
@@ -62,7 +63,11 @@ export function VendorStorePageClient({ vendor, products = [] }: VendorStorePage
                   {vendor.storeName}
                 </h1>
                 {vendor.storeDescription && (
-                  <p className="text-muted-foreground mb-4">{vendor.storeDescription}</p>
+                  <MultilineText
+                    text={vendor.storeDescription}
+                    className="mb-4"
+                    paragraphClassName="text-muted-foreground"
+                  />
                 )}
                 <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">
                   {vendor.isVerified && (

@@ -14,6 +14,7 @@ import type { CategoryNavItem } from '@/lib/utils/contentCategoryNav';
 import { NewsletterCTA } from '../shared';
 import { EmptyState } from './EmptyState';
 import { SectionComp } from '@/components/general/SectionComp';
+import { MultilinePreview } from '@/components/general/MultilinePreview';
 import type { TrendingStory } from './TrendingSidebar';
 
 interface TrendingStoriesPageClientProps {
@@ -146,9 +147,10 @@ export const TrendingStoriesPageClient = ({
                         {story.title}
                       </h3>
                       {story.excerpt && (
-                        <p className="text-sm text-muted-foreground line-clamp-3 mb-4">
-                          {story.excerpt}
-                        </p>
+                        <MultilinePreview
+                          text={story.excerpt}
+                          className="text-sm text-muted-foreground line-clamp-3 mb-4"
+                        />
                       )}
                       <div className="flex items-center gap-2 text-sm text-primary font-medium group-hover:gap-3 transition-all">
                         <span>Read more</span>

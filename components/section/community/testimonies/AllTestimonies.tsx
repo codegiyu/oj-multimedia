@@ -8,6 +8,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useState, useEffect } from 'react';
 import { SectionComp } from '@/components/general/SectionComp';
+import { MultilinePreview } from '@/components/general/MultilinePreview';
 import { ListPagination } from '@/components/general/ListPagination';
 import { EmptyState } from '@/components/section/news/EmptyState';
 import type { Testimony } from './TestimoniesPageClient';
@@ -93,7 +94,10 @@ export const AllTestimonies = ({ testimonies, pagination = null }: AllTestimonie
                       </span>
                     )}
                   </div>
-                  <p className="text-muted-foreground mb-6 line-clamp-4">{testimony.content}</p>
+                  <MultilinePreview
+                    text={testimony.content}
+                    className="text-muted-foreground mb-6 line-clamp-4"
+                  />
 
                   <div className="flex items-center justify-between pt-4 border-t border-border">
                     <div className="flex items-center gap-3">

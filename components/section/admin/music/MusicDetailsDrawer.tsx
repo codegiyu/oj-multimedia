@@ -71,6 +71,7 @@ function DetailsReadOnly({
           icon={FileText}
           label="Excerpt"
           value={(music as { excerpt?: string }).excerpt ?? '—'}
+          preserveParagraphs
         />
         <InfoCard
           icon={FileText}

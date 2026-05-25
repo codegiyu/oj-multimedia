@@ -7,6 +7,7 @@ import { FixedImage } from '@/components/general/FillImage';
 import { Card, CardContent } from '@/components/ui/card';
 import { SectionComp } from '@/components/general/SectionComp';
 import type { Testimony } from './TestimoniesPageClient';
+import { MultilinePreview } from '@/components/general/MultilinePreview';
 
 interface FeaturedTestimoniesProps {
   testimonies: Testimony[];
@@ -41,7 +42,10 @@ export const FeaturedTestimonies = ({ testimonies }: FeaturedTestimoniesProps) =
                       </span>
                     )}
                   </div>
-                  <p className="text-muted-foreground mb-6 line-clamp-5">{testimony.content}</p>
+                  <MultilinePreview
+                    text={testimony.content}
+                    className="text-muted-foreground mb-6 line-clamp-5"
+                  />
 
                   <div className="flex items-center justify-between pt-4 border-t border-border">
                     <div className="flex items-center gap-3">

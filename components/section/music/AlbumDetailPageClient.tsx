@@ -97,7 +97,11 @@ export function AlbumDetailPageClient({ album, tracks }: AlbumDetailPageClientPr
               animate={{ opacity: 1, y: 0 }}
               className="mb-10 max-w-3xl">
               {album.excerpt ? (
-                <p className="text-lg text-muted-foreground mb-4">{album.excerpt}</p>
+                <MultilineText
+                  text={album.excerpt}
+                  className="mb-4"
+                  paragraphClassName="text-lg text-muted-foreground"
+                />
               ) : null}
               {album.description ? (
                 <MultilineText text={album.description} className="text-muted-foreground" />

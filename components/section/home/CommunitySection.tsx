@@ -9,6 +9,7 @@ import { FixedImage } from '@/components/general/FillImage';
 import { useAuthStore } from '@/lib/store/useAuthStore';
 import { LoginModal } from '@/components/auth/LoginModal';
 import { EmptyState } from '@/components/section/news/EmptyState';
+import { MultilinePreview } from '@/components/general/MultilinePreview';
 
 export interface CommunityPost {
   user: string;
@@ -112,7 +113,10 @@ export const CommunitySection = ({
                         </div>
                         <div className="flex-1">
                           <p className="font-semibold text-sm">{post.user}</p>
-                          <p className="text-muted-foreground mt-1">{post.content}</p>
+                          <MultilinePreview
+                            text={post.content}
+                            className="text-muted-foreground mt-1 line-clamp-3"
+                          />
                           <div className="flex items-center gap-4 mt-3 text-sm text-muted-foreground">
                             <span className="flex items-center gap-1 hover:text-primary cursor-pointer transition-colors">
                               ❤️ {post.likes}

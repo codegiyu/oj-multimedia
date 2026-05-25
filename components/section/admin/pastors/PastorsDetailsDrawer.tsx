@@ -65,6 +65,14 @@ export function PastorsDetailsDrawer({
           />
           <InfoCard icon={FileText} label="Title" value={data.title ?? '—'} />
           <InfoCard icon={FileText} label="Church" value={data.church ?? '—'} />
+          <InfoCard
+            icon={FileText}
+            label="Bio"
+            value={(data as { bio?: string }).bio ?? '—'}
+            preserveParagraphs
+            hideIfEmpty
+            className="[&_.line-clamp-1]:line-clamp-none"
+          />
           <InfoCard icon={Hash} label="ID" value={data._id} hasCopy copyValue={data._id} />
         </div>
       </div>

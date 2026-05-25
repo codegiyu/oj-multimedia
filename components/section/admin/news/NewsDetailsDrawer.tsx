@@ -47,7 +47,7 @@ function DetailsReadOnly({
         <InfoCard icon={FileText} label="Author" value={n.author ?? '—'} />
         <InfoCard icon={FileText} label="Category" value={n.category ?? '—'} />
         <InfoCard icon={FileText} label="Status" value={n.status ?? '—'} />
-        <InfoCard icon={FileText} label="Excerpt" value={n.excerpt ?? '—'} />
+        <InfoCard icon={FileText} label="Excerpt" value={n.excerpt ?? '—'} preserveParagraphs />
         <InfoCard
           icon={FileText}
           label="Content"
