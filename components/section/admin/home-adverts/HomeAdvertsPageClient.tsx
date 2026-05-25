@@ -26,6 +26,8 @@ import { useFileUpload } from '@/lib/hooks/use-file-upload';
 import { FillImage } from '@/components/general/FillImage';
 import { hasHomeAdvertImage, saveHomeAdvert } from '@/lib/utils/homeAdvertForm';
 import { useAdminListSearch } from '@/lib/hooks/useAdminListSearch';
+import { serializeAdminListUrlKey } from '@/lib/admin/adminListUrl';
+import { useAdminListUrlRefresh } from '@/lib/hooks/useAdminListUrlRefresh';
 import { DASHBOARD_INLINE_TABLE_HUG_CLASS } from '@/lib/utils/dataTableColumnMeta';
 
 const slotFilterOptions: SelectOption[] = [
@@ -72,6 +74,7 @@ export function HomeAdvertsPageClient({
   const [searchQuery, setSearchQuery] = useQueryState('search', parseAsString.withDefault(''));
   const [slotFilter, setSlotFilter] = useQueryState('slot', parseAsString.withDefault('all'));
   const { onSearchChange, onSearchCommit } = useAdminListSearch(setSearchQuery, setPage);
+  useAdminListUrlRefresh(serializeAdminListUrlKey({ page, search: searchQuery, slot: slotFilter }));
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<IHomeAdvertItem | null>(null);

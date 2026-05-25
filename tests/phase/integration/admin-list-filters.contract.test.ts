@@ -91,4 +91,13 @@ describe('admin list filters contract (phase 4)', () => {
     const source = readFileSync('components/general/FilterableDataPage.tsx', 'utf8');
     expect(source).toContain('aria-label={searchPlaceholder}');
   });
+
+  it('exposes phase 4a list URL sync hooks', () => {
+    const adminRefresh = readFileSync('lib/hooks/useAdminListUrlRefresh.ts', 'utf8');
+    const accountRefresh = readFileSync('lib/hooks/useAccountListUrlRefresh.ts', 'utf8');
+    const queryStates = readFileSync('lib/hooks/useAdminListQueryStates.ts', 'utf8');
+    expect(adminRefresh).toContain('router.refresh');
+    expect(accountRefresh).toContain('isFirstRender');
+    expect(queryStates).toContain('useQueryStates');
+  });
 });

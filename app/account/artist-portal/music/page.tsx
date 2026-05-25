@@ -5,6 +5,7 @@ import type { Metadata } from 'next';
 import { buildAccountArtistContentQuery } from '@/lib/account/accountListFilters';
 import { callServerApi } from '@/lib/services/serverApi';
 import type { ApiErrorResponse } from '@/lib/types/http';
+import { parseAccountListPageParams } from '@/lib/utils/accountSearchParams';
 
 export const metadata: Metadata = {
   title: 'Artist Portal - Music',
@@ -25,39 +26,25 @@ function ArtistMusicPageSkeleton() {
   );
 }
 
-export default function ArtistPortalMusicPage({
-  searchParams,
-}: {
-  searchParams?: { page?: string; pagesize?: string; status?: string; search?: string };
-}) {
-  const page = Number(searchParams?.page ?? 1) || 1;
-  const pageSize = Number(searchParams?.pagesize ?? 10) || 10;
-  const status = searchParams?.status ?? '';
-  const search = searchParams?.search ?? '';
+interface ArtistPortalMusicPageProps {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}
 
+export default function ArtistPortalMusicPage({ searchParams }: ArtistPortalMusicPageProps) {
   return (
     <Suspense fallback={<ArtistMusicPageSkeleton />}>
-      <ArtistMusicPageClientServer
-        page={page}
-        pageSize={pageSize}
-        status={status}
-        search={search}
-      />
+      <ArtistMusicPageServer searchParams={searchParams} />
     </Suspense>
   );
 }
 
-async function ArtistMusicPageClientServer({
-  page,
-  pageSize,
-  status,
-  search,
+async function ArtistMusicPageServer({
+  searchParams,
 }: {
-  page: number;
-  pageSize: number;
-  status: string;
-  search: string;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  const raw = await searchParams;
+  const { page, pageSize, search, status } = parseAccountListPageParams(raw);
   const query =
     `?${buildAccountArtistContentQuery({ page, pageSize, status, search }).toString()}` as const;
 

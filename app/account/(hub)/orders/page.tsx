@@ -4,6 +4,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import type { Metadata } from 'next';
 import { buildAccountOrdersQuery } from '@/lib/account/accountListFilters';
 import { callServerApi } from '@/lib/services/serverApi';
+import { parseAccountListPageParams } from '@/lib/utils/accountSearchParams';
 
 export const metadata: Metadata = {
   title: 'Orders',
@@ -23,39 +24,25 @@ function AccountOrdersPageSkeleton() {
   );
 }
 
-export default function AccountOrdersPage({
-  searchParams,
-}: {
-  searchParams?: { page?: string; pagesize?: string; status?: string; search?: string };
-}) {
-  const page = Number(searchParams?.page ?? 1) || 1;
-  const pageSize = Number(searchParams?.pagesize ?? 10) || 10;
-  const status = searchParams?.status ?? '';
-  const search = searchParams?.search ?? '';
+interface AccountOrdersPageProps {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}
 
+export default function AccountOrdersPage({ searchParams }: AccountOrdersPageProps) {
   return (
     <Suspense fallback={<AccountOrdersPageSkeleton />}>
-      <AccountOrdersPageClientServer
-        page={page}
-        pageSize={pageSize}
-        status={status}
-        search={search}
-      />
+      <AccountOrdersPageServer searchParams={searchParams} />
     </Suspense>
   );
 }
 
-async function AccountOrdersPageClientServer({
-  page,
-  pageSize,
-  status,
-  search,
+async function AccountOrdersPageServer({
+  searchParams,
 }: {
-  page: number;
-  pageSize: number;
-  status: string;
-  search: string;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  const raw = await searchParams;
+  const { page, pageSize, search, status } = parseAccountListPageParams(raw);
   const query =
     `?${buildAccountOrdersQuery({ page, pageSize, search, status }).toString()}` as const;
 

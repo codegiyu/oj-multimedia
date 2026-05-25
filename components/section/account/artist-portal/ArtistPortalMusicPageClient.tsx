@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { useQueryState, parseAsInteger, parseAsString } from 'nuqs';
 import { DashboardPageHeader } from '@/components/layout/user-dashboard';
 import { Card } from '@/components/ui/card';
@@ -19,6 +19,8 @@ import {
   isAccountListUnfiltered,
 } from '@/lib/account/accountListFilters';
 import { useAccountListSearch } from '@/lib/hooks/useAccountListSearch';
+import { serializeAdminListUrlKey } from '@/lib/admin/adminListUrl';
+import { useAccountListUrlRefresh } from '@/lib/hooks/useAccountListUrlRefresh';
 
 const STATUS_FILTERS: Array<{ value: '' | 'draft' | 'published' | 'archived'; label: string }> = [
   { value: '', label: 'All' },
@@ -50,7 +52,6 @@ export function ArtistPortalMusicPageClient({
   const [reloadIndex, setReloadIndex] = useState(0);
   const [formOpen, setFormOpen] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
-  const didMountRef = useRef(false);
 
   const openCreate = () => {
     setEditId(null);
@@ -66,53 +67,47 @@ export function ArtistPortalMusicPageClient({
     setReloadIndex(prev => prev + 1);
   };
 
-  useEffect(() => {
-    if (!didMountRef.current) {
-      didMountRef.current = true;
-      return;
+  const loadMusic = async () => {
+    setLoading(true);
+    const query = `?${buildAccountArtistContentQuery({
+      page,
+      pageSize,
+      search: searchQuery,
+      status,
+    }).toString()}` as const;
+
+    const { data, error, message } = await callApi('ARTIST_GET_MUSIC', { query });
+
+    if (error || !data) {
+      setMusic([]);
+      setTotalPages(1);
+      const responseCode = (error as ApiErrorResponse | undefined)?.responseCode;
+      if (responseCode === 403 || responseCode === 404) {
+        setErrorMessage(null);
+      } else {
+        setErrorMessage(message || 'Unable to load music.');
+      }
+    } else {
+      setMusic(data.music);
+      setTotalPages(data.pagination?.totalPages ?? 1);
+      setErrorMessage(null);
     }
 
-    let cancelled = false;
+    setLoading(false);
+  };
 
-    const loadMusic = async () => {
-      setLoading(true);
-      const query = `?${buildAccountArtistContentQuery({
-        page,
-        pageSize,
-        search: searchQuery,
-        status,
-      }).toString()}` as const;
-
-      const { data, error, message } = await callApi('ARTIST_GET_MUSIC', {
-        query,
-      });
-
-      if (cancelled) return;
-
-      if (error || !data) {
-        setMusic([]);
-        setTotalPages(1);
-        const responseCode = (error as ApiErrorResponse | undefined)?.responseCode;
-        if (responseCode === 403 || responseCode === 404) {
-          setErrorMessage(null);
-        } else {
-          setErrorMessage(message || 'Unable to load music.');
-        }
-      } else {
-        setMusic(data.music);
-        setTotalPages(data.pagination?.totalPages ?? 1);
-        setErrorMessage(null);
-      }
-
-      setLoading(false);
-    };
-
-    void loadMusic();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [page, pageSize, status, searchQuery, reloadIndex]);
+  useAccountListUrlRefresh(
+    serializeAdminListUrlKey({
+      page,
+      search: searchQuery,
+      status,
+      pagesize: pageSize,
+      reloadIndex,
+    }),
+    () => {
+      void loadMusic();
+    }
+  );
 
   const showOnboardingEmpty = isAccountListUnfiltered(searchQuery, status);
 

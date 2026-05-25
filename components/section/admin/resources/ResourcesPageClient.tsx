@@ -18,6 +18,8 @@ import {
   RESOURCE_TYPE_FILTER_SELECT_OPTIONS,
 } from '@/lib/constants/adminSelectOptions';
 import { useAdminListSearch } from '@/lib/hooks/useAdminListSearch';
+import { serializeAdminListUrlKey } from '@/lib/admin/adminListUrl';
+import { useAdminListUrlRefresh } from '@/lib/hooks/useAdminListUrlRefresh';
 import { useAdminCategoryFilterOptions } from '@/lib/hooks/useAdminCategoryFilterOptions';
 
 export interface ResourcesPageClientProps {
@@ -47,6 +49,15 @@ export function ResourcesPageClient({
   const [filterType, setFilterType] = useQueryState('type', parseAsString.withDefault('all'));
   const categoryOptions = useAdminCategoryFilterOptions('resource');
   const { onSearchChange, onSearchCommit } = useAdminListSearch(setSearchQuery, setPage);
+  useAdminListUrlRefresh(
+    serializeAdminListUrlKey({
+      page,
+      search: searchQuery,
+      status: filterStatus,
+      category: filterCategory,
+      type: filterType,
+    })
+  );
 
   const [clickedRowDetails, setClickedRowDetails] = useState<
     ClickedRowDetails<ResourceListItem, string> | undefined
