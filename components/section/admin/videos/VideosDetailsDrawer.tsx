@@ -16,11 +16,6 @@ import {
   AdminContentCategoryFieldLink,
 } from '@/components/section/admin/shared';
 
-function artistName(artist: ArtistVideoListItem['artist']): string {
-  if (!artist) return '—';
-  return typeof artist === 'string' ? artist : ((artist as { name?: string }).name ?? '—');
-}
-
 function DetailsHeader({
   rowDetails,
 }: {
