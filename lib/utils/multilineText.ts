@@ -3,9 +3,22 @@
  * - Blank lines (`\n\n` or more) start a new paragraph
  * - Single `\n` inside a paragraph is a line break when rendered
  *
- * Textarea-backed fields across dashboards/forms typically map to API keys such as
- * content, description, excerpt, bio, lyrics, message, question, answer, storeDescription.
+ * Field inventory (forms → API keys → display scopes):
+ * @see {@link MULTILINE_TEXT_FIELD_REGISTRY} in `@/lib/constants/multilineTextFields`
  */
+
+export type {
+  MultilineTextDisplayScope,
+  MultilineTextFieldEntry,
+} from '@/lib/constants/multilineTextFields';
+export {
+  MULTILINE_TEXT_FIELD_ENTRIES,
+  MULTILINE_TEXT_FIELD_REGISTRY,
+  getMultilineFieldsByDisplayScope,
+  getMultilineFieldsForEntity,
+  getMultilineTextApiKeys,
+  isMultilineTextApiKey,
+} from '@/lib/constants/multilineTextFields';
 
 export function normalizeMultilineInput(text?: string | null): string {
   return (text ?? '').replace(/\r\n/g, '\n').trim();
