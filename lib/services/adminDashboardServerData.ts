@@ -24,6 +24,7 @@ import type {
 } from '@/lib/types/community';
 import type { PastorListItem } from '@/lib/types/community';
 import type { UserListItem } from '@/lib/types/adminUsers';
+import type { StaffListItem } from '@/lib/types/adminStaff';
 import {
   type AdminStandardListParams,
   type AdminCategoriesListParams,
@@ -388,6 +389,23 @@ export async function serverFetchAdminUsersList(
   }
   return {
     items: res.data.users ?? [],
+    totalPages: res.data.pagination?.totalPages ?? 1,
+    listError: null,
+  };
+}
+
+export async function serverFetchAdminStaffList(
+  p: AdminStandardListParams
+): Promise<AdminListPayload<StaffListItem>> {
+  const params = buildAdminListQuery('staff', p, { sort: '-createdAt' });
+  const res = await callServerApi('ADMIN_STAFF_LIST', {
+    query: `?${params.toString()}` as `?${string}`,
+  });
+  if (res.type === 'error') {
+    return { items: [], totalPages: 1, listError: res.message ?? 'Failed to load admin staff' };
+  }
+  return {
+    items: res.data.staff ?? [],
     totalPages: res.data.pagination?.totalPages ?? 1,
     listError: null,
   };

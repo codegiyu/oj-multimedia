@@ -128,8 +128,12 @@ export function ResetPasswordPageClient({
 
     if (error || !data) {
       toast({
-        title: 'Reset failed',
-        description: message || 'Failed to reset password. Please try again.',
+        title: variant === 'invite' ? 'Setup failed' : 'Reset failed',
+        description:
+          message ||
+          (variant === 'invite'
+            ? 'Failed to set your password. Please try again or request a new invite.'
+            : 'Failed to reset password. Please try again.'),
         variant: 'error',
       });
       return false;

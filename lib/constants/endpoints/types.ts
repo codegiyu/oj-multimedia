@@ -39,6 +39,13 @@ import type {
 } from '@/lib/types/community';
 import type { UsersListData, UserDetailData } from '@/lib/types/adminUsers';
 import type {
+  StaffListData,
+  StaffDetailData,
+  IAdminStaffInvitePayload,
+  IAdminStaffInviteRes,
+  IAdminStaffReinviteRes,
+} from '@/lib/types/adminStaff';
+import type {
   FeaturedOptionsRes,
   PromotionPricingOptionsRes,
   ResourceDownloadCategoriesRes,
@@ -878,6 +885,11 @@ export interface AllEndpoints {
     GetListRes<ContactSubmission, 'contactSubmissions'>,
     `?${string}`
   >;
+
+  ADMIN_STAFF_LIST: EndpointDefinition<undefined, StaffListData, `?${string}`>;
+  ADMIN_STAFF_ITEM: EndpointDefinition<undefined, StaffDetailData, `/${string}`>;
+  ADMIN_STAFF_INVITE: EndpointDefinition<IAdminStaffInvitePayload, IAdminStaffInviteRes, undefined>;
+  ADMIN_STAFF_REINVITE: EndpointDefinition<undefined, IAdminStaffReinviteRes, `/${string}`>;
 
   ADMIN_USERS_SEARCH: EndpointDefinition<undefined, IAdminUsersSearchRes, `?${string}`>;
   ADMIN_USERS_LIST: EndpointDefinition<undefined, UsersListData, `?${string}`>;
