@@ -515,3 +515,6 @@ export const UNIQUE_CURATED_ICONS: string[] = [...new Set(ALL_CURATED_ICONS)];
 
 // Total count
 export const TOTAL_CURATED_ICONS = UNIQUE_CURATED_ICONS.length;
+
+/** SubPageHero badge icons not listed in CURATED_ICON_GROUPS (included in generated registry) */
+export const EXTRA_DYNAMIC_ICONS = ['DiscAlbum', 'HandHeart', 'Flame'] as const;

@@ -1,21 +1,22 @@
 'use client';
 
-import { LucideIconComp } from '@/lib/types/general';
-import * as LucideIcons from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 import { SVGProps } from 'react';
+import {
+  SUBPAGE_ICON_REGISTRY,
+  type SubPageLucideIconName,
+} from '@/lib/lucide/subpage-icon-registry';
 
-export type LucideIconName = {
-  [K in keyof typeof LucideIcons]: (typeof LucideIcons)[K] extends LucideIconComp ? K : never;
-}[keyof typeof LucideIcons];
+export type { SubPageLucideIconName as LucideIconName } from '@/lib/lucide/subpage-icon-registry';
+export { isSubPageLucideIconName as isLucideIconName } from '@/lib/lucide/subpage-icon-registry';
 
 interface DynamicIconProps {
-  name: LucideIconName;
+  name: SubPageLucideIconName;
   props: SVGProps<SVGSVGElement>;
 }
 
 export function DynamicIcon({ name, props }: DynamicIconProps) {
-  const Icon = LucideIcons[name] || LucideIcons['AlertTriangle'];
+  const Icon = SUBPAGE_ICON_REGISTRY[name] ?? AlertTriangle;
+
   return <Icon {...props} />;
 }
-
-export { LucideIcons };
