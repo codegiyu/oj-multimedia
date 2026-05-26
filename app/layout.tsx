@@ -4,7 +4,7 @@ import { SEO_DETAILS } from '@/lib/constants/texts';
 import { Providers } from '@/components/Providers';
 import { omit } from 'lodash';
 import { ScrollRestorationHandler } from '@/components/general/ScrollRestorationHandler';
-import { LoadAnimationScreen } from '@/components/general/LoadAnimationScreen';
+import { LoadAnimationScreenDynamic } from '@/components/general/LoadAnimationScreenDynamic';
 import NextTopLoader from 'nextjs-toploader';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -45,7 +45,7 @@ export default function RootLayout({
       <body className="antialiased overflow-x-hidden">
         <NextTopLoader color="hsl(var(--primary))" height={3} showSpinner={false} />
         <ScrollRestorationHandler />
-        <LoadAnimationScreen />
+        <LoadAnimationScreenDynamic />
         <Providers>{children}</Providers>
       </body>
     </html>
