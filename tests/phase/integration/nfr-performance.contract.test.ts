@@ -25,6 +25,16 @@ describe('NFR performance contract', () => {
     expect(ADMIN_LIST_API_P95_TARGET_MS).toBe(300);
   });
 
+  it('enables optimizePackageImports for heavy UI dependencies', () => {
+    const nextConfig = readFileSync(join(process.cwd(), 'next.config.ts'), 'utf8');
+
+    expect(nextConfig).toContain('optimizePackageImports');
+    expect(nextConfig).toContain('lucide-react');
+    expect(nextConfig).toContain('motion');
+    expect(nextConfig).toContain('date-fns');
+    expect(nextConfig).toContain('lodash');
+  });
+
   it('ships server category nav fallbacks for music, video, and news', () => {
     expect(musicCategoryNavFallback[0].id).toBe('all');
     expect(videoCategoryNavFallback[0].id).toBe('all');
