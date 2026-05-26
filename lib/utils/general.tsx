@@ -1,5 +1,5 @@
-import capitalize from 'lodash/capitalize';
 import { SelectOption } from '../types/general';
+import { capitalizeWord } from './string';
 
 /**
  * @param ms number of milliseconds you want your process to be delayed by
@@ -81,14 +81,14 @@ export const formatPlural = (num: number, word: string, plural: string = '') => 
 };
 
 export const formatCamelCaseName = (name: string, joinString = ' ') => {
-  return capitalize(name.replace(/([a-z])([A-Z])/g, `$1${joinString}$2`));
+  return capitalizeWord(name.replace(/([a-z])([A-Z])/g, `$1${joinString}$2`));
 };
 
 export const formatSlugToText = (slug: string, joinerChar: string = ' ') => {
   return (
     slug
       ?.split(/[- _]/)
-      .map(word => capitalize(word))
+      .map(word => capitalizeWord(word))
       .join(joinerChar) || ''
   );
 };

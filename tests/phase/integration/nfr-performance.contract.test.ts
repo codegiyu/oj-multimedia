@@ -45,7 +45,24 @@ describe('NFR performance contract', () => {
     expect(nextConfig).toContain('lucide-react');
     expect(nextConfig).toContain('motion');
     expect(nextConfig).toContain('date-fns');
-    expect(nextConfig).toContain('lodash');
+  });
+
+  it('does not depend on lodash or unused icon/dnd packages', () => {
+    const pkg = JSON.parse(readFileSync(join(process.cwd(), 'package.json'), 'utf8'));
+    const deps = Object.keys(pkg.dependencies ?? {});
+
+    expect(deps).not.toContain('lodash');
+    expect(deps).not.toContain('react-icons');
+    expect(deps).not.toContain('@dnd-kit/core');
+    expect(deps).not.toContain('radix-ui');
+    expect(deps).toContain('@radix-ui/react-progress');
+  });
+
+  it('uses @radix-ui/react-progress instead of the radix-ui meta package', () => {
+    const progress = readFileSync(join(process.cwd(), 'components/ui/progress.tsx'), 'utf8');
+
+    expect(progress).toContain('@radix-ui/react-progress');
+    expect(progress).not.toContain("from 'radix-ui'");
   });
 
   it('ships server category nav fallbacks for music, video, and news', () => {
