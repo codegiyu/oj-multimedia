@@ -15,7 +15,11 @@ import {
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { ScrollArea } from '../ui/scroll-area';
-import { DynamicIcon, LucideIconName, LucideIcons } from '../general/DynamicIcon';
+import {
+  ICON_PICKER_REGISTRY,
+  type IconPickerLucideIconName,
+  isIconPickerLucideIconName,
+} from '@/lib/lucide/icon-picker-registry';
 
 export interface IconSelectProps {
   label?: string;
@@ -100,10 +104,9 @@ export const IconSelect = ({
             <span className="flex items-center gap-2">
               {value ? (
                 <>
-                  <DynamicIcon
-                    name={value as LucideIconName}
-                    props={{ className: 'size-5 text-primary' }}
-                  />
+                  {isIconPickerLucideIconName(value) && (
+                    <PickerIconPreview name={value} className="size-5 text-primary" />
+                  )}
                   <span className="text-foreground">{value}</span>
                 </>
               ) : (
@@ -223,10 +226,20 @@ interface IconButtonProps {
   onClick: () => void;
 }
 
-const IconButton = ({ iconName, isSelected, onClick }: IconButtonProps) => {
-  const icon = LucideIcons[iconName as LucideIconName];
+function PickerIconPreview({
+  name,
+  className,
+}: {
+  name: IconPickerLucideIconName;
+  className?: string;
+}) {
+  const Icon = ICON_PICKER_REGISTRY[name];
 
-  if (!icon) return null;
+  return <Icon className={className} />;
+}
+
+const IconButton = ({ iconName, isSelected, onClick }: IconButtonProps) => {
+  if (!isIconPickerLucideIconName(iconName)) return null;
 
   return (
     <button
@@ -241,9 +254,9 @@ const IconButton = ({ iconName, isSelected, onClick }: IconButtonProps) => {
           ? 'border-primary bg-primary/10 ring-2 ring-primary ring-offset-1'
           : 'border-border bg-card'
       )}>
-      <DynamicIcon
-        name={iconName as LucideIconName}
-        props={{ className: cn('size-6', isSelected ? 'text-primary' : 'text-foreground') }}
+      <PickerIconPreview
+        name={iconName}
+        className={cn('size-6', isSelected ? 'text-primary' : 'text-foreground')}
       />
       <span
         className={cn(

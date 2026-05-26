@@ -27,7 +27,8 @@
     "release:check": "npm run checks && npm run test:integration && npm run test:phase:integration && npm run audit:ci",
     "audit": "npm audit",
     "audit:ci": "npm audit --audit-level=high",
-    "generate:icons": "npx @svgr/cli --out-dir components/icons --ignore-existing --typescript --replace-attr-values #fff=currentColor,#000=currentColor --jsx-runtime automatic --icon -- public/icons"
+    "generate:icons": "npx @svgr/cli --out-dir components/icons --ignore-existing --typescript --replace-attr-values #fff=currentColor,#000=currentColor --jsx-runtime automatic --icon -- public/icons",
+    "generate:lucide-registry": "node scripts/generate-lucide-registry.mjs"
   },
   "keywords": [
     "nextjs",
