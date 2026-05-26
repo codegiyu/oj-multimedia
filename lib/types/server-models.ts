@@ -224,6 +224,7 @@ export type Gender = (typeof GENDERS)[number];
 
 export const ACCOUNT_STATUSES = [
   'unverified',
+  'invited',
   'active',
   'suspended',
   'deleted',

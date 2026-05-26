@@ -125,6 +125,13 @@ export const sidebarLinksData: ISidebarLinkGroup[] = [
         page: 'Users',
         path: { prefix: '/admin', suffix: '/dashboard/users' },
       },
+      /* CLIENT-HIDDEN: Admin staff / invite — uncomment when invite feature is paid for (import Shield).
+      {
+        LucideIcon: Shield,
+        page: 'Admin staff',
+        path: { prefix: '/admin', suffix: '/dashboard/staff' },
+      },
+      */
       {
         LucideIcon: TrendingUp,
         page: 'Gospel Verses',

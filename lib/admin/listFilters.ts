@@ -16,6 +16,7 @@ export type AdminListResourceKey =
   | 'artists'
   | 'pastors'
   | 'users'
+  | 'staff'
   | 'marketplaceWithVendor'
   | 'marketplaceOrders';
 
@@ -48,6 +49,7 @@ export const ADMIN_LIST_FILTER_FIELDS: Record<AdminListResourceKey, AdminListFil
   artists: ['search', 'status', 'sort'],
   pastors: ['search', 'status', 'sort'],
   users: ['search', 'status', 'sort'],
+  staff: ['search', 'status', 'sort'],
   marketplaceWithVendor: ['search', 'status', 'sort', 'vendor', 'category'],
   marketplaceOrders: ['search', 'status', 'sort', 'vendor', 'startDate', 'endDate'],
 };

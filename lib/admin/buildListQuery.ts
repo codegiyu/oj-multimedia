@@ -142,7 +142,8 @@ export function buildAdminListQuery(
     }
     case 'artists':
     case 'pastors':
-    case 'users': {
+    case 'users':
+    case 'staff': {
       const p = params as AdminStandardListParams;
       setPagination(query, p.page, p.pageSize, sort);
       if (p.search.trim()) query.set('search', p.search.trim());

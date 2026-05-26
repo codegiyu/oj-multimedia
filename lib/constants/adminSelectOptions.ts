@@ -86,6 +86,15 @@ export const PASTOR_STATUS_FILTER_SELECT_OPTIONS: ReadonlyArray<SelectOption> = 
   { text: 'Inactive', value: 'inactive' },
 ];
 
+export const STAFF_ACCOUNT_STATUS_FILTER_SELECT_OPTIONS: ReadonlyArray<SelectOption> = [
+  { text: 'All', value: 'all' },
+  { text: 'Active', value: 'active' },
+  { text: 'Invited', value: 'invited' },
+  { text: 'Unverified', value: 'unverified' },
+  { text: 'Suspended', value: 'suspended' },
+  { text: 'Blacklisted', value: 'blacklisted' },
+];
+
 export const USER_ACCOUNT_STATUS_FILTER_SELECT_OPTIONS: ReadonlyArray<SelectOption> = [
   { text: 'All', value: 'all' },
   { text: 'Active', value: 'active' },
