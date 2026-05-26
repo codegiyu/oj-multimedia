@@ -28,7 +28,7 @@ const nextConfig: NextConfig = {
   },
 
   experimental: {
-    // Ensure server components can use external packages
+    optimizePackageImports: ['lucide-react', 'motion', 'date-fns', 'lodash'],
     serverActions: {
       bodySizeLimit: '2mb',
     },
