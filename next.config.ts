@@ -28,7 +28,7 @@ const nextConfig: NextConfig = {
   },
 
   experimental: {
-    optimizePackageImports: ['lucide-react', 'motion', 'date-fns', 'lodash'],
+    optimizePackageImports: ['lucide-react', 'motion', 'date-fns'],
     serverActions: {
       bodySizeLimit: '2mb',
     },

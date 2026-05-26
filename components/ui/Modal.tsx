@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/dialog';
 import { RegularBtn, RegularBtnProps } from '@/components/atoms/RegularBtn';
 import { cn } from '@/lib/utils';
-import { omit } from 'lodash';
+import { omit } from '@/lib/utils/object';
 
 export interface ModalHeaderProps {
   title: string;

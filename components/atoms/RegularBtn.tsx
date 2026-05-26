@@ -10,7 +10,7 @@ import { buttonVariants } from '../ui/button';
 import { type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
-import { omit } from 'lodash';
+import { omit } from '@/lib/utils/object';
 import { Loader } from 'lucide-react';
 import { LucideIconComp } from '@/lib/types/general';
 

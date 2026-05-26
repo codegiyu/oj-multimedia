@@ -2,14 +2,16 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { SEO_DETAILS } from '@/lib/constants/texts';
 import { Providers } from '@/components/Providers';
-import { omit } from 'lodash';
 import { ScrollRestorationHandler } from '@/components/general/ScrollRestorationHandler';
 import { LoadAnimationScreenDynamic } from '@/components/general/LoadAnimationScreenDynamic';
 import NextTopLoader from 'nextjs-toploader';
 
 export async function generateMetadata(): Promise<Metadata> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { image, ogDesc, ...seoFields } = SEO_DETAILS;
+
   return {
-    ...omit(SEO_DETAILS, ['image', 'ogDesc']),
+    ...seoFields,
     openGraph: {
       title: SEO_DETAILS.title,
       description: SEO_DETAILS.ogDesc,

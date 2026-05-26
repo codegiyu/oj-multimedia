@@ -1,6 +1,6 @@
 import { RequestFormProps, StringOrStringArraySchema } from '@/components/forms/FormTemplate';
 import { z } from 'zod';
-import { default as pick } from 'lodash/pick';
+import { pick } from '@/lib/utils/object';
 import { generateOptionsFromArray } from '../utils/general';
 
 type FormSchemaField =
