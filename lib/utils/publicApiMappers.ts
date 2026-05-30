@@ -24,6 +24,7 @@ import type { FeaturedStory } from '@/components/section/news/FeaturedStories';
 import type { NewsItem as NewsFeedItem } from '@/components/section/news/NewsFeed';
 import type { TrendingStory } from '@/components/section/news/TrendingSidebar';
 import type { VideoNewsItem } from '@/components/section/news/VideoNews';
+import type { BreakingNewsStory } from '@/components/section/news/BreakingNews';
 import type { NewsItem as NewsDetailItem } from '@/lib/constants/news';
 import type { FeaturedArtist } from '@/components/section/music/FeaturedArtists';
 import type { FeaturedCreator } from '@/components/section/video/CreatorSpotlight';
@@ -38,6 +39,7 @@ import {
 } from '@/lib/utils/contentCompleteness';
 import { resolveContentPrice } from '@/lib/services/contentDownload';
 import { resolvePublicMusicAlbum } from '@/lib/utils/publicMusicAlbum';
+import { formatMediaDuration, parseMediaDurationSeconds } from '@/lib/utils/formatMediaDuration';
 
 function toArtistSummary(item: PublicMusicListItem) {
   const a = item.artist;
@@ -79,7 +81,7 @@ export function mapPublicMusicToTrendingSong(item: PublicMusicListItem): Trendin
     artist: toArtistSummary(item),
     cover: item.coverImage ?? '',
     plays: String(item.views ?? 0),
-    duration: (item as { duration?: string }).duration ?? '0:00',
+    duration: formatMediaDuration((item as { duration?: unknown }).duration),
     isNew: false,
     category: item.category,
   });
@@ -142,7 +144,8 @@ export function mapPublicMusicToDetailItem(item: PublicMusicListItem): MusicItem
     isMonetizable: Boolean(raw.isMonetizable),
     price,
     downloadPrice: price,
-    duration: (item as { duration?: string }).duration,
+    duration: formatMediaDuration((item as { duration?: unknown }).duration),
+    durationSeconds: parseMediaDurationSeconds((item as { duration?: unknown }).duration),
     releaseDate,
     album: toMusicCardAlbum(item),
   } as MusicItemWithArtist;
@@ -202,7 +205,7 @@ export function mapPublicVideoToTrendingVideo(item: PublicVideoListItem): Trendi
     creator: toCreatorSummary(item),
     thumbnail: item.thumbnail ?? '',
     views: String(item.views ?? 0),
-    duration: item.duration ?? '0:00',
+    duration: formatMediaDuration(item.duration),
     uploadedAt,
     isNew: false,
   };
@@ -215,7 +218,7 @@ export function mapPublicVideoToFeaturedVideo(item: PublicVideoListItem): Featur
     creator: toCreatorSummary(item),
     thumbnail: item.thumbnail ?? '',
     views: String(item.views ?? 0),
-    duration: item.duration ?? '0:00',
+    duration: formatMediaDuration(item.duration),
     category: videoCategoryToLabel(item.category),
     featured: item.isFeatured ?? false,
   };
@@ -233,7 +236,7 @@ export function mapPublicVideoToRecentUpload(item: PublicVideoListItem): RecentV
     uploadedAt,
     category: videoCategoryToLabel(item.category),
     views: String(item.views ?? 0),
-    duration: item.duration ?? '0:00',
+    duration: formatMediaDuration(item.duration),
   };
 }
 
@@ -245,7 +248,7 @@ export function mapPublicVideoToShortForm(item: PublicVideoListItem): ShortFormV
     creator: toCreatorSummary(item),
     thumbnail: item.thumbnail ?? '',
     views: String(item.views ?? 0),
-    duration: item.duration ?? '0:00',
+    duration: formatMediaDuration(item.duration),
     category: item.category ?? 'creative',
     likes: String(likes),
   };
@@ -283,7 +286,7 @@ export function mapPublicVideoToDetailItem(item: PublicVideoListItem): VideoItem
     isMonetizable: Boolean(raw.isMonetizable),
     price,
     downloadPrice: price,
-    duration: item.duration,
+    duration: formatMediaDuration(item.duration),
     uploadedAt,
   } as VideoItemWithCreator;
 }
@@ -305,7 +308,21 @@ function newsCategoryDisplay(cat: string | undefined): string {
   return (cat && map[cat]) ?? cat ?? 'News';
 }
 
+function newsPriority(item: PublicNewsListItem): number | undefined {
+  const raw = item as PublicNewsListItem & { priority?: number };
+  const priority = raw.priority;
+  if (typeof priority !== 'number' || !Number.isInteger(priority)) return undefined;
+  return priority;
+}
+
+function newsTags(item: PublicNewsListItem): string[] | undefined {
+  const raw = item as PublicNewsListItem & { tags?: string[] };
+  if (!Array.isArray(raw.tags) || raw.tags.length === 0) return undefined;
+  return raw.tags.filter((t): t is string => typeof t === 'string');
+}
+
 export function mapPublicNewsToFeaturedStory(item: PublicNewsListItem): FeaturedStory {
+  const priority = newsPriority(item);
   return {
     _id: String(item._id),
     title: item.title,
@@ -318,10 +335,12 @@ export function mapPublicNewsToFeaturedStory(item: PublicNewsListItem): Featured
     featured: true,
     author: item.author,
     date: newsDate(item),
+    ...(priority !== undefined && { priority }),
   };
 }
 
 export function mapPublicNewsToFeedItem(item: PublicNewsListItem): NewsFeedItem {
+  const priority = newsPriority(item);
   return {
     _id: String(item._id),
     title: item.title,
@@ -334,6 +353,7 @@ export function mapPublicNewsToFeedItem(item: PublicNewsListItem): NewsFeedItem 
     likes: 0,
     author: item.author,
     date: newsDate(item),
+    ...(priority !== undefined && { priority }),
   };
 }
 
@@ -341,6 +361,7 @@ export function mapPublicNewsToTrendingStory(
   item: PublicNewsListItem,
   rank: number
 ): TrendingStory {
+  const priority = newsPriority(item);
   return {
     _id: String(item._id),
     title: item.title,
@@ -352,11 +373,26 @@ export function mapPublicNewsToTrendingStory(
     views: String(item.views ?? 0),
     author: item.author,
     date: newsDate(item),
+    ...(priority !== undefined && { priority }),
+  };
+}
+
+export function mapPublicNewsToBreakingStory(item: PublicNewsListItem): BreakingNewsStory {
+  return {
+    _id: String(item._id),
+    title: item.title,
+    excerpt: item.excerpt ?? '',
+    category: newsCategoryDisplay(item.category),
+    readTime: item.readTime ?? '0 min read',
+    views: String(item.views ?? 0),
+    priority: newsPriority(item) ?? 4,
+    author: item.author,
+    date: newsDate(item),
   };
 }
 
 export function mapPublicNewsToVideoNewsItem(item: PublicNewsListItem): VideoNewsItem {
-  const duration = (item as { duration?: string }).duration ?? '0:00';
+  const duration = formatMediaDuration((item as { duration?: unknown }).duration);
   return {
     _id: String(item._id),
     title: item.title,
@@ -408,6 +444,9 @@ export function mapPublicNewsToDetailItem(item: PublicNewsListItem): NewsDetailI
     downloadUrl?: string;
     youtubeEmbedUrl?: string;
   };
+  const priority = newsPriority(item);
+  const tags = newsTags(item);
+
   return {
     _id: String(item._id),
     title: item.title,
@@ -419,6 +458,8 @@ export function mapPublicNewsToDetailItem(item: PublicNewsListItem): NewsDetailI
     comments: item.comments,
     author: item.author,
     date: newsDate(item),
+    ...(priority !== undefined && { priority }),
+    ...(tags && { tags }),
     audioUrl: raw.audioUrl,
     videoFileUrl: raw.videoFileUrl,
     embedUrl: raw.embedUrl,

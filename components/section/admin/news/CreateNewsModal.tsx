@@ -32,6 +32,11 @@ import {
   normalizeOptionalText,
   requireText,
 } from '@/lib/utils/adminFormValidation';
+import { Slider } from '@/components/ui/slider';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { Info } from 'lucide-react';
+import { parseCommaSeparatedTags, formatTagsForInput } from '@/lib/utils/adminCommaTags';
 
 interface CreateNewsModalProps {
   open: boolean;
@@ -54,6 +59,8 @@ const defaultForm = {
   downloadUrl: '',
   isFeatured: false,
   status: 'draft' as 'draft' | 'published' | 'archived',
+  priority: 1,
+  tags: '',
 };
 
 export function CreateNewsModal({ open, onOpenChange, editId, onSuccess }: CreateNewsModalProps) {
@@ -67,8 +74,10 @@ export function CreateNewsModal({ open, onOpenChange, editId, onSuccess }: Creat
   const [pendingCoverImage, setPendingCoverImage] = useState<File | null>(null);
   const [pendingAudio, setPendingAudio] = useState<File | null>(null);
   const [pendingVideoFile, setPendingVideoFile] = useState<File | null>(null);
+  const [priorityHelpOpen, setPriorityHelpOpen] = useState(false);
 
   const isEdit = Boolean(editId);
+  const canPublish = Boolean(form.category.trim());
   const coverUpload = useFileUpload({
     entityType: 'news-article',
     entityId: editId ?? 'news-pending',
@@ -125,6 +134,11 @@ export function CreateNewsModal({ open, onOpenChange, editId, onSuccess }: Creat
           downloadUrl: n.downloadUrl ?? '',
           status: normalizeEnumValue(n.status, PUBLISHABLE_STATUS_VALUES, 'draft'),
           isFeatured: n.isFeatured ?? false,
+          priority:
+            typeof (n as { priority?: number }).priority === 'number'
+              ? (n as { priority: number }).priority
+              : 1,
+          tags: formatTagsForInput((n as { tags?: string[] }).tags),
         });
       } finally {
         if (!cancelled) setDetailLoading(false);
@@ -146,7 +160,9 @@ export function CreateNewsModal({ open, onOpenChange, editId, onSuccess }: Creat
       const content = form.content.trim();
       const excerpt = normalizeOptionalText(form.excerpt);
       const author = normalizeOptionalText(form.author);
-      const category = normalizeOptionalText(form.category);
+      const category = form.category ?? '';
+      const tags = parseCommaSeparatedTags(form.tags);
+      const priority = form.priority;
       const coverImage = normalizeOptionalHttpUrl(form.coverImage, 'Cover image URL');
       const audioUrl = normalizeOptionalHttpUrl(form.audioUrl, 'Audio URL');
       const videoFileUrl = normalizeOptionalHttpUrl(form.videoFileUrl, 'Video file URL');
@@ -184,6 +200,8 @@ export function CreateNewsModal({ open, onOpenChange, editId, onSuccess }: Creat
             excerpt,
             author,
             category,
+            tags,
+            priority,
             coverImage: finalCoverImage,
             audioUrl: finalAudioUrl,
             videoFileUrl: finalVideoFileUrl,
@@ -202,6 +220,8 @@ export function CreateNewsModal({ open, onOpenChange, editId, onSuccess }: Creat
             excerpt: excerpt ?? '',
             author,
             category,
+            tags,
+            priority,
             coverImage: finalCoverImage || '',
             audioUrl: finalAudioUrl || '',
             videoFileUrl: finalVideoFileUrl || '',
@@ -320,6 +340,65 @@ export function CreateNewsModal({ open, onOpenChange, editId, onSuccess }: Creat
               onSelectChange={v => setForm(f => ({ ...f, category: v }))}
               options={categorySelectOptions}
               loading={categoriesLoading}
+              subtext="Required when publishing. Choose None to save as draft without a category."
+            />
+            <div className="grid gap-2">
+              <div className="flex items-center justify-between gap-2">
+                <Label htmlFor="news-priority">Priority (1–5)</Label>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 gap-1 text-muted-foreground"
+                  onClick={() => setPriorityHelpOpen(true)}>
+                  <Info className="w-4 h-4" />
+                  About breaking news
+                </Button>
+              </div>
+              <div className="flex items-center gap-4">
+                <Slider
+                  id="news-priority"
+                  min={1}
+                  max={5}
+                  step={1}
+                  value={form.priority}
+                  onValueChange={v => setForm(f => ({ ...f, priority: v }))}
+                  className="flex-1"
+                />
+                <span className="text-sm font-medium tabular-nums w-6 text-center">
+                  {form.priority}
+                </span>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Levels 4–5 appear in Breaking News for about 7 days.
+              </p>
+            </div>
+            <Dialog open={priorityHelpOpen} onOpenChange={setPriorityHelpOpen}>
+              <DialogContent className="max-w-md">
+                <DialogHeader>
+                  <DialogTitle>News priority</DialogTitle>
+                  <DialogDescription>
+                    Priority controls breaking-news placement and feed emphasis.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-2 text-sm text-muted-foreground">
+                  <p>
+                    <strong>1–3:</strong> Standard to elevated coverage in regular feeds.
+                  </p>
+                  <p>
+                    <strong>4–5:</strong> Breaking news — shown in the Breaking News rail and
+                    listing while the story is recent (about one week).
+                  </p>
+                  <p>Use priority 5 for urgent ministry or community announcements.</p>
+                </div>
+              </DialogContent>
+            </Dialog>
+            <RegularInput
+              label="Tags"
+              value={form.tags}
+              onChange={e => setForm(f => ({ ...f, tags: e.target.value }))}
+              placeholder="e.g. announcement, event, worship"
+              bottomText="Separate tags with commas"
             />
             <MediaUrlOrUploadField
               label="Cover image URL"
@@ -417,7 +496,7 @@ export function CreateNewsModal({ open, onOpenChange, editId, onSuccess }: Creat
                     text="Create & publish"
                     loading={loading}
                     onClick={() => void handleSubmit(undefined, 'published')}
-                    disabled={!form.title.trim() || loading}
+                    disabled={!form.title.trim() || !canPublish || loading}
                   />
                 </>
               )}
