@@ -17,6 +17,7 @@ import { useFavoriteToggle } from '@/lib/hooks/useFavoriteToggle';
 import { LoginModal } from '@/components/auth/LoginModal';
 import { shareContent } from '@/lib/utils/shareContent';
 import { publicMusicAlbumHref } from '@/lib/utils/publicMusicAlbum';
+import { parseMediaDurationSeconds } from '@/lib/utils/formatMediaDuration';
 
 interface MusicDetailPageClientProps {
   musicItem: MusicItemWithArtist;
@@ -182,6 +183,10 @@ export const MusicDetailPageClient = ({ musicItem, relatedSongs }: MusicDetailPa
               className="mb-8">
               <AudioPlayerDynamic
                 audioUrl={musicItem.audioUrl}
+                durationSeconds={
+                  (musicItem as { durationSeconds?: number }).durationSeconds ??
+                  parseMediaDurationSeconds(musicItem.duration)
+                }
                 title={musicItem.title}
                 artist={
                   typeof musicItem.artist === 'string' ? musicItem.artist : musicItem.artist.name
