@@ -1,3 +1,5 @@
+import { base64UrlDecode } from '@/lib/services/storage';
+
 export function sanitizeInternalRedirect(decoded: string, fallback: string): string {
   if (!decoded) return fallback;
 
@@ -16,4 +18,17 @@ export function sanitizeInternalRedirect(decoded: string, fallback: string): str
   if (/[\r\n]/.test(candidate)) return fallback;
 
   return candidate;
+}
+
+export function resolveRedirectDestination(
+  redirectTo: string | null | undefined,
+  fallback = '/account'
+): string {
+  if (!redirectTo) return fallback;
+
+  try {
+    return sanitizeInternalRedirect(base64UrlDecode(redirectTo), fallback);
+  } catch {
+    return fallback;
+  }
 }

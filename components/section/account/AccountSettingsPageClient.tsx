@@ -2,7 +2,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { z } from 'zod';
 import { DashboardFormCard, DashboardPageHeader } from '@/components/layout/user-dashboard';
 import { Card } from '@/components/ui/card';
@@ -17,6 +17,7 @@ import { useAuthStore } from '@/lib/store/useAuthStore';
 import { callApi } from '@/lib/services/callApi';
 import type { PopulatedUser } from '@/lib/constants/endpoints';
 import { ImageUploadField } from '@/components/general/MediaUploadField';
+import { base64UrlEncode } from '@/lib/services/storage';
 
 const optionalStoredImageUrl = z
   .string()
@@ -54,6 +55,7 @@ export function AccountSettingsPageClient({
   initialLoadError,
 }: AccountSettingsPageClientProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const setUser = useAuthStore(state => state.actions.setUser);
 
   const profileDefaults = {
@@ -174,7 +176,14 @@ export function AccountSettingsPageClient({
             <Button variant="outline" onClick={() => router.refresh()}>
               Retry
             </Button>
-            <Button onClick={() => router.push('/auth/login')}>Go to login</Button>
+            <Button
+              onClick={() =>
+                router.push(
+                  `/auth/login?redirectTo=${encodeURIComponent(base64UrlEncode(pathname))}`
+                )
+              }>
+              Go to login
+            </Button>
           </div>
         </Card>
       ) : (
