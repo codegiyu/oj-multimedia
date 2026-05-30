@@ -90,10 +90,10 @@ export const AskAPastorPageClient = ({
   return (
     <>
       <ActiveQuestionsSection questions={activeQuestions} />
-      <SubmitQuestionSection />
+      <QuestionCategoriesSection categories={categories} />
       <AnsweredQuestionsSection questions={answeredQuestions} />
       <AvailablePastorsSection pastors={availablePastors} />
-      <QuestionCategoriesSection categories={categories} />
+      <SubmitQuestionSection />
       <CommunityCTA />
     </>
   );

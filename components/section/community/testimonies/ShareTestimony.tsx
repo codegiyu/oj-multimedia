@@ -1,89 +1,11 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { motion } from 'motion/react';
-import { Heart, Send } from 'lucide-react';
-import { useState } from 'react';
+import { Heart } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-import { callApi } from '@/lib/services/callApi';
-import { getErrorMessage } from '@/lib/utils/general';
-import { RegularBtn } from '@/components/atoms/RegularBtn';
-import { RegularInput } from '@/components/atoms/RegularInput';
-import { RegularSelect } from '@/components/atoms/RegularSelect';
-import { RegularTextarea } from '@/components/atoms/RegularTextarea';
-import { toast } from '@/components/atoms/Toast';
-import { TESTIMONY_CATEGORY_SELECT_OPTIONS } from '@/lib/constants/communityCategorySelectOptions';
-import { LoginModal } from '@/components/auth/LoginModal';
-import { useAuthStore } from '@/lib/store/useAuthStore';
+import { ShareTestimonyForm } from './ShareTestimonyForm';
 
 export const ShareTestimony = () => {
-  const router = useRouter();
-  const user = useAuthStore(state => state.user);
-  const [name, setName] = useState('');
-  const [category, setCategory] = useState('');
-  const [content, setContent] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!user) {
-      setIsLoginModalOpen(true);
-      return;
-    }
-
-    if (!content.trim()) {
-      toast({
-        title: 'Testimony Required',
-        description: 'Please share your testimony before submitting.',
-        variant: 'error',
-      });
-      return;
-    }
-    if (name.length > 200 || content.length > 5000) {
-      toast({
-        title: 'Length limit',
-        description: 'Name max 200 characters; testimony max 5000 characters.',
-        variant: 'error',
-      });
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    const res = await callApi('PUBLIC_SUBMIT_TESTIMONY', {
-      payload: {
-        content: content.trim(),
-        name: name.trim() || undefined,
-        category: category.trim() || undefined,
-      },
-    });
-
-    setIsSubmitting(false);
-
-    if (res.error) {
-      toast({
-        title: 'Submission failed',
-        description: getErrorMessage(res.error),
-        variant: 'error',
-      });
-      return;
-    }
-
-    toast({
-      title: 'Testimony Submitted!',
-      description:
-        'Your testimony has been submitted successfully. It will be reviewed and published soon.',
-      variant: 'success',
-    });
-
-    setName('');
-    setCategory('');
-    setContent('');
-    router.refresh();
-  };
-
   return (
     <section
       id="share-testimony"
@@ -106,63 +28,11 @@ export const ShareTestimony = () => {
                 Your story matters! Share how God has worked in your life and inspire others in the
                 community.
               </p>
-
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <RegularInput
-                  id="name"
-                  name="name"
-                  label="Your Name (Optional)"
-                  placeholder="You can remain anonymous"
-                  value={name}
-                  onChange={e => setName(e.target.value)}
-                  maxLength={200}
-                />
-
-                <RegularSelect
-                  label="Category"
-                  value={category}
-                  onSelectChange={setCategory}
-                  placeholder="Select a category"
-                  options={TESTIMONY_CATEGORY_SELECT_OPTIONS}
-                />
-
-                <RegularTextarea
-                  id="content"
-                  name="content"
-                  label="Your Testimony"
-                  placeholder="Share your story here... How has God worked in your life?"
-                  rows={8}
-                  value={content}
-                  onChange={e => setContent(e.target.value)}
-                  required
-                  maxLength={5000}
-                />
-
-                <RegularBtn
-                  type="submit"
-                  size="full"
-                  className="w-full gap-2"
-                  disabled={isSubmitting}
-                  loading={isSubmitting}
-                  RightIcon={Send}
-                  rightIconProps={{ className: 'w-4 h-4' }}
-                  text={isSubmitting ? 'Submitting...' : 'Share Your Story'}
-                  onDisabledClick={() => {
-                    if (isSubmitting) {
-                      toast({
-                        title: 'Please wait',
-                        description: 'Submitting your testimony…',
-                        variant: 'info',
-                      });
-                    }
-                  }}
-                />
-              </form>
+              <ShareTestimonyForm />
             </CardContent>
           </Card>
         </motion.div>
       </div>
-      <LoginModal open={isLoginModalOpen} onOpenChange={setIsLoginModalOpen} />
     </section>
   );
 };

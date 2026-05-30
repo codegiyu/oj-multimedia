@@ -4,8 +4,11 @@ import { motion } from 'motion/react';
 import Link from 'next/link';
 import { MessageCircle, Sparkles, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useCommunityActionModals } from '@/components/section/community/shared/CommunityActionModalsProvider';
 
 export const CommunityHero = () => {
+  const { openShareTestimony } = useCommunityActionModals();
+
   return (
     <section className="relative min-h-[50vh] flex items-center overflow-hidden pt-[12.25rem] pb-12">
       {/* Background */}
@@ -63,11 +66,9 @@ export const CommunityHero = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
             className="flex flex-wrap justify-center gap-4">
-            <Button variant="hero" size="lg" className="gap-2" asChild>
-              <Link href="/community/testimonies#share-testimony">
-                <Heart className="w-4 h-4" />
-                Share a Testimony
-              </Link>
+            <Button variant="hero" size="lg" className="gap-2" onClick={openShareTestimony}>
+              <Heart className="w-4 h-4" />
+              Share a Testimony
             </Button>
             <Button variant="hero-outline" size="lg" className="gap-2" asChild>
               <Link href="/community/ask-a-pastor#submit-question">
