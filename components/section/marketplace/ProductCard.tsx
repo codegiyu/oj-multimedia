@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { MessageCircle, ShoppingCart } from 'lucide-react';
 import type { MarketplaceProduct } from '@/lib/utils/marketplace';
-import { formatPrice } from '@/lib/utils/marketplace';
+import { formatPrice, getProductVendorWhatsapp, buildWhatsappLink } from '@/lib/utils/marketplace';
 import { useCartStore } from '@/lib/store/cartStore';
 import type { IMarketplaceProduct } from '@/lib/constants/endpoints';
 import { FillImage } from '@/components/general/FillImage';
@@ -28,7 +28,8 @@ export function ProductCard({
 
   const mpProduct = product as IMarketplaceProduct;
   const isOutOfStock = mpProduct.inStock === false;
-  const whatsapp = mpProduct.vendorPopulated?.whatsapp;
+  const hasVariants = (mpProduct.variants?.length ?? 0) > 0;
+  const whatsapp = getProductVendorWhatsapp(mpProduct);
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -86,7 +87,7 @@ export function ProductCard({
               (whatsapp ? (
                 <Button variant="ghost" size="sm" className="flex-1 gap-1" asChild>
                   <a
-                    href={`https://wa.me/${whatsapp.replace(/\D/g, '')}`}
+                    href={buildWhatsappLink(whatsapp)}
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={e => e.stopPropagation()}>
@@ -104,17 +105,26 @@ export function ProductCard({
                   </AppLink>
                 </Button>
               ))}
-            {showAddToCart && (
-              <Button
-                variant="default"
-                size="sm"
-                className="flex-1 gap-1 bg-primary hover:bg-primary/90 disabled:opacity-70 disabled:cursor-not-allowed"
-                onClick={handleAddToCart}
-                disabled={isOutOfStock}>
-                <ShoppingCart className="w-4 h-4" />
-                {isOutOfStock ? 'Out of stock' : inCart ? 'In cart' : 'Add to cart'}
-              </Button>
-            )}
+            {showAddToCart &&
+              (hasVariants ? (
+                <Button
+                  variant="default"
+                  size="sm"
+                  className="flex-1 gap-1 bg-primary hover:bg-primary/90"
+                  tabIndex={-1}>
+                  View options
+                </Button>
+              ) : (
+                <Button
+                  variant="default"
+                  size="sm"
+                  className="flex-1 gap-1 bg-primary hover:bg-primary/90 disabled:opacity-70 disabled:cursor-not-allowed"
+                  onClick={handleAddToCart}
+                  disabled={isOutOfStock}>
+                  <ShoppingCart className="w-4 h-4" />
+                  {isOutOfStock ? 'Out of stock' : inCart ? 'In cart' : 'Add to cart'}
+                </Button>
+              ))}
           </div>
         </CardContent>
       </AppLink>

@@ -9,6 +9,7 @@ export default async function VendorLayout({ children }: { children: ReactNode }
   const code = meRes.type === 'error' ? meRes.error?.responseCode : undefined;
   const vendorId =
     meRes.type === 'success' ? (meRes.data as IVendorMeRes | undefined)?._id : undefined;
+  const vendor = meRes.type === 'success' ? (meRes.data as IVendorMeRes | undefined) : undefined;
 
   const profileMissing =
     (meRes.type === 'error' && (code === 403 || code === 404)) ||
@@ -20,7 +21,7 @@ export default async function VendorLayout({ children }: { children: ReactNode }
       : null;
 
   return (
-    <VendorDashboardLayoutClient>
+    <VendorDashboardLayoutClient vendorStatus={vendor?.status}>
       <VendorPortalRouteGate initialProfileMissing={profileMissing} initialLoadError={loadError}>
         {children}
       </VendorPortalRouteGate>

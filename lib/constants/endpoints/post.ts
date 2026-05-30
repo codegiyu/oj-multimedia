@@ -391,6 +391,8 @@ export interface IMarketplaceProduct {
   vendorSlug?: string;
   /** When API populates vendor, includes whatsapp for "Chat with vendor" link */
   vendorPopulated?: PopulatedVendorSummary;
+  /** Flat vendor WhatsApp from list/detail API (alternative to vendorPopulated.whatsapp) */
+  vendorWhatsapp?: string;
   description?: string;
   /** Populated in API responses with at least { _id, name, slug } */
   category?: ProductCategoryRef;
@@ -407,6 +409,9 @@ export interface IMarketplaceProduct {
   status: 'draft' | 'published' | 'archived';
   isFeatured: boolean;
   displayOrder: number;
+  approvedAt?: string;
+  rejectionReason?: string;
+  rejectedAt?: string;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -446,6 +451,9 @@ export interface IMarketplaceVendor {
   bankAccountName?: string;
   bankAccountNumber?: string;
   bankName?: string;
+  approvedAt?: string;
+  rejectionReason?: string;
+  rejectedAt?: string;
 }
 
 export interface IMarketplaceOrderItem {
@@ -586,6 +594,12 @@ export interface IVendorUpdateProductPayload {
   }>;
 }
 export type IVendorOrdersRes = GetListRes<PopulatedMarketplaceOrder, 'orders'>;
+export interface IVendorPatchOrderPayload {
+  status: 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+}
+export interface IVendorPatchOrderRes {
+  order: PopulatedMarketplaceOrder;
+}
 export interface IVendorUpdateSettingsPayload {
   storeName?: string;
   storeDescription?: string;

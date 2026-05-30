@@ -297,3 +297,16 @@ export function getMockOrdersByVendorId(vendorId: string): MarketplaceOrder[] {
 export function formatPrice(amount: number): string {
   return `₦${amount.toLocaleString()}`;
 }
+
+/** Resolve vendor WhatsApp from flat or populated product fields */
+export function getProductVendorWhatsapp(product: {
+  vendorWhatsapp?: string;
+  vendorPopulated?: { whatsapp?: string };
+}): string | undefined {
+  return product.vendorWhatsapp ?? product.vendorPopulated?.whatsapp;
+}
+
+/** Build wa.me link from a WhatsApp number */
+export function buildWhatsappLink(number: string): string {
+  return `https://wa.me/${number.replace(/\D/g, '')}`;
+}

@@ -24,7 +24,8 @@ export function MarketplaceVendorsActionsMenu({
   onReject,
   onDelete,
 }: MarketplaceVendorsActionsMenuProps) {
-  const canApprove = vendor.status === 'pending' || vendor.status === 'rejected';
+  const canApprove =
+    vendor.status === 'pending' || vendor.status === 'rejected' || vendor.status === 'inactive';
 
   return (
     <DropdownMenu>
