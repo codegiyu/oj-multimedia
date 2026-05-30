@@ -68,6 +68,10 @@ export const OTHER_ENDPOINTS: Record<string, EndpointDetails> = {
     method: 'PATCH',
   },
   VENDOR_GET_ORDERS: { path: '/api/v1/vendor/orders', method: 'GET' },
+  VENDOR_PATCH_ORDER: {
+    path: '/api/v1/vendor/orders', // /:id - orderId
+    method: 'PATCH',
+  },
   VENDOR_UPDATE_SETTINGS: { path: '/api/v1/vendor/settings', method: 'PATCH' },
   VENDOR_GET_DASHBOARD_STATS: { path: '/api/v1/vendor/dashboard-stats', method: 'GET' },
 };

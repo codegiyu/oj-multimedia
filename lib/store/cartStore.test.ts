@@ -105,5 +105,12 @@ describe('cartStore optimistic race handling', () => {
     const state = useInitCartStore.getState();
     expect(state.items).toHaveLength(1);
     expect(state.items[0]?.quantity).toBe(2);
+
+    expect(vi.mocked(callApi)).toHaveBeenNthCalledWith(1, 'USER_CART_ADD', {
+      payload: { productId: 'p1', quantity: 1, sku: 'sku-1' },
+    });
+    expect(vi.mocked(callApi)).toHaveBeenNthCalledWith(2, 'USER_CART_ADD', {
+      payload: { productId: 'p1', quantity: 2, sku: 'sku-1' },
+    });
   });
 });

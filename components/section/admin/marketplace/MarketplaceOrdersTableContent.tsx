@@ -28,7 +28,7 @@ function formatPrice(price: number) {
 
 function StatusBadge({ status }: { status?: string }) {
   const variant =
-    status === 'completed' ? 'default' : status === 'pending' ? 'secondary' : 'outline';
+    status === 'delivered' ? 'default' : status === 'pending' ? 'secondary' : 'outline';
   return <Badge variant={variant}>{status ?? '—'}</Badge>;
 }
 

@@ -60,9 +60,12 @@ export const useInitAuthStore = create<AuthStore>()((set, get) => ({
         return;
       }
 
-      // Favorites require client-access; customer accounts only (not admin console users).
+      // Favorites and cart merge require client-access; customer accounts only (not admin console users).
       if ('phoneNumber' in user) {
         void useInitFavoritesStore.getState().actions.hydrateFromServer();
+        void import('./cartStore').then(({ mergeGuestCartWithBackend }) =>
+          mergeGuestCartWithBackend()
+        );
       }
     },
     setPermissions: permissions => {

@@ -1,25 +1,58 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { SectionContainer } from '@/components/general/SectionContainer';
 import { SectionHeader } from '@/components/general/SectionHeader';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { formatPrice } from '@/lib/utils/marketplace';
-import { MessageCircle, Package } from 'lucide-react';
+import { MessageCircle, Package, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { EmptyState } from '@/components/section/news/EmptyState';
 import { callApi } from '@/lib/services/callApi';
 import type { PopulatedMarketplaceOrder } from '@/lib/constants/endpoints';
 import { toast } from 'sonner';
+import { useAuthStore } from '@/lib/store/useAuthStore';
+import { base64UrlEncode } from '@/lib/services/storage';
+
+function openOrderWhatsapp(order: PopulatedMarketplaceOrder) {
+  if (order.whatsappLink) {
+    window.open(order.whatsappLink, '_blank');
+    return;
+  }
+
+  const digits = order.vendor.whatsapp?.replace(/\D/g, '');
+  if (digits) {
+    window.open(`https://wa.me/${digits}`, '_blank');
+    return;
+  }
+
+  toast.error('This vendor does not have a WhatsApp number configured for chat.');
+}
 
 export function OrdersPageClient() {
+  const router = useRouter();
+  const { user, initLoading } = useAuthStore(state => ({
+    user: state.user,
+    initLoading: state.initLoading,
+  }));
   const [orders, setOrders] = useState<PopulatedMarketplaceOrder[]>([]);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
+    if (initLoading) return;
+    if (!user) {
+      const redirectTo = base64UrlEncode('/marketplace/orders');
+      router.replace(`/auth/login?redirectTo=${redirectTo}`);
+    }
+  }, [user, initLoading, router]);
+
+  useEffect(() => {
+    if (initLoading || !user) return;
+
     let mounted = true;
     (async () => {
       const { data, error, message } = await callApi('MARKETPLACE_GET_MY_ORDERS', {});
@@ -37,7 +70,20 @@ export function OrdersPageClient() {
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [user, initLoading]);
+
+  if (initLoading || !user) {
+    return (
+      <MainLayout>
+        <SectionContainer className="py-16 md:py-20">
+          <div className="max-w-xl mx-auto text-center">
+            <Loader2 className="w-8 h-8 animate-spin text-primary mx-auto mb-4" />
+            <p className="text-muted-foreground">Loading your account…</p>
+          </div>
+        </SectionContainer>
+      </MainLayout>
+    );
+  }
 
   if (loading) {
     return (
@@ -146,32 +192,7 @@ export function OrdersPageClient() {
                       variant="outline"
                       size="sm"
                       className="gap-1"
-                      onClick={async () => {
-                        if (order.whatsappLink) {
-                          window.open(order.whatsappLink, '_blank');
-                          return;
-                        }
-
-                        const { data, error, message } = await callApi(
-                          'MARKETPLACE_ORDER_WHATSAPP_LINK',
-                          { query: `/${order._id}/whatsapp-link` as `/${string}` }
-                        );
-
-                        if (error || !data) {
-                          toast.error(
-                            message || 'Unable to generate WhatsApp link for this order.'
-                          );
-                          return;
-                        }
-
-                        if (data.whatsappLink) {
-                          window.open(data.whatsappLink, '_blank');
-                        } else {
-                          toast.error(
-                            'This vendor does not have a WhatsApp number configured for chat.'
-                          );
-                        }
-                      }}>
+                      onClick={() => openOrderWhatsapp(order)}>
                       <MessageCircle className="w-4 h-4" />
                       Chat on WhatsApp
                     </Button>

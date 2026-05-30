@@ -10,12 +10,12 @@ import { RegularBtn } from '@/components/atoms/RegularBtn';
 import { RegularInput } from '@/components/atoms/RegularInput';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { useCartStore } from '@/lib/store/cartStore';
+import { useCartStore, useInitCartStore } from '@/lib/store/cartStore';
 import { useAuthStore } from '@/lib/store/useAuthStore';
 import { formatPrice } from '@/lib/utils/marketplace';
 import { toast } from 'sonner';
 import { callApi } from '@/lib/services/callApi';
-import type { IMarketplacePlaceOrderRes } from '@/lib/constants/endpoints';
+import type { ICartRes, IMarketplacePlaceOrderRes } from '@/lib/constants/endpoints';
 import { EmptyState } from '@/components/section/news/EmptyState';
 import { CreditCard, ShoppingCart } from 'lucide-react';
 
@@ -71,6 +71,25 @@ export function CheckoutPageClient() {
     e.preventDefault();
     setSubmitting(true);
     try {
+      let checkoutItems = items;
+
+      if (user) {
+        const {
+          data: cartData,
+          error: cartError,
+          message: cartMessage,
+        } = await callApi('USER_CART_GET', {});
+        if (cartError) {
+          toast.error(cartMessage ?? 'Could not sync your cart. Please try again.');
+          return;
+        }
+        const cart = cartData as ICartRes | undefined;
+        if (cart?.items) {
+          actions.syncFromBackend(cart);
+          checkoutItems = useInitCartStore.getState().items;
+        }
+      }
+
       const payload = {
         customer: {
           name: form.name.trim(),
@@ -79,7 +98,7 @@ export function CheckoutPageClient() {
           address: form.address.trim() || undefined,
           notes: form.notes.trim() || undefined,
         },
-        items: items.map(item => ({
+        items: checkoutItems.map(item => ({
           productId: item.productId,
           productName: item.name,
           quantity: item.quantity,
@@ -125,7 +144,31 @@ export function CheckoutPageClient() {
       } else {
         toast.success('Order placed successfully! We will contact you for payment.');
       }
-      router.push(user ? '/marketplace/orders' : '/marketplace/order-success');
+      const placedOrders =
+        orderData?.orders && orderData.orders.length > 0
+          ? orderData.orders
+          : orderData?.order
+            ? [orderData.order]
+            : [];
+
+      if (user) {
+        router.push('/account/orders');
+        return;
+      }
+
+      const successParams = new URLSearchParams();
+      const orderNumbers = placedOrders.map(o => o.orderNumber).filter(Boolean);
+      const orderIds = placedOrders.map(o => o._id).filter(Boolean);
+      if (orderNumbers.length > 0) {
+        successParams.set('orderNumbers', orderNumbers.join(','));
+      }
+      if (orderIds.length > 0) {
+        successParams.set('orderIds', orderIds.join(','));
+      }
+      const successQuery = successParams.toString();
+      router.push(
+        successQuery ? `/marketplace/order-success?${successQuery}` : '/marketplace/order-success'
+      );
     } catch {
       toast.error('Something went wrong. Please try again.');
     } finally {
