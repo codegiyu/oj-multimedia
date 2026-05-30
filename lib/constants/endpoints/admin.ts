@@ -224,7 +224,6 @@ export const ADMIN_ENDPOINTS: Record<string, EndpointDetails> = {
   MARKETPLACE_BECOME_VENDOR: {
     path: '/api/v1/marketplace/become-vendor',
     method: 'POST',
-    isNotAuthenticated: true,
   },
   MARKETPLACE_PLACE_ORDER: {
     path: '/api/v1/marketplace/orders',

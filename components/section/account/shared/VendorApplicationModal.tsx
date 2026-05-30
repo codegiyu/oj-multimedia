@@ -31,6 +31,7 @@ export function VendorApplicationModal({
         </DialogHeader>
         <VendorApplicationForm
           bare
+          className="pt-2"
           onSuccess={() => {
             onOpenChange(false);
             onApplied?.();
