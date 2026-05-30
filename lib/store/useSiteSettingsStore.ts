@@ -23,13 +23,17 @@ export interface SiteSettingsStore {
   // State
   settings: Partial<ClientSiteSettings> | null;
   loadedSlices: Set<SiteSettingsSlice>;
-  isLoading: boolean;
+  loadingSlices: Set<SiteSettingsSlice>;
   lastFetched: Date | null;
   fetchError: string | null;
 
   // Actions
   actions: {
     fetchSettings: (slice?: SiteSettingsSlice, options?: { force?: boolean }) => Promise<void>;
+    ensureSettingsLoaded: (
+      slices: SiteSettingsSlice[],
+      options?: { force?: boolean }
+    ) => Promise<void>;
     fetchAllSettings: (options?: { force?: boolean }) => Promise<void>;
     setSettings: (settings: Partial<ClientSiteSettings>) => void;
     updateSettings: (updates: Partial<ClientSiteSettings>) => void;
@@ -43,10 +47,13 @@ type InitialSiteSettingsStore = Omit<SiteSettingsStore, 'actions'>;
 const initialData: InitialSiteSettingsStore = {
   settings: null,
   loadedSlices: new Set(),
-  isLoading: false,
+  loadingSlices: new Set(),
   lastFetched: null,
   fetchError: null,
 };
+
+/** Slices loaded once per session for global chrome (footer, etc.). */
+export const PUBLIC_CHROME_SETTINGS_SLICES: SiteSettingsSlice[] = ['socials', 'appDetails'];
 
 // Cache duration in minutes - longer for settings since they change less frequently
 const CACHE_DURATION_MINUTES = 10;
@@ -56,24 +63,37 @@ const isCacheValid = (lastFetched: Date | null): boolean => {
   return differenceInMinutes(new Date(), lastFetched) < CACHE_DURATION_MINUTES;
 };
 
+const sliceNeedsFetch = (
+  slice: SiteSettingsSlice,
+  loadedSlices: Set<SiteSettingsSlice>,
+  lastFetched: Date | null,
+  force: boolean
+): boolean => {
+  if (force) return true;
+  if (!isCacheValid(lastFetched)) return true;
+
+  return !loadedSlices.has(slice);
+};
+
 export const useInitSiteSettingsStore = create<SiteSettingsStore>()((set, get) => ({
   ...initialData,
   actions: {
     fetchSettings: async (slice = 'all', options = {}) => {
       const { force = false } = options;
-      const { lastFetched, isLoading, loadedSlices } = get();
+      const { lastFetched, loadingSlices, loadedSlices } = get();
 
-      // Return early if cache is valid and slice is already loaded
-      if (!force && isCacheValid(lastFetched) && loadedSlices.has(slice)) {
+      if (!sliceNeedsFetch(slice, loadedSlices, lastFetched, force)) {
         return;
       }
 
-      // Prevent duplicate requests
-      if (isLoading) {
+      if (loadingSlices.has(slice)) {
         return;
       }
 
-      set({ isLoading: true, fetchError: null });
+      set(state => ({
+        loadingSlices: new Set([...state.loadingSlices, slice]),
+        fetchError: null,
+      }));
 
       try {
         const { data, error } = await callApi('GET_SITE_SETTINGS', {
@@ -102,7 +122,21 @@ export const useInitSiteSettingsStore = create<SiteSettingsStore>()((set, get) =
         console.error('Failed to fetch site settings:', errorMessage);
         set({ fetchError: errorMessage });
       } finally {
-        set({ isLoading: false });
+        set(state => {
+          const nextLoading = new Set(state.loadingSlices);
+          nextLoading.delete(slice);
+
+          return { loadingSlices: nextLoading };
+        });
+      }
+    },
+
+    ensureSettingsLoaded: async (slices, options = {}) => {
+      const { actions } = get();
+      const unique = [...new Set(slices)];
+
+      for (const slice of unique) {
+        await actions.fetchSettings(slice, options);
       }
     },
 
@@ -132,6 +166,7 @@ export const useInitSiteSettingsStore = create<SiteSettingsStore>()((set, get) =
       set({
         ...initialData,
         loadedSlices: new Set(),
+        loadingSlices: new Set(),
         fetchError: null,
       });
     },

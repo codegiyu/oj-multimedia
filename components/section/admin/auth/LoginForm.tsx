@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
 import { useEffect } from 'react';
@@ -24,14 +23,14 @@ export const LoginForm = () => {
     actions: { login },
   } = useAuthStore(state => state);
 
-  const { settings, fetchSettings } = useSiteSettingsStore(state => ({
+  const { settings, ensureSettingsLoaded } = useSiteSettingsStore(state => ({
     settings: state.settings,
-    fetchSettings: state.actions.fetchSettings,
+    ensureSettingsLoaded: state.actions.ensureSettingsLoaded,
   }));
 
   useEffect(() => {
-    fetchSettings('features');
-  }, []);
+    void ensureSettingsLoaded(['features']);
+  }, [ensureSettingsLoaded]);
 
   const loginEnabled = settings?.features?.loginEnabled ?? true;
 

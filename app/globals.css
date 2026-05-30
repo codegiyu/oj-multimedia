@@ -429,6 +429,13 @@
     @apply min-h-screen w-full bg-background text-foreground font-body text-[1rem] leading-[1.5] tracking-[0.05em] break-words text-wrap text-start antialiased;
   }
 
+  /* Defer off-screen layout/paint for long public pages until near viewport */
+  main > section,
+  main .section-content-visibility {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 480px;
+  }
+
   h1,
   h2,
   h3,
