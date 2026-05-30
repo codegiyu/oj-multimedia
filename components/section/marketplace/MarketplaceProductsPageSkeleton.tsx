@@ -1,13 +1,13 @@
 'use client';
 
-import { MainLayout } from '@/components/layout/MainLayout';
 import { SectionContainer } from '@/components/general/SectionContainer';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Package } from 'lucide-react';
+import { PageSkeletonShell, ProductCardSkeleton, CardGridSkeleton } from '@/components/skeletons';
 
 export function MarketplaceProductsPageSkeleton() {
   return (
-    <MainLayout>
+    <PageSkeletonShell label="Loading products">
       <SectionContainer className="py-16 md:py-20">
         <div className="max-w-7xl mx-auto">
           <Skeleton className="h-5 w-48 mb-8" />
@@ -25,22 +25,15 @@ export function MarketplaceProductsPageSkeleton() {
             </aside>
             <div className="flex-1">
               <Skeleton className="h-9 w-48 mb-6" />
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {[1, 2, 3, 4, 5, 6].map(i => (
-                  <Skeleton key={i} className="rounded-xl overflow-hidden">
-                    <Skeleton className="aspect-square w-full" />
-                    <div className="p-4 space-y-2">
-                      <Skeleton className="h-4 w-16" />
-                      <Skeleton className="h-5 w-full" />
-                      <Skeleton className="h-6 w-20" />
-                    </div>
-                  </Skeleton>
-                ))}
-              </div>
+              <CardGridSkeleton
+                count={6}
+                gridClassName="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <ProductCardSkeleton />
+              </CardGridSkeleton>
             </div>
           </div>
         </div>
       </SectionContainer>
-    </MainLayout>
+    </PageSkeletonShell>
   );
 }
