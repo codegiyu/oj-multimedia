@@ -1,249 +1,179 @@
 'use client';
 
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  PageSkeletonShell,
+  SectionSkeleton,
+  SectionHeaderSkeleton,
+  HorizontalRailSkeleton,
+  CardGridSkeleton,
+  CTASectionSkeleton,
+  MusicCardSkeleton,
+  VideoCardSkeleton,
+  ChartCardSkeleton,
+  ArtistCardSkeleton,
+  ProductCardSkeleton,
+  DevotionalCardSkeleton,
+  HomeAdvertStripSkeleton,
+  SimpleMusicRailSkeleton,
+  SimpleVideoRailSkeleton,
+} from '@/components/skeletons';
 
-export const HomePageSkeleton = () => {
+function TrendingMusicSectionSkeleton() {
   return (
-    <>
-      {/* Trending Music Section Skeleton */}
-      <section className="py-16 md:py-24">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center gap-3">
-              <Skeleton className="w-10 h-10 rounded-xl" />
-              <div>
-                <Skeleton className="h-7 w-32 mb-2" />
-                <Skeleton className="h-4 w-48" />
-              </div>
-            </div>
-            <Skeleton className="h-10 w-20 rounded-lg" />
-          </div>
-          <div className="flex gap-2 mb-8 overflow-x-auto pb-2">
-            {[1, 2, 3, 4, 5, 6, 7].map(i => (
-              <Skeleton key={i} className="h-10 w-24 rounded-full shrink-0" />
+    <SectionSkeleton>
+      <SectionHeaderSkeleton showPrevNext tabs={7} />
+      <HorizontalRailSkeleton
+        itemWidthClass="w-[160px] sm:w-[180px] md:w-[200px] lg:w-[220px] xl:w-[240px] 2xl:w-[260px]"
+        count={8}>
+        <MusicCardSkeleton />
+      </HorizontalRailSkeleton>
+    </SectionSkeleton>
+  );
+}
+
+function TrendingVideosSectionSkeleton() {
+  return (
+    <SectionSkeleton background="bg-muted/30">
+      <SectionHeaderSkeleton showPrevNext tabs={6} />
+      <HorizontalRailSkeleton itemWidthClass="w-[280px] md:w-[320px]" count={6}>
+        <VideoCardSkeleton />
+      </HorizontalRailSkeleton>
+    </SectionSkeleton>
+  );
+}
+
+function DevotionalsRailSkeleton() {
+  return (
+    <SectionSkeleton>
+      <SectionHeaderSkeleton />
+      <HorizontalRailSkeleton itemWidthClass="w-[260px] sm:w-[280px]" count={5}>
+        <DevotionalCardSkeleton />
+      </HorizontalRailSkeleton>
+    </SectionSkeleton>
+  );
+}
+
+function TopChartsSectionSkeleton() {
+  return (
+    <SectionSkeleton sectionClassName="overflow-hidden">
+      <div className="grid lg:grid-cols-2 gap-8">
+        <div className="bg-card rounded-3xl p-6 shadow-sm">
+          <SectionHeaderSkeleton showViewAll className="mb-6" />
+          <div className="space-y-1">
+            {Array.from({ length: 5 }, (_, i) => (
+              <ChartCardSkeleton key={i} />
             ))}
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 md:gap-6">
-            {[1, 2, 3, 4, 5, 6].map(i => (
-              <div key={i} className="bg-card rounded-2xl overflow-hidden">
-                <Skeleton className="aspect-square w-full" />
-                <div className="p-3">
+        </div>
+        <div className="bg-card rounded-3xl p-6 shadow-sm">
+          <SectionHeaderSkeleton showViewAll className="mb-6" />
+          <CardGridSkeleton count={4} gridClassName="grid grid-cols-2 gap-4">
+            <ArtistCardSkeleton />
+          </CardGridSkeleton>
+        </div>
+      </div>
+    </SectionSkeleton>
+  );
+}
+
+function NewsSectionSkeleton() {
+  return (
+    <SectionSkeleton background="bg-muted/30">
+      <SectionHeaderSkeleton />
+      <div className="grid lg:grid-cols-2 gap-6">
+        <Skeleton className="h-[400px] rounded-2xl" />
+        <div className="grid gap-6">
+          {[1, 2].map(i => (
+            <div key={i} className="flex gap-4 bg-card rounded-2xl p-4">
+              <Skeleton className="w-[140px] aspect-video rounded-xl shrink-0" />
+              <div className="flex-1">
+                <Skeleton className="h-5 w-20 mb-2 rounded-full" />
+                <Skeleton className="h-5 w-full mb-2" />
+                <Skeleton className="h-4 w-3/4" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </SectionSkeleton>
+  );
+}
+
+function MarketplaceSectionSkeleton() {
+  return (
+    <SectionSkeleton>
+      <SectionHeaderSkeleton />
+      <CardGridSkeleton count={4} gridClassName="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+        <ProductCardSkeleton />
+      </CardGridSkeleton>
+    </SectionSkeleton>
+  );
+}
+
+function CommunitySectionSkeleton() {
+  return (
+    <SectionSkeleton background="bg-muted/30">
+      <SectionHeaderSkeleton />
+      <div className="grid lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 space-y-4">
+          <Skeleton className="h-6 w-40" />
+          {[1, 2, 3].map(i => (
+            <div key={i} className="bg-card rounded-2xl p-4">
+              <div className="flex gap-3">
+                <Skeleton className="w-10 h-10 rounded-full shrink-0" />
+                <div className="flex-1">
+                  <Skeleton className="h-4 w-24 mb-2" />
                   <Skeleton className="h-4 w-full mb-2" />
                   <Skeleton className="h-3 w-3/4" />
                 </div>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
-      </section>
-
-      {/* Trending Videos Section Skeleton */}
-      <section className="py-16 md:py-24 bg-muted/30">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center gap-3">
-              <Skeleton className="w-10 h-10 rounded-xl" />
-              <div>
-                <Skeleton className="h-7 w-32 mb-2" />
-                <Skeleton className="h-4 w-48" />
-              </div>
-            </div>
-            <Skeleton className="h-10 w-24 rounded-lg" />
-          </div>
-          <div className="flex gap-2 mb-8 overflow-x-auto pb-2">
-            {[1, 2, 3, 4, 5, 6, 7].map(i => (
-              <Skeleton key={i} className="h-10 w-28 rounded-full shrink-0" />
-            ))}
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {[1, 2, 3, 4, 5].map(i => (
-              <div key={i} className="bg-card rounded-2xl overflow-hidden">
-                <Skeleton className="aspect-video w-full" />
-                <div className="p-4">
-                  <Skeleton className="h-5 w-full mb-2" />
-                  <Skeleton className="h-4 w-3/4" />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Top Charts Section Skeleton */}
-      <section className="py-16 md:py-24">
-        <div className="container mx-auto px-4">
-          <div className="grid lg:grid-cols-2 gap-8">
-            {/* Top Songs Chart */}
-            <div className="bg-card rounded-3xl p-6">
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                  <Skeleton className="w-10 h-10 rounded-xl" />
-                  <div>
-                    <Skeleton className="h-6 w-24 mb-2" />
-                    <Skeleton className="h-4 w-20" />
-                  </div>
-                </div>
-                <Skeleton className="h-8 w-16 rounded-lg" />
-              </div>
-              <div className="space-y-1">
-                {[1, 2, 3, 4, 5].map(i => (
-                  <div key={i} className="flex items-center gap-4 p-2">
-                    <Skeleton className="w-8 h-8 rounded" />
-                    <Skeleton className="w-12 h-12 rounded-lg" />
-                    <div className="flex-1">
-                      <Skeleton className="h-4 w-full mb-1" />
-                      <Skeleton className="h-3 w-3/4" />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Rising Artists */}
-            <div className="bg-card rounded-3xl p-6">
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                  <Skeleton className="w-10 h-10 rounded-xl" />
-                  <div>
-                    <Skeleton className="h-6 w-28 mb-2" />
-                    <Skeleton className="h-4 w-24" />
-                  </div>
-                </div>
-                <Skeleton className="h-8 w-16 rounded-lg" />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                {[1, 2, 3, 4].map(i => (
-                  <div key={i} className="text-center">
-                    <Skeleton className="w-16 h-16 rounded-full mx-auto mb-3" />
-                    <Skeleton className="h-4 w-20 mx-auto mb-1" />
-                    <Skeleton className="h-3 w-16 mx-auto mb-1" />
-                    <Skeleton className="h-3 w-12 mx-auto" />
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* News Section Skeleton */}
-      <section className="py-16 md:py-24 bg-muted/30">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center gap-3">
-              <Skeleton className="w-10 h-10 rounded-xl" />
-              <div>
-                <Skeleton className="h-7 w-32 mb-2" />
-                <Skeleton className="h-4 w-48" />
-              </div>
-            </div>
-            <Skeleton className="h-10 w-20 rounded-lg" />
-          </div>
-          <div className="grid lg:grid-cols-2 gap-6">
-            <Skeleton className="h-[400px] rounded-2xl" />
-            <div className="grid gap-6">
-              {[1, 2].map(i => (
-                <div key={i} className="flex gap-4 bg-card rounded-2xl p-4">
-                  <Skeleton className="w-[140px] h-full aspect-video rounded-xl shrink-0" />
-                  <div className="flex-1">
-                    <Skeleton className="h-5 w-20 mb-2 rounded-full" />
-                    <Skeleton className="h-5 w-full mb-2" />
-                    <Skeleton className="h-4 w-3/4" />
-                  </div>
-                </div>
+        <div className="space-y-6">
+          <div className="bg-card rounded-2xl p-6">
+            <Skeleton className="h-6 w-24 mb-4" />
+            <Skeleton className="h-4 w-full mb-4" />
+            <div className="space-y-2">
+              {[1, 2, 3, 4].map(i => (
+                <Skeleton key={i} className="h-10 w-full rounded-lg" />
               ))}
             </div>
+            <Skeleton className="h-3 w-24 mt-3" />
           </div>
-        </div>
-      </section>
-
-      {/* Marketplace Section Skeleton */}
-      <section className="py-16 md:py-24">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center gap-3">
-              <Skeleton className="w-10 h-10 rounded-xl" />
-              <div>
-                <Skeleton className="h-7 w-32 mb-2" />
-                <Skeleton className="h-4 w-48" />
-              </div>
-            </div>
-            <Skeleton className="h-10 w-24 rounded-lg" />
-          </div>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-            {[1, 2, 3, 4].map(i => (
-              <div key={i} className="bg-card rounded-2xl overflow-hidden">
-                <Skeleton className="aspect-square w-full" />
-                <div className="p-4">
-                  <Skeleton className="h-3 w-20 mb-1" />
-                  <Skeleton className="h-5 w-full mb-2" />
-                  <Skeleton className="h-4 w-16" />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Community Section Skeleton */}
-      <section className="py-16 md:py-24 bg-muted/30">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center gap-3">
-              <Skeleton className="w-10 h-10 rounded-xl" />
-              <div>
-                <Skeleton className="h-7 w-32 mb-2" />
-                <Skeleton className="h-4 w-48" />
-              </div>
-            </div>
-            <Skeleton className="h-10 w-32 rounded-lg" />
-          </div>
-          <div className="grid lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2 space-y-4">
-              <Skeleton className="h-6 w-40" />
+          <div className="bg-card rounded-2xl p-6">
+            <Skeleton className="h-6 w-24 mb-4" />
+            <div className="space-y-2">
               {[1, 2, 3].map(i => (
-                <div key={i} className="bg-card rounded-2xl p-4">
-                  <div className="flex gap-3">
-                    <Skeleton className="w-10 h-10 rounded-full" />
-                    <div className="flex-1">
-                      <Skeleton className="h-4 w-24 mb-2" />
-                      <Skeleton className="h-4 w-full mb-2" />
-                      <Skeleton className="h-3 w-3/4" />
-                    </div>
-                  </div>
-                </div>
+                <Skeleton key={i} className="h-10 w-full rounded-lg" />
               ))}
-            </div>
-            <div className="space-y-6">
-              <div className="bg-card rounded-2xl p-6">
-                <Skeleton className="h-6 w-24 mb-4" />
-                <Skeleton className="h-4 w-full mb-4" />
-                <div className="space-y-2">
-                  {[1, 2, 3, 4].map(i => (
-                    <Skeleton key={i} className="h-10 w-full rounded-lg" />
-                  ))}
-                </div>
-                <Skeleton className="h-3 w-24 mt-3" />
-              </div>
-              <div className="bg-card rounded-2xl p-6">
-                <Skeleton className="h-6 w-24 mb-4" />
-                <div className="space-y-2">
-                  {[1, 2, 3].map(i => (
-                    <Skeleton key={i} className="h-10 w-full rounded-lg" />
-                  ))}
-                </div>
-              </div>
             </div>
           </div>
         </div>
-      </section>
+      </div>
+    </SectionSkeleton>
+  );
+}
 
-      {/* CTA Skeleton */}
-      <section className="py-16 md:py-24">
-        <div className="container mx-auto px-4">
-          <Skeleton className="h-32 w-full rounded-2xl" />
-        </div>
-      </section>
-    </>
+export const HomePageSkeleton = () => {
+  return (
+    <PageSkeletonShell label="Loading home page">
+      <HomeAdvertStripSkeleton />
+      <SimpleMusicRailSkeleton />
+      <SimpleMusicRailSkeleton />
+      <TrendingMusicSectionSkeleton />
+      <TrendingVideosSectionSkeleton />
+      <SimpleVideoRailSkeleton />
+      <DevotionalsRailSkeleton />
+      <TopChartsSectionSkeleton />
+      <NewsSectionSkeleton />
+      <NewsSectionSkeleton />
+      <NewsSectionSkeleton />
+      <MarketplaceSectionSkeleton />
+      <CommunitySectionSkeleton />
+      <HomeAdvertStripSkeleton />
+      <CTASectionSkeleton />
+    </PageSkeletonShell>
   );
 };

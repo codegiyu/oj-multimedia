@@ -23,20 +23,8 @@ import {
   type HomeDevotionalCard,
 } from '.';
 import { UploadCTA } from '../shared';
-import { Skeleton } from '@/components/ui/skeleton';
+import { SimpleMusicRailSkeleton, SimpleVideoRailSkeleton } from '@/components/skeletons';
 import type { IHomeAdvertItem } from '@/lib/constants/endpoints';
-
-const TrendingMusicRailSkeleton = () => (
-  <div className="container mx-auto px-4 py-8">
-    <Skeleton className="h-40 w-full rounded-2xl" />
-  </div>
-);
-
-const TrendingVideosRailSkeleton = () => (
-  <div className="container mx-auto px-4 py-8">
-    <Skeleton className="h-48 w-full rounded-2xl" />
-  </div>
-);
 
 interface HomePageClientProps {
   advertsAfterHero: IHomeAdvertItem[];
@@ -90,7 +78,7 @@ export const HomePageClient = ({
       ) : null}
 
       <HomeAdvertStrip adverts={advertsAfterHero} />
-      <Suspense fallback={<TrendingMusicRailSkeleton />}>
+      <Suspense fallback={<SimpleMusicRailSkeleton />}>
         <SimpleMusicRail
           heading="Latest music"
           subtext="New releases (excluding sermons)"
@@ -98,7 +86,7 @@ export const HomePageClient = ({
           music={latestMusic}
         />
       </Suspense>
-      <Suspense fallback={<TrendingMusicRailSkeleton />}>
+      <Suspense fallback={<SimpleMusicRailSkeleton />}>
         <SimpleMusicRail
           heading="Latest sermons"
           subtext="Teaching and messages"
@@ -106,13 +94,13 @@ export const HomePageClient = ({
           music={latestSermons}
         />
       </Suspense>
-      <Suspense fallback={<TrendingMusicRailSkeleton />}>
+      <Suspense fallback={<SimpleMusicRailSkeleton />}>
         <TrendingMusicSection music={trendingMusic} />
       </Suspense>
-      <Suspense fallback={<TrendingVideosRailSkeleton />}>
+      <Suspense fallback={<SimpleVideoRailSkeleton />}>
         <TrendingVideosSection videos={trendingVideos} />
       </Suspense>
-      <Suspense fallback={<TrendingVideosRailSkeleton />}>
+      <Suspense fallback={<SimpleVideoRailSkeleton />}>
         <SimpleVideoRail
           heading="Latest movies"
           subtext="Films and long-form video"
