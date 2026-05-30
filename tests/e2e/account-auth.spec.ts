@@ -10,10 +10,11 @@ describeWithWebServer('client auth routes', () => {
     });
   }
 
-  test('login page shows welcome heading', async ({ page }) => {
+  test('login page shows sign-in heading and exit links', async ({ page }) => {
     await page.goto('/auth/login', { waitUntil: 'domcontentloaded' });
 
-    await expect(page.getByRole('heading', { name: /welcome back/i }).first()).toBeVisible();
+    await expect(page.getByRole('heading', { name: /sign in/i }).first()).toBeVisible();
+    await expect(page.getByRole('link', { name: /back to home/i })).toBeVisible();
   });
 });
 
