@@ -3,7 +3,7 @@ import { Suspense } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { MusicHero } from '@/components/section/music/MusicHero';
 import { MusicPageClient } from '@/components/section/music/MusicPageClient';
-import { MusicPageSkeleton } from '@/components/section/music/MusicPageSkeleton';
+import { MusicHubPageSkeleton } from '@/components/section/music/MusicPageSkeleton';
 import type { TrendingSong } from '@/components/section/music/TrendingSongs';
 import type { ChartSong } from '@/components/section/music/TopMusicCharts';
 import type { RecentUpload } from '@/components/section/music/RecentUploads';
@@ -122,7 +122,7 @@ export default async function MusicPage({ searchParams }: MusicPageProps) {
   return (
     <MainLayout>
       <MusicHero />
-      <Suspense fallback={<MusicPageSkeleton />}>
+      <Suspense fallback={<MusicHubPageSkeleton />}>
         <MusicPageServer category={category} period={period} />
       </Suspense>
     </MainLayout>

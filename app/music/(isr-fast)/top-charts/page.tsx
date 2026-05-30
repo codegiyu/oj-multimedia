@@ -3,7 +3,7 @@ import { Suspense } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { SubPageHero } from '@/components/general/SubPageHero';
 import { TopChartsPageClient } from '@/components/section/music/TopChartsPageClient';
-import { MusicPageSkeleton } from '@/components/section/music/MusicPageSkeleton';
+import { MusicTopChartsPageSkeleton } from '@/components/section/music/MusicPageSkeleton';
 import type { ChartSong } from '@/components/section/music/TopMusicCharts';
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import { ISR_PUBLIC_FETCH } from '@/lib/constants/isr';
@@ -80,7 +80,7 @@ export default async function TopChartsPage({ searchParams }: TopChartsPageProps
           },
         ]}
       />
-      <Suspense fallback={<MusicPageSkeleton />}>
+      <Suspense fallback={<MusicTopChartsPageSkeleton />}>
         <TopChartsServer category={category} period={period} />
       </Suspense>
     </MainLayout>

@@ -3,7 +3,7 @@ import { Suspense } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { SubPageHero } from '@/components/general/SubPageHero';
 import { AlbumsListPageClient } from '@/components/section/music/AlbumsListPageClient';
-import { MusicPageSkeleton } from '@/components/section/music/MusicPageSkeleton';
+import { MusicAlbumsPageSkeleton } from '@/components/section/music/MusicPageSkeleton';
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import { filterPublicAlbumList, mapPublicAlbumToCard } from '@/lib/utils/publicApiMappers';
 import type { IPublicAlbumsListRes } from '@/lib/constants/endpoints';
@@ -45,7 +45,7 @@ export default function AlbumsListPage() {
         backLabel="Back to Music"
         stats={[{ text: 'Curated releases' }, { text: 'Updated regularly' }]}
       />
-      <Suspense fallback={<MusicPageSkeleton />}>
+      <Suspense fallback={<MusicAlbumsPageSkeleton />}>
         <AlbumsListServer />
       </Suspense>
     </MainLayout>
