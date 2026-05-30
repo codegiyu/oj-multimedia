@@ -3,8 +3,11 @@
 import { motion } from 'motion/react';
 import { Heart, MessageCircle, Send, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useOptionalCommunityActionModals } from '@/components/section/community/shared/CommunityActionModalsProvider';
 
 export const CommunityCTA = () => {
+  const modals = useOptionalCommunityActionModals();
+
   return (
     <section className="py-16">
       <motion.div
@@ -12,12 +15,10 @@ export const CommunityCTA = () => {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         className="relative rounded-3xl overflow-hidden">
-        {/* Background */}
         <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-secondary/15 to-accent/20" />
         <div className="absolute top-0 right-0 w-64 h-64 bg-primary/20 rounded-full blur-3xl" />
         <div className="absolute bottom-0 left-0 w-48 h-48 bg-secondary/20 rounded-full blur-3xl" />
 
-        {/* Content */}
         <div className="relative z-10 py-16 px-8 text-center">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
@@ -61,35 +62,22 @@ export const CommunityCTA = () => {
             viewport={{ once: true }}
             transition={{ delay: 0.4 }}
             className="flex flex-wrap justify-center gap-4">
-            <Button variant="hero" size="lg" className="gap-2">
+            <Button
+              variant="hero"
+              size="lg"
+              className="gap-2"
+              onClick={() => modals?.openShareTestimony()}>
               <Heart className="w-4 h-4" />
               Share Your Testimony
             </Button>
-            <Button variant="hero-outline" size="lg" className="gap-2">
+            <Button
+              variant="hero-outline"
+              size="lg"
+              className="gap-2"
+              onClick={() => modals?.openSubmitPrayerRequest()}>
               <Send className="w-4 h-4" />
               Submit Prayer Request
             </Button>
-          </motion.div>
-
-          {/* Stats */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.5 }}
-            className="flex flex-wrap justify-center gap-8 mt-12 pt-8 border-t border-border/30">
-            <div>
-              <p className="text-2xl font-display font-bold">5K+</p>
-              <p className="text-sm text-muted-foreground">Testimonies Shared</p>
-            </div>
-            <div>
-              <p className="text-2xl font-display font-bold">12K+</p>
-              <p className="text-sm text-muted-foreground">Prayers Answered</p>
-            </div>
-            <div>
-              <p className="text-2xl font-display font-bold">25K+</p>
-              <p className="text-sm text-muted-foreground">Community Members</p>
-            </div>
           </motion.div>
         </div>
       </motion.div>
