@@ -1,14 +1,29 @@
 'use client';
 
-import { useState } from 'react';
+import { z } from 'zod';
 import { Card } from '@/components/ui/card';
 import { RegularBtn } from '@/components/atoms/RegularBtn';
 import { RegularInput } from '@/components/atoms/RegularInput';
-import { Textarea } from '@/components/ui/textarea';
+import { RegularTextarea } from '@/components/atoms/RegularTextarea';
 import { toast } from 'sonner';
 import { callApi } from '@/lib/services/callApi';
-import { Label } from '@/components/ui/label';
+import { useForm } from '@/lib/hooks/use-form';
 import { cn } from '@/lib/utils';
+import type { ApiErrorResponse } from '@/lib/types/http';
+
+const vendorApplicationSchema = z.object({
+  storeName: z.string().min(1, 'Store name is required'),
+  storeDescription: z.string().optional(),
+  email: z.string().min(1, 'Email is required').email('Enter a valid email'),
+  phone: z.string().min(1, 'Phone is required'),
+  whatsapp: z.string().optional(),
+  address: z.string().optional(),
+  bankAccountName: z.string().optional(),
+  bankAccountNumber: z.string().optional(),
+  bankName: z.string().optional(),
+});
+
+type VendorApplicationValues = z.infer<typeof vendorApplicationSchema>;
 
 export interface VendorApplicationFormProps {
   /** Called after successful API submission (e.g. close modal + refresh) */
@@ -19,148 +34,156 @@ export interface VendorApplicationFormProps {
 }
 
 export function VendorApplicationForm({ onSuccess, bare, className }: VendorApplicationFormProps) {
-  const [submitting, setSubmitting] = useState(false);
-  const [form, setForm] = useState({
-    storeName: '',
-    storeDescription: '',
-    email: '',
-    phone: '',
-    whatsapp: '',
-    address: '',
-    bankAccountName: '',
-    bankAccountNumber: '',
-    bankName: '',
-  });
+  const { formValues, formErrors, loading, handleInputChange, handleSubmit, errorsVisible } =
+    useForm<typeof vendorApplicationSchema>({
+      formSchema: vendorApplicationSchema,
+      defaultFormValues: {
+        storeName: '',
+        storeDescription: '',
+        email: '',
+        phone: '',
+        whatsapp: '',
+        address: '',
+        bankAccountName: '',
+        bankAccountNumber: '',
+        bankName: '',
+      },
+      async onSubmit(values: VendorApplicationValues) {
+        const payload = {
+          storeName: values.storeName.trim(),
+          storeDescription: values.storeDescription?.trim() || undefined,
+          email: values.email.trim(),
+          phone: values.phone.trim(),
+          whatsapp: values.whatsapp?.trim() || undefined,
+          address: values.address?.trim() || undefined,
+          bankAccountName: values.bankAccountName?.trim() || undefined,
+          bankAccountNumber: values.bankAccountNumber?.trim() || undefined,
+          bankName: values.bankName?.trim() || undefined,
+        };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitting(true);
-    try {
-      const payload = {
-        storeName: form.storeName.trim(),
-        storeDescription: form.storeDescription.trim() || undefined,
-        email: form.email.trim(),
-        phone: form.phone.trim(),
-        whatsapp: form.whatsapp.trim() || undefined,
-        address: form.address.trim() || undefined,
-        bankAccountName: form.bankAccountName.trim() || undefined,
-        bankAccountNumber: form.bankAccountNumber.trim() || undefined,
-        bankName: form.bankName.trim() || undefined,
-      };
+        const { error, message } = await callApi('MARKETPLACE_BECOME_VENDOR', { payload });
 
-      const { error, message } = await callApi('MARKETPLACE_BECOME_VENDOR', {
-        payload,
-      });
+        if (error) {
+          const code = (error as ApiErrorResponse | undefined)?.responseCode;
+          if (code === 409) {
+            toast.error(message || 'You already have a vendor application linked to your account.');
+            return false;
+          }
+          toast.error(message ?? 'Failed to submit application. Please check your details.');
+          return false;
+        }
 
-      if (error) {
-        toast.error(message ?? 'Failed to submit application. Please check your details.');
-        return;
-      }
-
-      toast.success('Application received! We will review and get back to you soon.');
-      onSuccess?.();
-    } catch {
-      toast.error('Something went wrong. Please try again.');
-    } finally {
-      setSubmitting(false);
-    }
-  };
+        toast.success('Application received! We will review and get back to you soon.');
+        onSuccess?.();
+        return true;
+      },
+    });
 
   const formInner = (
-    <form onSubmit={handleSubmit} className={cn('space-y-6', className)}>
-      <div>
-        <h2 className="text-lg font-semibold text-foreground mb-4">Store details</h2>
+    <form onSubmit={handleSubmit} className={cn('space-y-8 pt-2', className)}>
+      <div className="space-y-4">
+        <h2 className="text-lg font-semibold text-foreground">Store details</h2>
         <div className="space-y-4">
           <RegularInput
             label="Store name"
             name="storeName"
             required
-            value={form.storeName}
-            onChange={e => setForm(f => ({ ...f, storeName: e.target.value }))}
+            value={formValues.storeName}
+            onChange={handleInputChange}
             placeholder="Enter store name"
+            disabled={loading}
+            errors={errorsVisible ? (formErrors.storeName ?? []) : []}
           />
-          <div className="space-y-2">
-            <Label htmlFor="vendor-app-store-desc">Store description (optional)</Label>
-            <Textarea
-              id="vendor-app-store-desc"
-              value={form.storeDescription}
-              onChange={e => setForm(f => ({ ...f, storeDescription: e.target.value }))}
-              className="mt-0"
-              rows={3}
-              placeholder="Tell customers about your store"
-            />
-          </div>
+          <RegularTextarea
+            label="Store description (optional)"
+            name="storeDescription"
+            value={formValues.storeDescription ?? ''}
+            onChange={handleInputChange}
+            rows={3}
+            placeholder="Tell customers about your store"
+            disabled={loading}
+          />
         </div>
       </div>
 
-      <div>
-        <h2 className="text-lg font-semibold text-foreground mb-4">Contact</h2>
-        <div className="space-y-4">
+      <div className="space-y-4">
+        <h2 className="text-lg font-semibold text-foreground">Contact</h2>
+        <div className="grid gap-4 md:grid-cols-2">
           <RegularInput
             label="Email"
             name="email"
             type="email"
             required
-            value={form.email}
-            onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
+            value={formValues.email}
+            onChange={handleInputChange}
             placeholder="Enter email"
+            disabled={loading}
+            errors={errorsVisible ? (formErrors.email ?? []) : []}
           />
           <RegularInput
             label="Phone"
             name="phone"
             type="tel"
             required
-            value={form.phone}
-            onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
+            value={formValues.phone}
+            onChange={handleInputChange}
             placeholder="Enter phone number"
+            disabled={loading}
+            errors={errorsVisible ? (formErrors.phone ?? []) : []}
           />
           <RegularInput
             label="WhatsApp (optional)"
             name="whatsapp"
             type="tel"
-            value={form.whatsapp}
-            onChange={e => setForm(f => ({ ...f, whatsapp: e.target.value }))}
+            value={formValues.whatsapp ?? ''}
+            onChange={handleInputChange}
             placeholder="Enter WhatsApp number"
+            disabled={loading}
+            wrapClassName="md:col-span-2"
           />
-          <div className="space-y-2">
-            <Label htmlFor="vendor-app-address">Address (optional)</Label>
-            <Textarea
-              id="vendor-app-address"
-              value={form.address}
-              onChange={e => setForm(f => ({ ...f, address: e.target.value }))}
-              rows={2}
-              placeholder="Business address"
-            />
-          </div>
+          <RegularTextarea
+            label="Address (optional)"
+            name="address"
+            value={formValues.address ?? ''}
+            onChange={handleInputChange}
+            rows={2}
+            placeholder="Business address"
+            disabled={loading}
+            wrapClassName="md:col-span-2"
+          />
         </div>
       </div>
 
-      <div>
-        <h2 className="text-lg font-semibold text-foreground mb-4">Bank details</h2>
-        <p className="text-sm text-muted-foreground mb-4">
+      <div className="space-y-4">
+        <h2 className="text-lg font-semibold text-foreground">Bank details</h2>
+        <p className="text-sm text-muted-foreground">
           For receiving payments. You can update this later in vendor settings.
         </p>
-        <div className="space-y-4">
+        <div className="grid gap-4 md:grid-cols-2">
           <RegularInput
             label="Account name"
             name="bankAccountName"
-            value={form.bankAccountName}
-            onChange={e => setForm(f => ({ ...f, bankAccountName: e.target.value }))}
+            value={formValues.bankAccountName ?? ''}
+            onChange={handleInputChange}
             placeholder="Bank account name"
+            disabled={loading}
           />
           <RegularInput
             label="Account number"
             name="bankAccountNumber"
-            value={form.bankAccountNumber}
-            onChange={e => setForm(f => ({ ...f, bankAccountNumber: e.target.value }))}
+            value={formValues.bankAccountNumber ?? ''}
+            onChange={handleInputChange}
             placeholder="Bank account number"
+            disabled={loading}
           />
           <RegularInput
             label="Bank name"
             name="bankName"
-            value={form.bankName}
-            onChange={e => setForm(f => ({ ...f, bankName: e.target.value }))}
+            value={formValues.bankName ?? ''}
+            onChange={handleInputChange}
             placeholder="Bank name"
+            disabled={loading}
+            wrapClassName="md:col-span-2"
           />
         </div>
       </div>
@@ -169,12 +192,12 @@ export function VendorApplicationForm({ onSuccess, bare, className }: VendorAppl
         type="submit"
         variant="default"
         className="w-full bg-primary hover:bg-primary/90"
-        disabled={submitting}
-        loading={submitting}
+        disabled={loading}
+        loading={loading}
         onDisabledClick={() => {
-          if (submitting) toast.info('Please wait, submitting your application…');
+          if (loading) toast.info('Please wait, submitting your application…');
         }}>
-        {submitting ? 'Submitting…' : 'Submit application'}
+        {loading ? 'Submitting…' : 'Submit application'}
       </RegularBtn>
     </form>
   );
