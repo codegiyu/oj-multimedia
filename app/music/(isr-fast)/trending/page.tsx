@@ -3,7 +3,7 @@ import { Suspense } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { SubPageHero } from '@/components/general/SubPageHero';
 import { TrendingSongsPageClient } from '@/components/section/music/TrendingSongsPageClient';
-import { MusicPageSkeleton } from '@/components/section/music/MusicPageSkeleton';
+import { MusicTrendingPageSkeleton } from '@/components/section/music/MusicPageSkeleton';
 import type { TrendingSong } from '@/components/section/music/TrendingSongs';
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import { ISR_PUBLIC_FETCH } from '@/lib/constants/isr';
@@ -65,7 +65,7 @@ export default async function TrendingSongsPage({ searchParams }: TrendingSongsP
         backLabel="Back to Music"
         stats={[{ icon: 'Flame', text: 'Most popular' }, { text: 'Updated in real-time' }]}
       />
-      <Suspense fallback={<MusicPageSkeleton />}>
+      <Suspense fallback={<MusicTrendingPageSkeleton />}>
         <TrendingSongsServer category={category} />
       </Suspense>
     </MainLayout>
