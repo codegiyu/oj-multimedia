@@ -38,8 +38,14 @@ export const MUSIC_CATEGORIES: ReadonlyArray<ContentCategoryOption> = [
   { id: 'sermon', label: 'Sermon' },
 ];
 
-export const NEWS_TYPE_VALUES = ['featured', 'latest', 'trending', 'video'] as const;
-export const VIDEO_TYPE_VALUES = ['trending', 'featured', 'recent', 'short-form'] as const;
+export const NEWS_TYPE_VALUES = ['featured', 'latest', 'trending', 'video', 'breaking'] as const;
+export const VIDEO_TYPE_VALUES = [
+  'trending',
+  'featured',
+  'recent',
+  'short-form',
+  'long-form',
+] as const;
 export const MUSIC_TYPE_VALUES = ['trending', 'charts', 'recent'] as const;
 export const CHART_PERIOD_VALUES = ['weekly', 'monthly', 'alltime'] as const;
 
@@ -48,6 +54,7 @@ export const NEWS_TYPES = {
   latest: 'latest',
   trending: 'trending',
   video: 'video',
+  breaking: 'breaking',
 } as const;
 
 export const VIDEO_TYPES = {
@@ -55,6 +62,7 @@ export const VIDEO_TYPES = {
   featured: 'featured',
   recent: 'recent',
   shortForm: 'short-form',
+  longForm: 'long-form',
 } as const;
 
 export const MUSIC_TYPES = {
