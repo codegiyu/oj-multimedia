@@ -8,7 +8,7 @@ import type { PublicNewsListItem } from '@/lib/constants/endpoints';
 import { NewsDetailsDrawer } from './NewsDetailsDrawer';
 import { NewsTableContent } from './NewsTableContent';
 import { CreateNewsModal } from './CreateNewsModal';
-import { ApprovalModal } from '@/components/section/admin/shared';
+import { ApprovalModal, AdminContentSectionGuideButton } from '@/components/section/admin/shared';
 import { callApi } from '@/lib/services/callApi';
 import { RegularBtn } from '@/components/atoms/RegularBtn';
 import { Plus } from 'lucide-react';
@@ -107,14 +107,17 @@ export function NewsPageClient({
       description={pageDescription}
       onRefresh={handleRefresh}
       pageHeaderActions={
-        <RegularBtn
-          LeftIcon={Plus}
-          text="Create News"
-          onClick={() => {
-            setEditNewsId(null);
-            setCreateOpen(true);
-          }}
-        />
+        <>
+          <AdminContentSectionGuideButton scope="news" />
+          <RegularBtn
+            LeftIcon={Plus}
+            text="Create News"
+            onClick={() => {
+              setEditNewsId(null);
+              setCreateOpen(true);
+            }}
+          />
+        </>
       }
       listError={listError}
       filterableDataPageProps={{
