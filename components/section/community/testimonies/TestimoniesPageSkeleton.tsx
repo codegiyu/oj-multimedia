@@ -1,19 +1,19 @@
 'use client';
 
 import { Skeleton } from '@/components/ui/skeleton';
+import { PageSkeletonShell, SectionSkeleton } from '@/components/skeletons';
 
 export const TestimoniesPageSkeleton = () => {
   return (
-    <section className="container mx-auto px-4 pb-16">
-      {/* Featured Testimonies Section Skeleton */}
-      <section className="py-12">
+    <PageSkeletonShell label="Loading testimonies">
+      <SectionSkeleton sectionClassName="pb-0">
         <div className="text-center mb-10">
           <Skeleton className="w-10 h-10 rounded-xl mx-auto mb-4" />
           <Skeleton className="h-8 w-64 mx-auto mb-3" />
-          <Skeleton className="h-4 w-96 mx-auto" />
+          <Skeleton className="h-4 w-96 max-w-full mx-auto" />
         </div>
         <div className="grid md:grid-cols-3 gap-6">
-          {[1, 2, 3].map(i => (
+          {Array.from({ length: 3 }, (_, i) => (
             <div key={i} className="bg-card rounded-2xl p-6 border border-border/50">
               <div className="flex items-start justify-between mb-4">
                 <Skeleton className="w-8 h-8" />
@@ -39,22 +39,21 @@ export const TestimoniesPageSkeleton = () => {
             </div>
           ))}
         </div>
-      </section>
+      </SectionSkeleton>
 
-      {/* All Testimonies Section Skeleton */}
-      <section className="py-12">
+      <SectionSkeleton>
         <div className="text-center mb-10">
           <Skeleton className="w-10 h-10 rounded-xl mx-auto mb-4" />
           <Skeleton className="h-8 w-48 mx-auto mb-3" />
-          <Skeleton className="h-4 w-96 mx-auto" />
+          <Skeleton className="h-4 w-96 max-w-full mx-auto" />
         </div>
         <div className="flex flex-wrap items-center gap-3 mb-8 justify-center">
-          {[1, 2, 3, 4, 5].map(i => (
+          {Array.from({ length: 5 }, (_, i) => (
             <Skeleton key={i} className="h-9 w-20 rounded-lg" />
           ))}
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[1, 2, 3, 4, 5, 6].map(i => (
+          {Array.from({ length: 6 }, (_, i) => (
             <div key={i} className="bg-card rounded-2xl p-6 border border-border/50">
               <div className="flex items-start justify-between mb-4">
                 <Skeleton className="w-6 h-6" />
@@ -80,14 +79,13 @@ export const TestimoniesPageSkeleton = () => {
             </div>
           ))}
         </div>
-      </section>
+      </SectionSkeleton>
 
-      {/* Share Testimony Section Skeleton */}
-      <section className="py-12">
+      <SectionSkeleton>
         <div className="max-w-3xl mx-auto">
           <Skeleton className="h-64 w-full rounded-2xl" />
         </div>
-      </section>
-    </section>
+      </SectionSkeleton>
+    </PageSkeletonShell>
   );
 };

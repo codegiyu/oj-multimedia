@@ -1,12 +1,12 @@
 'use client';
 
 import { Skeleton } from '@/components/ui/skeleton';
+import { PageSkeletonShell, SectionSkeleton } from '@/components/skeletons';
 
 export const ResourcesPageSkeleton = () => {
   return (
-    <section className="container mx-auto px-4 pb-16">
-      {/* Free Downloads Section Skeleton */}
-      <section className="py-12">
+    <PageSkeletonShell label="Loading resources">
+      <SectionSkeleton sectionClassName="pb-0">
         <div className="text-center mb-10">
           <Skeleton className="w-10 h-10 rounded-xl mx-auto mb-4" />
           <Skeleton className="h-8 w-64 mx-auto mb-3" />
@@ -24,10 +24,9 @@ export const ResourcesPageSkeleton = () => {
           ))}
         </div>
         <Skeleton className="h-48 w-full rounded-2xl" />
-      </section>
+      </SectionSkeleton>
 
-      {/* E-books Section Skeleton */}
-      <section className="py-12">
+      <SectionSkeleton>
         <div className="text-center mb-10">
           <Skeleton className="w-10 h-10 rounded-xl mx-auto mb-4" />
           <Skeleton className="h-8 w-48 mx-auto mb-3" />
@@ -46,10 +45,9 @@ export const ResourcesPageSkeleton = () => {
             </div>
           ))}
         </div>
-      </section>
+      </SectionSkeleton>
 
-      {/* Templates Section Skeleton */}
-      <section className="py-12">
+      <SectionSkeleton>
         <div className="text-center mb-10">
           <Skeleton className="w-10 h-10 rounded-xl mx-auto mb-4" />
           <Skeleton className="h-8 w-56 mx-auto mb-3" />
@@ -68,10 +66,9 @@ export const ResourcesPageSkeleton = () => {
             </div>
           ))}
         </div>
-      </section>
+      </SectionSkeleton>
 
-      {/* Beats Section Skeleton */}
-      <section className="py-12">
+      <SectionSkeleton>
         <div className="text-center mb-10">
           <Skeleton className="w-10 h-10 rounded-xl mx-auto mb-4" />
           <Skeleton className="h-8 w-52 mx-auto mb-3" />
@@ -90,10 +87,9 @@ export const ResourcesPageSkeleton = () => {
             </div>
           ))}
         </div>
-      </section>
+      </SectionSkeleton>
 
-      {/* Wallpapers Section Skeleton */}
-      <section className="py-12">
+      <SectionSkeleton>
         <div className="text-center mb-10">
           <Skeleton className="w-10 h-10 rounded-xl mx-auto mb-4" />
           <Skeleton className="h-8 w-56 mx-auto mb-3" />
@@ -112,10 +108,9 @@ export const ResourcesPageSkeleton = () => {
             </div>
           ))}
         </div>
-      </section>
+      </SectionSkeleton>
 
-      {/* Affiliate Products Section Skeleton */}
-      <section className="py-12">
+      <SectionSkeleton>
         <div className="text-center mb-10">
           <Skeleton className="w-10 h-10 rounded-xl mx-auto mb-4" />
           <Skeleton className="h-8 w-56 mx-auto mb-3" />
@@ -132,7 +127,7 @@ export const ResourcesPageSkeleton = () => {
             </div>
           ))}
         </div>
-      </section>
-    </section>
+      </SectionSkeleton>
+    </PageSkeletonShell>
   );
 };

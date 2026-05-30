@@ -1,12 +1,12 @@
 'use client';
 
 import { Skeleton } from '@/components/ui/skeleton';
+import { PageSkeletonShell, SectionSkeleton } from '@/components/skeletons';
 
 export const PollsPageSkeleton = () => {
   return (
-    <section className="container mx-auto px-4 pb-16">
-      {/* Active Polls Section Skeleton */}
-      <section className="py-12">
+    <PageSkeletonShell label="Loading polls">
+      <SectionSkeleton sectionClassName="pb-0">
         <div className="text-center mb-10">
           <Skeleton className="w-10 h-10 rounded-xl mx-auto mb-4" />
           <Skeleton className="h-8 w-48 mx-auto mb-3" />
@@ -39,10 +39,9 @@ export const PollsPageSkeleton = () => {
             </div>
           ))}
         </div>
-      </section>
+      </SectionSkeleton>
 
-      {/* Recent Polls Section Skeleton */}
-      <section className="py-12">
+      <SectionSkeleton>
         <div className="text-center mb-10">
           <Skeleton className="w-10 h-10 rounded-xl mx-auto mb-4" />
           <Skeleton className="h-8 w-40 mx-auto mb-3" />
@@ -73,14 +72,13 @@ export const PollsPageSkeleton = () => {
             </div>
           ))}
         </div>
-      </section>
+      </SectionSkeleton>
 
-      {/* Create Poll Section Skeleton */}
-      <section className="py-12">
+      <SectionSkeleton>
         <div className="max-w-3xl mx-auto">
           <Skeleton className="h-64 w-full rounded-2xl" />
         </div>
-      </section>
-    </section>
+      </SectionSkeleton>
+    </PageSkeletonShell>
   );
 };

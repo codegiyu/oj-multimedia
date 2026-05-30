@@ -1,24 +1,15 @@
 'use client';
 
 import { Skeleton } from '@/components/ui/skeleton';
+import { PageSkeletonShell, SectionSkeleton, SectionHeaderSkeleton } from '@/components/skeletons';
 
 export const DevotionalsPageSkeleton = () => {
   return (
-    <section className="container mx-auto px-4 pb-16">
-      {/* Daily Devotionals Skeleton */}
-      <section className="py-12">
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-3">
-            <Skeleton className="w-10 h-10 rounded-xl" />
-            <div>
-              <Skeleton className="h-8 w-48 mb-2" />
-              <Skeleton className="h-4 w-32" />
-            </div>
-          </div>
-          <Skeleton className="h-10 w-24" />
-        </div>
+    <PageSkeletonShell label="Loading devotionals">
+      <SectionSkeleton sectionClassName="pb-0">
+        <SectionHeaderSkeleton />
         <div className="grid md:grid-cols-2 gap-4">
-          {[1, 2, 3, 4].map(i => (
+          {Array.from({ length: 4 }, (_, i) => (
             <div key={i} className="bg-card rounded-2xl p-5 border border-border/50">
               <Skeleton className="h-16 w-16 rounded-xl mb-4" />
               <Skeleton className="h-5 w-3/4 mb-2" />
@@ -29,24 +20,14 @@ export const DevotionalsPageSkeleton = () => {
             </div>
           ))}
         </div>
-      </section>
+      </SectionSkeleton>
 
-      {/* Bible Study Series Skeleton */}
-      <section className="py-12">
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-3">
-            <Skeleton className="w-10 h-10 rounded-xl" />
-            <div>
-              <Skeleton className="h-8 w-48 mb-2" />
-              <Skeleton className="h-4 w-32" />
-            </div>
-          </div>
-          <Skeleton className="h-10 w-32" />
-        </div>
+      <SectionSkeleton>
+        <SectionHeaderSkeleton />
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[1, 2, 3, 4].map(i => (
+          {Array.from({ length: 4 }, (_, i) => (
             <div key={i} className="bg-card rounded-2xl overflow-hidden border border-border/50">
-              <Skeleton className="aspect-[1.75] w-full" />
+              <Skeleton className="aspect-[1.75] w-full rounded-none" />
               <div className="p-5">
                 <Skeleton className="h-5 w-3/4 mb-2" />
                 <Skeleton className="h-4 w-full mb-2" />
@@ -56,7 +37,7 @@ export const DevotionalsPageSkeleton = () => {
             </div>
           ))}
         </div>
-      </section>
-    </section>
+      </SectionSkeleton>
+    </PageSkeletonShell>
   );
 };
