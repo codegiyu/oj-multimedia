@@ -1,8 +1,7 @@
 'use client';
 
 import { motion } from 'motion/react';
-import { ArrowLeft, Calendar, Share2, CheckCircle, BarChart3 } from 'lucide-react';
-import Link from 'next/link';
+import { Calendar, Share2, CheckCircle, BarChart3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { toast } from '@/components/atoms/Toast';
@@ -13,6 +12,7 @@ import type { PollItem } from '@/lib/constants/community/polls';
 import { MultilineText } from '@/components/general/MultilineText';
 import { LoginModal } from '@/components/auth/LoginModal';
 import { useAuthStore } from '@/lib/store/useAuthStore';
+import { CommunityContentDetailHero } from '../shared/CommunityContentDetailHero';
 
 interface PollDetailPageClientProps {
   poll: PollItem;
@@ -127,58 +127,36 @@ export const PollDetailPageClient = ({ poll }: PollDetailPageClientProps) => {
 
   return (
     <article className="min-h-screen">
-      <section className="bg-gradient-to-br from-primary/10 via-background to-accent/10 py-20">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            <Link href="/community/polls-and-voting">
-              <Button variant="ghost" size="sm" className="gap-2 mb-6">
-                <ArrowLeft className="w-4 h-4" />
-                Back to Polls
-              </Button>
-            </Link>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="flex items-start gap-4">
-              <div className="flex-1">
-                <div className="flex items-center gap-3 mb-4">
-                  <span className="inline-flex w-fit px-3 py-1 rounded-full bg-primary text-primary-foreground text-xs font-medium">
-                    {poll.status === 'active' ? 'Active' : 'Closed'}
-                  </span>
-                  {poll.category && (
-                    <span className="px-3 py-1 rounded-full bg-muted text-foreground text-xs">
-                      {poll.category}
-                    </span>
-                  )}
-                </div>
-                <h1 className="text-3xl md:text-4xl font-display font-bold mb-4">
-                  {poll.question}
-                </h1>
-                {poll.description && (
-                  <MultilineText
-                    text={poll.description}
-                    className="mb-6"
-                    paragraphClassName="text-lg text-muted-foreground"
-                  />
-                )}
-                <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                  {poll.date && (
-                    <span className="flex items-center gap-1">
-                      <Calendar className="w-4 h-4" />
-                      {new Date(poll.date).toLocaleDateString()}
-                    </span>
-                  )}
-                  <span className="flex items-center gap-1">
-                    <BarChart3 className="w-4 h-4" />
-                    {localPoll.totalVotes} votes
-                  </span>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
+      <CommunityContentDetailHero
+        backHref="/community/polls-and-voting"
+        backLabel="Back to Polls"
+        title={poll.question}
+        badge={
+          <>
+            <span className="inline-flex w-fit px-3 py-1 rounded-full bg-primary text-primary-foreground text-xs font-medium mr-2">
+              {poll.status === 'active' ? 'Active' : 'Closed'}
+            </span>
+            {poll.category && (
+              <span className="inline-flex w-fit px-3 py-1 rounded-full bg-muted text-foreground text-xs">
+                {poll.category}
+              </span>
+            )}
+          </>
+        }
+        metaItems={[
+          ...(poll.date
+            ? [{ icon: Calendar, label: new Date(poll.date).toLocaleDateString() }]
+            : []),
+          { icon: BarChart3, label: `${localPoll.totalVotes} votes` },
+        ]}>
+        {poll.description && (
+          <MultilineText
+            text={poll.description}
+            className="mb-2"
+            paragraphClassName="text-lg text-muted-foreground"
+          />
+        )}
+      </CommunityContentDetailHero>
 
       <section className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">

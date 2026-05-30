@@ -1,10 +1,7 @@
 'use client';
 
-import { motion } from 'motion/react';
-import { ArrowLeft, Music, Video, Users, ExternalLink, DiscAlbum } from 'lucide-react';
-import Link from 'next/link';
+import { Music, Video, Users, ExternalLink, DiscAlbum } from 'lucide-react';
 import { FillImage } from '@/components/general/FillImage';
-import { Button } from '@/components/ui/button';
 import { MusicCard } from '@/components/cards/MusicCard';
 import { AlbumCard } from '@/components/cards/AlbumCard';
 import { VideoCard } from '@/components/cards/VideoCard';
@@ -13,6 +10,7 @@ import type { ArtistProfile } from '@/lib/types/artist';
 import type { MusicItemWithArtist } from '@/lib/utils/music';
 import type { VideoItemWithCreator } from '@/lib/utils/videos';
 import { MultilineText } from '@/components/general/MultilineText';
+import { CommunityContentDetailHero } from '../shared/CommunityContentDetailHero';
 
 interface ArtistDetailPageClientProps {
   artist: ArtistProfile;
@@ -36,83 +34,73 @@ export function ArtistDetailPageClient({
 
   return (
     <article className="min-h-screen">
-      <section className="bg-gradient-to-br from-primary/10 via-background to-accent/10 py-20">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            <Link href="/community/artists">
-              <Button variant="ghost" size="sm" className="gap-2 mb-6">
-                <ArrowLeft className="w-4 h-4" />
-                Back to Artists
-              </Button>
-            </Link>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="flex flex-col md:flex-row gap-8 items-start">
-              <div className="shrink-0">
-                <div className="relative w-40 h-40 md:w-48 md:h-48 rounded-2xl overflow-hidden ring-4 ring-background shadow-lg">
-                  <FillImage
-                    src={artist.image}
-                    alt={artist.name}
-                    imageContext="public"
-                    sizes="(max-width: 768px) 160px, 192px"
-                  />
-                </div>
-              </div>
-              <div className="flex-1 min-w-0">
-                <h1 className="text-3xl md:text-4xl font-display font-bold mb-2">{artist.name}</h1>
-                {artist.genre && <p className="text-primary font-medium mb-4">{artist.genre}</p>}
-                <div className="flex flex-wrap gap-4 text-sm text-muted-foreground mb-4">
-                  {artist.followers && (
-                    <span className="flex items-center gap-1">
-                      <Users className="w-4 h-4" />
-                      {artist.followers} followers
-                    </span>
-                  )}
-                  {artist.songs != null && (
-                    <span className="flex items-center gap-1">
-                      <Music className="w-4 h-4" />
-                      {artist.songs} songs
-                    </span>
-                  )}
-                  {artist.videos != null && (
-                    <span className="flex items-center gap-1">
-                      <Video className="w-4 h-4" />
-                      {artist.videos} videos
-                    </span>
-                  )}
-                </div>
-                {artist.bio && (
-                  <MultilineText
-                    text={artist.bio}
-                    className="mb-6"
-                    paragraphClassName="text-muted-foreground leading-relaxed"
-                  />
-                )}
-                {hasSocials && artist.socials && (
-                  <div className="flex flex-wrap gap-2">
-                    {Object.entries(artist.socials).map(
-                      ([key, url]) =>
-                        url && (
-                          <a
-                            key={key}
-                            href={url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 text-sm text-primary hover:underline">
-                            {key}
-                            <ExternalLink className="w-3 h-3" />
-                          </a>
-                        )
-                    )}
-                  </div>
+      <CommunityContentDetailHero
+        backHref="/community/artists"
+        backLabel="Back to Artists"
+        title=""
+        customContent>
+        <div className="flex flex-col md:flex-row gap-8 items-start">
+          <div className="shrink-0">
+            <div className="relative w-40 h-40 md:w-48 md:h-48 rounded-2xl overflow-hidden ring-4 ring-background shadow-lg">
+              <FillImage
+                src={artist.image}
+                alt={artist.name}
+                imageContext="public"
+                sizes="(max-width: 768px) 160px, 192px"
+              />
+            </div>
+          </div>
+          <div className="flex-1 min-w-0">
+            <h1 className="text-3xl md:text-4xl font-display font-bold mb-2">{artist.name}</h1>
+            {artist.genre && <p className="text-primary font-medium mb-4">{artist.genre}</p>}
+            <div className="flex flex-wrap gap-4 text-sm text-muted-foreground mb-4">
+              {artist.followers && (
+                <span className="flex items-center gap-1">
+                  <Users className="w-4 h-4" />
+                  {artist.followers} followers
+                </span>
+              )}
+              {artist.songs != null && (
+                <span className="flex items-center gap-1">
+                  <Music className="w-4 h-4" />
+                  {artist.songs} songs
+                </span>
+              )}
+              {artist.videos != null && (
+                <span className="flex items-center gap-1">
+                  <Video className="w-4 h-4" />
+                  {artist.videos} videos
+                </span>
+              )}
+            </div>
+            {artist.bio && (
+              <MultilineText
+                text={artist.bio}
+                className="mb-6"
+                paragraphClassName="text-muted-foreground leading-relaxed"
+              />
+            )}
+            {hasSocials && artist.socials && (
+              <div className="flex flex-wrap gap-2">
+                {Object.entries(artist.socials).map(
+                  ([key, url]) =>
+                    url && (
+                      <a
+                        key={key}
+                        href={url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-sm text-primary hover:underline">
+                        {key}
+                        <ExternalLink className="w-3 h-3" />
+                      </a>
+                    )
                 )}
               </div>
-            </motion.div>
+            )}
           </div>
         </div>
-      </section>
+      </CommunityContentDetailHero>
 
       {(musicItems.length > 0 || videoItems.length > 0 || albumItems.length > 0) && (
         <section className="py-12">

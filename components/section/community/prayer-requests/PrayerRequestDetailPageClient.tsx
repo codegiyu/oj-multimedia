@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'motion/react';
-import { ArrowLeft, Heart, MessageCircle, Calendar, Share2, AlertCircle } from 'lucide-react';
+import { Heart, MessageCircle, Calendar, Share2, AlertCircle, User } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
@@ -10,6 +10,7 @@ import type { PrayerRequestItem } from '@/lib/constants/community/prayer-request
 import { MultilineText } from '@/components/general/MultilineText';
 import { LoginModal } from '@/components/auth/LoginModal';
 import { useAuthStore } from '@/lib/store/useAuthStore';
+import { CommunityContentDetailHero } from '../shared/CommunityContentDetailHero';
 
 interface PrayerRequestDetailPageClientProps {
   request: PrayerRequestItem;
@@ -66,49 +67,36 @@ export const PrayerRequestDetailPageClient = ({
 
   return (
     <article className="min-h-screen">
-      <section className="bg-gradient-to-br from-primary/10 via-background to-accent/10 py-20">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            <Link href="/community/prayer-requests">
-              <Button variant="ghost" size="sm" className="gap-2 mb-6">
-                <ArrowLeft className="w-4 h-4" />
-                Back to Prayer Requests
-              </Button>
-            </Link>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="flex items-start gap-4">
-              {request.urgent && (
-                <AlertCircle className="w-6 h-6 text-destructive flex-shrink-0 mt-1" />
-              )}
-              <div className="flex-1">
-                <div className="flex items-center gap-3 mb-4">
-                  <h1 className="text-3xl md:text-4xl font-display font-bold">{request.title}</h1>
-                  {request.urgent && (
-                    <span className="px-3 py-1 rounded-full bg-destructive/10 text-destructive text-xs font-medium">
-                      Urgent
-                    </span>
-                  )}
-                </div>
-                <div className="flex items-center gap-4 text-sm text-muted-foreground mb-6">
-                  <span>{request.author}</span>
-                  {request.date && (
-                    <span className="flex items-center gap-1">
-                      <Calendar className="w-4 h-4" />
-                      {new Date(request.date).toLocaleDateString()}
-                    </span>
-                  )}
-                  <span className="px-3 py-1 rounded-full bg-primary/10 text-primary text-xs">
-                    {request.category}
-                  </span>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
+      <CommunityContentDetailHero
+        backHref="/community/prayer-requests"
+        backLabel="Back to Prayer Requests"
+        title={request.title}
+        headerPrefix={
+          request.urgent ? (
+            <AlertCircle className="w-6 h-6 text-destructive flex-shrink-0 mt-1" />
+          ) : undefined
+        }
+        metaItems={[
+          { icon: User, label: request.author },
+          ...(request.date
+            ? [{ icon: Calendar, label: new Date(request.date).toLocaleDateString() }]
+            : []),
+        ]}
+        badge={
+          <>
+            {request.urgent && (
+              <span className="inline-flex w-fit px-3 py-1 rounded-full bg-destructive/10 text-destructive text-xs font-medium mr-2">
+                Urgent
+              </span>
+            )}
+            {request.category && (
+              <span className="inline-flex w-fit px-3 py-1 rounded-full bg-primary/10 text-primary text-xs">
+                {request.category}
+              </span>
+            )}
+          </>
+        }
+      />
 
       <section className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
