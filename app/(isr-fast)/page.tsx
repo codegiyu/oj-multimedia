@@ -206,8 +206,7 @@ async function fetchHomeSections(filters: {
     limit: '12',
     page: '1',
     status: 'published',
-    type: 'recent',
-    category: 'movie',
+    type: 'long-form',
   });
   const featuredNewsQuery = new URLSearchParams({
     limit: '6',
