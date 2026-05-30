@@ -1,7 +1,5 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
-import { useEffect } from 'react';
 import Link from 'next/link';
 import { GhostBtn } from '../atoms/GhostBtn';
 import { Logo } from '../atoms/Logo';
@@ -44,16 +42,10 @@ const footerLinks = {
 export const Footer = () => {
   const currentYear = new Date().getFullYear();
 
-  const { socials, appDetails, fetchSettings } = useSiteSettingsStore(state => ({
+  const { socials, appDetails } = useSiteSettingsStore(state => ({
     socials: state.settings?.socials,
     appDetails: state.settings?.appDetails,
-    fetchSettings: state.actions.fetchSettings,
   }));
-
-  useEffect(() => {
-    fetchSettings('socials');
-    fetchSettings('appDetails');
-  }, []);
 
   const appSocials =
     socials?.map((social: { platform: SocialPlatform; href: string }) => ({

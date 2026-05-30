@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
 import { useEffect } from 'react';
@@ -26,16 +25,18 @@ export const ContactInfoSection = ({
 }: ContactInfoSectionProps = {}) => {
   const { siteLoading } = useSiteStore(state => state);
 
-  const { settings, isLoading, fetchSettings } = useSiteSettingsStore(state => ({
+  const { settings, isLoading, ensureSettingsLoaded } = useSiteSettingsStore(state => ({
     settings: state.settings,
-    isLoading: state.isLoading,
-    fetchSettings: state.actions.fetchSettings,
+    isLoading: state.loadingSlices.size > 0,
+    ensureSettingsLoaded: state.actions.ensureSettingsLoaded,
   }));
 
   useEffect(() => {
-    if (initialContactInfo == null) fetchSettings('contactInfo');
-    if (initialSocials == null) fetchSettings('socials');
-  }, []);
+    const slices: Array<'contactInfo' | 'socials'> = [];
+    if (initialContactInfo == null) slices.push('contactInfo');
+    if (initialSocials == null) slices.push('socials');
+    if (slices.length > 0) void ensureSettingsLoaded(slices);
+  }, [ensureSettingsLoaded, initialContactInfo, initialSocials]);
 
   const contactInfo = initialContactInfo ?? settings?.contactInfo;
   const officeHours = formatOfficeHours(contactInfo?.officeHours);

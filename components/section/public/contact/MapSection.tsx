@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
 import { useEffect } from 'react';
@@ -17,14 +16,14 @@ export interface MapSectionProps {
 export const MapSection = ({ contactInfo: initialContactInfo }: MapSectionProps = {}) => {
   const { siteLoading } = useSiteStore(state => state);
 
-  const { settings, fetchSettings } = useSiteSettingsStore(state => ({
+  const { settings, ensureSettingsLoaded } = useSiteSettingsStore(state => ({
     settings: state.settings,
-    fetchSettings: state.actions.fetchSettings,
+    ensureSettingsLoaded: state.actions.ensureSettingsLoaded,
   }));
 
   useEffect(() => {
-    if (initialContactInfo == null) fetchSettings('contactInfo');
-  }, []);
+    if (initialContactInfo == null) void ensureSettingsLoaded(['contactInfo']);
+  }, [ensureSettingsLoaded, initialContactInfo]);
 
   const contactInfo = initialContactInfo ?? settings?.contactInfo;
   const address = contactInfo?.address?.join(', ') || 'Our Location';

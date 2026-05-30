@@ -19,11 +19,11 @@ export function ArtistPortalUploadPageClient({
   initialLoadError,
 }: ArtistPortalUploadPageClientProps) {
   const settings = useInitSiteSettingsStore(s => s.settings);
-  const fetchSettings = useInitSiteSettingsStore(s => s.actions.fetchSettings);
+  const ensureSettingsLoaded = useInitSiteSettingsStore(s => s.actions.ensureSettingsLoaded);
 
   useEffect(() => {
-    void fetchSettings('contactInfo', { force: false });
-  }, [fetchSettings]);
+    void ensureSettingsLoaded(['contactInfo']);
+  }, [ensureSettingsLoaded]);
 
   const waHref = useMemo(
     () => buildWhatsAppHref(settings?.contactInfo?.whatsapp, ARTIST_CONTENT_SUBMIT_PAYLOAD),

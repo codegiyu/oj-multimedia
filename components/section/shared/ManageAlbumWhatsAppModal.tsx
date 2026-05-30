@@ -49,7 +49,7 @@ export function ManageAlbumWhatsAppModal({
   defaultRequestType,
 }: ManageAlbumWhatsAppModalProps) {
   const settings = useInitSiteSettingsStore(s => s.settings);
-  const fetchSettings = useInitSiteSettingsStore(s => s.actions.fetchSettings);
+  const ensureSettingsLoaded = useInitSiteSettingsStore(s => s.actions.ensureSettingsLoaded);
 
   const initialType: AlbumWhatsAppRequestType = defaultRequestType ?? (album ? 'edit' : 'create');
 
@@ -59,7 +59,7 @@ export function ManageAlbumWhatsAppModal({
     if (!open) return;
 
     setRequestType(defaultRequestType ?? (album ? 'edit' : 'create'));
-    void fetchSettings('contactInfo', { force: false });
+    void ensureSettingsLoaded(['contactInfo']);
   }, [open, album, defaultRequestType]);
 
   const waHref = useMemo(() => {

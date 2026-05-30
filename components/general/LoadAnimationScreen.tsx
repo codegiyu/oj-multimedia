@@ -7,9 +7,31 @@ import { useSiteStore } from '@/lib/store/siteStore';
 import BackgroundPaths from '@/components/kokonutui/background-paths';
 import Image from 'next/image';
 
-const BASE_LOAD_TIME = 800; // ms — short gate so LCP is not blocked on repeat visits
-const TRANSITION_DURATION = 0.8; // s
-const TEXT_ANIMATION_DELAY = 0.5; // s - delay before text animates in
+const SPLASH_SEEN_SESSION_KEY = 'oj-splash-seen';
+const BASE_LOAD_TIME = 800;
+const REPEAT_VISIT_LOAD_TIME = 200;
+const TRANSITION_DURATION = 0.8;
+const TEXT_ANIMATION_DELAY = 0.5;
+
+function prefersReducedMotion(): boolean {
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
+function hasSeenSplashThisSession(): boolean {
+  try {
+    return sessionStorage.getItem(SPLASH_SEEN_SESSION_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
+
+function markSplashSeenThisSession(): void {
+  try {
+    sessionStorage.setItem(SPLASH_SEEN_SESSION_KEY, '1');
+  } catch {
+    // Private mode or blocked storage — skip persistence
+  }
+}
 
 export const LoadAnimationScreen = () => {
   const {
@@ -18,21 +40,37 @@ export const LoadAnimationScreen = () => {
   } = useSiteStore(state => state);
   const [pageLoaded, setPageLoaded] = useState(false);
   const [showText, setShowText] = useState(false);
+  const [skipHeavySplash] = useState(() => {
+    if (typeof window === 'undefined') return false;
+
+    return hasSeenSplashThisSession() || prefersReducedMotion();
+  });
 
   useEffect(() => {
+    if (skipHeavySplash) {
+      const reducedMotion = prefersReducedMotion();
+
+      void (async () => {
+        await debounce(reducedMotion ? 0 : REPEAT_VISIT_LOAD_TIME);
+        setPageLoaded(true);
+        markSplashSeenThisSession();
+      })();
+
+      return;
+    }
+
     const handleLoad = async () => {
       await debounce(BASE_LOAD_TIME);
       setPageLoaded(true);
+      markSplashSeenThisSession();
     };
 
-    // If already loaded (from cache)
     if (document.readyState === 'complete') {
-      handleLoad();
+      void handleLoad();
     } else {
       window.addEventListener('load', handleLoad);
     }
 
-    // Show text after a delay
     const textTimer = setTimeout(() => {
       setShowText(true);
     }, TEXT_ANIMATION_DELAY * 1000);
@@ -41,7 +79,7 @@ export const LoadAnimationScreen = () => {
       window.removeEventListener('load', handleLoad);
       clearTimeout(textTimer);
     };
-  }, []);
+  }, [skipHeavySplash]);
 
   return (
     <AnimatePresence>
@@ -50,51 +88,52 @@ export const LoadAnimationScreen = () => {
           initial={{ opacity: 1 }}
           animate={pageLoaded ? { opacity: 0 } : { opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: TRANSITION_DURATION, ease: 'easeInOut' }}
+          transition={{
+            duration: skipHeavySplash ? 0.2 : TRANSITION_DURATION,
+            ease: 'easeInOut',
+          }}
           onAnimationComplete={() => {
             if (pageLoaded) {
               setSiteLoading(false);
             }
           }}
           className="w-full h-screen bg-white grid place-items-center fixed inset-0 z-[99] overflow-hidden">
-          {/* Background Paths */}
-          <BackgroundPaths
-            title=""
-            showTitle={false}
-            gradientColors={{
-              primary: 'hsl(16, 90%, 58%)',
-              middle: 'hsl(24, 100%, 65%)',
-              accent: 'hsl(45, 93%, 58%)',
-            }}
-            opacity={1}
-            className="absolute inset-0"
-          />
+          {!skipHeavySplash && (
+            <BackgroundPaths
+              title=""
+              showTitle={false}
+              gradientColors={{
+                primary: 'hsl(16, 90%, 58%)',
+                middle: 'hsl(24, 100%, 65%)',
+                accent: 'hsl(45, 93%, 58%)',
+              }}
+              opacity={1}
+              className="absolute inset-0"
+            />
+          )}
 
-          {/* Content */}
           <div className="text-center relative z-10">
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}
               animate={pageLoaded ? {} : { scale: 1, opacity: 1 }}
-              transition={{ duration: 0.6, ease: 'easeOut' }}
+              transition={{ duration: skipHeavySplash ? 0.2 : 0.6, ease: 'easeOut' }}
               className="mb-6">
-              {/* Logo and Text Container */}
               <div className="flex items-center justify-center gap-3 mb-6">
-                {/* Logo Image */}
                 <motion.div
                   initial={{ scale: 0.8, opacity: 0 }}
                   animate={pageLoaded ? {} : { scale: 1, opacity: 1 }}
-                  transition={{ duration: 0.6, ease: 'easeOut' }}>
+                  transition={{ duration: skipHeavySplash ? 0.2 : 0.6, ease: 'easeOut' }}>
                   <Image
                     src="/images/logo-badge.png"
                     alt="OJ Multimedia Logo"
                     width={50}
                     height={50}
+                    priority
                     className="w-12 h-12 md:w-14 md:h-14 object-contain"
                   />
                 </motion.div>
-                {/* Animated Text */}
                 <AnimatePresence>
-                  {showText && !pageLoaded && (
+                  {showText && !pageLoaded && !skipHeavySplash && (
                     <motion.span
                       initial={{ x: -20, opacity: 0 }}
                       animate={{ x: 0, opacity: 1 }}
@@ -106,15 +145,17 @@ export const LoadAnimationScreen = () => {
                   )}
                 </AnimatePresence>
               </div>
-              <motion.p
-                initial={{ y: 20, opacity: 0 }}
-                animate={pageLoaded ? {} : { y: 0, opacity: 1 }}
-                transition={{ duration: 0.6, delay: 0.3 }}
-                className="text-primary-foreground/80 text-sm md:text-base">
-                Strengthening Faith Through Content
-              </motion.p>
+              {!skipHeavySplash && (
+                <motion.p
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={pageLoaded ? {} : { y: 0, opacity: 1 }}
+                  transition={{ duration: 0.6, delay: 0.3 }}
+                  className="text-primary-foreground/80 text-sm md:text-base">
+                  Strengthening Faith Through Content
+                </motion.p>
+              )}
             </motion.div>
-            {!pageLoaded && (
+            {!pageLoaded && !skipHeavySplash && (
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: '200px' }}

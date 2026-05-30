@@ -40,13 +40,13 @@ export function PaidDownloadModal({
   pageUrl,
 }: PaidDownloadModalProps) {
   const settings = useInitSiteSettingsStore(s => s.settings);
-  const fetchSettings = useInitSiteSettingsStore(s => s.actions.fetchSettings);
+  const ensureSettingsLoaded = useInitSiteSettingsStore(s => s.actions.ensureSettingsLoaded);
 
   useEffect(() => {
     if (!open) return;
 
-    void fetchSettings('contactInfo', { force: false });
-  }, [open, fetchSettings]);
+    void ensureSettingsLoaded(['contactInfo']);
+  }, [open, ensureSettingsLoaded]);
 
   const downloadPayload = useMemo(
     () => ({

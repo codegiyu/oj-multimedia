@@ -48,12 +48,12 @@ export function CompanyWhatsAppModal({
   continueLabel = 'Continue on WhatsApp',
 }: CompanyWhatsAppModalProps) {
   const settings = useInitSiteSettingsStore(s => s.settings);
-  const fetchSettings = useInitSiteSettingsStore(s => s.actions.fetchSettings);
+  const ensureSettingsLoaded = useInitSiteSettingsStore(s => s.actions.ensureSettingsLoaded);
 
   useEffect(() => {
     if (!open) return;
 
-    void fetchSettings('contactInfo', { force: false });
+    void ensureSettingsLoaded(['contactInfo']);
   }, [open]);
 
   const waHref = useMemo(() => {

@@ -39,7 +39,7 @@ export const SectionContent = ({
   itemClassName,
   containerVariants = defaultContainerVariants,
   itemVariants = defaultItemVariants,
-  enableAnimation = true,
+  enableAnimation = false,
 }: SectionContentProps) => {
   if (asList && Array.isArray(children)) {
     const content = enableAnimation ? (
