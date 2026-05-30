@@ -576,6 +576,8 @@ export interface INewsArticle {
   status: 'draft' | 'published' | 'archived';
   isFeatured: boolean;
   isTrending: boolean;
+  tags?: string[];
+  priority?: number;
   views: number;
   displayOrder: number;
   seo?: {

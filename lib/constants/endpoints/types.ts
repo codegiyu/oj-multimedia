@@ -435,6 +435,8 @@ export interface IArtistCreateMusicPayload {
   videoUrl?: string;
   downloadUrl?: string;
   category?: string;
+  tags?: string[];
+  metadata?: Record<string, unknown>;
   isMonetizable?: boolean;
   price?: number;
   status?: 'draft' | 'published' | 'archived';
@@ -464,6 +466,8 @@ export interface IArtistCreateVideoPayload {
   videoFileUrl?: string;
   embedUrl?: string;
   category?: string;
+  tags?: string[];
+  metadata?: Record<string, unknown>;
   isMonetizable?: boolean;
   price?: number;
   status?: 'draft' | 'published' | 'archived';

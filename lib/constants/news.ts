@@ -41,6 +41,8 @@ export interface NewsItem {
   isLatest?: boolean; // Mark for latest/news feed section
   author?: string; // Author name
   date?: string; // Publication date (ISO format or readable format)
+  priority?: number;
+  tags?: string[];
   fullStory?: FullStoryContent; // Structured full story content
 }
 
