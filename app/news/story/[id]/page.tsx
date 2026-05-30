@@ -6,6 +6,9 @@ import { callPublicServerApi } from '@/lib/services/serverApi';
 import { mapPublicNewsToDetailItem } from '@/lib/utils/publicApiMappers';
 import type { NewsItem } from '@/lib/constants/news';
 import { buildDetailShareMetadata } from '@/lib/utils/metadata';
+import { generateNewsStoryStaticParams } from '@/lib/services/isrPrebuildParams';
+
+export const generateStaticParams = generateNewsStoryStaticParams;
 
 interface NewsStoryPageProps {
   params: Promise<{ id: string }>;

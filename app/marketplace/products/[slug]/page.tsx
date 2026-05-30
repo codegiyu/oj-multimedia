@@ -6,6 +6,9 @@ import { callPublicServerApi } from '@/lib/services/serverApi';
 import { ISR_PUBLIC_FETCH } from '@/lib/constants/isr';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { buildDetailShareMetadata } from '@/lib/utils/metadata';
+import { generateMarketplaceProductStaticParams } from '@/lib/services/isrPrebuildParams';
+
+export const generateStaticParams = generateMarketplaceProductStaticParams;
 
 interface PageProps {
   params: Promise<{ slug: string }>;

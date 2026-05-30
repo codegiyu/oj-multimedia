@@ -10,6 +10,9 @@ import {
 } from '@/lib/utils/publicApiMappers';
 import type { MusicItemWithArtist } from '@/lib/utils/music';
 import { buildDetailShareMetadata } from '@/lib/utils/metadata';
+import { generateMusicDetailStaticParams } from '@/lib/services/isrPrebuildParams';
+
+export const generateStaticParams = generateMusicDetailStaticParams;
 
 interface MusicDetailPageProps {
   params: Promise<{ id: string }>;
