@@ -68,6 +68,7 @@ export function FillImage({
       fill
       sizes={sizes}
       priority={priority}
+      fetchPriority={priority ? 'high' : 'low'}
       unoptimized={shouldUseUnoptimized(displaySrc)}
       onError={handleError}
       className={cn('object-cover', className)}
@@ -107,6 +108,7 @@ export function FixedImage({
       width={width}
       height={height}
       priority={priority}
+      fetchPriority={priority ? 'high' : 'low'}
       unoptimized={shouldUseUnoptimized(displaySrc)}
       onError={handleError}
       className={className}
