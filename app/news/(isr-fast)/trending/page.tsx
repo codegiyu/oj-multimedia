@@ -7,6 +7,7 @@ import { NewsPageSkeleton } from '@/components/section/news/NewsPageSkeleton';
 import { filterByCategory } from '@/components/section/news/categoryUtils';
 import type { TrendingStory } from '@/components/section/news/TrendingSidebar';
 import { callPublicServerApi } from '@/lib/services/serverApi';
+import { ISR_PUBLIC_FETCH } from '@/lib/constants/isr';
 import { mapPublicNewsToTrendingStory } from '@/lib/utils/publicApiMappers';
 import { NEWS_TYPES } from '@/lib/constants/contentTaxonomy';
 import { normalizePublicCategoryByScope } from '@/lib/utils/contentCategoriesServer';
@@ -24,7 +25,7 @@ async function fetchTrendingStories(category: string) {
     category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';
   const query =
     `?limit=50&page=1&status=published&type=${NEWS_TYPES.trending}${categoryParam}` as const;
-  const res = await callPublicServerApi('PUBLIC_GET_NEWS', { query });
+  const res = await callPublicServerApi('PUBLIC_GET_NEWS', { query }, ISR_PUBLIC_FETCH.fast);
 
   if (res.type === 'error') {
     return {
@@ -47,7 +48,11 @@ interface TrendingStoriesPageProps {
 
 export default async function TrendingStoriesPage({ searchParams }: TrendingStoriesPageProps) {
   const params = await searchParams;
-  const category = await normalizePublicCategoryByScope('news', params.category);
+  const category = await normalizePublicCategoryByScope(
+    'news',
+    params.category,
+    ISR_PUBLIC_FETCH.fast
+  );
 
   return (
     <MainLayout>
@@ -71,7 +76,7 @@ export default async function TrendingStoriesPage({ searchParams }: TrendingStor
 async function TrendingStoriesServer({ category }: { category: string }) {
   const [data, categoryOptions] = await Promise.all([
     fetchTrendingStories(category),
-    fetchPublicCategoryNav('news', 'All Stories', newsCategoryNavFallback),
+    fetchPublicCategoryNav('news', 'All Stories', newsCategoryNavFallback, ISR_PUBLIC_FETCH.fast),
   ]);
 
   return <TrendingStoriesPageClient {...data} categoryOptions={categoryOptions} />;

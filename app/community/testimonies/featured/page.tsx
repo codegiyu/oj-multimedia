@@ -7,9 +7,12 @@ import { FeaturedTestimonies } from '@/components/section/community/testimonies/
 import { DataLoadErrorWithRetry } from '@/components/general/DataLoadErrorWithRetry';
 import { Sparkles } from 'lucide-react';
 import { callPublicServerApi } from '@/lib/services/serverApi';
+import { ISR_PUBLIC_FETCH, ISR_REVALIDATE } from '@/lib/constants/isr';
 import { mapToTestimony } from '@/lib/utils/communityApiMappers';
 import { buildCommunityListQuery } from '@/lib/utils/communityListQuery';
 import type { Testimony } from '@/components/section/community/testimonies/TestimoniesPageClient';
+
+export const revalidate = ISR_REVALIDATE.slow;
 
 export const metadata: Metadata = {
   title: 'Featured Testimonies - Inspiring Stories',
@@ -21,9 +24,13 @@ async function fetchFeaturedTestimonies(): Promise<{
   featuredTestimonies: Testimony[];
   initialErrorMessage: string | null;
 }> {
-  const res = await callPublicServerApi('PUBLIC_GET_TESTIMONIES', {
-    query: buildCommunityListQuery({ type: 'featured', limit: 50 }),
-  });
+  const res = await callPublicServerApi(
+    'PUBLIC_GET_TESTIMONIES',
+    {
+      query: buildCommunityListQuery({ type: 'featured', limit: 50 }),
+    },
+    ISR_PUBLIC_FETCH.slow
+  );
 
   if (res.type === 'error') {
     return {

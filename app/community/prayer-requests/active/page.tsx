@@ -8,9 +8,12 @@ import { DataLoadErrorWithRetry } from '@/components/general/DataLoadErrorWithRe
 import { HandHeart } from 'lucide-react';
 import { filterByCategory } from '@/lib/utils/community/prayer-requests';
 import { callPublicServerApi } from '@/lib/services/serverApi';
+import { ISR_PUBLIC_FETCH, ISR_REVALIDATE } from '@/lib/constants/isr';
 import { mapToPrayerRequest } from '@/lib/utils/communityApiMappers';
 import { buildCommunityListQuery } from '@/lib/utils/communityListQuery';
 import type { PrayerRequest } from '@/components/section/community/prayer-requests/PrayerRequestsPageClient';
+
+export const revalidate = ISR_REVALIDATE.fast;
 
 export const metadata: Metadata = {
   title: 'Active Prayer Requests - Join in Prayer',
@@ -22,9 +25,13 @@ async function fetchActivePrayerRequests(category: string): Promise<{
   activeRequests: PrayerRequest[];
   initialErrorMessage: string | null;
 }> {
-  const res = await callPublicServerApi('PUBLIC_GET_PRAYER_REQUESTS', {
-    query: buildCommunityListQuery({ status: 'active', limit: 50, category }),
-  });
+  const res = await callPublicServerApi(
+    'PUBLIC_GET_PRAYER_REQUESTS',
+    {
+      query: buildCommunityListQuery({ status: 'active', limit: 50, category }),
+    },
+    ISR_PUBLIC_FETCH.fast
+  );
 
   if (res.type === 'error') {
     return {

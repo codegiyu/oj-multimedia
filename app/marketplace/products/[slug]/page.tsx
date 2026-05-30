@@ -3,6 +3,7 @@ import { Suspense } from 'react';
 import { ProductDetailClient } from '@/components/section/marketplace/ProductDetailClient';
 import { ProductDetailSkeleton } from '@/components/section/marketplace/ProductDetailSkeleton';
 import { callPublicServerApi } from '@/lib/services/serverApi';
+import { ISR_PUBLIC_FETCH } from '@/lib/constants/isr';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { buildDetailShareMetadata } from '@/lib/utils/metadata';
 
@@ -11,9 +12,13 @@ interface PageProps {
 }
 
 async function fetchProductBySlug(slug: string) {
-  const res = await callPublicServerApi('MARKETPLACE_GET_PRODUCT_BY_SLUG', {
-    query: `/${encodeURIComponent(slug)}` as `/${string}`,
-  });
+  const res = await callPublicServerApi(
+    'MARKETPLACE_GET_PRODUCT_BY_SLUG',
+    {
+      query: `/${encodeURIComponent(slug)}` as `/${string}`,
+    },
+    ISR_PUBLIC_FETCH.fast
+  );
   if (res.type === 'error') return null;
   return res.data;
 }

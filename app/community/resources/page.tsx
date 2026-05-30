@@ -13,6 +13,7 @@ import {
 } from '@/components/section/community/resources/ResourcesPageClient';
 import { ResourcesPageSkeleton } from '@/components/section/community/resources/ResourcesPageSkeleton';
 import { callPublicServerApi } from '@/lib/services/serverApi';
+import { ISR_PUBLIC_FETCH, ISR_REVALIDATE } from '@/lib/constants/isr';
 import { RESOURCE_TYPES } from '@/lib/types/community';
 import {
   mapToEbook,
@@ -24,6 +25,8 @@ import {
 import { DOWNLOAD_CATEGORIES_FALLBACK } from '@/lib/constants/promotionFallbacks';
 import type { ResourceDownloadCategory } from '@/lib/types/promotion';
 import { filterCompleteResources } from '@/lib/utils/contentCompleteness';
+
+export const revalidate = ISR_REVALIDATE.slow;
 
 export const metadata: Metadata = {
   title: 'Resources - Free Downloads & More',
@@ -46,12 +49,16 @@ async function fetchResourcesData(): Promise<
   const [resourceRequests, downloadCategoriesRes] = await Promise.all([
     Promise.all(
       RESOURCE_TYPE_ORDER.map(type =>
-        callPublicServerApi('PUBLIC_GET_RESOURCES', {
-          query: `${baseQuery}&type=${type}` as `?${string}`,
-        })
+        callPublicServerApi(
+          'PUBLIC_GET_RESOURCES',
+          {
+            query: `${baseQuery}&type=${type}` as `?${string}`,
+          },
+          ISR_PUBLIC_FETCH.slow
+        )
       )
     ),
-    callPublicServerApi('PUBLIC_GET_RESOURCE_DOWNLOAD_CATEGORIES', {}),
+    callPublicServerApi('PUBLIC_GET_RESOURCE_DOWNLOAD_CATEGORIES', {}, ISR_PUBLIC_FETCH.slow),
   ]);
   const results = resourceRequests;
   let initialErrorMessage: string | null = null;

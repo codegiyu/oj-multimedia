@@ -1,6 +1,6 @@
 import { ALL_CATEGORY_ID } from '@/lib/constants/contentTaxonomy';
 import type { IContentCategoryItem } from '@/lib/constants/endpoints';
-import { callPublicServerApi } from '@/lib/services/serverApi';
+import { callPublicServerApi, type PublicServerApiConfig } from '@/lib/services/serverApi';
 
 export type CategoryNavItem = { id: string; label: string };
 
@@ -9,7 +9,8 @@ type ContentCategoryScope = IContentCategoryItem['scope'];
 export async function fetchPublicCategoryNav(
   scope: ContentCategoryScope,
   allLabel: string,
-  fallback: CategoryNavItem[]
+  fallback: CategoryNavItem[],
+  isr?: PublicServerApiConfig
 ): Promise<CategoryNavItem[]> {
   const params = new URLSearchParams();
   params.set('page', '1');
@@ -18,9 +19,13 @@ export async function fetchPublicCategoryNav(
   params.set('scope', scope);
   params.set('isActive', 'true');
 
-  const res = await callPublicServerApi('PUBLIC_GET_CONTENT_CATEGORIES', {
-    query: `?${params.toString()}` as `?${string}`,
-  });
+  const res = await callPublicServerApi(
+    'PUBLIC_GET_CONTENT_CATEGORIES',
+    {
+      query: `?${params.toString()}` as `?${string}`,
+    },
+    isr
+  );
 
   if (res.type !== 'success') {
     return fallback;

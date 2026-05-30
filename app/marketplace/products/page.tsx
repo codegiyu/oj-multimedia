@@ -4,6 +4,7 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { MarketplaceProductsPageClient } from '@/components/section/marketplace/MarketplaceProductsPageClient';
 import { MarketplaceProductsPageSkeleton } from '@/components/section/marketplace/MarketplaceProductsPageSkeleton';
 import { callPublicServerApi } from '@/lib/services/serverApi';
+import { ISR_PUBLIC_FETCH } from '@/lib/constants/isr';
 import type {
   IMarketplaceCategory,
   IMarketplaceSubCategory,
@@ -55,16 +56,24 @@ async function fetchProductsPageData(params: {
 
   try {
     const [categoriesRes, productsRes] = await Promise.all([
-      callPublicServerApi('MARKETPLACE_GET_CATEGORIES', {}),
-      callPublicServerApi('MARKETPLACE_GET_PRODUCTS', {
-        query: `?${query.toString()}` as `?${string}`,
-      }),
+      callPublicServerApi('MARKETPLACE_GET_CATEGORIES', {}, ISR_PUBLIC_FETCH.fast),
+      callPublicServerApi(
+        'MARKETPLACE_GET_PRODUCTS',
+        {
+          query: `?${query.toString()}` as `?${string}`,
+        },
+        ISR_PUBLIC_FETCH.fast
+      ),
     ]);
 
     const subcategoriesRes = params.category
-      ? await callPublicServerApi('MARKETPLACE_GET_SUBCATEGORIES', {
-          query: `?category=${encodeURIComponent(params.category)}` as `?${string}`,
-        })
+      ? await callPublicServerApi(
+          'MARKETPLACE_GET_SUBCATEGORIES',
+          {
+            query: `?category=${encodeURIComponent(params.category)}` as `?${string}`,
+          },
+          ISR_PUBLIC_FETCH.fast
+        )
       : null;
 
     const error =

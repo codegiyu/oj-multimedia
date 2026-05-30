@@ -7,9 +7,12 @@ import { BibleStudySeriesSection } from '@/components/section/community/devotion
 import { DataLoadErrorWithRetry } from '@/components/general/DataLoadErrorWithRetry';
 import { BookOpen } from 'lucide-react';
 import { callPublicServerApi } from '@/lib/services/serverApi';
+import { ISR_PUBLIC_FETCH, ISR_REVALIDATE } from '@/lib/constants/isr';
 import { mapToBibleStudy } from '@/lib/utils/communityApiMappers';
 import { buildCommunityListQuery } from '@/lib/utils/communityListQuery';
 import type { BibleStudy } from '@/components/section/community/devotionals/DevotionalsPageClient';
+
+export const revalidate = ISR_REVALIDATE.slow;
 
 export const metadata: Metadata = {
   title: 'Bible Study Series - Deep Dive into Scripture',
@@ -21,9 +24,13 @@ async function fetchBibleStudySeries(): Promise<{
   bibleStudySeries: BibleStudy[];
   initialErrorMessage: string | null;
 }> {
-  const res = await callPublicServerApi('PUBLIC_GET_DEVOTIONALS', {
-    query: buildCommunityListQuery({ type: 'bible-study', publishedOnly: true }),
-  });
+  const res = await callPublicServerApi(
+    'PUBLIC_GET_DEVOTIONALS',
+    {
+      query: buildCommunityListQuery({ type: 'bible-study', publishedOnly: true }),
+    },
+    ISR_PUBLIC_FETCH.slow
+  );
 
   if (res.type === 'error') {
     return {

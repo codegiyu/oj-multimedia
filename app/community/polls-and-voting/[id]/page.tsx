@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { PollDetailPageClient } from '@/components/section/community/polls/PollDetailPageClient';
 import { callPublicServerApi } from '@/lib/services/serverApi';
+import { ISR_PUBLIC_FETCH } from '@/lib/constants/isr';
 import { mapToPoll } from '@/lib/utils/communityApiMappers';
 import { buildDetailShareMetadata } from '@/lib/utils/metadata';
 
@@ -16,9 +17,13 @@ export async function generateMetadata({ params }: PollDetailPageProps): Promise
   if (!id) {
     return { title: 'Poll Not Found', description: 'The requested poll could not be found.' };
   }
-  const res = await callPublicServerApi('PUBLIC_GET_POLL_ITEM', {
-    query: `/${encodeURIComponent(id)}`,
-  });
+  const res = await callPublicServerApi(
+    'PUBLIC_GET_POLL_ITEM',
+    {
+      query: `/${encodeURIComponent(id)}`,
+    },
+    ISR_PUBLIC_FETCH.fast
+  );
   if (res.type === 'error') {
     return { title: 'Poll Not Found', description: 'The requested poll could not be found.' };
   }
@@ -47,9 +52,13 @@ export default async function PollDetailPage({ params }: PollDetailPageProps) {
   const id = resolvedParams.id;
   if (!id) notFound();
 
-  const res = await callPublicServerApi('PUBLIC_GET_POLL_ITEM', {
-    query: `/${encodeURIComponent(id)}`,
-  });
+  const res = await callPublicServerApi(
+    'PUBLIC_GET_POLL_ITEM',
+    {
+      query: `/${encodeURIComponent(id)}`,
+    },
+    ISR_PUBLIC_FETCH.fast
+  );
   if (res.type === 'error') notFound();
 
   const data = res.data;

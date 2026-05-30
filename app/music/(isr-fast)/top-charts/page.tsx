@@ -6,6 +6,7 @@ import { TopChartsPageClient } from '@/components/section/music/TopChartsPageCli
 import { MusicPageSkeleton } from '@/components/section/music/MusicPageSkeleton';
 import type { ChartSong } from '@/components/section/music/TopMusicCharts';
 import { callPublicServerApi } from '@/lib/services/serverApi';
+import { ISR_PUBLIC_FETCH } from '@/lib/constants/isr';
 import { filterByCategory } from '@/lib/utils/music';
 import { filterPublicMusicList, mapPublicMusicToChartSong } from '@/lib/utils/publicApiMappers';
 import { CHART_PERIOD_VALUES, MUSIC_TYPES } from '@/lib/constants/contentTaxonomy';
@@ -24,7 +25,7 @@ async function fetchChartSongs(category: string, period: string) {
     category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';
   const query =
     `?limit=100&page=1&status=published&type=${MUSIC_TYPES.charts}&period=${encodeURIComponent(period)}${categoryParam}` as const;
-  const res = await callPublicServerApi('PUBLIC_GET_MUSIC', { query });
+  const res = await callPublicServerApi('PUBLIC_GET_MUSIC', { query }, ISR_PUBLIC_FETCH.fast);
   if (res.type === 'error') {
     return {
       chartSongs: [] as (ChartSong & { category?: string })[],
@@ -46,7 +47,11 @@ interface TopChartsPageProps {
 
 export default async function TopChartsPage({ searchParams }: TopChartsPageProps) {
   const params = await searchParams;
-  const category = await normalizePublicCategoryByScope('music', params.category);
+  const category = await normalizePublicCategoryByScope(
+    'music',
+    params.category,
+    ISR_PUBLIC_FETCH.fast
+  );
   const period = CHART_PERIOD_VALUES.includes(
     (params.period ?? 'weekly') as (typeof CHART_PERIOD_VALUES)[number]
   )
@@ -85,7 +90,7 @@ export default async function TopChartsPage({ searchParams }: TopChartsPageProps
 async function TopChartsServer({ category, period }: { category: string; period: string }) {
   const [data, categoryOptions] = await Promise.all([
     fetchChartSongs(category, period),
-    fetchPublicCategoryNav('music', 'All Genres', musicCategoryNavFallback),
+    fetchPublicCategoryNav('music', 'All Genres', musicCategoryNavFallback, ISR_PUBLIC_FETCH.fast),
   ]);
 
   return <TopChartsPageClient {...data} categoryOptions={categoryOptions} period={period} />;
