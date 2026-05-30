@@ -26,7 +26,7 @@ export function useMusicDownload(input: MusicDownloadInput) {
     downloadPrice: input.downloadPrice,
   });
 
-  const strategy = { useTrackedDownload: !requiresPurchase && Boolean(input.downloadUrl) };
+  const hasHostedFile = Boolean(input.downloadUrl?.trim() || input.audioUrl?.trim());
 
   return {
     download,
@@ -37,6 +37,7 @@ export function useMusicDownload(input: MusicDownloadInput) {
     price,
     paidModalOpen,
     setPaidModalOpen,
-    useTrackedDownload: strategy.useTrackedDownload,
+    useDownloadApi: !requiresPurchase && hasHostedFile,
+    useTrackedDownload: !requiresPurchase && hasHostedFile,
   };
 }
