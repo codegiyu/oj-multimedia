@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion } from 'motion/react';
-import { Users, MessageSquare, BarChart3, Sparkles, ArrowRight } from 'lucide-react';
+import { Users, BarChart3, Sparkles, ArrowRight, BookOpen, Heart, HandHeart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { FixedImage } from '@/components/general/FillImage';
@@ -10,14 +10,8 @@ import { useAuthStore } from '@/lib/store/useAuthStore';
 import { LoginModal } from '@/components/auth/LoginModal';
 import { EmptyState } from '@/components/section/news/EmptyState';
 import { MultilinePreview } from '@/components/general/MultilinePreview';
-
-export interface CommunityPost {
-  user: string;
-  avatar: string;
-  content: string;
-  likes: number;
-  comments: number;
-}
+import type { CommunityHighlightItem } from '@/lib/utils/mergeCommunityHighlights';
+import { cn } from '@/lib/utils';
 
 export interface PollOption {
   _id: string;
@@ -26,15 +20,28 @@ export interface PollOption {
 }
 
 interface CommunitySectionProps {
-  posts: CommunityPost[];
+  highlights: CommunityHighlightItem[];
   pollOptions: PollOption[];
   pollTotalVotes: number;
+  pollQuestion?: string;
+  pollHref?: string;
 }
 
+const kindStyles: Record<
+  CommunityHighlightItem['kind'],
+  { icon: typeof Heart; className: string }
+> = {
+  testimony: { icon: Heart, className: 'bg-primary/10 text-primary' },
+  devotional: { icon: BookOpen, className: 'bg-secondary/10 text-secondary' },
+  'prayer-request': { icon: HandHeart, className: 'bg-accent/10 text-accent' },
+};
+
 export const CommunitySection = ({
-  posts: communityPosts,
+  highlights,
   pollOptions,
   pollTotalVotes,
+  pollQuestion,
+  pollHref = '/community/polls-and-voting',
 }: CommunitySectionProps) => {
   const user = useAuthStore(state => state.user);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -42,7 +49,6 @@ export const CommunitySection = ({
   return (
     <section id="community" className="py-16 md:py-24 bg-muted/30 overflow-hidden">
       <div className="container mx-auto px-4">
-        {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center">
@@ -75,69 +81,89 @@ export const CommunitySection = ({
         </div>
 
         <div className="grid lg:grid-cols-3 gap-6">
-          {/* Community Highlights */}
           <div className="lg:col-span-2 space-y-4">
             <h3 className="font-semibold text-lg flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-accent" />
-              Community Highlights
+              Latest content from community
             </h3>
             <div className="space-y-4">
-              {communityPosts.length === 0 ? (
+              {highlights.length === 0 ? (
                 <EmptyState
-                  title="No community highlights yet"
-                  description="Join the community to share your story and connect with others."
+                  title="No community content yet"
+                  description="Join the community to share your story, devotionals, and prayer requests."
                   icon={<Sparkles className="w-12 h-12 text-muted-foreground" />}
                   actionLabel="Visit community"
                   actionHref="/community"
                   showDefaultActions={false}
                 />
               ) : (
-                communityPosts.map((post, index) => (
-                  <Link key={index} href="/community">
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: index * 0.1 }}
-                      className="bg-card rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
-                      <div className="flex gap-3">
-                        <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full">
-                          <FixedImage
-                            imageContext="public"
-                            src={post.avatar}
-                            alt={post.user}
-                            width={40}
-                            height={40}
-                            className="h-full w-full object-cover"
-                          />
-                        </div>
-                        <div className="flex-1">
-                          <p className="font-semibold text-sm">{post.user}</p>
-                          <MultilinePreview
-                            text={post.content}
-                            className="text-muted-foreground mt-1 line-clamp-3"
-                          />
-                          <div className="flex items-center gap-4 mt-3 text-sm text-muted-foreground">
-                            <span className="flex items-center gap-1 hover:text-primary cursor-pointer transition-colors">
-                              ❤️ {post.likes}
-                            </span>
-                            <span className="flex items-center gap-1 hover:text-primary cursor-pointer transition-colors">
-                              <MessageSquare className="w-4 h-4" />
-                              {post.comments}
-                            </span>
+                highlights.map((item, index) => {
+                  const style = kindStyles[item.kind];
+                  const Icon = style.icon;
+
+                  return (
+                    <Link key={`${item.kind}-${item._id}`} href={item.href}>
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: index * 0.1 }}
+                        className="bg-card rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                        <div className="flex gap-3">
+                          {item.avatar ? (
+                            <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full">
+                              <FixedImage
+                                imageContext="public"
+                                src={item.avatar}
+                                alt={item.author ?? item.title}
+                                width={40}
+                                height={40}
+                                className="h-full w-full object-cover"
+                              />
+                            </div>
+                          ) : (
+                            <div
+                              className={cn(
+                                'h-10 w-10 shrink-0 rounded-full flex items-center justify-center',
+                                style.className
+                              )}>
+                              <Icon className="w-4 h-4" />
+                            </div>
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1 flex-wrap">
+                              <span
+                                className={cn(
+                                  'text-xs font-medium px-2 py-0.5 rounded-full',
+                                  style.className
+                                )}>
+                                {item.badge}
+                              </span>
+                              {item.metaLabel && (
+                                <span className="text-xs text-muted-foreground">
+                                  {item.metaLabel}
+                                </span>
+                              )}
+                            </div>
+                            <p className="font-semibold text-sm line-clamp-1">{item.title}</p>
+                            <MultilinePreview
+                              text={item.preview}
+                              className="text-muted-foreground mt-1 line-clamp-2 text-sm"
+                            />
+                            {item.author && (
+                              <p className="text-xs text-muted-foreground mt-2">— {item.author}</p>
+                            )}
                           </div>
                         </div>
-                      </div>
-                    </motion.div>
-                  </Link>
-                ))
+                      </motion.div>
+                    </Link>
+                  );
+                })
               )}
             </div>
           </div>
 
-          {/* Polls & Quick Actions */}
           <div className="space-y-6">
-            {/* Poll */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -145,9 +171,8 @@ export const CommunitySection = ({
               className="bg-card rounded-2xl p-6 shadow-sm">
               <h3 className="font-semibold flex items-center gap-2 mb-4">
                 <BarChart3 className="w-5 h-5 text-primary" />
-                Weekly Poll
+                Recent Poll
               </h3>
-              <p className="text-sm mb-4">What genre do you listen to the most?</p>
               {pollOptions.length === 0 ? (
                 <EmptyState
                   title="No active poll"
@@ -159,6 +184,7 @@ export const CommunitySection = ({
                 />
               ) : (
                 <>
+                  {pollQuestion && <p className="text-sm mb-4 font-medium">{pollQuestion}</p>}
                   <div className="space-y-2">
                     {pollOptions.map(item => (
                       <div
@@ -181,16 +207,15 @@ export const CommunitySection = ({
                       {pollTotalVotes.toLocaleString()} votes
                     </p>
                     <Link
-                      href="/community/polls-and-voting"
+                      href={pollHref}
                       className="text-xs text-primary hover:text-primary/80 transition-colors">
-                      View All Polls →
+                      Vote on this poll →
                     </Link>
                   </div>
                 </>
               )}
             </motion.div>
 
-            {/* Quick Links */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}

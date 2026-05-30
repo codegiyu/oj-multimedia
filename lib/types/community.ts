@@ -151,6 +151,8 @@ export interface CommunityHubData {
   categoryCounts: Record<string, number>;
   featuredTestimonies?: TestimonyListItem[];
   trendingDevotionals?: DevotionalListItem[];
+  recentPrayerRequests?: PrayerRequestListItem[];
+  /** @deprecated Replaced by recentPrayerRequests */
   activeDiscussions?: unknown[];
 }
 

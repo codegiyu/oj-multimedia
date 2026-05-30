@@ -10,9 +10,10 @@ import {
   type RisingArtist,
   type NewsArticle,
   type MarketplaceProduct,
-  type CommunityPost,
   type PollOption,
 } from '@/components/section/home';
+import type { CommunityHighlightItem } from '@/lib/utils/mergeCommunityHighlights';
+import { mergeCommunityHighlights } from '@/lib/utils/mergeCommunityHighlights';
 import { HomePageSkeleton } from '@/components/section/home/HomePageSkeleton';
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import { ISR_PUBLIC_FETCH } from '@/lib/constants/isr';
@@ -26,6 +27,7 @@ import type {
   IMarketplaceProductsListRes,
   IPublicHomeAdvertsRes,
   IPublicDevotionalsListRes,
+  IPublicPrayerRequestsListRes,
   IHomeAdvertItem,
 } from '@/lib/constants/endpoints';
 import type { HomeDevotionalCard } from '@/components/section/home';
@@ -83,9 +85,11 @@ interface HomePageData {
   risingArtists: RisingArtist[];
   newsArticles: NewsArticle[];
   marketplaceProducts: MarketplaceProduct[];
-  communityPosts: CommunityPost[];
+  communityHighlights: CommunityHighlightItem[];
   pollOptions: PollOption[];
   pollTotalVotes: number;
+  pollQuestion?: string;
+  pollHref?: string;
   initialErrorMessage: string | null;
 }
 
@@ -235,6 +239,7 @@ async function fetchHomeSections(filters: {
     marketplaceRes,
     pollsRes,
     testimoniesRes,
+    prayerRequestsRes,
     homeAdvertsRes,
     latestMusicRes,
     latestSermonsRes,
@@ -295,7 +300,14 @@ async function fetchHomeSections(filters: {
     callPublicServerApi(
       'PUBLIC_GET_TESTIMONIES',
       {
-        query: '?type=featured&page=1&limit=3&status=published',
+        query: '?type=latest&page=1&limit=4&status=published',
+      },
+      ISR_PUBLIC_FETCH.fast
+    ),
+    callPublicServerApi(
+      'PUBLIC_GET_PRAYER_REQUESTS',
+      {
+        query: '?status=active&page=1&limit=4',
       },
       ISR_PUBLIC_FETCH.fast
     ),
@@ -399,6 +411,10 @@ async function fetchHomeSections(filters: {
     ? (testimoniesRes.data as IPublicTestimoniesListRes | undefined)
     : undefined) ?? { testimonies: [] as IPublicTestimoniesListRes['testimonies'] };
 
+  const prayerRequestsData = (prayerRequestsRes.type === 'success'
+    ? (prayerRequestsRes.data as IPublicPrayerRequestsListRes | undefined)
+    : undefined) ?? { prayerRequests: [] as IPublicPrayerRequestsListRes['prayerRequests'] };
+
   const homeAdvertsData = (homeAdvertsRes.type === 'success'
     ? (homeAdvertsRes.data as IPublicHomeAdvertsRes | undefined)
     : undefined) ?? { adverts: [] as IHomeAdvertItem[] };
@@ -497,14 +513,17 @@ async function fetchHomeSections(filters: {
       votes: option.percentage,
     })) ?? [];
   const pollTotalVotes = activePoll?.totalVotes ?? 0;
+  const pollQuestion = activePoll?.question;
+  const pollHref = activePoll
+    ? `/community/polls-and-voting/${activePoll._id}`
+    : '/community/polls-and-voting';
 
-  const communityPosts: CommunityPost[] = testimoniesData.testimonies.map(testimony => ({
-    user: testimony.author ?? 'Community member',
-    avatar: testimony.avatar ?? '/images/artist-1.jpg',
-    content: testimony.content ?? '',
-    likes: testimony.likes ?? 0,
-    comments: testimony.comments ?? 0,
-  }));
+  const communityHighlights = mergeCommunityHighlights({
+    testimonies: testimoniesData.testimonies as unknown as Record<string, unknown>[],
+    devotionals: devotionalsData.devotionals.slice(0, 4) as unknown as Record<string, unknown>[],
+    prayerRequests: prayerRequestsData.prayerRequests as unknown as Record<string, unknown>[],
+    limit: 6,
+  });
 
   return {
     advertsAfterHero,
@@ -521,9 +540,11 @@ async function fetchHomeSections(filters: {
     risingArtists,
     newsArticles,
     marketplaceProducts,
-    communityPosts,
+    communityHighlights,
     pollOptions,
     pollTotalVotes,
+    pollQuestion,
+    pollHref,
     initialErrorMessage,
   };
 }

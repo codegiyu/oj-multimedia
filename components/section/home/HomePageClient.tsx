@@ -18,10 +18,10 @@ import {
   type RisingArtist,
   type NewsArticle,
   type MarketplaceProduct,
-  type CommunityPost,
   type PollOption,
   type HomeDevotionalCard,
 } from '.';
+import type { CommunityHighlightItem } from '@/lib/utils/mergeCommunityHighlights';
 import { UploadCTA } from '../shared';
 import { SimpleMusicRailSkeleton, SimpleVideoRailSkeleton } from '@/components/skeletons';
 import type { IHomeAdvertItem } from '@/lib/constants/endpoints';
@@ -41,9 +41,11 @@ interface HomePageClientProps {
   risingArtists: RisingArtist[];
   newsArticles: NewsArticle[];
   marketplaceProducts: MarketplaceProduct[];
-  communityPosts: CommunityPost[];
+  communityHighlights: CommunityHighlightItem[];
   pollOptions: PollOption[];
   pollTotalVotes: number;
+  pollQuestion?: string;
+  pollHref?: string;
   initialErrorMessage: string | null;
 }
 
@@ -62,9 +64,11 @@ export const HomePageClient = ({
   risingArtists,
   newsArticles,
   marketplaceProducts,
-  communityPosts,
+  communityHighlights,
   pollOptions,
   pollTotalVotes,
+  pollQuestion,
+  pollHref,
   initialErrorMessage,
 }: HomePageClientProps) => {
   return (
@@ -131,9 +135,11 @@ export const HomePageClient = ({
       <NewsSection articles={newsArticles} />
       <MarketplaceSection products={marketplaceProducts} />
       <CommunitySection
-        posts={communityPosts}
+        highlights={communityHighlights}
         pollOptions={pollOptions}
         pollTotalVotes={pollTotalVotes}
+        pollQuestion={pollQuestion}
+        pollHref={pollHref}
       />
       <HomeAdvertStrip adverts={advertsBeforeCta} />
       <UploadCTA />

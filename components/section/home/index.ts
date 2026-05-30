@@ -5,7 +5,8 @@ export { TrendingVideosSection, type TrendingVideoItem } from './TrendingVideosS
 export { TopChartsSection, type ChartItem, type RisingArtist } from './TopChartsSection';
 export { NewsSection, type NewsArticle } from './NewsSection';
 export { MarketplaceSection, type MarketplaceProduct } from './MarketplaceSection';
-export { CommunitySection, type CommunityPost, type PollOption } from './CommunitySection';
+export { CommunitySection, type PollOption } from './CommunitySection';
+export type { CommunityHighlightItem } from '@/lib/utils/mergeCommunityHighlights';
 export { HomeAdvertStrip } from './HomeAdvertStrip';
 export { SimpleMusicRail } from './SimpleMusicRail';
 export { SimpleVideoRail } from './SimpleVideoRail';
