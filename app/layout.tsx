@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { SEO_DETAILS } from '@/lib/constants/texts';
+import { ISR_REVALIDATE } from '@/lib/constants/isr';
 import { Providers } from '@/components/Providers';
 import { ScrollRestorationHandler } from '@/components/general/ScrollRestorationHandler';
 import { LoadAnimationScreenDynamic } from '@/components/general/LoadAnimationScreenDynamic';
@@ -34,8 +35,8 @@ export const viewport: Viewport = {
   colorScheme: 'only light',
 };
 
-/** ISR: regenerate static pages at most every 60s (public + nested routes inherit unless overridden). */
-export const revalidate = 60;
+/** ISR: public routes inherit default tier unless overridden in nested layouts/pages. */
+export const revalidate = ISR_REVALIDATE.default;
 
 export default function RootLayout({
   children,

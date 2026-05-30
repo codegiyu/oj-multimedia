@@ -10,6 +10,7 @@ import {
   type AllEndpoints,
 } from '../constants/endpoints';
 import { buildUpstreamUrl } from './upstreamUrl';
+import { ISR_REVALIDATE, resolveIsrRevalidateSeconds } from '../constants/isr';
 
 export { buildUpstreamUrl };
 
@@ -18,8 +19,8 @@ const SERVER_BASE_URL =
   process.env.NEXT_PUBLIC_BASE_URL ||
   'https://api.ojmultimedia.com';
 
-/** Aligns with `export const revalidate = 60` on app layouts (ISR / data cache). */
-export const SERVER_FETCH_REVALIDATE_SECONDS = 60;
+/** Aligns with root layout `revalidate` (ISR / data cache default tier). */
+export const SERVER_FETCH_REVALIDATE_SECONDS = ISR_REVALIDATE.default;
 
 type ServerFetchMode = 'public-cacheable' | 'private-auth';
 
@@ -111,7 +112,8 @@ async function runServerFetch<T extends keyof AllEndpoints>(
   endpoint: T,
   options: Omit<AllEndpoints[T], 'response'>,
   upstreamAuth: UpstreamAuthHeaders | undefined,
-  mode: ServerFetchMode
+  mode: ServerFetchMode,
+  revalidateSeconds: number = ISR_REVALIDATE.default
 ): Promise<ResponseMessage<T>> {
   const { path, method } = ENDPOINTS[endpoint];
   const hasBody = Boolean(options.payload);
@@ -131,9 +133,7 @@ async function runServerFetch<T extends keyof AllEndpoints>(
         ...(upstreamAuth?.authorization ? { Authorization: upstreamAuth.authorization } : {}),
       },
       body: options.payload ? JSON.stringify(options.payload) : undefined,
-      ...(useRevalidate
-        ? { next: { revalidate: SERVER_FETCH_REVALIDATE_SECONDS } }
-        : { cache: 'no-store' }),
+      ...(useRevalidate ? { next: { revalidate: revalidateSeconds } } : { cache: 'no-store' }),
       ...(hasUpstreamCookie ? { credentials: 'include' as RequestCredentials } : {}),
     });
 
@@ -179,15 +179,26 @@ async function runServerFetch<T extends keyof AllEndpoints>(
   }
 }
 
+export type PublicServerApiConfig = {
+  revalidateSeconds?: number;
+};
+
 /**
  * Public/server-only API calls: no request cookies, cacheable with ISR.
  * Use from public routes so `cookies()` is not invoked (enables static generation + revalidate).
  */
 export const callPublicServerApi = async <T extends keyof AllEndpoints>(
   endpoint: T,
-  options: Omit<AllEndpoints[T], 'response'>
+  options: Omit<AllEndpoints[T], 'response'>,
+  config?: PublicServerApiConfig
 ): Promise<ResponseMessage<T>> => {
-  return runServerFetch(endpoint, options, undefined, 'public-cacheable');
+  return runServerFetch(
+    endpoint,
+    options,
+    undefined,
+    'public-cacheable',
+    resolveIsrRevalidateSeconds(config?.revalidateSeconds)
+  );
 };
 
 /** Authenticated or cookie-forwarded calls (account, vendor, artist, admin). Always uncached. */
