@@ -1,11 +1,6 @@
-import type { Metadata } from 'next';
-import { OrdersPageClient } from '@/components/section/marketplace/OrdersPageClient';
+import { redirect } from 'next/navigation';
 
-export const metadata: Metadata = {
-  title: 'My Orders - Marketplace',
-  description: 'View your marketplace order history.',
-};
-
+/** Legacy marketplace orders URL — customer order history lives under the account hub. */
 export default function MarketplaceOrdersPage() {
-  return <OrdersPageClient />;
+  redirect('/account/orders');
 }

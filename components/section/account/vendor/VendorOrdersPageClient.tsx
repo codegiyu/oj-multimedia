@@ -11,7 +11,15 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ShoppingBag, Loader2, Mail } from 'lucide-react';
 import { callApi } from '@/lib/services/callApi';
-import type { IVendorOrdersRes } from '@/lib/constants/endpoints';
+import type { IVendorOrdersRes, IVendorPatchOrderPayload } from '@/lib/constants/endpoints';
+import { toast } from 'sonner';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { formatPrice } from '@/lib/utils/marketplace';
 import type { ApiErrorResponse } from '@/lib/types/http';
 import { cn } from '@/lib/utils';
@@ -49,6 +57,8 @@ interface VendorOrdersListProps {
   onPreviousPage: () => void;
   onNextPage: () => void;
   loading: boolean;
+  updatingOrderId: string | null;
+  onOrderStatusChange: (orderId: string, status: IVendorPatchOrderPayload['status']) => void;
 }
 
 function VendorOrdersList({
@@ -64,6 +74,8 @@ function VendorOrdersList({
   onPreviousPage,
   onNextPage,
   loading,
+  updatingOrderId,
+  onOrderStatusChange,
 }: VendorOrdersListProps) {
   const showOnboardingEmpty = isAccountListUnfiltered(searchQuery, statusFilter);
 
@@ -195,13 +207,33 @@ function VendorOrdersList({
                           {formatPrice(order.totalAmount)}
                         </td>
                         <td className="px-4 py-3">
-                          <span
-                            className={cn(
-                              'inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium capitalize',
-                              statusBadgeClass(order.status)
-                            )}>
-                            {order.status}
-                          </span>
+                          <Select
+                            value={order.status}
+                            disabled={updatingOrderId === order._id}
+                            onValueChange={value =>
+                              onOrderStatusChange(
+                                order._id,
+                                value as IVendorPatchOrderPayload['status']
+                              )
+                            }>
+                            <SelectTrigger
+                              className={cn(
+                                'h-8 w-[130px] rounded-full border-0 px-2.5 text-xs font-medium capitalize shadow-none focus:ring-1',
+                                statusBadgeClass(order.status)
+                              )}>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {STATUS_OPTIONS.filter(opt => opt.value).map(opt => (
+                                <SelectItem
+                                  key={opt.value}
+                                  value={opt.value}
+                                  className="capitalize">
+                                  {opt.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                         </td>
                         <td className="px-4 py-3 text-muted-foreground tabular-nums">
                           {new Date(order.createdAt).toLocaleDateString()}
@@ -278,7 +310,30 @@ export function VendorOrdersPageClient({
   const [errorMessage, setErrorMessage] = useState<string | null>(initialErrorMessage);
   const [totalPages, setTotalPages] = useState(initialTotalPages);
   const [reloadIndex, setReloadIndex] = useState(0);
+  const [updatingOrderId, setUpdatingOrderId] = useState<string | null>(null);
   const didMountRef = useRef(false);
+
+  const handleOrderStatusChange = async (
+    orderId: string,
+    status: IVendorPatchOrderPayload['status']
+  ) => {
+    setUpdatingOrderId(orderId);
+
+    const { data, error, message } = await callApi('VENDOR_PATCH_ORDER', {
+      query: `/${orderId}` as `/${string}`,
+      payload: { status },
+    });
+
+    setUpdatingOrderId(null);
+
+    if (error || !data?.order) {
+      toast.error(message || 'Could not update order status.');
+      return;
+    }
+
+    setOrders(prev => prev.map(order => (order._id === orderId ? data.order : order)));
+    toast.success('Order status updated.');
+  };
 
   useEffect(() => {
     if (!didMountRef.current) {
@@ -361,6 +416,8 @@ export function VendorOrdersPageClient({
         onPreviousPage={() => setPage(Math.max(1, page - 1))}
         onNextPage={() => setPage(Math.min(totalPages, page + 1))}
         loading={loading}
+        updatingOrderId={updatingOrderId}
+        onOrderStatusChange={handleOrderStatusChange}
       />
     </div>
   );

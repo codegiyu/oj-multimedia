@@ -82,15 +82,18 @@ export const useInitCartStore = create<CartStore>()(
           const opSeq = get().mutationSeq + 1;
           set({ mutationSeq: opSeq });
 
+          let absoluteQuantity = qty;
+
           set(state => {
             const existing = state.items.find(i => itemsMatch(i, item));
+            absoluteQuantity = existing ? existing.quantity + qty : qty;
             const next = existing
               ? state.items.map(i =>
                   itemsMatch(i, item)
-                    ? { ...i, quantity: i.quantity + qty, sku: item.sku ?? i.sku }
+                    ? { ...i, quantity: absoluteQuantity, sku: item.sku ?? i.sku }
                     : i
                 )
-              : [...state.items, { ...item, quantity: qty }];
+              : [...state.items, { ...item, quantity: absoluteQuantity }];
             return { items: next };
           });
 
@@ -98,7 +101,7 @@ export const useInitCartStore = create<CartStore>()(
 
           const payload: IUserCartAddPayload = {
             productId: item.productId,
-            quantity: qty,
+            quantity: absoluteQuantity,
             ...(item.sku ? { sku: item.sku } : {}),
           };
 
@@ -233,4 +236,70 @@ export const useInitCartStore = create<CartStore>()(
 
 export function useCartStore() {
   return useInitCartStore(state => state);
+}
+
+function backendCartItemsMatchLocal(
+  localItems: CartItem[],
+  backendItems: BackendCartItem[]
+): boolean {
+  if (localItems.length !== backendItems.length) return false;
+
+  return localItems.every(local => {
+    const backend = backendItems.find(
+      b => b.productId === local.productId && (b.sku ?? '') === (local.sku ?? '')
+    );
+    return backend != null && backend.quantity === local.quantity;
+  });
+}
+
+/** Merge persisted guest cart into the authenticated user's backend cart after login. */
+export async function mergeGuestCartWithBackend(): Promise<void> {
+  if (!shouldSyncWithBackend()) return;
+
+  const { actions } = useInitCartStore.getState();
+  const localItems = useInitCartStore.getState().items;
+  const { data: backendCart, error } = await callApi('USER_CART_GET', {});
+
+  if (error) return;
+
+  const backendItems = backendCart?.items ?? [];
+
+  if (
+    backendCart &&
+    backendItems.length > 0 &&
+    backendCartItemsMatchLocal(localItems, backendItems)
+  ) {
+    actions.syncFromBackend(backendCart);
+    return;
+  }
+
+  if (localItems.length === 0) {
+    if (backendCart) actions.syncFromBackend(backendCart);
+    return;
+  }
+
+  const quantityByKey = new Map<string, number>();
+
+  for (const item of backendItems) {
+    const key = `${item.productId}::${item.sku ?? ''}`;
+    quantityByKey.set(key, item.quantity);
+  }
+
+  for (const item of localItems) {
+    const key = `${item.productId}::${item.sku ?? ''}`;
+    quantityByKey.set(key, (quantityByKey.get(key) ?? 0) + item.quantity);
+  }
+
+  for (const [key, quantity] of quantityByKey) {
+    const [productId, skuPart] = key.split('::');
+    const payload: IUserCartAddPayload = {
+      productId,
+      quantity,
+      ...(skuPart ? { sku: skuPart } : {}),
+    };
+    await callApi('USER_CART_ADD', { payload });
+  }
+
+  const { data: mergedCart } = await callApi('USER_CART_GET', {});
+  if (mergedCart) actions.syncFromBackend(mergedCart);
 }

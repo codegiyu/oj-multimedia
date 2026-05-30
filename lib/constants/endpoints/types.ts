@@ -106,6 +106,8 @@ import {
   IVendorDashboardStatsRes,
   IVendorMeRes,
   IVendorOrdersRes,
+  IVendorPatchOrderPayload,
+  IVendorPatchOrderRes,
   IVendorProductsRes,
   IVendorUpdateProductPayload,
   IVendorUpdateSettingsPayload,
@@ -1295,6 +1297,11 @@ export interface AllEndpoints {
     `/${string}`
   >;
   VENDOR_GET_ORDERS: EndpointDefinition<undefined, IVendorOrdersRes, `?${string}`>;
+  VENDOR_PATCH_ORDER: EndpointDefinition<
+    IVendorPatchOrderPayload,
+    IVendorPatchOrderRes,
+    `/${string}`
+  >;
   VENDOR_UPDATE_SETTINGS: EndpointDefinition<
     IVendorUpdateSettingsPayload,
     IMarketplaceVendor,
