@@ -1,18 +1,20 @@
 'use client';
 
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  PageSkeletonShell,
+  SectionSkeleton,
+  SectionHeaderSkeleton,
+  CTASectionSkeleton,
+} from '@/components/skeletons';
 
 export const CommunityPageSkeleton = () => {
   return (
-    <section className="container mx-auto px-4 pb-16">
-      {/* Categories Section Skeleton */}
-      <section className="py-12">
-        <div className="text-center mb-10">
-          <Skeleton className="h-8 w-64 mx-auto mb-3" />
-          <Skeleton className="h-4 w-96 mx-auto" />
-        </div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
+    <PageSkeletonShell label="Loading community page">
+      <SectionSkeleton sectionClassName="pb-0">
+        <SectionHeaderSkeleton showViewAll={false} className="text-center items-center" />
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {Array.from({ length: 9 }, (_, i) => (
             <div key={i} className="bg-card rounded-2xl p-6">
               <Skeleton className="w-12 h-12 rounded-xl mx-auto mb-4" />
               <Skeleton className="h-5 w-24 mx-auto mb-2" />
@@ -21,22 +23,12 @@ export const CommunityPageSkeleton = () => {
             </div>
           ))}
         </div>
-      </section>
+      </SectionSkeleton>
 
-      {/* Featured Testimonies Skeleton */}
-      <section className="py-12">
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-3">
-            <Skeleton className="w-10 h-10 rounded-xl" />
-            <div>
-              <Skeleton className="h-7 w-40 mb-2" />
-              <Skeleton className="h-4 w-48" />
-            </div>
-          </div>
-          <Skeleton className="h-10 w-20 rounded-lg" />
-        </div>
+      <SectionSkeleton>
+        <SectionHeaderSkeleton />
         <div className="grid md:grid-cols-3 gap-6">
-          {[1, 2, 3].map(i => (
+          {Array.from({ length: 3 }, (_, i) => (
             <div key={i} className="bg-card rounded-2xl p-6 border border-border/50">
               <Skeleton className="w-8 h-8 mb-4" />
               <Skeleton className="h-4 w-full mb-2" />
@@ -58,32 +50,22 @@ export const CommunityPageSkeleton = () => {
             </div>
           ))}
         </div>
-      </section>
+      </SectionSkeleton>
 
-      {/* Trending Devotionals Skeleton */}
-      <section className="py-12">
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-3">
-            <Skeleton className="w-10 h-10 rounded-xl" />
-            <div>
-              <Skeleton className="h-7 w-40 mb-2" />
-              <Skeleton className="h-4 w-48" />
-            </div>
-          </div>
-          <Skeleton className="h-10 w-20 rounded-lg" />
-        </div>
+      <SectionSkeleton>
+        <SectionHeaderSkeleton />
         <div className="grid md:grid-cols-2 gap-4">
-          {[1, 2, 3, 4].map(i => (
+          {Array.from({ length: 4 }, (_, i) => (
             <div key={i} className="bg-card rounded-2xl p-5 border border-border/50">
               <div className="flex gap-4">
                 <Skeleton className="w-16 h-16 rounded-xl shrink-0" />
                 <div className="flex-1">
                   <div className="flex items-start justify-between gap-2 mb-2">
-                    <div>
+                    <div className="flex-1">
                       <Skeleton className="h-3 w-20 mb-2 rounded-full" />
                       <Skeleton className="h-5 w-full mb-2" />
                     </div>
-                    <Skeleton className="w-8 h-8 rounded-lg" />
+                    <Skeleton className="w-8 h-8 rounded-lg shrink-0" />
                   </div>
                   <Skeleton className="h-4 w-full mb-2" />
                   <Skeleton className="h-4 w-3/4 mb-3" />
@@ -99,22 +81,12 @@ export const CommunityPageSkeleton = () => {
             </div>
           ))}
         </div>
-      </section>
+      </SectionSkeleton>
 
-      {/* Active Discussions Skeleton */}
-      <section className="py-12">
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-3">
-            <Skeleton className="w-10 h-10 rounded-xl" />
-            <div>
-              <Skeleton className="h-7 w-40 mb-2" />
-              <Skeleton className="h-4 w-48" />
-            </div>
-          </div>
-          <Skeleton className="h-10 w-20 rounded-lg" />
-        </div>
+      <SectionSkeleton>
+        <SectionHeaderSkeleton />
         <div className="bg-card rounded-2xl border border-border/50 overflow-hidden">
-          {[1, 2, 3, 4, 5].map(i => (
+          {Array.from({ length: 5 }, (_, i) => (
             <div key={i} className="p-4 border-b border-border/30 last:border-b-0">
               <div className="flex items-center gap-4">
                 <Skeleton className="w-10 h-10 rounded-full shrink-0" />
@@ -137,12 +109,9 @@ export const CommunityPageSkeleton = () => {
         <div className="mt-6 text-center">
           <Skeleton className="h-10 w-40 mx-auto rounded-lg" />
         </div>
-      </section>
+      </SectionSkeleton>
 
-      {/* CTA Skeleton */}
-      <section className="py-12">
-        <Skeleton className="h-32 w-full rounded-2xl" />
-      </section>
-    </section>
+      <CTASectionSkeleton sectionClassName="py-12" />
+    </PageSkeletonShell>
   );
 };
