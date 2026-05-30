@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useQueryState, parseAsInteger, parseAsString } from 'nuqs';
+import { toast } from 'sonner';
 import { AdminDashboardListLayout } from '@/components/section/admin/AdminDashboardListLayout';
 import type {
   IMarketplaceVendor,
@@ -207,7 +208,7 @@ export function MarketplacePageClient({
       setApproveTarget(null);
       handleRefresh();
     } catch (err) {
-      console.error('Approve failed:', err);
+      toast.error(err instanceof Error ? err.message : 'Approve failed');
     } finally {
       setActionLoading(false);
     }
@@ -233,7 +234,7 @@ export function MarketplacePageClient({
       setRejectTarget(null);
       handleRefresh();
     } catch (err) {
-      console.error('Reject failed:', err);
+      toast.error(err instanceof Error ? err.message : 'Reject failed');
     } finally {
       setActionLoading(false);
     }

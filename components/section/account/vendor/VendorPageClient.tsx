@@ -19,6 +19,9 @@ export function VendorPageClient({ vendor, stats, errorMessage }: VendorPageClie
   const productsCount = stats?.productsCount ?? 0;
   const pendingOrdersCount = stats?.pendingOrdersCount ?? 0;
   const revenue = stats?.totalPaidRevenue ?? 0;
+  const storeStatus = vendor?.status
+    ? vendor.status.charAt(0).toUpperCase() + vendor.status.slice(1)
+    : 'Unknown';
 
   return (
     <div className="max-w-6xl space-y-8">
@@ -43,7 +46,7 @@ export function VendorPageClient({ vendor, stats, errorMessage }: VendorPageClie
         <DashboardStatCard
           label="Total sales"
           value={formatPrice(revenue)}
-          hint="+12% this month"
+          hint={revenue > 0 ? 'From paid orders' : 'No paid orders yet'}
           icon={CreditCard}
           corner={<TrendingUp className="h-4 w-4 text-emerald-600" aria-hidden />}
         />
@@ -62,13 +65,13 @@ export function VendorPageClient({ vendor, stats, errorMessage }: VendorPageClie
         />
         <DashboardStatCard
           label="Store health"
-          value="Active"
-          hint="Keep listings updated"
+          value={storeStatus}
+          hint={vendor?.status === 'active' ? 'Store is live' : 'Review your store status'}
           icon={Settings}
         />
       </div>
 
-      <VendorDashboardCharts revenueHint={revenue > 0 ? formatPrice(revenue) : undefined} />
+      <VendorDashboardCharts stats={stats} />
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <Card className="border-border/80 p-6 shadow-sm transition-shadow hover:shadow-md">

@@ -37,6 +37,38 @@ function formatDate(dateStr?: string) {
   }
 }
 
+function ApprovalMetadataFields({
+  data,
+}: {
+  data: { approvedAt?: string; rejectedAt?: string; rejectionReason?: string };
+}) {
+  const hasApproval = Boolean(data.approvedAt);
+  const hasRejection = Boolean(data.rejectedAt || data.rejectionReason);
+
+  if (!hasApproval && !hasRejection) return null;
+
+  return (
+    <>
+      {hasApproval && (
+        <InfoCard icon={FileText} label="Approved" value={formatDate(data.approvedAt)} />
+      )}
+      {hasRejection && (
+        <>
+          <InfoCard icon={FileText} label="Rejected" value={formatDate(data.rejectedAt)} />
+          {data.rejectionReason ? (
+            <InfoCard
+              icon={FileText}
+              label="Rejection reason"
+              value={data.rejectionReason}
+              preserveParagraphs
+            />
+          ) : null}
+        </>
+      )}
+    </>
+  );
+}
+
 function VendorDetails({ data }: { data: IMarketplaceVendor }) {
   return (
     <div className="grid gap-4 p-4">
@@ -45,6 +77,7 @@ function VendorDetails({ data }: { data: IMarketplaceVendor }) {
         <InfoCard icon={Store} label="Store Name" value={data.storeName} />
         <InfoCard icon={FileText} label="Name" value={data.name} />
         <InfoCard icon={FileText} label="Status" value={data.status} />
+        <ApprovalMetadataFields data={data} />
         <InfoCard
           icon={FileText}
           label="Logo URL"
@@ -79,6 +112,7 @@ function ProductDetails({ data }: { data: IMarketplaceProduct }) {
           />
         </InfoCard>
         <InfoCard icon={FileText} label="Status" value={data.status} />
+        <ApprovalMetadataFields data={data} />
         <InfoCard icon={FileText} label="Price" value={formatPrice(data.price)} />
         <InfoCard
           icon={FileText}

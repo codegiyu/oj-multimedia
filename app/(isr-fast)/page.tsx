@@ -495,6 +495,7 @@ async function fetchHomeSections(filters: {
 
   const marketplaceProducts: MarketplaceProduct[] = marketplaceData.products.map(product => ({
     _id: product._id,
+    slug: product.slug,
     name: product.name,
     price: new Intl.NumberFormat('en-NG', {
       style: 'currency',
@@ -503,6 +504,7 @@ async function fetchHomeSections(filters: {
     }).format(product.price),
     seller: product.vendorName ?? product.vendorPopulated?.storeName ?? 'Vendor',
     image: product.images?.[0] ?? '',
+    vendorWhatsapp: product.vendorWhatsapp ?? product.vendorPopulated?.whatsapp,
   }));
 
   const activePoll = pollsData.polls[0];

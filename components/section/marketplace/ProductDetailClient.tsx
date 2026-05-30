@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { MessageCircle, ShoppingCart, Store, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import type { MarketplaceProduct } from '@/lib/utils/marketplace';
-import { formatPrice } from '@/lib/utils/marketplace';
+import { formatPrice, getProductVendorWhatsapp, buildWhatsappLink } from '@/lib/utils/marketplace';
 import { useCartStore } from '@/lib/store/cartStore';
 import { MultilineText } from '@/components/general/MultilineText';
 import {
@@ -99,9 +99,7 @@ function ProductDetailContent({ product }: ProductDetailContentProps) {
   const handleAddToCart = () => {
     const sku = selectedVariant?.sku;
     const price = selectedVariant?.price ?? product.price;
-    const vendorWhatsapp =
-      (product as IMarketplaceProduct & { vendorWhatsapp?: string }).vendorWhatsapp ??
-      product.vendorPopulated?.whatsapp;
+    const vendorWhatsapp = getProductVendorWhatsapp(product);
     actions.addItem({
       productId: product._id,
       slug: product.slug,
@@ -115,6 +113,8 @@ function ProductDetailContent({ product }: ProductDetailContentProps) {
       vendorWhatsapp,
     });
   };
+
+  const vendorWhatsapp = getProductVendorWhatsapp(product);
 
   return (
     <>
@@ -277,10 +277,10 @@ function ProductDetailContent({ product }: ProductDetailContentProps) {
                   <ShoppingCart className="w-4 h-4" />
                   {isOutOfStock ? 'Out of stock' : inCart ? 'In cart' : 'Add to cart'}
                 </Button>
-                {product.vendorPopulated?.whatsapp ? (
+                {vendorWhatsapp ? (
                   <Button variant="outline" className="gap-2" asChild>
                     <a
-                      href={`https://wa.me/${product.vendorPopulated.whatsapp.replace(/\D/g, '')}`}
+                      href={buildWhatsappLink(vendorWhatsapp)}
                       target="_blank"
                       rel="noopener noreferrer">
                       <MessageCircle className="w-4 h-4" />

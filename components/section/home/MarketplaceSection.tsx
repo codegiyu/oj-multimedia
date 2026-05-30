@@ -8,13 +8,16 @@ import Link from 'next/link';
 import { SectionComp } from '@/components/general/SectionComp';
 import { EmptyState } from '@/components/section/news/EmptyState';
 import { FillImage } from '@/components/general/FillImage';
+import { buildWhatsappLink } from '@/lib/utils/marketplace';
 
 export interface MarketplaceProduct {
   _id: string;
+  slug: string;
   name: string;
   price: string;
   seller: string;
   image: string;
+  vendorWhatsapp?: string;
 }
 
 interface MarketplaceSectionProps {
@@ -78,7 +81,7 @@ export const MarketplaceSection = ({ products }: MarketplaceSectionProps) => {
               viewport={{ once: true }}
               transition={{ delay: index * 0.05 }}
               className="w-[200px] sm:w-[240px] md:w-[280px] lg:w-[300px] xl:w-[320px] 2xl:w-[340px] snap-start shrink-0">
-              <Link href={`/marketplace/products/${product._id}`} className="block">
+              <Link href={`/marketplace/products/${product.slug}`} className="block">
                 <motion.div
                   whileHover={{ y: -4 }}
                   className="group bg-card rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all">
@@ -98,9 +101,22 @@ export const MarketplaceSection = ({ products }: MarketplaceSectionProps) => {
                     </h3>
                     <div className="flex items-center justify-between">
                       <span className="font-bold text-primary">{product.price}</span>
-                      <Button variant="ghost" size="icon-sm">
-                        <MessageCircle className="w-4 h-4" />
-                      </Button>
+                      {product.vendorWhatsapp ? (
+                        <Button variant="ghost" size="icon-sm" asChild>
+                          <a
+                            href={buildWhatsappLink(product.vendorWhatsapp)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={e => e.stopPropagation()}
+                            aria-label={`Chat with ${product.seller}`}>
+                            <MessageCircle className="w-4 h-4" />
+                          </a>
+                        </Button>
+                      ) : (
+                        <Button variant="ghost" size="icon-sm" tabIndex={-1} aria-hidden>
+                          <MessageCircle className="w-4 h-4 opacity-40" />
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </motion.div>
