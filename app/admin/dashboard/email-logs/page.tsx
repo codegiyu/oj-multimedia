@@ -3,24 +3,13 @@ import { EmailLogsPageClient } from '@/components/section/admin/email-logs/Email
 import { serverFetchAdminEmailLogsList } from '@/lib/services/adminDashboardServerData';
 import { parseAdminEmailLogsListParams } from '@/lib/utils/adminDashboardSearchParams';
 import { Metadata } from 'next';
+import { AdminListPageSkeleton } from '@/components/section/admin/skeletons';
 import { Suspense } from 'react';
-import { Loader2 } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Email Logs',
   description: 'View and manage email delivery logs',
 };
-
-function EmailLogsPageFallback() {
-  return (
-    <div className="flex items-center justify-center min-h-[400px]">
-      <div className="flex flex-col items-center gap-4">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <p className="text-sm text-muted-foreground">Loading email logs...</p>
-      </div>
-    </div>
-  );
-}
 
 interface EmailLogsPageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -31,7 +20,7 @@ export default function EmailLogsPage({ searchParams }: EmailLogsPageProps) {
     <DashboardLayout>
       <section className="h-full overflow-hidden">
         <section className="h-full space-y-6 overflow-auto sleek-scrollbar">
-          <Suspense fallback={<EmailLogsPageFallback />}>
+          <Suspense fallback={<AdminListPageSkeleton label="Loading email logs..." />}>
             <AdminEmailLogsPageServer searchParams={searchParams} />
           </Suspense>
         </section>

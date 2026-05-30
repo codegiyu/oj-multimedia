@@ -1,8 +1,8 @@
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { AdminProfilePageClient } from '@/components/section/admin/profile/AdminProfilePageClient';
 import { Metadata } from 'next';
+import { AdminProfilePageSkeleton } from '@/components/section/admin/skeletons';
 import { Suspense } from 'react';
-import { Loader2 } from 'lucide-react';
 import { callServerApi } from '@/lib/services/serverApi';
 
 export const metadata: Metadata = {
@@ -10,21 +10,10 @@ export const metadata: Metadata = {
   description: 'View and update your admin profile',
 };
 
-function ProfilePageFallback() {
-  return (
-    <div className="flex items-center justify-center min-h-[400px]">
-      <div className="flex flex-col items-center gap-4">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <p className="text-sm text-muted-foreground">Loading profile…</p>
-      </div>
-    </div>
-  );
-}
-
 export default function AdminProfilePage() {
   return (
     <DashboardLayout>
-      <Suspense fallback={<ProfilePageFallback />}>
+      <Suspense fallback={<AdminProfilePageSkeleton />}>
         <AdminProfilePageServer />
       </Suspense>
     </DashboardLayout>

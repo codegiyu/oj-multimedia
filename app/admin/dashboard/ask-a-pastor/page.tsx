@@ -3,24 +3,13 @@ import { AskAPastorPageClient } from '@/components/section/admin/ask-a-pastor/As
 import { serverFetchAdminAskAPastorList } from '@/lib/services/adminDashboardServerData';
 import { parseAdminContentListParams } from '@/lib/utils/adminDashboardSearchParams';
 import { Metadata } from 'next';
+import { AdminListPageSkeleton } from '@/components/section/admin/skeletons';
 import { Suspense } from 'react';
-import { Loader2 } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Ask a Pastor',
   description: 'Manage community questions for pastors',
 };
-
-function AskAPastorPageFallback() {
-  return (
-    <div className="flex items-center justify-center min-h-[400px]">
-      <div className="flex flex-col items-center gap-4">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <p className="text-sm text-muted-foreground">Loading questions...</p>
-      </div>
-    </div>
-  );
-}
 
 interface AskAPastorPageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -31,7 +20,7 @@ export default function AskAPastorAdminPage({ searchParams }: AskAPastorPageProp
     <DashboardLayout>
       <section className="h-full overflow-hidden">
         <section className="h-full space-y-6 overflow-auto sleek-scrollbar">
-          <Suspense fallback={<AskAPastorPageFallback />}>
+          <Suspense fallback={<AdminListPageSkeleton label="Loading questions..." />}>
             <AdminAskAPastorPageServer searchParams={searchParams} />
           </Suspense>
         </section>
