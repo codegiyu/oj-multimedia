@@ -15,4 +15,16 @@ describeWithWebServer('marketplace routes', () => {
 
     await expect(page.getByRole('heading', { name: /product not found/i })).toBeVisible();
   });
+
+  test('become-vendor page redirects unauthenticated users to login', async ({ page }) => {
+    await page.goto('/marketplace/become-vendor');
+
+    await expect(page).toHaveURL(/\/auth\/login/);
+  });
+
+  test('marketplace orders route redirects to account orders', async ({ page }) => {
+    await page.goto('/marketplace/orders');
+
+    await expect(page).toHaveURL(/\/account\/orders/);
+  });
 });
