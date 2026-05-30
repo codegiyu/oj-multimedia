@@ -2,7 +2,7 @@
 
 import { motion } from 'motion/react';
 import { Verified } from 'lucide-react';
-import Link from 'next/link';
+import { AppLink } from '@/components/atoms/AppLink';
 import { FixedImage } from '@/components/general/FillImage';
 
 export interface ArtistCardProps {
@@ -43,8 +43,8 @@ export function ArtistCard({ _id, name, image, genre, followers, verified }: Art
   );
 
   return (
-    <Link href={`/community/artists/${_id}`} className="block">
+    <AppLink href={`/community/artists/${_id}`} className="block">
       {cardContent}
-    </Link>
+    </AppLink>
   );
 }

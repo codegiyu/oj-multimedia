@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import Link from 'next/link'; // Nav: keep viewport prefetch for primary navigation
 import { usePathname } from 'next/navigation';
 import { isPathActive } from '@/lib/utils/isPathActive';
 import { type ReactNode, useMemo } from 'react';
@@ -38,7 +38,7 @@ export function NavLink({
   const combinedClassName = `${className} ${isActive ? activeClassName : ''}`.trim();
 
   return (
-    <Link href={href} className={combinedClassName}>
+    <Link href={href} prefetch className={combinedClassName}>
       {children}
     </Link>
   );

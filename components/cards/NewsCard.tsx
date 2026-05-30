@@ -2,7 +2,7 @@
 
 import { motion } from 'motion/react';
 import { Clock, ArrowRight } from 'lucide-react';
-import Link from 'next/link';
+import { AppLink } from '@/components/atoms/AppLink';
 import { FillImage } from '@/components/general/FillImage';
 import { MultilinePreview } from '@/components/general/MultilinePreview';
 
@@ -68,9 +68,9 @@ export const NewsCard = ({
 
     if (linkId) {
       return (
-        <Link href={`/news/story/${linkId}`} className="block h-full">
+        <AppLink href={`/news/story/${linkId}`} className="block h-full">
           {featuredContent}
-        </Link>
+        </AppLink>
       );
     }
     return featuredContent;
@@ -111,9 +111,9 @@ export const NewsCard = ({
 
   if (linkId) {
     return (
-      <Link href={`/news/story/${linkId}`} className="block h-full">
+      <AppLink href={`/news/story/${linkId}`} className="block h-full">
         {regularContent}
-      </Link>
+      </AppLink>
     );
   }
   return regularContent;

@@ -38,6 +38,20 @@ describe('NFR performance contract', () => {
     expect(splashDynamic).toContain('ssr: false');
   });
 
+  it('uses low fetch priority on non-LCP FillImage instances', () => {
+    const fillImage = readFileSync(join(process.cwd(), 'components/general/FillImage.tsx'), 'utf8');
+
+    expect(fillImage).toContain("fetchPriority={priority ? 'high' : 'low'}");
+  });
+
+  it('ships AppLink with deferred viewport prefetch for list cards', () => {
+    const appLink = readFileSync(join(process.cwd(), 'components/atoms/AppLink.tsx'), 'utf8');
+    const newsCard = readFileSync(join(process.cwd(), 'components/cards/NewsCard.tsx'), 'utf8');
+
+    expect(appLink).toContain('prefetch = false');
+    expect(newsCard).toContain('AppLink');
+  });
+
   it('enables optimizePackageImports for heavy UI dependencies', () => {
     const nextConfig = readFileSync(join(process.cwd(), 'next.config.ts'), 'utf8');
 

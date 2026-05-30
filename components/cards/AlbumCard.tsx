@@ -2,7 +2,7 @@
 
 import { motion } from 'motion/react';
 import { DiscAlbum } from 'lucide-react';
-import Link from 'next/link';
+import { AppLink } from '@/components/atoms/AppLink';
 import { FillImage } from '@/components/general/FillImage';
 import type { PublicAlbumCard } from '@/lib/utils/publicApiMappers';
 import { MultilinePreview } from '@/components/general/MultilinePreview';
@@ -29,7 +29,7 @@ export function AlbumCard({
       whileHover={{ y: -8 }}
       transition={{ duration: 0.3 }}
       className="group relative bg-card rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow">
-      <Link href={detailHref} className="block" aria-label={`View album ${title}`}>
+      <AppLink href={detailHref} className="block" aria-label={`View album ${title}`}>
         <div className="relative aspect-square overflow-hidden">
           <FillImage
             imageContext="public"
@@ -60,7 +60,7 @@ export function AlbumCard({
             {releaseLabel ? ` · ${releaseLabel}` : ''}
           </p>
         </div>
-      </Link>
+      </AppLink>
     </motion.div>
   );
 }

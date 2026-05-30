@@ -2,7 +2,7 @@
 
 import { motion } from 'motion/react';
 import { LucideIcon } from 'lucide-react';
-import Link from 'next/link';
+import { AppLink } from '@/components/atoms/AppLink';
 import { cn } from '@/lib/utils';
 
 interface CategoryCardProps {
@@ -86,9 +86,9 @@ export const CategoryCard = ({
 
   if (href) {
     return (
-      <Link href={href} className="block">
+      <AppLink href={href} className="block">
         {cardContent}
-      </Link>
+      </AppLink>
     );
   }
 

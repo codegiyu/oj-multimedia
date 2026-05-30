@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import { AppLink } from '@/components/atoms/AppLink';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { MessageCircle, ShoppingCart } from 'lucide-react';
@@ -53,7 +53,7 @@ export function ProductCard({
       className={`group overflow-hidden hover:shadow-lg transition-shadow ${
         isOutOfStock ? 'opacity-80' : ''
       }`}>
-      <Link href={`/marketplace/products/${product.slug}`} className="block">
+      <AppLink href={`/marketplace/products/${product.slug}`} className="block">
         <div className="relative aspect-square bg-muted rounded-t-xl overflow-hidden">
           <FillImage
             src={imageUrl ?? ''}
@@ -96,12 +96,12 @@ export function ProductCard({
                 </Button>
               ) : (
                 <Button variant="ghost" size="sm" className="flex-1 gap-1" asChild>
-                  <Link
+                  <AppLink
                     href={`/marketplace/vendors/${product.vendorSlug ?? product.vendor}?chat=1`}
                     onClick={e => e.stopPropagation()}>
                     <MessageCircle className="w-4 h-4" />
                     Chat
-                  </Link>
+                  </AppLink>
                 </Button>
               ))}
             {showAddToCart && (
@@ -117,7 +117,7 @@ export function ProductCard({
             )}
           </div>
         </CardContent>
-      </Link>
+      </AppLink>
     </Card>
   );
 }

@@ -9,7 +9,7 @@ import {
 import { buttonVariants } from '../ui/button';
 import { type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
-import Link from 'next/link';
+import { AppLink } from '@/components/atoms/AppLink';
 import { omit } from '@/lib/utils/object';
 import { Loader } from 'lucide-react';
 import { LucideIconComp } from '@/lib/types/general';
@@ -121,7 +121,7 @@ export const RegularBtn = ({
   return (
     <>
       {linkProps && !disabled ? (
-        <Link
+        <AppLink
           onClick={(e: MouseEvent<HTMLAnchorElement>) => {
             if (linkProps.preventdefault === 'true') e.preventDefault();
             props.onClick?.();
@@ -129,7 +129,7 @@ export const RegularBtn = ({
           className={fullWrapClassName}
           {...linkProps}>
           {mainEl}
-        </Link>
+        </AppLink>
       ) : (
         <div className={fullWrapClassName} {...wrapProps}>
           {mainEl}
