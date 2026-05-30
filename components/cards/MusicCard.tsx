@@ -2,7 +2,7 @@
 
 import { motion } from 'motion/react';
 import { Play } from 'lucide-react';
-import Link from 'next/link';
+import { AppLink } from '@/components/atoms/AppLink';
 import { FillImage } from '@/components/general/FillImage';
 import { MusicCardDownloadButton } from '@/components/content/MusicCardDownloadButton';
 import { FavoriteButton } from '@/components/content/FavoriteButton';
@@ -45,7 +45,10 @@ export const MusicCard = (props: MusicCardProps) => {
       transition={{ duration: 0.3 }}
       className="group relative bg-card rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow">
       <div className="relative aspect-square overflow-hidden">
-        <Link href={detailHref} className="absolute inset-0 z-0 block" aria-label={`View ${title}`}>
+        <AppLink
+          href={detailHref}
+          className="absolute inset-0 z-0 block"
+          aria-label={`View ${title}`}>
           <FillImage
             imageContext="public"
             src={cover}
@@ -66,7 +69,7 @@ export const MusicCard = (props: MusicCardProps) => {
             {isNew && <span className="badge-new">NEW</span>}
             <span className="genre-tag bg-card/90 backdrop-blur-sm text-foreground">{genre}</span>
           </div>
-        </Link>
+        </AppLink>
 
         <div className="absolute top-3 right-3 z-10 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
           <FavoriteButton
@@ -80,21 +83,21 @@ export const MusicCard = (props: MusicCardProps) => {
 
       <div className="p-4">
         <div className="flex items-start justify-between gap-2">
-          <Link href={detailHref} className="min-w-0 flex-1">
+          <AppLink href={detailHref} className="min-w-0 flex-1">
             <h3 className="font-semibold truncate group-hover:text-primary transition-colors">
               {title}
             </h3>
             <p className="text-sm text-muted-foreground truncate">{artistName}</p>
             {album ? (
-              <Link
+              <AppLink
                 href={publicMusicAlbumHref(album)}
                 onClick={e => e.stopPropagation()}
                 className="text-xs text-primary truncate block mt-1 hover:underline underline-offset-2">
                 {album.title}
-              </Link>
+              </AppLink>
             ) : null}
             <p className="text-xs text-muted-foreground mt-2">{plays} plays</p>
-          </Link>
+          </AppLink>
           {optionsItem ? (
             <MusicCardOptions musicItem={optionsItem} />
           ) : (

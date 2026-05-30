@@ -3,7 +3,7 @@
 import { motion } from 'motion/react';
 import { Play, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import Link from 'next/link';
+import { AppLink } from '@/components/atoms/AppLink';
 import { FillImage } from '@/components/general/FillImage';
 
 interface ChartCardProps {
@@ -44,7 +44,7 @@ export const ChartCard = ({
       transition={{ duration: 0.2 }}
       className={`group flex items-center gap-4 p-3 rounded-xl hover:bg-muted/50 transition-colors ${detailHref ? '' : ''}`}>
       {detailHref ? (
-        <Link
+        <AppLink
           href={detailHref}
           className="flex min-w-0 flex-1 items-center gap-4"
           aria-label={`View ${title}`}>
@@ -82,7 +82,7 @@ export const ChartCard = ({
               </p>
             )}
           </div>
-        </Link>
+        </AppLink>
       ) : (
         <>
           <div className="w-8 text-center">
@@ -123,9 +123,9 @@ export const ChartCard = ({
           size="icon-sm"
           className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
           asChild>
-          <Link href={detailHref} aria-label={`Play ${title}`}>
+          <AppLink href={detailHref} aria-label={`Play ${title}`}>
             <Play className="w-4 h-4 fill-current ml-0.5" />
-          </Link>
+          </AppLink>
         </Button>
       )}
     </motion.div>

@@ -3,7 +3,7 @@
 import { motion } from 'motion/react';
 import { Play, Eye, Clock, MoreVertical, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import Link from 'next/link';
+import { AppLink } from '@/components/atoms/AppLink';
 import { FillImage } from '@/components/general/FillImage';
 import { ShareIconButton } from '@/components/content/ShareIconButton';
 import { FavoriteButton } from '@/components/content/FavoriteButton';
@@ -52,7 +52,7 @@ export const VideoCard = ({
         transition={{ duration: 0.3 }}
         className="group flex gap-4 p-4 bg-card rounded-2xl hover:shadow-md transition-all">
         {detailHref ? (
-          <Link
+          <AppLink
             href={detailHref}
             className="flex min-w-0 flex-1 gap-4"
             aria-label={`View ${title}`}>
@@ -92,7 +92,7 @@ export const VideoCard = ({
                 )}
               </div>
             </div>
-          </Link>
+          </AppLink>
         ) : (
           <div className="flex min-w-0 flex-1 gap-4">
             <div className="relative w-32 h-20 rounded-xl overflow-hidden shrink-0">
@@ -126,7 +126,7 @@ export const VideoCard = ({
       <div
         className={`relative overflow-hidden ${isShortFormVariant ? 'aspect-[9/16]' : 'aspect-video'}`}>
         {detailHref ? (
-          <Link
+          <AppLink
             href={detailHref}
             className="absolute inset-0 z-0 block"
             aria-label={`View ${title}`}>
@@ -169,7 +169,7 @@ export const VideoCard = ({
                 ) : null}
               </div>
             )}
-          </Link>
+          </AppLink>
         ) : (
           <>
             <FillImage
@@ -208,7 +208,7 @@ export const VideoCard = ({
       <div className={isShortFormVariant ? 'p-2' : 'p-4'}>
         {isShortFormVariant ? (
           detailHref ? (
-            <Link href={detailHref} className="block" aria-label={`View ${title}`}>
+            <AppLink href={detailHref} className="block" aria-label={`View ${title}`}>
               <h3 className="font-semibold text-xs line-clamp-2 group-hover:text-primary transition-colors mb-1">
                 {title}
               </h3>
@@ -221,7 +221,7 @@ export const VideoCard = ({
                   {likes ?? '0'}
                 </span>
               </div>
-            </Link>
+            </AppLink>
           ) : (
             <>
               <h3 className="font-semibold text-xs line-clamp-2 mb-1">{title}</h3>
@@ -230,7 +230,7 @@ export const VideoCard = ({
           )
         ) : isFeaturedVariant ? (
           detailHref ? (
-            <Link href={detailHref} className="block" aria-label={`View ${title}`}>
+            <AppLink href={detailHref} className="block" aria-label={`View ${title}`}>
               <div className="mb-2">
                 <span className="text-xs text-primary font-medium mb-1 block">{category}</span>
                 <h3 className="font-semibold text-sm line-clamp-2 group-hover:text-primary transition-colors mb-1">
@@ -244,7 +244,7 @@ export const VideoCard = ({
                   {views}
                 </span>
               </div>
-            </Link>
+            </AppLink>
           ) : (
             <div>
               <h3 className="font-semibold text-sm line-clamp-2">{title}</h3>
@@ -254,7 +254,7 @@ export const VideoCard = ({
         ) : (
           <div className="flex gap-3">
             {detailHref ? (
-              <Link
+              <AppLink
                 href={detailHref}
                 className="flex min-w-0 flex-1 gap-3"
                 aria-label={`View ${title}`}>
@@ -275,7 +275,7 @@ export const VideoCard = ({
                     </span>
                   </div>
                 </div>
-              </Link>
+              </AppLink>
             ) : (
               <div className="flex min-w-0 flex-1 gap-3">
                 <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center shrink-0">
