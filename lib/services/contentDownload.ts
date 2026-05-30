@@ -1,5 +1,4 @@
 import { getPublicMusicDownloadUrl, getPublicVideoDownloadUrl } from '@/lib/constants/endpoints';
-import { sendContentAnalyticsEvent } from '@/lib/services/contentAnalytics';
 import { isLikelyYoutubeUrl } from '@/lib/utils/videoEmbed';
 
 export type ContentDownloadKind = 'music' | 'video' | 'resource' | 'news';
@@ -23,13 +22,24 @@ export interface ContentDownloadStrategy {
   idOrSlug: string;
   canDownload: boolean;
   requiresPurchase: boolean;
+  /** Uses public download API (server counter + attachment redirect). */
+  useDownloadApi: boolean;
+  /** @deprecated Use useDownloadApi */
   useTrackedDownload: boolean;
+  downloadApiUrl: string;
+  /** @deprecated Use downloadApiUrl */
   trackedDownloadUrl: string;
-  /** URL opened directly when not using tracked redirect */
+  effectiveFileUrl: string;
+  /** @deprecated Use effectiveFileUrl */
   directUrl: string;
+  fallbackViewUrl: string;
 }
 
 const STATIC_DOWNLOAD_HOST = 'static.ojmultimedia.com';
+
+function isHttpUrl(url: string): boolean {
+  return /^https?:\/\//i.test(url);
+}
 
 export function resolveContentPrice(input: {
   price?: number;
@@ -52,23 +62,6 @@ export function isStaticOjDownloadHost(url: string): boolean {
   }
 }
 
-/** Opens a file URL: download attribute on static host; new tab elsewhere (incl. R2/CDN). */
-export function deliverFileUrl(url: string, suggestedFilename?: string): void {
-  if (isStaticOjDownloadHost(url)) {
-    const link = document.createElement('a');
-    link.href = url;
-    if (suggestedFilename) link.download = suggestedFilename;
-    link.rel = 'noopener noreferrer';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    return;
-  }
-
-  window.open(url, '_blank', 'noopener,noreferrer');
-}
-
 export function getVideoDownloadMediaUrl(input: {
   videoFileUrl?: string;
   videoUrl?: string;
@@ -83,15 +76,80 @@ export function getVideoDownloadMediaUrl(input: {
   return input.downloadUrl?.trim() ?? '';
 }
 
+/** Hosted file URL used for forced download (downloadUrl preferred, then media URL). */
+export function resolveEffectiveFileUrl(input: ContentDownloadInput): string {
+  const explicit = input.downloadUrl?.trim() ?? '';
+  const media = input.mediaUrl?.trim() ?? '';
+
+  if (input.kind === 'video') {
+    const hosted = media && !isLikelyYoutubeUrl(media) ? media : '';
+
+    return explicit || hosted;
+  }
+
+  if (input.kind === 'music') {
+    const candidate = explicit || media;
+
+    if (!candidate || !isHttpUrl(candidate) || isLikelyYoutubeUrl(candidate)) return '';
+
+    return candidate;
+  }
+
+  const candidate = explicit || media;
+
+  return candidate && isHttpUrl(candidate) ? candidate : '';
+}
+
+/** External page/stream URL when no downloadable file is available. */
+export function resolveContentViewUrl(input: ContentDownloadInput): string {
+  const candidates = [input.downloadUrl, input.mediaUrl]
+    .map(value => (typeof value === 'string' ? value.trim() : ''))
+    .filter(Boolean);
+
+  return candidates.find(url => isHttpUrl(url)) ?? '';
+}
+
+export function openContentInNewTab(url: string): void {
+  window.open(url, '_blank', 'noopener,noreferrer');
+}
+
+/** Direct file save for news/resources (and static CDN when not using the download API). */
+export function deliverFileUrl(url: string, suggestedFilename?: string): void {
+  if (isStaticOjDownloadHost(url)) {
+    const link = document.createElement('a');
+    link.href = url;
+    if (suggestedFilename) link.download = suggestedFilename;
+    link.rel = 'noopener noreferrer';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    return;
+  }
+
+  openContentInNewTab(url);
+}
+
+/** Triggers GET /public/.../download without navigating the current page away. */
+export function triggerDownloadViaApi(apiUrl: string): void {
+  const link = document.createElement('a');
+  link.href = apiUrl;
+  link.rel = 'noopener noreferrer';
+  link.style.display = 'none';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
 export function getContentDownloadStrategy(input: ContentDownloadInput): ContentDownloadStrategy {
   const idOrSlug = input.slug || input._id;
-  const trackedDownloadUrl =
+  const downloadApiUrl =
     input.kind === 'music'
       ? getPublicMusicDownloadUrl(idOrSlug)
       : getPublicVideoDownloadUrl(idOrSlug);
 
-  const explicitDownload = input.downloadUrl?.trim() ?? '';
-  const mediaUrl = input.mediaUrl?.trim() ?? '';
+  const effectiveFileUrl = resolveEffectiveFileUrl(input);
+  const fallbackViewUrl = resolveContentViewUrl(input);
   const price = resolveContentPrice(input);
 
   if (input.isMonetizable && price != null) {
@@ -99,34 +157,35 @@ export function getContentDownloadStrategy(input: ContentDownloadInput): Content
       idOrSlug,
       canDownload: true,
       requiresPurchase: true,
+      useDownloadApi: false,
       useTrackedDownload: false,
-      trackedDownloadUrl,
-      directUrl: explicitDownload || mediaUrl,
+      downloadApiUrl,
+      trackedDownloadUrl: downloadApiUrl,
+      effectiveFileUrl,
+      directUrl: effectiveFileUrl,
+      fallbackViewUrl,
     };
   }
 
-  const videoFileUrl =
-    input.kind === 'video' && mediaUrl && !isLikelyYoutubeUrl(mediaUrl) ? mediaUrl : '';
+  const useDownloadApi =
+    (input.kind === 'music' || input.kind === 'video') && Boolean(effectiveFileUrl);
 
-  const useTrackedDownload =
-    (input.kind === 'music' && Boolean(explicitDownload)) ||
-    (input.kind === 'video' && Boolean(videoFileUrl));
+  const hasDirectFile =
+    (input.kind === 'resource' || input.kind === 'news') && Boolean(effectiveFileUrl);
 
-  const directUrl =
-    explicitDownload ||
-    (input.kind === 'music' ? mediaUrl : '') ||
-    (input.kind === 'video' ? videoFileUrl : '') ||
-    (input.kind === 'resource' || input.kind === 'news' ? mediaUrl || explicitDownload : '');
-
-  const canDownload = Boolean(useTrackedDownload || directUrl);
+  const canDownload = Boolean(useDownloadApi || hasDirectFile || fallbackViewUrl);
 
   return {
     idOrSlug,
     canDownload,
     requiresPurchase: false,
-    useTrackedDownload,
-    trackedDownloadUrl,
-    directUrl,
+    useDownloadApi,
+    useTrackedDownload: useDownloadApi,
+    downloadApiUrl,
+    trackedDownloadUrl: downloadApiUrl,
+    effectiveFileUrl,
+    directUrl: effectiveFileUrl,
+    fallbackViewUrl,
   };
 }
 
@@ -144,26 +203,28 @@ export async function executeContentDownload(
     return { started: false, reason: 'unavailable' };
   }
 
-  if (strategy.useTrackedDownload) {
-    window.location.href = strategy.trackedDownloadUrl;
+  if (strategy.useDownloadApi) {
+    triggerDownloadViaApi(strategy.downloadApiUrl);
 
     return { started: true };
   }
 
-  const url = strategy.directUrl;
-  if (!url) return { started: false, reason: 'unavailable' };
+  if (strategy.effectiveFileUrl) {
+    const ext = input.kind === 'video' ? '.mp4' : input.kind === 'resource' ? '' : '.mp3';
+    const filename = ext ? `${input.title} - ${input.creatorName}${ext}` : undefined;
 
-  const analyticsKind = input.kind === 'news' ? 'news' : input.kind;
-  if (analyticsKind === 'music' || analyticsKind === 'video') {
-    sendContentAnalyticsEvent(analyticsKind, strategy.idOrSlug, 'download');
+    deliverFileUrl(strategy.effectiveFileUrl, filename);
+
+    return { started: true };
   }
 
-  const ext = input.kind === 'video' ? '.mp4' : input.kind === 'resource' ? '' : '.mp3';
-  const filename = ext ? `${input.title} - ${input.creatorName}${ext}` : undefined;
+  if (strategy.fallbackViewUrl) {
+    openContentInNewTab(strategy.fallbackViewUrl);
 
-  deliverFileUrl(url, filename);
+    return { started: true };
+  }
 
-  return { started: true };
+  return { started: false, reason: 'unavailable' };
 }
 
 /** @deprecated Use ContentDownloadInput */

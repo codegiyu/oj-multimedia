@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { executeMusicDownload, getMusicDownloadStrategy } from './musicDownload';
 
 vi.mock('@/lib/services/contentAnalytics', () => ({
@@ -6,6 +6,20 @@ vi.mock('@/lib/services/contentAnalytics', () => ({
 }));
 
 describe('musicDownload (re-exports)', () => {
+  const clickSpy = vi.fn<() => void>();
+
+  beforeEach(() => {
+    clickSpy.mockClear();
+    vi.spyOn(document.body, 'appendChild').mockImplementation(node => {
+      if (node instanceof HTMLAnchorElement) {
+        vi.spyOn(node, 'click').mockImplementation(clickSpy);
+      }
+
+      return node;
+    });
+    vi.spyOn(document.body, 'removeChild').mockImplementation(node => node);
+  });
+
   afterEach(() => {
     vi.unstubAllEnvs();
     vi.restoreAllMocks();
@@ -22,12 +36,8 @@ describe('musicDownload (re-exports)', () => {
     expect(strategy.canDownload).toBe(false);
   });
 
-  it('redirects using explicit downloadUrl', async () => {
+  it('uses download API for explicit downloadUrl', async () => {
     vi.stubEnv('NEXT_PUBLIC_BASE_URL', 'https://api.example.com');
-    Object.defineProperty(window, 'location', {
-      configurable: true,
-      value: { href: '' },
-    });
 
     const result = await executeMusicDownload({
       _id: 'track-dl',
@@ -38,6 +48,18 @@ describe('musicDownload (re-exports)', () => {
     });
 
     expect(result.started).toBe(true);
-    expect(window.location.href).toContain('/public/music/track-dl/download');
+    expect(clickSpy).toHaveBeenCalled();
+  });
+
+  it('uses download API when only audioUrl is set', async () => {
+    const strategy = getMusicDownloadStrategy({
+      _id: 'track-audio',
+      title: 'Song',
+      artistName: 'Artist',
+      audioUrl: 'https://cdn.example.com/play.mp3',
+      source: 'detail',
+    });
+
+    expect(strategy.useDownloadApi).toBe(true);
   });
 });

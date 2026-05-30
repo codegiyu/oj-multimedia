@@ -5,11 +5,42 @@ import {
   getContentDownloadStrategy,
   getMusicDownloadStrategy,
   isStaticOjDownloadHost,
+  resolveEffectiveFileUrl,
+  triggerDownloadViaApi,
 } from './contentDownload';
 
 vi.mock('@/lib/services/contentAnalytics', () => ({
   sendContentAnalyticsEvent: vi.fn(),
 }));
+
+import { sendContentAnalyticsEvent } from '@/lib/services/contentAnalytics';
+
+describe('resolveEffectiveFileUrl', () => {
+  it('prefers downloadUrl over audioUrl for music', () => {
+    expect(
+      resolveEffectiveFileUrl({
+        kind: 'music',
+        _id: '1',
+        title: 'T',
+        creatorName: 'A',
+        downloadUrl: 'https://cdn.example.com/dl.mp3',
+        mediaUrl: 'https://cdn.example.com/play.mp3',
+      })
+    ).toBe('https://cdn.example.com/dl.mp3');
+  });
+
+  it('falls back to audioUrl when downloadUrl is missing', () => {
+    expect(
+      resolveEffectiveFileUrl({
+        kind: 'music',
+        _id: '1',
+        title: 'T',
+        creatorName: 'A',
+        mediaUrl: 'https://cdn.example.com/play.mp3',
+      })
+    ).toBe('https://cdn.example.com/play.mp3');
+  });
+});
 
 describe('getContentDownloadStrategy', () => {
   afterEach(() => {
@@ -28,10 +59,10 @@ describe('getContentDownloadStrategy', () => {
 
     expect(strategy.requiresPurchase).toBe(true);
     expect(strategy.canDownload).toBe(true);
-    expect(strategy.useTrackedDownload).toBe(false);
+    expect(strategy.useDownloadApi).toBe(false);
   });
 
-  it('uses tracked download only when explicit downloadUrl is set', () => {
+  it('uses download API when explicit downloadUrl is set', () => {
     vi.stubEnv('NEXT_PUBLIC_BASE_URL', 'https://api.example.com');
 
     const strategy = getContentDownloadStrategy({
@@ -42,11 +73,11 @@ describe('getContentDownloadStrategy', () => {
       downloadUrl: 'https://cdn.example.com/song.mp3',
     });
 
-    expect(strategy.useTrackedDownload).toBe(true);
-    expect(strategy.trackedDownloadUrl).toContain('/public/music/track-2/download');
+    expect(strategy.useDownloadApi).toBe(true);
+    expect(strategy.downloadApiUrl).toContain('/public/music/track-2/download');
   });
 
-  it('allows direct audioUrl when no downloadUrl is set', () => {
+  it('uses download API for audioUrl when no downloadUrl is set', () => {
     const strategy = getContentDownloadStrategy({
       kind: 'music',
       _id: 'track-3',
@@ -55,12 +86,11 @@ describe('getContentDownloadStrategy', () => {
       mediaUrl: 'https://cdn.example.com/play.mp3',
     });
 
-    expect(strategy.useTrackedDownload).toBe(false);
-    expect(strategy.canDownload).toBe(true);
-    expect(strategy.directUrl).toBe('https://cdn.example.com/play.mp3');
+    expect(strategy.useDownloadApi).toBe(true);
+    expect(strategy.effectiveFileUrl).toBe('https://cdn.example.com/play.mp3');
   });
 
-  it('uses tracked video download when a hosted file exists', () => {
+  it('uses download API for hosted video files', () => {
     vi.stubEnv('NEXT_PUBLIC_BASE_URL', 'https://api.example.com');
 
     const strategy = getContentDownloadStrategy({
@@ -71,8 +101,8 @@ describe('getContentDownloadStrategy', () => {
       mediaUrl: 'https://cdn.example.com/video.mp4',
     });
 
-    expect(strategy.useTrackedDownload).toBe(true);
-    expect(strategy.trackedDownloadUrl).toContain('/public/videos/vid-1/download');
+    expect(strategy.useDownloadApi).toBe(true);
+    expect(strategy.downloadApiUrl).toContain('/public/videos/vid-1/download');
   });
 
   it('legacy getMusicDownloadStrategy rejects card-only download without media', () => {
@@ -88,20 +118,28 @@ describe('getContentDownloadStrategy', () => {
 });
 
 describe('executeContentDownload', () => {
+  const clickSpy = vi.fn<() => void>();
+
   beforeEach(() => {
-    vi.stubGlobal('open', vi.fn());
-    Object.defineProperty(window, 'location', {
-      configurable: true,
-      value: { href: '' },
+    clickSpy.mockClear();
+    vi.spyOn(document.body, 'appendChild').mockImplementation(node => {
+      if (node instanceof HTMLAnchorElement) {
+        vi.spyOn(node, 'click').mockImplementation(clickSpy);
+      }
+
+      return node;
     });
+    vi.spyOn(document.body, 'removeChild').mockImplementation(node => node);
+    vi.stubGlobal('open', vi.fn());
   });
 
   afterEach(() => {
+    vi.unstubAllEnvs();
     vi.unstubAllGlobals();
     vi.restoreAllMocks();
   });
 
-  it('opens non-static URLs in a new tab', () => {
+  it('opens non-static URLs in a new tab via deliverFileUrl', () => {
     deliverFileUrl('https://r2.example.com/file.mp3', 'song.mp3');
 
     expect(window.open).toHaveBeenCalledWith(
@@ -111,7 +149,7 @@ describe('executeContentDownload', () => {
     );
   });
 
-  it('redirects to tracked music download when downloadUrl is set', async () => {
+  it('triggers download API via anchor click for music with downloadUrl', async () => {
     vi.stubEnv('NEXT_PUBLIC_BASE_URL', 'https://api.example.com');
 
     const result = await executeContentDownload({
@@ -123,7 +161,15 @@ describe('executeContentDownload', () => {
     });
 
     expect(result.started).toBe(true);
-    expect(window.location.href).toContain('/public/music/track-dl/download');
+    expect(clickSpy).toHaveBeenCalled();
+    expect(sendContentAnalyticsEvent).not.toHaveBeenCalled();
+  });
+
+  it('triggerDownloadViaApi does not assign window.location', () => {
+    vi.stubEnv('NEXT_PUBLIC_BASE_URL', 'https://api.example.com');
+    triggerDownloadViaApi('https://api.example.com/api/v1/public/music/x/download');
+
+    expect(clickSpy).toHaveBeenCalled();
   });
 });
 
