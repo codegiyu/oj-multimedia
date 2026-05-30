@@ -6,6 +6,7 @@ import { TrendingVideosPageClient } from '@/components/section/video/TrendingVid
 import { VideoPageSkeleton } from '@/components/section/video/VideoPageSkeleton';
 import type { TrendingVideo } from '@/components/section/video/TrendingVideos';
 import { callPublicServerApi } from '@/lib/services/serverApi';
+import { ISR_PUBLIC_FETCH } from '@/lib/constants/isr';
 import { filterByCategory } from '@/lib/utils/videos';
 import { mapPublicVideoToTrendingVideo } from '@/lib/utils/publicApiMappers';
 import { VIDEO_TYPES } from '@/lib/constants/contentTaxonomy';
@@ -24,7 +25,7 @@ async function fetchTrendingVideos(category: string) {
     category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';
   const query =
     `?limit=50&page=1&status=published&type=${VIDEO_TYPES.trending}${categoryParam}` as const;
-  const res = await callPublicServerApi('PUBLIC_GET_VIDEOS', { query });
+  const res = await callPublicServerApi('PUBLIC_GET_VIDEOS', { query }, ISR_PUBLIC_FETCH.fast);
   if (res.type === 'error') {
     return {
       trendingVideos: [] as TrendingVideo[],
@@ -43,7 +44,11 @@ interface TrendingVideosPageProps {
 
 export default async function TrendingVideosPage({ searchParams }: TrendingVideosPageProps) {
   const params = await searchParams;
-  const category = await normalizePublicCategoryByScope('video', params.category);
+  const category = await normalizePublicCategoryByScope(
+    'video',
+    params.category,
+    ISR_PUBLIC_FETCH.fast
+  );
 
   return (
     <MainLayout>
@@ -67,7 +72,7 @@ export default async function TrendingVideosPage({ searchParams }: TrendingVideo
 async function TrendingVideosServer({ category }: { category: string }) {
   const [data, categoryOptions] = await Promise.all([
     fetchTrendingVideos(category),
-    fetchPublicCategoryNav('video', 'All Videos', videoCategoryNavFallback),
+    fetchPublicCategoryNav('video', 'All Videos', videoCategoryNavFallback, ISR_PUBLIC_FETCH.fast),
   ]);
 
   return <TrendingVideosPageClient {...data} categoryOptions={categoryOptions} />;

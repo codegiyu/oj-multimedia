@@ -7,9 +7,12 @@ import { AllTestimonies } from '@/components/section/community/testimonies/AllTe
 import { DataLoadErrorWithRetry } from '@/components/general/DataLoadErrorWithRetry';
 import { Clock } from 'lucide-react';
 import { callPublicServerApi } from '@/lib/services/serverApi';
+import { ISR_PUBLIC_FETCH, ISR_REVALIDATE } from '@/lib/constants/isr';
 import { mapToTestimony } from '@/lib/utils/communityApiMappers';
 import { buildCommunityListQuery } from '@/lib/utils/communityListQuery';
 import type { Testimony } from '@/components/section/community/testimonies/TestimoniesPageClient';
+
+export const revalidate = ISR_REVALIDATE.fast;
 
 export const metadata: Metadata = {
   title: 'Latest Testimonies - Recent Stories',
@@ -20,9 +23,13 @@ async function fetchLatestTestimonies(): Promise<{
   latestTestimonies: Testimony[];
   initialErrorMessage: string | null;
 }> {
-  const res = await callPublicServerApi('PUBLIC_GET_TESTIMONIES', {
-    query: buildCommunityListQuery({ type: 'latest', limit: 50 }),
-  });
+  const res = await callPublicServerApi(
+    'PUBLIC_GET_TESTIMONIES',
+    {
+      query: buildCommunityListQuery({ type: 'latest', limit: 50 }),
+    },
+    ISR_PUBLIC_FETCH.fast
+  );
 
   if (res.type === 'error') {
     return {

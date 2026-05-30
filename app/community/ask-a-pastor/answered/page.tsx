@@ -8,9 +8,12 @@ import { DataLoadErrorWithRetry } from '@/components/general/DataLoadErrorWithRe
 import { HelpCircle } from 'lucide-react';
 import { filterByCategory } from '@/lib/utils/community/questions';
 import { callPublicServerApi } from '@/lib/services/serverApi';
+import { ISR_PUBLIC_FETCH, ISR_REVALIDATE } from '@/lib/constants/isr';
 import { mapToAnsweredQuestion } from '@/lib/utils/communityApiMappers';
 import { buildCommunityListQuery } from '@/lib/utils/communityListQuery';
 import type { AnsweredQuestion } from '@/components/section/community/ask-a-pastor/AskAPastorPageClient';
+
+export const revalidate = ISR_REVALIDATE.slow;
 
 export const metadata: Metadata = {
   title: 'Answered Questions - Biblical Guidance',
@@ -22,9 +25,13 @@ async function fetchAnsweredQuestions(category: string): Promise<{
   answeredQuestions: AnsweredQuestion[];
   initialErrorMessage: string | null;
 }> {
-  const res = await callPublicServerApi('PUBLIC_GET_ASK_A_PASTOR_QUESTIONS', {
-    query: buildCommunityListQuery({ status: 'answered', limit: 50, category }),
-  });
+  const res = await callPublicServerApi(
+    'PUBLIC_GET_ASK_A_PASTOR_QUESTIONS',
+    {
+      query: buildCommunityListQuery({ status: 'answered', limit: 50, category }),
+    },
+    ISR_PUBLIC_FETCH.slow
+  );
 
   if (res.type === 'error') {
     return {

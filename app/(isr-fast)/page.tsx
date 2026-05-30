@@ -15,6 +15,7 @@ import {
 } from '@/components/section/home';
 import { HomePageSkeleton } from '@/components/section/home/HomePageSkeleton';
 import { callPublicServerApi } from '@/lib/services/serverApi';
+import { ISR_PUBLIC_FETCH } from '@/lib/constants/isr';
 import type {
   IPublicMusicListRes,
   IPublicVideosListRes,
@@ -243,49 +244,105 @@ async function fetchHomeSections(filters: {
     trendingNewsRes,
     devotionalsRes,
   ] = await Promise.all([
-    callPublicServerApi('PUBLIC_GET_MUSIC', {
-      query: `?${baseMusicQuery.toString()}`,
-    }),
-    callPublicServerApi('PUBLIC_GET_VIDEOS', {
-      query: `?${baseVideoQuery.toString()}`,
-    }),
-    callPublicServerApi('PUBLIC_GET_NEWS', {
-      query: `?${baseNewsQuery.toString()}`,
-    }),
-    callPublicServerApi('PUBLIC_GET_MUSIC', {
-      query: `?${baseChartsQuery.toString()}`,
-    }),
-    callPublicServerApi('PUBLIC_GET_ARTISTS', {
-      query: '?page=1&limit=4',
-    }),
-    callPublicServerApi('MARKETPLACE_GET_PRODUCTS', {
-      query: `?${marketplaceQuery.toString()}`,
-    }),
-    callPublicServerApi('PUBLIC_GET_POLLS', {
-      query: '?status=active&page=1&limit=1',
-    }),
-    callPublicServerApi('PUBLIC_GET_TESTIMONIES', {
-      query: '?type=featured&page=1&limit=3&status=published',
-    }),
-    callPublicServerApi('PUBLIC_GET_HOME_ADVERTS', {}),
-    callPublicServerApi('PUBLIC_GET_MUSIC', {
-      query: `?${latestMusicQuery.toString()}`,
-    }),
-    callPublicServerApi('PUBLIC_GET_MUSIC', {
-      query: `?${latestSermonsQuery.toString()}`,
-    }),
-    callPublicServerApi('PUBLIC_GET_VIDEOS', {
-      query: `?${latestMoviesQuery.toString()}`,
-    }),
-    callPublicServerApi('PUBLIC_GET_NEWS', {
-      query: `?${featuredNewsQuery.toString()}`,
-    }),
-    callPublicServerApi('PUBLIC_GET_NEWS', {
-      query: `?${trendingNewsQuery.toString()}`,
-    }),
-    callPublicServerApi('PUBLIC_GET_DEVOTIONALS', {
-      query: `?${devotionalsQuery.toString()}`,
-    }),
+    callPublicServerApi(
+      'PUBLIC_GET_MUSIC',
+      {
+        query: `?${baseMusicQuery.toString()}`,
+      },
+      ISR_PUBLIC_FETCH.fast
+    ),
+    callPublicServerApi(
+      'PUBLIC_GET_VIDEOS',
+      {
+        query: `?${baseVideoQuery.toString()}`,
+      },
+      ISR_PUBLIC_FETCH.fast
+    ),
+    callPublicServerApi(
+      'PUBLIC_GET_NEWS',
+      {
+        query: `?${baseNewsQuery.toString()}`,
+      },
+      ISR_PUBLIC_FETCH.fast
+    ),
+    callPublicServerApi(
+      'PUBLIC_GET_MUSIC',
+      {
+        query: `?${baseChartsQuery.toString()}`,
+      },
+      ISR_PUBLIC_FETCH.fast
+    ),
+    callPublicServerApi(
+      'PUBLIC_GET_ARTISTS',
+      {
+        query: '?page=1&limit=4',
+      },
+      ISR_PUBLIC_FETCH.fast
+    ),
+    callPublicServerApi(
+      'MARKETPLACE_GET_PRODUCTS',
+      {
+        query: `?${marketplaceQuery.toString()}`,
+      },
+      ISR_PUBLIC_FETCH.fast
+    ),
+    callPublicServerApi(
+      'PUBLIC_GET_POLLS',
+      {
+        query: '?status=active&page=1&limit=1',
+      },
+      ISR_PUBLIC_FETCH.fast
+    ),
+    callPublicServerApi(
+      'PUBLIC_GET_TESTIMONIES',
+      {
+        query: '?type=featured&page=1&limit=3&status=published',
+      },
+      ISR_PUBLIC_FETCH.fast
+    ),
+    callPublicServerApi('PUBLIC_GET_HOME_ADVERTS', {}, ISR_PUBLIC_FETCH.fast),
+    callPublicServerApi(
+      'PUBLIC_GET_MUSIC',
+      {
+        query: `?${latestMusicQuery.toString()}`,
+      },
+      ISR_PUBLIC_FETCH.fast
+    ),
+    callPublicServerApi(
+      'PUBLIC_GET_MUSIC',
+      {
+        query: `?${latestSermonsQuery.toString()}`,
+      },
+      ISR_PUBLIC_FETCH.fast
+    ),
+    callPublicServerApi(
+      'PUBLIC_GET_VIDEOS',
+      {
+        query: `?${latestMoviesQuery.toString()}`,
+      },
+      ISR_PUBLIC_FETCH.fast
+    ),
+    callPublicServerApi(
+      'PUBLIC_GET_NEWS',
+      {
+        query: `?${featuredNewsQuery.toString()}`,
+      },
+      ISR_PUBLIC_FETCH.fast
+    ),
+    callPublicServerApi(
+      'PUBLIC_GET_NEWS',
+      {
+        query: `?${trendingNewsQuery.toString()}`,
+      },
+      ISR_PUBLIC_FETCH.fast
+    ),
+    callPublicServerApi(
+      'PUBLIC_GET_DEVOTIONALS',
+      {
+        query: `?${devotionalsQuery.toString()}`,
+      },
+      ISR_PUBLIC_FETCH.fast
+    ),
   ]);
 
   let initialErrorMessage: string | null = null;

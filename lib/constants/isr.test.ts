@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ISR_REVALIDATE, resolveIsrRevalidateSeconds } from '@/lib/constants/isr';
+import { ISR_REVALIDATE, ISR_PUBLIC_FETCH, resolveIsrRevalidateSeconds } from '@/lib/constants/isr';
 
 describe('isr constants', () => {
   it('defines fast, default, and slow revalidation tiers in seconds', () => {
@@ -15,5 +15,11 @@ describe('isr constants', () => {
   it('returns explicit revalidateSeconds when provided', () => {
     expect(resolveIsrRevalidateSeconds(ISR_REVALIDATE.fast)).toBe(60);
     expect(resolveIsrRevalidateSeconds(900)).toBe(900);
+  });
+
+  it('exposes fetch config aligned to each tier', () => {
+    expect(ISR_PUBLIC_FETCH.fast.revalidateSeconds).toBe(ISR_REVALIDATE.fast);
+    expect(ISR_PUBLIC_FETCH.default.revalidateSeconds).toBe(ISR_REVALIDATE.default);
+    expect(ISR_PUBLIC_FETCH.slow.revalidateSeconds).toBe(ISR_REVALIDATE.slow);
   });
 });

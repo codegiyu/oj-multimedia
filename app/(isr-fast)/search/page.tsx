@@ -6,6 +6,7 @@ import { SearchResultsClient } from '@/components/section/public/search/SearchRe
 import { SearchResultsSkeleton } from '@/components/section/public/search/SearchResultsSkeleton';
 import type { ISearchResultItem } from '@/lib/constants/endpoints';
 import { callPublicServerApi } from '@/lib/services/serverApi';
+import { ISR_PUBLIC_FETCH } from '@/lib/constants/isr';
 
 export const metadata = {
   title: 'Search - Find Music, News, Videos & Community Content',
@@ -34,9 +35,13 @@ async function fetchSearchResults(params: {
   if (params.page) searchParams.set('page', params.page);
   if (params.limit) searchParams.set('limit', params.limit);
 
-  const res = await callPublicServerApi('PUBLIC_SEARCH', {
-    query: `?${searchParams.toString()}` as `?${string}`,
-  });
+  const res = await callPublicServerApi(
+    'PUBLIC_SEARCH',
+    {
+      query: `?${searchParams.toString()}` as `?${string}`,
+    },
+    ISR_PUBLIC_FETCH.fast
+  );
 
   if (res.error) {
     return {
