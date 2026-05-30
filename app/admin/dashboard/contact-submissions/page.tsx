@@ -3,24 +3,13 @@ import { ContactSubmissionsPageClient } from '@/components/section/admin/contact
 import { serverFetchAdminContactSubmissionsList } from '@/lib/services/adminDashboardServerData';
 import { parseAdminStandardListParams } from '@/lib/utils/adminDashboardSearchParams';
 import { Metadata } from 'next';
+import { AdminListPageSkeleton } from '@/components/section/admin/skeletons';
 import { Suspense } from 'react';
-import { Loader2 } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Contact Submissions',
   description: 'View and manage contact form submissions',
 };
-
-function ContactSubmissionsPageFallback() {
-  return (
-    <div className="flex items-center justify-center min-h-[400px]">
-      <div className="flex flex-col items-center gap-4">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <p className="text-sm text-muted-foreground">Loading contact submissions...</p>
-      </div>
-    </div>
-  );
-}
 
 interface ContactSubmissionsPageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -31,7 +20,7 @@ export default function ContactSubmissionsPage({ searchParams }: ContactSubmissi
     <DashboardLayout>
       <section className="h-full overflow-hidden">
         <section className="h-full space-y-6 overflow-auto sleek-scrollbar">
-          <Suspense fallback={<ContactSubmissionsPageFallback />}>
+          <Suspense fallback={<AdminListPageSkeleton label="Loading contact submissions..." />}>
             <AdminContactSubmissionsPageServer searchParams={searchParams} />
           </Suspense>
         </section>

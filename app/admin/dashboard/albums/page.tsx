@@ -3,24 +3,13 @@ import { AlbumsPageClient } from '@/components/section/admin/albums/AlbumsPageCl
 import { serverFetchAdminAlbumsList } from '@/lib/services/adminDashboardServerData';
 import { parseAdminContentListParams } from '@/lib/utils/adminDashboardSearchParams';
 import { Metadata } from 'next';
+import { AdminListPageSkeleton } from '@/components/section/admin/skeletons';
 import { Suspense } from 'react';
-import { Loader2 } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Albums',
   description: 'Manage albums',
 };
-
-function AlbumsPageFallback() {
-  return (
-    <div className="flex items-center justify-center min-h-[400px]">
-      <div className="flex flex-col items-center gap-4">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <p className="text-sm text-muted-foreground">Loading albums...</p>
-      </div>
-    </div>
-  );
-}
 
 interface AlbumsPageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -31,7 +20,7 @@ export default function AlbumsPage({ searchParams }: AlbumsPageProps) {
     <DashboardLayout>
       <section className="h-full overflow-hidden">
         <section className="h-full space-y-6 overflow-auto sleek-scrollbar">
-          <Suspense fallback={<AlbumsPageFallback />}>
+          <Suspense fallback={<AdminListPageSkeleton label="Loading albums..." />}>
             <AdminAlbumsPageServer searchParams={searchParams} />
           </Suspense>
         </section>
