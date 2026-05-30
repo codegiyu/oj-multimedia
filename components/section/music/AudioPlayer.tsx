@@ -31,11 +31,27 @@ interface AudioPlayerProps {
   audioUrl: string;
   title?: string;
   artist?: string;
+  /** Known duration from API metadata (seconds) — shown before browser loads file headers. */
+  durationSeconds?: number;
   /** Fires once when playback actually starts. */
   onFirstPlay?: () => void;
 }
 
-export const AudioPlayer = ({ audioUrl, title, artist, onFirstPlay }: AudioPlayerProps) => {
+function formatClock(seconds: number): string {
+  const total = Math.max(0, Math.floor(seconds));
+  const minutes = Math.floor(total / 60);
+  const remainder = total % 60;
+
+  return `${minutes}:${remainder.toString().padStart(2, '0')}`;
+}
+
+export const AudioPlayer = ({
+  audioUrl,
+  title,
+  artist,
+  durationSeconds,
+  onFirstPlay,
+}: AudioPlayerProps) => {
   const rootRef = useRef<HTMLDivElement>(null);
   const playedRef = useRef(false);
 
@@ -79,10 +95,18 @@ export const AudioPlayer = ({ audioUrl, title, artist, onFirstPlay }: AudioPlaye
               className="text-foreground hover:text-primary transition-colors"
             />
             <MediaTimeRange className="min-h-2 flex-1" />
-            <MediaTimeDisplay
-              showDuration
-              className="min-w-[100px] text-xs text-muted-foreground"
-            />
+            {durationSeconds != null && durationSeconds > 0 ? (
+              <span
+                className="min-w-[100px] text-xs text-muted-foreground tabular-nums text-right"
+                aria-label={`Duration ${formatClock(durationSeconds)}`}>
+                0:00 / {formatClock(durationSeconds)}
+              </span>
+            ) : (
+              <MediaTimeDisplay
+                showDuration
+                className="min-w-[100px] text-xs text-muted-foreground"
+              />
+            )}
             <MediaMuteButton className="text-foreground hover:text-primary transition-colors" />
             <MediaVolumeRange className="min-h-2 w-24" />
           </MediaControlBar>
