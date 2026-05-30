@@ -2,8 +2,7 @@
 
 import { useEffect } from 'react';
 import { motion } from 'motion/react';
-import { ArrowLeft, Clock, Eye, Calendar, Share2, Bookmark, BookOpen } from 'lucide-react';
-import Link from 'next/link';
+import { Clock, Eye, Calendar, Share2, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/atoms/Toast';
 import type { DevotionalItem } from '@/lib/constants/community/devotionals';
@@ -11,6 +10,8 @@ import { MultilineText } from '@/components/general/MultilineText';
 import { StructuredProseContent } from '@/components/general/StructuredProseContent';
 import { RelatedDevotionals } from './RelatedDevotionals';
 import { sendContentAnalyticsEvent } from '@/lib/services/contentAnalytics';
+import { CommunityContentDetailHero } from '../shared/CommunityContentDetailHero';
+import { DevotionalSaveButton } from '@/components/content/DevotionalSaveButton';
 
 interface DevotionalDetailPageClientProps {
   devotional: DevotionalItem;
@@ -53,62 +54,25 @@ export const DevotionalDetailPageClient = ({
 
   return (
     <article className="min-h-screen">
-      {/* Hero Section */}
-      <section className="bg-gradient-to-br from-primary/10 via-background to-accent/10 py-20">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            <Link href="/community/devotionals">
-              <Button variant="ghost" size="sm" className="gap-2 mb-6">
-                <ArrowLeft className="w-4 h-4" />
-                Back to Devotionals
-              </Button>
-            </Link>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}>
-              <span className="inline-flex w-fit px-3 py-1 rounded-full bg-primary text-primary-foreground text-xs font-medium mb-4">
-                {devotional.category}
-              </span>
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold mb-4">
-                {devotional.title}
-              </h1>
-              {devotional.verse && (
-                <p className="text-lg text-muted-foreground font-medium mb-6 italic">
-                  {devotional.verse}
-                </p>
-              )}
-              <div className="flex items-center gap-4 text-sm text-muted-foreground flex-wrap">
-                {devotional.date && (
-                  <span className="flex items-center gap-1">
-                    <Calendar className="w-4 h-4" />
-                    {devotional.date}
-                  </span>
-                )}
-                {devotional.readingTime && (
-                  <span className="flex items-center gap-1">
-                    <Clock className="w-4 h-4" />
-                    {devotional.readingTime}
-                  </span>
-                )}
-                {devotional.views && (
-                  <span className="flex items-center gap-1">
-                    <Eye className="w-4 h-4" />
-                    {devotional.views.toLocaleString()} views
-                  </span>
-                )}
-                {devotional.author && (
-                  <span className="flex items-center gap-1">
-                    <BookOpen className="w-4 h-4" />
-                    {devotional.author}
-                  </span>
-                )}
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
+      <CommunityContentDetailHero
+        backHref="/community/devotionals"
+        backLabel="Back to Devotionals"
+        title={devotional.title}
+        subtitle={devotional.verse}
+        badge={
+          <span className="inline-flex w-fit px-3 py-1 rounded-full bg-primary text-primary-foreground text-xs font-medium">
+            {devotional.category}
+          </span>
+        }
+        metaItems={[
+          ...(devotional.date ? [{ icon: Calendar, label: devotional.date }] : []),
+          ...(devotional.readingTime ? [{ icon: Clock, label: devotional.readingTime }] : []),
+          ...(devotional.views
+            ? [{ icon: Eye, label: `${devotional.views.toLocaleString()} views` }]
+            : []),
+          ...(devotional.author ? [{ icon: BookOpen, label: devotional.author }] : []),
+        ]}
+      />
 
       {/* Main Content */}
       <section className="container mx-auto px-4 py-12">
@@ -173,10 +137,7 @@ export const DevotionalDetailPageClient = ({
                 <Share2 className="w-4 h-4" />
                 Share
               </Button>
-              <Button variant="outline" size="sm" className="gap-2">
-                <Bookmark className="w-4 h-4" />
-                Save
-              </Button>
+              <DevotionalSaveButton entityId={devotional._id} variant="labeled" />
             </div>
           </motion.div>
         </div>

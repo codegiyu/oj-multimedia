@@ -1,9 +1,8 @@
 'use client';
 
 import { motion } from 'motion/react';
-import { ArrowLeft, Heart, MessageCircle, Calendar, Share2, Bookmark, User } from 'lucide-react';
+import { Heart, MessageCircle, Calendar, Share2, Bookmark, User } from 'lucide-react';
 import Link from 'next/link';
-import { FixedImage } from '@/components/general/FillImage';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { toast } from '@/components/atoms/Toast';
@@ -11,6 +10,7 @@ import type { TestimonyItem } from '@/lib/constants/community/testimonies';
 import { MultilineText } from '@/components/general/MultilineText';
 import { LoginModal } from '@/components/auth/LoginModal';
 import { useAuthStore } from '@/lib/store/useAuthStore';
+import { CommunityContentDetailHero } from '../shared/CommunityContentDetailHero';
 
 interface TestimonyDetailPageClientProps {
   testimony: TestimonyItem;
@@ -67,54 +67,31 @@ export const TestimonyDetailPageClient = ({
 
   return (
     <article className="min-h-screen">
-      <section className="bg-gradient-to-br from-primary/10 via-background to-accent/10 py-20">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            <Link href="/community/testimonies">
-              <Button variant="ghost" size="sm" className="gap-2 mb-6">
-                <ArrowLeft className="w-4 h-4" />
-                Back to Testimonies
-              </Button>
-            </Link>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="flex items-start gap-6">
-              <FixedImage
-                src={testimony.avatar}
-                alt={testimony.author}
-                width={80}
-                height={80}
-                imageContext="public"
-                className="rounded-full"
-              />
-              <div className="flex-1">
-                <h1 className="text-3xl md:text-4xl font-display font-bold mb-4">
-                  {testimony.title || 'Testimony'}
-                </h1>
-                <div className="flex items-center gap-4 text-sm text-muted-foreground mb-6">
-                  <span className="flex items-center gap-1">
-                    <User className="w-4 h-4" />
-                    {testimony.author}
-                  </span>
-                  {testimony.date && (
-                    <span className="flex items-center gap-1">
-                      <Calendar className="w-4 h-4" />
-                      {new Date(testimony.date).toLocaleDateString()}
-                    </span>
-                  )}
-                  {testimony.category && (
-                    <span className="px-3 py-1 rounded-full bg-primary/10 text-primary text-xs">
-                      {testimony.category}
-                    </span>
-                  )}
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
+      <CommunityContentDetailHero
+        backHref="/community/testimonies"
+        backLabel="Back to Testimonies"
+        title={testimony.title || 'Testimony'}
+        layout="avatar"
+        avatar={{ src: testimony.avatar, alt: testimony.author }}
+        metaItems={[
+          { icon: User, label: testimony.author },
+          ...(testimony.date
+            ? [
+                {
+                  icon: Calendar,
+                  label: new Date(testimony.date).toLocaleDateString(),
+                },
+              ]
+            : []),
+        ]}
+        badge={
+          testimony.category ? (
+            <span className="px-3 py-1 rounded-full bg-primary/10 text-primary text-xs">
+              {testimony.category}
+            </span>
+          ) : undefined
+        }
+      />
 
       <section className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">

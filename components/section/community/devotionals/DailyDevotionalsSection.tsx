@@ -2,11 +2,12 @@
 
 import { useRouter } from 'next/navigation';
 import { motion } from 'motion/react';
-import { Calendar, Clock, Eye, Bookmark } from 'lucide-react';
+import { Calendar, Clock, Eye } from 'lucide-react';
 import Link from 'next/link';
 import { SectionComp } from '@/components/general/SectionComp';
 import { DataLoadError } from '@/components/general/DataLoadError';
 import { EmptyState } from '@/components/section/news/EmptyState';
+import { DevotionalSaveButton } from '@/components/content/DevotionalSaveButton';
 import type { DailyDevotional } from './DevotionalsPageClient';
 
 interface DailyDevotionalsSectionProps {
@@ -64,34 +65,31 @@ export const DailyDevotionalsSection = ({
             viewport={{ once: true }}
             transition={{ delay: index * 0.1 }}
             whileHover={{ scale: 1.01 }}
-            className="bg-card rounded-2xl p-5 shadow-sm border border-border/50 hover:shadow-md transition-all cursor-pointer group">
-            <Link href={`/community/devotionals/${devotional._id}`}>
-              <div className="flex gap-4">
+            className="bg-card rounded-2xl p-5 shadow-sm border border-border/50 hover:shadow-md transition-all group">
+            <div className="flex gap-4">
+              <Link
+                href={`/community/devotionals/${devotional._id}`}
+                className="flex gap-4 flex-1 min-w-0">
                 <div className="w-16 h-16 rounded-xl bg-secondary/10 flex items-center justify-center shrink-0">
                   <Calendar className="w-7 h-7 text-secondary" />
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-start justify-between gap-2 mb-2">
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xs text-secondary font-medium">
-                          {devotional.category}
+                  <div className="mb-2">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xs text-secondary font-medium">
+                        {devotional.category}
+                      </span>
+                      {devotional.date === 'Today' && (
+                        <span className="text-xs bg-green-500/20 text-green-600 dark:text-green-400 px-2 py-0.5 rounded-full">
+                          Today
                         </span>
-                        {devotional.date === 'Today' && (
-                          <span className="text-xs bg-green-500/20 text-green-600 dark:text-green-400 px-2 py-0.5 rounded-full">
-                            Today
-                          </span>
-                        )}
-                      </div>
-                      <h3 className="font-semibold group-hover:text-secondary transition-colors line-clamp-1">
-                        {devotional.title}
-                      </h3>
-                      <p className="text-sm text-primary font-medium mt-1">{devotional.verse}</p>
+                      )}
                     </div>
-                    <button className="p-2 rounded-lg hover:bg-muted transition-colors shrink-0">
-                      <Bookmark className="w-4 h-4 text-muted-foreground" />
-                    </button>
+                    <h3 className="font-semibold group-hover:text-secondary transition-colors line-clamp-1">
+                      {devotional.title}
+                    </h3>
+                    <p className="text-sm text-primary font-medium mt-1">{devotional.verse}</p>
                   </div>
 
                   <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
@@ -112,8 +110,9 @@ export const DailyDevotionalsSection = ({
                     </div>
                   </div>
                 </div>
-              </div>
-            </Link>
+              </Link>
+              <DevotionalSaveButton entityId={devotional._id} />
+            </div>
           </motion.div>
         ))}
       </div>

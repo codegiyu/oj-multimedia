@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'motion/react';
-import { ArrowLeft, Eye, MessageCircle, ThumbsUp, User } from 'lucide-react';
+import { Eye, MessageCircle, ThumbsUp, User } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
@@ -12,6 +12,7 @@ import { ShareButton } from '@/lib/hooks/use-copy';
 import { MultilineText } from '@/components/general/MultilineText';
 import { LoginModal } from '@/components/auth/LoginModal';
 import { useAuthStore } from '@/lib/store/useAuthStore';
+import { CommunityContentDetailHero } from '../shared/CommunityContentDetailHero';
 
 interface QuestionDetailPageClientProps {
   question: QuestionItem;
@@ -43,46 +44,21 @@ export const QuestionDetailPageClient = ({
 
   return (
     <article className="min-h-screen">
-      <section className="bg-gradient-to-br from-primary/10 via-background to-accent/10 py-20">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            <Link href="/community/ask-a-pastor">
-              <Button variant="ghost" size="sm" className="gap-2 mb-6">
-                <ArrowLeft className="w-4 h-4" />
-                Back to Ask a Pastor
-              </Button>
-            </Link>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="flex items-start gap-4">
-              <div className="flex-1">
-                <span className="inline-flex w-fit px-3 py-1 rounded-full bg-primary text-primary-foreground text-xs font-medium mb-4">
-                  {question.category}
-                </span>
-                <h1 className="text-3xl md:text-4xl font-display font-bold mb-4">
-                  {question.question}
-                </h1>
-                <div className="flex items-center gap-4 text-sm text-muted-foreground mb-6">
-                  <span className="flex items-center gap-1">
-                    <User className="w-4 h-4" />
-                    {question.author}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Eye className="w-4 h-4" />
-                    {question.views} views
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <MessageCircle className="w-4 h-4" />
-                    {question.answers} answers
-                  </span>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
+      <CommunityContentDetailHero
+        backHref="/community/ask-a-pastor"
+        backLabel="Back to Ask a Pastor"
+        title={question.question}
+        badge={
+          <span className="inline-flex w-fit px-3 py-1 rounded-full bg-primary text-primary-foreground text-xs font-medium">
+            {question.category}
+          </span>
+        }
+        metaItems={[
+          { icon: User, label: question.author },
+          { icon: Eye, label: `${question.views} views` },
+          { icon: MessageCircle, label: `${question.answers} answers` },
+        ]}
+      />
 
       <section className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
