@@ -8,7 +8,11 @@ import type { ArtistMusicListItem } from '@/lib/constants/endpoints';
 import { MusicDetailsDrawer } from './MusicDetailsDrawer';
 import { MusicTableContent } from './MusicTableContent';
 import { CreateMusicModalDynamic } from './CreateMusicModalDynamic';
-import { ApprovalModal, RejectModal } from '@/components/section/admin/shared';
+import {
+  ApprovalModal,
+  RejectModal,
+  AdminContentSectionGuideButton,
+} from '@/components/section/admin/shared';
 import { callApi } from '@/lib/services/callApi';
 import { RegularBtn } from '@/components/atoms/RegularBtn';
 import { Plus } from 'lucide-react';
@@ -150,14 +154,17 @@ export function MusicPageClient({
       description={pageDescription}
       onRefresh={handleRefresh}
       pageHeaderActions={
-        <RegularBtn
-          LeftIcon={Plus}
-          text="Create Music"
-          onClick={() => {
-            setEditMusicId(null);
-            setCreateOpen(true);
-          }}
-        />
+        <>
+          <AdminContentSectionGuideButton scope="music" />
+          <RegularBtn
+            LeftIcon={Plus}
+            text="Create Music"
+            onClick={() => {
+              setEditMusicId(null);
+              setCreateOpen(true);
+            }}
+          />
+        </>
       }
       listError={listError}
       filterableDataPageProps={{

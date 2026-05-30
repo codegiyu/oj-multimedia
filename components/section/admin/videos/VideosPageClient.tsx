@@ -8,7 +8,11 @@ import type { ArtistVideoListItem } from '@/lib/constants/endpoints';
 import { VideosDetailsDrawer } from './VideosDetailsDrawer';
 import { VideosTableContent } from './VideosTableContent';
 import { CreateVideoModalDynamic } from './CreateVideoModalDynamic';
-import { ApprovalModal, RejectModal } from '@/components/section/admin/shared';
+import {
+  ApprovalModal,
+  RejectModal,
+  AdminContentSectionGuideButton,
+} from '@/components/section/admin/shared';
 import { callApi } from '@/lib/services/callApi';
 import { RegularBtn } from '@/components/atoms/RegularBtn';
 import { Plus } from 'lucide-react';
@@ -148,14 +152,17 @@ export function VideosPageClient({
       description={pageDescription}
       onRefresh={handleRefresh}
       pageHeaderActions={
-        <RegularBtn
-          LeftIcon={Plus}
-          text="Create Video"
-          onClick={() => {
-            setEditVideoId(null);
-            setCreateOpen(true);
-          }}
-        />
+        <>
+          <AdminContentSectionGuideButton scope="video" />
+          <RegularBtn
+            LeftIcon={Plus}
+            text="Create Video"
+            onClick={() => {
+              setEditVideoId(null);
+              setCreateOpen(true);
+            }}
+          />
+        </>
       }
       listError={listError}
       filterableDataPageProps={{
