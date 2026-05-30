@@ -47,7 +47,7 @@ export const AuthProtect = ({ children, loginRoute = DEFAULT_LOGIN_ROUTE }: Auth
       const fullUrl = pathname + (searchParams.toString() ? `?${searchParams.toString()}` : '');
       const encodedRedirect = base64UrlEncode(fullUrl);
       const separator = loginRoute.includes('?') ? '&' : '?';
-      router.replace(`${loginRoute}${separator}redirectTo=${encodedRedirect}`);
+      router.replace(`${loginRoute}${separator}redirectTo=${encodeURIComponent(encodedRedirect)}`);
     }
   }, [user, isChecking, initLoading, pathname, searchParams, router, loginRoute]);
 
