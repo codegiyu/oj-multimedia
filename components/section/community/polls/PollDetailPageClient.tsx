@@ -77,6 +77,11 @@ export const PollDetailPageClient = ({ poll }: PollDetailPageClientProps) => {
     setIsVoting(false);
 
     if (res.error) {
+      if (res.error.responseCode === 401) {
+        setIsLoginModalOpen(true);
+        return;
+      }
+
       const isAlreadyVoted = res.error.responseCode === 409;
       const msg = getErrorMessage(res.error);
       toast({
@@ -236,7 +241,12 @@ export const PollDetailPageClient = ({ poll }: PollDetailPageClientProps) => {
           </motion.div>
         </div>
       </section>
-      <LoginModal open={isLoginModalOpen} onOpenChange={setIsLoginModalOpen} />
+      <LoginModal
+        open={isLoginModalOpen}
+        onOpenChange={setIsLoginModalOpen}
+        title="Sign in to vote"
+        description="Create an account or sign in to participate in this poll."
+      />
     </article>
   );
 };

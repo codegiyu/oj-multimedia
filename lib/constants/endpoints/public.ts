@@ -133,7 +133,7 @@ export const PUBLIC_ENDPOINTS: Record<string, EndpointDetails> = {
     method: 'POST',
     isNotAuthenticated: true,
   },
-  PUBLIC_POLL_VOTE: { path: '/api/v1/public/polls', method: 'POST', isNotAuthenticated: true }, // /:idOrSlug/vote
+  PUBLIC_POLL_VOTE: { path: '/api/v1/public/polls', method: 'POST' }, // /:idOrSlug/vote — auth required
   PUBLIC_CREATE_POLL: { path: '/api/v1/public/polls', method: 'POST', isNotAuthenticated: true },
 
   // Contact & Search (public)
