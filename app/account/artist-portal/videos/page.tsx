@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import { ArtistPortalVideosPageClient } from '@/components/section/account/artist-portal/ArtistPortalVideosPageClient';
-import { Skeleton } from '@/components/ui/skeleton';
+import { ArtistPortalContentListPageSkeleton } from '@/components/section/account/skeletons';
 import type { Metadata } from 'next';
 import { buildAccountArtistContentQuery } from '@/lib/account/accountListFilters';
 import { callServerApi } from '@/lib/services/serverApi';
@@ -10,20 +10,6 @@ export const metadata: Metadata = {
   title: 'Artist Portal - Videos',
   description: 'Manage your video content.',
 };
-
-function ArtistVideosPageSkeleton() {
-  return (
-    <div className="max-w-5xl mx-auto py-8 space-y-4">
-      <Skeleton className="h-7 w-40 rounded-md" />
-      <Skeleton className="h-10 w-48 rounded-md" />
-      <div className="space-y-3 mt-4">
-        <Skeleton className="h-24 w-full rounded-lg" />
-        <Skeleton className="h-24 w-full rounded-lg" />
-        <Skeleton className="h-24 w-full rounded-lg" />
-      </div>
-    </div>
-  );
-}
 
 export default function ArtistPortalVideosPage({
   searchParams,
@@ -36,7 +22,7 @@ export default function ArtistPortalVideosPage({
   const search = searchParams?.search ?? '';
 
   return (
-    <Suspense fallback={<ArtistVideosPageSkeleton />}>
+    <Suspense fallback={<ArtistPortalContentListPageSkeleton />}>
       <ArtistVideosPageClientServer
         page={page}
         pageSize={pageSize}

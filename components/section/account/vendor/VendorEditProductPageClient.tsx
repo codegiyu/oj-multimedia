@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { DashboardPageHeader } from '@/components/layout/user-dashboard';
 import { Card } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
+import { VendorProductFormPageSkeleton } from '@/components/section/account/skeletons';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { RegularBtn } from '@/components/atoms/RegularBtn';
@@ -435,12 +435,7 @@ export function VendorEditProductPageClient({ productId }: { productId: string }
     isValid && !variationValidationFailed && (!hasVariations || variants.length > 0) && !submitting;
 
   if (loadingProduct) {
-    return (
-      <div className="mx-auto max-w-2xl py-12 text-center">
-        <Skeleton className="mx-auto mb-4 h-16 w-16 rounded-full" />
-        <p className="text-muted-foreground">Loading product…</p>
-      </div>
-    );
+    return <VendorProductFormPageSkeleton />;
   }
 
   if (notFound || !product) {

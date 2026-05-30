@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import { AccountSettingsPageClient } from '@/components/section/account/AccountSettingsPageClient';
-import { Skeleton } from '@/components/ui/skeleton';
+import { AccountSettingsPageSkeleton } from '@/components/section/account/skeletons';
 import type { Metadata } from 'next';
 import { callServerApi } from '@/lib/services/serverApi';
 
@@ -8,19 +8,6 @@ export const metadata: Metadata = {
   title: 'Account Settings',
   description: 'Update your account settings and preferences.',
 };
-
-function AccountSettingsPageSkeleton() {
-  return (
-    <div className="max-w-2xl mx-auto py-8 space-y-4">
-      <Skeleton className="h-7 w-48 rounded-md" />
-      <Skeleton className="h-4 w-32 rounded-md" />
-      <div className="space-y-3 mt-4">
-        <Skeleton className="h-20 w-full rounded-lg" />
-        <Skeleton className="h-20 w-full rounded-lg" />
-      </div>
-    </div>
-  );
-}
 
 export default function AccountSettingsPage() {
   return (

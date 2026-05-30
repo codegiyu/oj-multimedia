@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import { AccountPageClient } from '@/components/section/account/AccountPageClient';
-import { Skeleton } from '@/components/ui/skeleton';
+import { AccountHubPageSkeleton } from '@/components/section/account/skeletons';
 import type { Metadata } from 'next';
 import { callServerApi } from '@/lib/services/serverApi';
 
@@ -9,27 +9,9 @@ export const metadata: Metadata = {
   description: 'Manage your account and preferences.',
 };
 
-function AccountPageSkeleton() {
-  return (
-    <div className="space-y-8">
-      <Skeleton className="h-32 w-full rounded-2xl" />
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Skeleton className="h-28 w-full rounded-xl" />
-        <Skeleton className="h-28 w-full rounded-xl" />
-        <Skeleton className="h-28 w-full rounded-xl" />
-        <Skeleton className="h-28 w-full rounded-xl" />
-      </div>
-      <div className="grid gap-8 lg:grid-cols-2">
-        <Skeleton className="h-64 w-full rounded-xl" />
-        <Skeleton className="h-64 w-full rounded-xl" />
-      </div>
-    </div>
-  );
-}
-
 export default function AccountPage() {
   return (
-    <Suspense fallback={<AccountPageSkeleton />}>
+    <Suspense fallback={<AccountHubPageSkeleton />}>
       <AccountPageClientServer />
     </Suspense>
   );

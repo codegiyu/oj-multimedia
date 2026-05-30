@@ -1,25 +1,13 @@
 import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { AccountFavoritesPageClient } from '@/components/section/account/AccountFavoritesPageClient';
-import { Skeleton } from '@/components/ui/skeleton';
+import { AccountFavoritesPageSkeleton } from '@/components/section/account/skeletons';
 import { callServerApi } from '@/lib/services/serverApi';
 
 export const metadata: Metadata = {
   title: 'Favorites',
   description: 'Your saved music, videos, and other content.',
 };
-
-function AccountFavoritesPageSkeleton() {
-  return (
-    <div className="max-w-4xl mx-auto py-8 space-y-4">
-      <Skeleton className="h-7 w-32 rounded-md" />
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <Skeleton className="aspect-square w-full rounded-xl" />
-        <Skeleton className="aspect-square w-full rounded-xl" />
-      </div>
-    </div>
-  );
-}
 
 export default function AccountFavoritesPage() {
   return (
