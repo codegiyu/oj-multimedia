@@ -35,7 +35,7 @@ async function fetchVideoSections(category: string) {
     category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';
   const baseQuery = `?limit=12&page=1&status=published${categoryParam}` as const;
 
-  const [trendingRes, featuredRes, recentRes, shortRes, artistsRes] = await Promise.all([
+  const [trendingRes, featuredRes, recentRes, shortRes, longRes, artistsRes] = await Promise.all([
     callPublicServerApi('PUBLIC_GET_VIDEOS', {
       query: `${baseQuery}&type=${VIDEO_TYPES.trending}`,
     }),
@@ -45,6 +45,9 @@ async function fetchVideoSections(category: string) {
     callPublicServerApi('PUBLIC_GET_VIDEOS', { query: `${baseQuery}&type=${VIDEO_TYPES.recent}` }),
     callPublicServerApi('PUBLIC_GET_VIDEOS', {
       query: `${baseQuery}&type=${VIDEO_TYPES.shortForm}`,
+    }),
+    callPublicServerApi('PUBLIC_GET_VIDEOS', {
+      query: `${baseQuery}&type=${VIDEO_TYPES.longForm}`,
     }),
     callPublicServerApi('PUBLIC_GET_ARTISTS', { query: '?page=1&limit=6' as `?${string}` }),
   ]);
@@ -58,6 +61,8 @@ async function fetchVideoSections(category: string) {
     errorMessage = recentRes.error?.message ?? 'Failed to load recent';
   else if (shortRes.type === 'error')
     errorMessage = shortRes.error?.message ?? 'Failed to load short form';
+  else if (longRes.type === 'error')
+    errorMessage = longRes.error?.message ?? 'Failed to load long-form videos';
 
   const rawTrending = filterPublicVideoList(
     trendingRes.type === 'success' ? (trendingRes.data?.videos ?? []) : []
@@ -70,6 +75,9 @@ async function fetchVideoSections(category: string) {
   );
   const rawShort = filterPublicVideoList(
     shortRes.type === 'success' ? (shortRes.data?.videos ?? []) : []
+  );
+  const rawLong = filterPublicVideoList(
+    longRes.type === 'success' ? (longRes.data?.videos ?? []) : []
   );
 
   const trendingVideos: TrendingVideo[] = filterByCategory(rawTrending, category)
@@ -84,6 +92,9 @@ async function fetchVideoSections(category: string) {
   const shortFormVideos: ShortFormVideo[] = filterByCategory(rawShort, category)
     .map(mapPublicVideoToShortForm)
     .slice(0, 8);
+  const longFormVideos = filterByCategory(rawLong, category)
+    .map(mapPublicVideoToRecentUpload)
+    .slice(0, 4);
 
   const rawArtists = artistsRes.type === 'success' ? (artistsRes.data?.artists ?? []) : [];
   const featuredCreators: FeaturedCreator[] = rawArtists
@@ -95,6 +106,7 @@ async function fetchVideoSections(category: string) {
     featuredVideos,
     recentUploads,
     shortFormVideos,
+    longFormVideos,
     featuredCreators,
     initialErrorMessage: errorMessage,
   };

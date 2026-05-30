@@ -9,6 +9,7 @@ import type { FeaturedStory } from '@/components/section/news/FeaturedStories';
 import type { NewsItem as NewsFeedItem } from '@/components/section/news/NewsFeed';
 import type { TrendingStory } from '@/components/section/news/TrendingSidebar';
 import type { VideoNewsItem } from '@/components/section/news/VideoNews';
+import type { BreakingNewsStory } from '@/components/section/news/BreakingNews';
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import { NEWS_TYPES } from '@/lib/constants/contentTaxonomy';
 import { normalizePublicCategoryByScope } from '@/lib/utils/contentCategoriesServer';
@@ -20,6 +21,7 @@ import {
   mapPublicNewsToFeedItem,
   mapPublicNewsToTrendingStory,
   mapPublicNewsToVideoNewsItem,
+  mapPublicNewsToBreakingStory,
 } from '@/lib/utils/publicApiMappers';
 
 export const metadata: Metadata = {
@@ -33,11 +35,12 @@ async function fetchNewsSections(category: string) {
     category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';
   const baseQuery = `?limit=15&page=1&status=published${categoryParam}` as const;
 
-  const [featuredRes, latestRes, trendingRes, videoRes] = await Promise.all([
+  const [featuredRes, latestRes, trendingRes, videoRes, breakingRes] = await Promise.all([
     callPublicServerApi('PUBLIC_GET_NEWS', { query: `${baseQuery}&type=${NEWS_TYPES.featured}` }),
     callPublicServerApi('PUBLIC_GET_NEWS', { query: `${baseQuery}&type=${NEWS_TYPES.latest}` }),
     callPublicServerApi('PUBLIC_GET_NEWS', { query: `${baseQuery}&type=${NEWS_TYPES.trending}` }),
     callPublicServerApi('PUBLIC_GET_NEWS', { query: `${baseQuery}&type=${NEWS_TYPES.video}` }),
+    callPublicServerApi('PUBLIC_GET_NEWS', { query: `${baseQuery}&type=${NEWS_TYPES.breaking}` }),
   ]);
 
   let errorMessage: string | null = null;
@@ -49,6 +52,8 @@ async function fetchNewsSections(category: string) {
     errorMessage = trendingRes.error?.message ?? 'Failed to load trending';
   else if (videoRes.type === 'error')
     errorMessage = videoRes.error?.message ?? 'Failed to load video stories';
+  else if (breakingRes.type === 'error')
+    errorMessage = breakingRes.error?.message ?? 'Failed to load breaking news';
 
   const rawFeatured = filterPublicNewsList(
     featuredRes.type === 'success' ? (featuredRes.data?.articles ?? []) : []
@@ -61,6 +66,9 @@ async function fetchNewsSections(category: string) {
   );
   const rawVideo = filterPublicNewsList(
     videoRes.type === 'success' ? (videoRes.data?.articles ?? []) : []
+  );
+  const rawBreaking = filterPublicNewsList(
+    breakingRes.type === 'success' ? (breakingRes.data?.articles ?? []) : []
   );
 
   const featuredStories: FeaturedStory[] = filterByCategory(
@@ -79,12 +87,17 @@ async function fetchNewsSections(category: string) {
     rawVideo.map(mapPublicNewsToVideoNewsItem),
     category
   ).slice(0, 4);
+  const breakingStories: BreakingNewsStory[] = filterByCategory(
+    rawBreaking.map(mapPublicNewsToBreakingStory),
+    category
+  ).slice(0, 8);
 
   return {
     featuredStories,
     newsItems,
     trendingStories,
     videoNews,
+    breakingStories,
     initialErrorMessage: errorMessage,
   };
 }

@@ -9,6 +9,7 @@ import { TrendingVideos, type TrendingVideo } from './TrendingVideos';
 import { FeaturedVideos, type FeaturedVideo } from './FeaturedVideos';
 import { RecentVideoUploads, type RecentVideoUpload } from './RecentVideoUploads';
 import { ShortFormVideos, type ShortFormVideo } from './ShortFormVideos';
+import { LongFormVideos } from './LongFormVideos';
 import { CreatorSpotlight, type FeaturedCreator } from './CreatorSpotlight';
 import { VideoUploadCTA } from './VideoUploadCTA';
 import { Video } from 'lucide-react';
@@ -19,6 +20,7 @@ interface VideoPageClientProps {
   featuredVideos: FeaturedVideo[];
   recentUploads: RecentVideoUpload[];
   shortFormVideos: ShortFormVideo[];
+  longFormVideos: RecentVideoUpload[];
   featuredCreators: FeaturedCreator[];
   categoryOptions: CategoryNavItem[];
   initialErrorMessage?: string | null;
@@ -29,6 +31,7 @@ export const VideoPageClient = ({
   featuredVideos,
   recentUploads,
   shortFormVideos,
+  longFormVideos,
   featuredCreators,
   categoryOptions,
   initialErrorMessage = null,
@@ -39,6 +42,7 @@ export const VideoPageClient = ({
     featuredVideos.length > 0 ||
     recentUploads.length > 0 ||
     shortFormVideos.length > 0 ||
+    longFormVideos.length > 0 ||
     featuredCreators.length > 0;
 
   if (initialErrorMessage && !hasAnyContent) {
@@ -71,6 +75,7 @@ export const VideoPageClient = ({
       <FeaturedVideos videos={featuredVideos} />
       <RecentVideoUploads uploads={recentUploads} />
       <ShortFormVideos videos={shortFormVideos} />
+      <LongFormVideos videos={longFormVideos} />
       <CreatorSpotlight creators={featuredCreators} />
       <VideoUploadCTA />
     </>

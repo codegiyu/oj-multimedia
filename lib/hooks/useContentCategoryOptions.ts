@@ -14,7 +14,7 @@ type Scope = IContentCategoryItem['scope'];
 type Audience = 'public' | 'admin';
 
 const DEFAULT_ALL_LABEL: Record<Scope, string> = {
-  music: 'All Genres',
+  music: 'All Categories',
   video: 'All Videos',
   news: 'All Stories',
   devotional: 'All',

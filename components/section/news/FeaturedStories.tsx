@@ -20,6 +20,7 @@ export interface FeaturedStory {
   videoUrl?: string;
   author?: string;
   date?: string;
+  priority?: number;
 }
 
 interface FeaturedStoriesProps {

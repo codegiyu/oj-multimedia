@@ -19,6 +19,7 @@ export interface NewsItem {
   videoUrl?: string;
   author?: string;
   date?: string;
+  priority?: number;
 }
 
 interface NewsFeedProps {

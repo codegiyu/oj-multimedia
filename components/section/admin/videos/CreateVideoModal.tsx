@@ -42,6 +42,8 @@ import {
   PUBLISHABLE_STATUS_SELECT_OPTIONS,
   PUBLISHABLE_STATUS_VALUES,
 } from '@/lib/constants/adminSelectOptions';
+import { parseCommaSeparatedTags, formatTagsForInput } from '@/lib/utils/adminCommaTags';
+import { readVideoMetadata, type ClientMediaMetadata } from '@/lib/utils/mediaMetadataClient';
 
 interface CreateVideoModalProps {
   open: boolean;
@@ -50,7 +52,11 @@ interface CreateVideoModalProps {
   onSuccess: () => void;
 }
 
-const defaultForm: IArtistCreateVideoPayload & { artistId: string; ownerUserId: string } = {
+const defaultForm: Omit<IArtistCreateVideoPayload, 'tags'> & {
+  artistId: string;
+  ownerUserId: string;
+  tags: string;
+} = {
   title: '',
   description: '',
   thumbnail: '',
@@ -58,6 +64,7 @@ const defaultForm: IArtistCreateVideoPayload & { artistId: string; ownerUserId: 
   videoFileUrl: '',
   embedUrl: '',
   category: '',
+  tags: '',
   isMonetizable: false,
   price: 0,
   artistId: '',
@@ -89,8 +96,10 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
   const [editListRow, setEditListRow] = useState<ArtistVideoListItem | null>(null);
   const [pendingThumbnail, setPendingThumbnail] = useState<File | null>(null);
   const [pendingVideoFile, setPendingVideoFile] = useState<File | null>(null);
+  const [capturedMetadata, setCapturedMetadata] = useState<ClientMediaMetadata | null>(null);
 
   const isEdit = Boolean(editId);
+  const canPublish = Boolean((form.category ?? '').trim());
   const thumbnailUpload = useFileUpload({
     entityType: 'resource',
     entityId: editId ?? 'video-pending',
@@ -165,6 +174,7 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
           price: typeof v.price === 'number' ? v.price : Number(v.price) || 0,
           artistId: '',
           ownerUserId: '',
+          tags: formatTagsForInput((v as { tags?: string[] }).tags),
         });
         setEditStatus(normalizeEnumValue(v.status, PUBLISHABLE_STATUS_VALUES, 'draft'));
         const hasArtist = Boolean(v.artist);
@@ -196,7 +206,8 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
       const videoUrl = normalizeOptionalHttpUrl(form.videoUrl ?? '', 'Legacy video URL');
       const videoFileUrl = normalizeOptionalHttpUrl(form.videoFileUrl ?? '', 'Video file URL');
       const embedUrl = normalizeOptionalHttpUrl(form.embedUrl ?? '', 'Embed URL');
-      const category = normalizeOptionalText(form.category ?? '');
+      const category = form.category ?? '';
+      const tags = parseCommaSeparatedTags(form.tags);
 
       assertMonetizationPriceClient(form.isMonetizable, form.price);
       const isMonetizable = Boolean(form.isMonetizable);
@@ -231,6 +242,8 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
           videoFileUrl: finalVideoFileUrl,
           embedUrl,
           category,
+          tags,
+          ...(capturedMetadata ? { metadata: capturedMetadata } : {}),
           isMonetizable,
           price,
           status: editStatus,
@@ -253,6 +266,7 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
           videoFileUrl: finalVideoFileUrl || '',
           embedUrl,
           category,
+          tags,
           isMonetizable,
           price,
           status: createStatus,
@@ -279,12 +293,13 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
             });
             if (upload?.url) finalVideoFileUrl = upload.url;
           }
-          if (pendingThumbnail || pendingVideoFile) {
+          if (pendingThumbnail || pendingVideoFile || capturedMetadata) {
             const patchRes = await callApi('ADMIN_VIDEO_UPDATE', {
               query: `/${createdId}` as `/${string}`,
               payload: {
                 thumbnail: finalThumbnail,
                 videoFileUrl: finalVideoFileUrl,
+                ...(capturedMetadata ? { metadata: capturedMetadata } : {}),
               },
             });
             if (patchRes.type !== 'success')
@@ -310,6 +325,17 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
   };
 
   const categorySelectOptions = ensureSelectContainsSlug(categoryOptions, form.category);
+
+  const handlePendingVideoFile = (file: File | null) => {
+    setPendingVideoFile(file);
+    if (!file) {
+      setCapturedMetadata(null);
+      return;
+    }
+    void readVideoMetadata(file)
+      .then(meta => setCapturedMetadata(meta))
+      .catch(() => setCapturedMetadata(null));
+  };
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -366,6 +392,14 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
               onSelectChange={v => setForm(f => ({ ...f, category: v }))}
               options={categorySelectOptions}
               loading={categoriesLoading}
+              subtext="Required when publishing."
+            />
+            <RegularInput
+              label="Tags"
+              value={form.tags}
+              onChange={e => setForm(f => ({ ...f, tags: e.target.value }))}
+              placeholder="e.g. sermon, worship, documentary"
+              bottomText="Separate tags with commas"
             />
             <RegularTextarea
               label="Description"
@@ -395,7 +429,7 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
               fallbackEntityIdPrefix="video-file"
               intent="other"
               accept="video/*"
-              onPendingFileChange={setPendingVideoFile}
+              onPendingFileChange={handlePendingVideoFile}
             />
             <RegularInput
               label="Embed URL (YouTube)"
@@ -468,7 +502,7 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
                     text="Create & publish"
                     loading={loading}
                     onClick={() => void handleSubmit(undefined, 'published')}
-                    disabled={!form.title.trim() || loading}
+                    disabled={!form.title.trim() || !canPublish || loading}
                   />
                 </>
               )}

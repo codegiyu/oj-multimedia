@@ -47,6 +47,8 @@ import {
   loadPublishedAlbumSelectOptions,
   resolveContentArtistId,
 } from '@/lib/utils/adminMusicAlbumSelect';
+import { parseCommaSeparatedTags, formatTagsForInput } from '@/lib/utils/adminCommaTags';
+import { readAudioMetadata, type ClientMediaMetadata } from '@/lib/utils/mediaMetadataClient';
 
 interface CreateMusicModalProps {
   open: boolean;
@@ -55,7 +57,11 @@ interface CreateMusicModalProps {
   onSuccess: () => void;
 }
 
-const defaultForm: IArtistCreateMusicPayload & { artistId: string; ownerUserId: string } = {
+const defaultForm: Omit<IArtistCreateMusicPayload, 'tags'> & {
+  artistId: string;
+  ownerUserId: string;
+  tags: string;
+} = {
   title: '',
   description: '',
   lyrics: '',
@@ -70,6 +76,7 @@ const defaultForm: IArtistCreateMusicPayload & { artistId: string; ownerUserId: 
   artistId: '',
   ownerUserId: '',
   albumId: '',
+  tags: '',
 };
 
 function artistName(artist: ArtistMusicListItem['artist']): string {
@@ -102,8 +109,10 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
   ]);
   const [albumsLoading, setAlbumsLoading] = useState(false);
   const [createOwnerArtistId, setCreateOwnerArtistId] = useState('');
+  const [capturedMetadata, setCapturedMetadata] = useState<ClientMediaMetadata | null>(null);
 
   const isEdit = Boolean(editId);
+  const canPublish = Boolean((form.category ?? '').trim());
   const resolvedArtistId = isEdit
     ? resolveContentArtistId(editListRow?.artist)
     : form.artistId.trim() || createOwnerArtistId.trim() || null;
@@ -225,6 +234,7 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
           artistId: '',
           ownerUserId: '',
           albumId: m.albumId ?? m.album?._id ?? '',
+          tags: formatTagsForInput((m as { tags?: string[] }).tags),
         });
         setEditStatus(normalizeEnumValue(m.status, PUBLISHABLE_STATUS_VALUES, 'draft'));
         const hasArtist = Boolean(m.artist);
@@ -254,7 +264,8 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
       const description = normalizeOptionalText(form.description ?? '');
       const lyrics = normalizeOptionalText(form.lyrics ?? '');
       const excerpt = normalizeOptionalText(form.excerpt ?? '');
-      const category = normalizeOptionalText(form.category ?? '');
+      const category = form.category ?? '';
+      const tags = parseCommaSeparatedTags(form.tags);
       const coverImage = normalizeOptionalHttpUrl(form.coverImage ?? '', 'Cover image URL');
       const audioUrl = normalizeOptionalHttpUrl(form.audioUrl ?? '', 'Audio URL');
       const videoUrl = normalizeOptionalHttpUrl(form.videoUrl ?? '', 'Video URL');
@@ -289,6 +300,8 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
           lyrics: lyrics || undefined,
           excerpt,
           category,
+          tags,
+          ...(capturedMetadata ? { metadata: capturedMetadata } : {}),
           coverImage: finalCoverImage,
           audioUrl: finalAudioUrl,
           videoUrl: finalVideoUrl,
@@ -319,6 +332,7 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
           lyrics,
           excerpt,
           category,
+          tags,
           coverImage: finalCoverImage || undefined,
           audioUrl: finalAudioUrl || undefined,
           videoUrl: finalVideoUrl || undefined,
@@ -361,12 +375,13 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
             if (upload?.url) finalAudioUrl = upload.url;
           }
 
-          if (pendingCover || pendingAudio) {
+          if (pendingCover || pendingAudio || capturedMetadata) {
             const patchRes = await callApi('ADMIN_MUSIC_UPDATE', {
               query: `/${createdId}` as `/${string}`,
               payload: {
                 coverImage: finalCoverImage,
                 audioUrl: finalAudioUrl,
+                ...(capturedMetadata ? { metadata: capturedMetadata } : {}),
               },
             });
 
@@ -395,6 +410,17 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
   };
 
   const categorySelectOptions = ensureSelectContainsSlug(categoryOptions, form.category);
+  const handlePendingAudio = (file: File | null) => {
+    setPendingAudio(file);
+    if (!file) {
+      setCapturedMetadata(null);
+      return;
+    }
+    void readAudioMetadata(file)
+      .then(meta => setCapturedMetadata(meta))
+      .catch(() => setCapturedMetadata(null));
+  };
+
   const albumSelectOptions = ensureAlbumSelectContainsCurrent(
     albumOptions,
     form.albumId ?? undefined,
@@ -478,6 +504,14 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
               onSelectChange={v => setForm(f => ({ ...f, category: v }))}
               options={categorySelectOptions}
               loading={categoriesLoading}
+              subtext="Required when publishing."
+            />
+            <RegularInput
+              label="Tags"
+              value={form.tags}
+              onChange={e => setForm(f => ({ ...f, tags: e.target.value }))}
+              placeholder="e.g. worship, praise, live"
+              bottomText="Separate tags with commas"
             />
             <RegularTextarea
               label="Description"
@@ -520,7 +554,7 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
               fallbackEntityIdPrefix="music-audio"
               intent="other"
               accept="audio/*"
-              onPendingFileChange={setPendingAudio}
+              onPendingFileChange={handlePendingAudio}
             />
             <MonetizationFormFields
               idPrefix="admin-music"
@@ -593,7 +627,7 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
                     text="Create & publish"
                     loading={loading}
                     onClick={() => void handleSubmit(undefined, 'published')}
-                    disabled={!form.title.trim() || loading}
+                    disabled={!form.title.trim() || !canPublish || loading}
                   />
                 </>
               )}

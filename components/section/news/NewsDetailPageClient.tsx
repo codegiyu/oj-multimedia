@@ -19,6 +19,7 @@ import { MultilineText } from '@/components/general/MultilineText';
 import { StructuredProseContent } from '@/components/general/StructuredProseContent';
 import { MultilinePreview } from '@/components/general/MultilinePreview';
 import { NewsDownloadButton } from '@/components/section/news/NewsDownloadButton';
+import { NewsPriorityIndicator } from '@/components/section/news/NewsPriorityIndicator';
 import { Button } from '@/components/ui/button';
 
 interface NewsDetailPageClientProps {
@@ -88,9 +89,12 @@ export const NewsDetailPageClient = ({ newsItem, relatedStories }: NewsDetailPag
         {/* Content Overlay */}
         <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-8 lg:p-12 text-primary-foreground">
           <div className="max-w-4xl">
-            <span className="inline-flex w-fit px-3 py-1 rounded-full bg-primary text-primary-foreground text-xs font-medium mb-4">
-              {newsItem.category}
-            </span>
+            <div className="flex flex-wrap items-center gap-2 mb-4">
+              <span className="inline-flex w-fit px-3 py-1 rounded-full bg-primary text-primary-foreground text-xs font-medium">
+                {newsItem.category}
+              </span>
+              <NewsPriorityIndicator priority={newsItem.priority} preferDialog />
+            </div>
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold mb-4">
               {newsItem.title}
             </h1>
