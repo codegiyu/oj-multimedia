@@ -636,6 +636,10 @@ export interface ISubmitPrayerRequestRes {
   prayerRequest: PrayerRequestListItem;
 }
 
+export interface IPublicPrayerRequestPrayRes {
+  prayers: number;
+}
+
 export interface ISubmitQuestionPayload {
   name?: string;
   email?: string;
@@ -1329,6 +1333,11 @@ export interface AllEndpoints {
     undefined,
     IPublicPrayerRequestItemRes,
     `/${string}`
+  >;
+  PUBLIC_PRAYER_REQUEST_PRAY: EndpointDefinition<
+    undefined,
+    IPublicPrayerRequestPrayRes,
+    `/${string}/pray`
   >;
   PUBLIC_GET_ASK_A_PASTOR_QUESTIONS: EndpointDefinition<
     undefined,

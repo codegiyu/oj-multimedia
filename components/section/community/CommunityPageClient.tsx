@@ -21,19 +21,19 @@ import { SectionContainer } from '@/components/general/SectionContainer';
 import { DataLoadError } from '@/components/general/DataLoadError';
 import { FeaturedTestimonies, type Testimony } from './FeaturedTestimonies';
 import { TrendingDevotionals, type Devotional } from './TrendingDevotionals';
-import { ActiveDiscussions, type Discussion } from './ActiveDiscussions';
+import { RecentPrayerRequestsSection } from './RecentPrayerRequestsSection';
 import { CommunityCTA } from '../shared';
+import type { PrayerRequest } from './prayer-requests/PrayerRequestsPageClient';
 
 export interface CommunityCategory {
   icon: string;
   title: string;
   description: string;
   color: 'primary' | 'secondary' | 'accent';
-  count: number;
+  count?: number;
   href: string;
 }
 
-// Icon map to convert string identifiers to actual icon components
 const iconMap: Record<string, LucideIcon> = {
   BookOpen,
   Video,
@@ -46,9 +46,9 @@ const iconMap: Record<string, LucideIcon> = {
   Users,
 };
 
-// Static category definitions - hardcoded on the client side
-// Each category has a key that matches the server's categoryCounts keys
-const categoryDefinitions: Array<Omit<CommunityCategory, 'count'> & { key: string }> = [
+const categoryDefinitions: Array<
+  Omit<CommunityCategory, 'count'> & { key: string; showCount?: boolean }
+> = [
   {
     key: 'devotionals',
     icon: 'BookOpen',
@@ -112,6 +112,7 @@ const categoryDefinitions: Array<Omit<CommunityCategory, 'count'> & { key: strin
     description: 'Get your content featured and reach a wider audience',
     color: 'secondary',
     href: '/community/promote-your-content',
+    showCount: false,
   },
 ];
 
@@ -119,7 +120,7 @@ interface CommunityPageClientProps {
   categoryCounts: Record<string, number>;
   testimonies: Testimony[];
   devotionals: Devotional[];
-  discussions: Discussion[];
+  prayerRequests: PrayerRequest[];
   initialErrorMessage?: string | null;
 }
 
@@ -127,11 +128,12 @@ export const CommunityPageClient = ({
   categoryCounts,
   testimonies,
   devotionals,
-  discussions,
+  prayerRequests,
   initialErrorMessage = null,
 }: CommunityPageClientProps) => {
   const router = useRouter();
-  const hasAnyContent = testimonies.length > 0 || devotionals.length > 0 || discussions.length > 0;
+  const hasAnyContent =
+    testimonies.length > 0 || devotionals.length > 0 || prayerRequests.length > 0;
 
   if (initialErrorMessage && !hasAnyContent) {
     return (
@@ -146,13 +148,12 @@ export const CommunityPageClient = ({
     );
   }
 
-  // Merge static category definitions with dynamic counts from server
   const categories: CommunityCategory[] = categoryDefinitions.map(def => ({
     icon: def.icon,
     title: def.title,
     description: def.description,
     color: def.color,
-    count: categoryCounts[def.key] ?? 0,
+    count: def.showCount === false ? undefined : (categoryCounts[def.key] ?? 0),
     href: def.href,
   }));
 
@@ -188,7 +189,7 @@ export const CommunityPageClient = ({
 
       <TrendingDevotionals devotionals={devotionals} />
 
-      <ActiveDiscussions discussions={discussions} />
+      <RecentPrayerRequestsSection requests={prayerRequests} />
 
       <CommunityCTA />
     </>

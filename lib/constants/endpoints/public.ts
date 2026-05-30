@@ -61,6 +61,11 @@ export const PUBLIC_ENDPOINTS: Record<string, EndpointDetails> = {
     method: 'GET',
     isNotAuthenticated: true,
   }, // /:idOrSlug
+  PUBLIC_PRAYER_REQUEST_PRAY: {
+    path: '/api/v1/public/prayer-requests',
+    method: 'POST',
+    isNotAuthenticated: true,
+  }, // /:idOrSlug/pray
   PUBLIC_GET_ASK_A_PASTOR_QUESTIONS: {
     path: '/api/v1/public/ask-a-pastor/questions',
     method: 'GET',

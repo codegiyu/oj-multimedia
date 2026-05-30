@@ -6,9 +6,13 @@ import { CommunityPageClient } from '@/components/section/community/CommunityPag
 import { CommunityPageSkeleton } from '@/components/section/community/CommunityPageSkeleton';
 import type { Testimony } from '@/components/section/community/FeaturedTestimonies';
 import type { Devotional } from '@/components/section/community/TrendingDevotionals';
-import type { Discussion } from '@/components/section/community/ActiveDiscussions';
+import type { PrayerRequest } from '@/components/section/community/prayer-requests/PrayerRequestsPageClient';
 import { callPublicServerApi } from '@/lib/services/serverApi';
-import { mapToTestimony, mapToDevotional, mapToDiscussion } from '@/lib/utils/communityApiMappers';
+import {
+  mapToTestimony,
+  mapToDevotional,
+  mapToPrayerRequest,
+} from '@/lib/utils/communityApiMappers';
 
 export const metadata: Metadata = {
   title: 'Community - Connect & Engage',
@@ -31,7 +35,7 @@ async function fetchCommunityData(): Promise<{
   categoryCounts: Record<string, number>;
   testimonies: Testimony[];
   devotionals: Devotional[];
-  discussions: Discussion[];
+  prayerRequests: PrayerRequest[];
   initialErrorMessage: string | null;
 }> {
   const res = await callPublicServerApi('PUBLIC_GET_COMMUNITY', {});
@@ -40,7 +44,7 @@ async function fetchCommunityData(): Promise<{
       categoryCounts: DEFAULT_CATEGORY_COUNTS,
       testimonies: [],
       devotionals: [],
-      discussions: [],
+      prayerRequests: [],
       initialErrorMessage: res.error?.message ?? 'Failed to load community data',
     };
   }
@@ -50,7 +54,7 @@ async function fetchCommunityData(): Promise<{
       categoryCounts: DEFAULT_CATEGORY_COUNTS,
       testimonies: [],
       devotionals: [],
-      discussions: [],
+      prayerRequests: [],
       initialErrorMessage: null,
     };
   }
@@ -66,15 +70,16 @@ async function fetchCommunityData(): Promise<{
     mapToDevotional(d as Record<string, unknown>)
   );
 
-  const rawDiscussions = (data.activeDiscussions ?? []) as unknown[];
-  const discussions: Discussion[] = rawDiscussions.map(d =>
-    mapToDiscussion(d as Record<string, unknown>)
+  const rawPrayerRequests = (data.recentPrayerRequests ?? []) as unknown[];
+  const prayerRequests: PrayerRequest[] = rawPrayerRequests.map(p =>
+    mapToPrayerRequest(p as Record<string, unknown>)
   );
+
   return {
     categoryCounts,
     testimonies,
     devotionals,
-    discussions,
+    prayerRequests,
     initialErrorMessage: null,
   };
 }

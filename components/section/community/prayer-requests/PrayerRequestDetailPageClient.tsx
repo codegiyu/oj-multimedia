@@ -4,12 +4,11 @@ import { motion } from 'motion/react';
 import { Heart, MessageCircle, Calendar, Share2, AlertCircle, User } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { useState } from 'react';
 import { toast } from '@/components/atoms/Toast';
 import type { PrayerRequestItem } from '@/lib/constants/community/prayer-requests';
 import { MultilineText } from '@/components/general/MultilineText';
 import { LoginModal } from '@/components/auth/LoginModal';
-import { useAuthStore } from '@/lib/store/useAuthStore';
+import { useSendPrayer } from '@/lib/hooks/useSendPrayer';
 import { CommunityContentDetailHero } from '../shared/CommunityContentDetailHero';
 
 interface PrayerRequestDetailPageClientProps {
@@ -21,9 +20,8 @@ export const PrayerRequestDetailPageClient = ({
   request,
   relatedRequests,
 }: PrayerRequestDetailPageClientProps) => {
-  const user = useAuthStore(state => state.user);
-  const [prayers, setPrayers] = useState(request.prayers);
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const { prayerCount, sendPrayer, isLoginModalOpen, setIsLoginModalOpen, formatPrayerCount } =
+    useSendPrayer(request._id, { initialCount: request.prayers });
 
   const handleShare = async () => {
     try {
@@ -52,17 +50,7 @@ export const PrayerRequestDetailPageClient = ({
   };
 
   const handlePray = () => {
-    if (!user) {
-      setIsLoginModalOpen(true);
-      return;
-    }
-
-    setPrayers(prev => prev + 1);
-    toast({
-      title: 'Praying!',
-      description: 'Thank you for joining in prayer.',
-      variant: 'success',
-    });
+    void sendPrayer();
   };
 
   return (
@@ -138,7 +126,7 @@ export const PrayerRequestDetailPageClient = ({
             <div className="flex items-center gap-6">
               <Button variant="ghost" size="sm" onClick={handlePray} className="gap-2">
                 <Heart className="w-4 h-4" />
-                {prayers} praying
+                {formatPrayerCount(prayerCount)}
               </Button>
               <span className="flex items-center gap-2 text-sm text-muted-foreground">
                 <MessageCircle className="w-4 h-4" />
@@ -180,7 +168,12 @@ export const PrayerRequestDetailPageClient = ({
           </div>
         </section>
       )}
-      <LoginModal open={isLoginModalOpen} onOpenChange={setIsLoginModalOpen} />
+      <LoginModal
+        open={isLoginModalOpen}
+        onOpenChange={setIsLoginModalOpen}
+        title="Sign in to send a prayer"
+        description="Create an account or sign in to join others in prayer."
+      />
     </article>
   );
 };
