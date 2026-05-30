@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import { AccountOrdersPageClient } from '@/components/section/account/AccountOrdersPageClient';
-import { Skeleton } from '@/components/ui/skeleton';
+import { AccountOrdersPageSkeleton } from '@/components/section/account/skeletons';
 import type { Metadata } from 'next';
 import { buildAccountOrdersQuery } from '@/lib/account/accountListFilters';
 import { callServerApi } from '@/lib/services/serverApi';
@@ -10,19 +10,6 @@ export const metadata: Metadata = {
   title: 'Orders',
   description: 'View and manage your orders.',
 };
-
-function AccountOrdersPageSkeleton() {
-  return (
-    <div className="max-w-4xl mx-auto py-8 space-y-4">
-      <Skeleton className="h-7 w-40 rounded-md" />
-      <div className="space-y-3 mt-4">
-        <Skeleton className="h-24 w-full rounded-lg" />
-        <Skeleton className="h-24 w-full rounded-lg" />
-        <Skeleton className="h-24 w-full rounded-lg" />
-      </div>
-    </div>
-  );
-}
 
 interface AccountOrdersPageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;

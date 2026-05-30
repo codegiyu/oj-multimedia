@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import { VendorPageClient } from '@/components/section/account/vendor/VendorPageClient';
-import { Skeleton } from '@/components/ui/skeleton';
+import { VendorDashboardPageSkeleton } from '@/components/section/account/skeletons';
 import type { Metadata } from 'next';
 import { callServerApi } from '@/lib/services/serverApi';
 import type { IVendorDashboardStatsRes, IVendorMeRes } from '@/lib/constants/endpoints';
@@ -10,27 +10,9 @@ export const metadata: Metadata = {
   description: 'Manage your vendor account and store.',
 };
 
-function VendorDashboardSkeleton() {
-  return (
-    <div className="max-w-5xl mx-auto py-8 space-y-4">
-      <Skeleton className="h-7 w-40 rounded-md" />
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Skeleton className="h-24 w-full rounded-lg" />
-        <Skeleton className="h-24 w-full rounded-lg" />
-        <Skeleton className="h-24 w-full rounded-lg" />
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-        <Skeleton className="h-40 w-full rounded-lg" />
-        <Skeleton className="h-40 w-full rounded-lg" />
-        <Skeleton className="h-40 w-full rounded-lg" />
-      </div>
-    </div>
-  );
-}
-
 export default function VendorPage() {
   return (
-    <Suspense fallback={<VendorDashboardSkeleton />}>
+    <Suspense fallback={<VendorDashboardPageSkeleton />}>
       <VendorPageClientServer />
     </Suspense>
   );

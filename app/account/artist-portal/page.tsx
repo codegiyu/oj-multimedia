@@ -3,7 +3,7 @@ import {
   ArtistPortalPageClient,
   type ArtistRecentUpload,
 } from '@/components/section/account/artist-portal/ArtistPortalPageClient';
-import { Skeleton } from '@/components/ui/skeleton';
+import { ArtistPortalDashboardSkeleton } from '@/components/section/account/skeletons';
 import type { Metadata } from 'next';
 import { callServerApi } from '@/lib/services/serverApi';
 import type {
@@ -46,24 +46,9 @@ function buildArtistRecentUploads(
     .slice(0, 6);
 }
 
-function ArtistDashboardSkeleton() {
-  return (
-    <div className="space-y-4 py-4">
-      <Skeleton className="h-10 w-64 rounded-md" />
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Skeleton className="h-28 w-full rounded-xl" />
-        <Skeleton className="h-28 w-full rounded-xl" />
-        <Skeleton className="h-28 w-full rounded-xl" />
-        <Skeleton className="h-28 w-full rounded-xl" />
-      </div>
-      <Skeleton className="h-64 w-full rounded-xl" />
-    </div>
-  );
-}
-
 export default function ArtistPortalPage() {
   return (
-    <Suspense fallback={<ArtistDashboardSkeleton />}>
+    <Suspense fallback={<ArtistPortalDashboardSkeleton />}>
       <ArtistPortalPageClientServer />
     </Suspense>
   );

@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
 import type { Metadata } from 'next';
-import { Skeleton } from '@/components/ui/skeleton';
 import { ArtistPortalAlbumsPageClient } from '@/components/section/account/artist-portal/ArtistPortalAlbumsPageClient';
+import { ArtistPortalAlbumsPageSkeleton } from '@/components/section/account/skeletons';
 import { callServerApi, callPublicServerApi } from '@/lib/services/serverApi';
 import { filterPublicAlbumList, mapPublicAlbumToCard } from '@/lib/utils/publicApiMappers';
 import type { IPublicAlbumsListRes } from '@/lib/constants/endpoints';
@@ -12,22 +12,9 @@ export const metadata: Metadata = {
   description: 'View your albums and request changes via WhatsApp.',
 };
 
-function AlbumsPageSkeleton() {
-  return (
-    <div className="space-y-4">
-      <Skeleton className="h-8 w-48 rounded-md" />
-      <Skeleton className="h-10 w-40 rounded-md" />
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-        <Skeleton className="aspect-square rounded-2xl" />
-        <Skeleton className="aspect-square rounded-2xl" />
-      </div>
-    </div>
-  );
-}
-
 export default function ArtistPortalAlbumsPage() {
   return (
-    <Suspense fallback={<AlbumsPageSkeleton />}>
+    <Suspense fallback={<ArtistPortalAlbumsPageSkeleton />}>
       <ArtistPortalAlbumsPageServer />
     </Suspense>
   );

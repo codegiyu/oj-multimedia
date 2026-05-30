@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import { ArtistPortalMusicPageClient } from '@/components/section/account/artist-portal/ArtistPortalMusicPageClient';
-import { Skeleton } from '@/components/ui/skeleton';
+import { ArtistPortalContentListPageSkeleton } from '@/components/section/account/skeletons';
 import type { Metadata } from 'next';
 import { buildAccountArtistContentQuery } from '@/lib/account/accountListFilters';
 import { callServerApi } from '@/lib/services/serverApi';
@@ -12,27 +12,13 @@ export const metadata: Metadata = {
   description: 'Manage your music releases and tracks.',
 };
 
-function ArtistMusicPageSkeleton() {
-  return (
-    <div className="max-w-5xl mx-auto py-8 space-y-4">
-      <Skeleton className="h-7 w-40 rounded-md" />
-      <Skeleton className="h-10 w-48 rounded-md" />
-      <div className="space-y-3 mt-4">
-        <Skeleton className="h-24 w-full rounded-lg" />
-        <Skeleton className="h-24 w-full rounded-lg" />
-        <Skeleton className="h-24 w-full rounded-lg" />
-      </div>
-    </div>
-  );
-}
-
 interface ArtistPortalMusicPageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
 export default function ArtistPortalMusicPage({ searchParams }: ArtistPortalMusicPageProps) {
   return (
-    <Suspense fallback={<ArtistMusicPageSkeleton />}>
+    <Suspense fallback={<ArtistPortalContentListPageSkeleton />}>
       <ArtistMusicPageServer searchParams={searchParams} />
     </Suspense>
   );
