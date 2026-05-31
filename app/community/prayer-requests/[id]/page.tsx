@@ -1,11 +1,12 @@
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { PrayerRequestDetailPageClient } from '@/components/section/community/prayer-requests/PrayerRequestDetailPageClient';
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import { mapToPrayerRequestDetail } from '@/lib/utils/communityApiMappers';
-import { buildCommunityListQuery } from '@/lib/utils/communityListQuery';
-import type { PrayerRequestItem } from '@/lib/constants/community/prayer-requests';
+import { RelatedPrayerRequestsSection } from './_sections/RelatedPrayerRequestsSection';
+import { CommunityRelatedSectionSkeleton } from '@/app/community/_sections/detailSkeletons';
 
 interface PrayerRequestDetailPageProps {
   params: Promise<{ id: string }>;
@@ -15,24 +16,6 @@ async function fetchPrayerRequestDetail(id: string) {
   return callPublicServerApi('PUBLIC_GET_PRAYER_REQUEST_ITEM', {
     query: `/${encodeURIComponent(id)}`,
   });
-}
-
-async function fetchRelatedPrayerRequests(
-  id: string,
-  category: string
-): Promise<PrayerRequestItem[]> {
-  const res = await callPublicServerApi('PUBLIC_GET_PRAYER_REQUESTS', {
-    query: buildCommunityListQuery({ status: 'active', limit: 12, category }),
-  });
-
-  if (res.type === 'error') return [];
-
-  const rawList = (res.data?.prayerRequests ?? []) as unknown[];
-
-  return rawList
-    .map(i => mapToPrayerRequestDetail(i as Record<string, unknown>))
-    .filter(r => r._id !== id)
-    .slice(0, 3);
 }
 
 export async function generateMetadata({
@@ -78,11 +61,17 @@ export default async function PrayerRequestDetailPage({ params }: PrayerRequestD
 
   const raw = res.data.prayerRequest as unknown as Record<string, unknown>;
   const request = mapToPrayerRequestDetail(raw);
-  const relatedRequests = await fetchRelatedPrayerRequests(id, request.category);
 
   return (
     <MainLayout>
-      <PrayerRequestDetailPageClient request={request} relatedRequests={relatedRequests} />
+      <PrayerRequestDetailPageClient
+        request={request}
+        relatedSlot={
+          <Suspense fallback={<CommunityRelatedSectionSkeleton />}>
+            <RelatedPrayerRequestsSection id={id} category={request.category} />
+          </Suspense>
+        }
+      />
     </MainLayout>
   );
 }

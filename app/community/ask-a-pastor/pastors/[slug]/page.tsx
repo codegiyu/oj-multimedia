@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+import { MainLayout } from '@/components/layout/MainLayout';
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import { mapToPastor } from '@/lib/utils/communityApiMappers';
 import { PastorPublicProfilePageClient } from '@/components/section/community/ask-a-pastor/PastorPublicProfilePageClient';
@@ -42,5 +43,9 @@ export default async function PastorPublicProfilePage({ params }: PageProps) {
     bio: mapped.bio,
   };
 
-  return <PastorPublicProfilePageClient pastor={pastor} />;
+  return (
+    <MainLayout>
+      <PastorPublicProfilePageClient pastor={pastor} />
+    </MainLayout>
+  );
 }

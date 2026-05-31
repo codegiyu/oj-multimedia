@@ -1,10 +1,13 @@
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { DevotionalDetailPageClient } from '@/components/section/community/devotionals/DevotionalDetailPageClient';
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import { mapToDailyDevotional } from '@/lib/utils/communityApiMappers';
 import { buildDetailShareMetadata } from '@/lib/utils/metadata';
+import { RelatedDevotionalsSection } from './_sections/RelatedDevotionalsSection';
+import { CommunityRelatedSectionSkeleton } from '@/app/community/_sections/detailSkeletons';
 
 interface DevotionalDetailPageProps {
   params: Promise<{ id: string }>;
@@ -68,19 +71,16 @@ export default async function DevotionalDetailPage({ params }: DevotionalDetailP
     content: raw.content,
   } as Parameters<typeof DevotionalDetailPageClient>[0]['devotional'];
 
-  const relatedRaw = (data.relatedDevotionals ?? []) as unknown[];
-  const relatedDevotionals = relatedRaw.map(r => {
-    const item = r as Record<string, unknown>;
-    return {
-      ...mapToDailyDevotional(item),
-      fullContent: item.fullContent,
-      content: item.content,
-    };
-  }) as Parameters<typeof DevotionalDetailPageClient>[0]['relatedDevotionals'];
-
   return (
     <MainLayout>
-      <DevotionalDetailPageClient devotional={devotional} relatedDevotionals={relatedDevotionals} />
+      <DevotionalDetailPageClient
+        devotional={devotional}
+        relatedSlot={
+          <Suspense fallback={<CommunityRelatedSectionSkeleton />}>
+            <RelatedDevotionalsSection id={id} />
+          </Suspense>
+        }
+      />
     </MainLayout>
   );
 }

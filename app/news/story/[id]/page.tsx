@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { NewsDetailPageClient } from '@/components/section/news/NewsDetailPageClient';
@@ -7,6 +8,8 @@ import { mapPublicNewsToDetailItem } from '@/lib/utils/publicApiMappers';
 import type { NewsItem } from '@/lib/constants/news';
 import { buildDetailShareMetadata } from '@/lib/utils/metadata';
 import { generateNewsStoryStaticParams } from '@/lib/services/isrPrebuildParams';
+import { NewsRelatedStoriesSection } from './_sections/NewsRelatedStoriesSection';
+import { NewsRelatedSectionSkeleton } from './_sections/skeletons';
 
 export const generateStaticParams = generateNewsStoryStaticParams;
 
@@ -62,22 +65,20 @@ export default async function NewsStoryPage({ params }: NewsStoryPageProps) {
   const data = res.data;
   const rawArticle = data.article;
   const newsItem = mapPublicNewsToDetailItem(rawArticle) as NewsItem;
-
   const categorySlug = rawArticle.category
     ? `&category=${encodeURIComponent(rawArticle.category)}`
     : '';
-  const relatedRes = await callPublicServerApi('PUBLIC_GET_NEWS', {
-    query: `?limit=4&page=1&status=published&type=latest${categorySlug}`,
-  });
-  const relatedList = relatedRes.type === 'success' ? (relatedRes.data?.articles ?? []) : [];
-  const relatedStories: NewsItem[] = relatedList
-    .filter(a => String(a._id) !== id)
-    .slice(0, 3)
-    .map(a => mapPublicNewsToDetailItem(a) as NewsItem);
 
   return (
     <MainLayout>
-      <NewsDetailPageClient newsItem={newsItem} relatedStories={relatedStories} />
+      <NewsDetailPageClient
+        newsItem={newsItem}
+        relatedSlot={
+          <Suspense fallback={<NewsRelatedSectionSkeleton />}>
+            <NewsRelatedStoriesSection id={id} categorySlug={categorySlug} />
+          </Suspense>
+        }
+      />
     </MainLayout>
   );
 }

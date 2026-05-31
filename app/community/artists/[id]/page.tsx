@@ -1,22 +1,20 @@
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { ArtistDetailPageClient } from '@/components/section/community/artists/ArtistDetailPageClient';
 import { callPublicServerApi } from '@/lib/services/serverApi';
-import { mapPublicMusicToDetailItem } from '@/lib/utils/publicApiMappers';
-import { mapPublicVideoToDetailItem } from '@/lib/utils/publicApiMappers';
-import type { MusicItemWithArtist } from '@/lib/utils/music';
-import type { VideoItemWithCreator } from '@/lib/utils/videos';
 import type { ArtistProfile } from '@/lib/types/artist';
-import type {
-  IPublicMusicListRes,
-  IPublicVideosListRes,
-  IPublicArtistItemRes,
-  IPublicAlbumsListRes,
-} from '@/lib/constants/endpoints';
-import { filterPublicAlbumList, mapPublicAlbumToCard } from '@/lib/utils/publicApiMappers';
-import type { PublicAlbumCard } from '@/lib/utils/publicApiMappers';
+import type { IPublicArtistItemRes } from '@/lib/constants/endpoints';
 import { buildDetailShareMetadata } from '@/lib/utils/metadata';
+import { ArtistAlbumsSection } from './_sections/ArtistAlbumsSection';
+import { ArtistMusicSection } from './_sections/ArtistMusicSection';
+import { ArtistVideosSection } from './_sections/ArtistVideosSection';
+import {
+  ArtistAlbumsSectionSkeleton,
+  ArtistCatalogSectionSkeleton,
+  ArtistVideosSectionSkeleton,
+} from './_sections/skeletons';
 
 interface ArtistDetailPageProps {
   params: Promise<{ id: string }>;
@@ -86,41 +84,25 @@ export default async function ArtistDetailPage({ params }: ArtistDetailPageProps
     socials: apiArtist.socials,
   };
 
-  const [musicRes, videoRes, albumsRes] = await Promise.all([
-    callPublicServerApi('PUBLIC_GET_MUSIC', {
-      query: `?artist=${encodeURIComponent(artistId)}&status=published&page=1&limit=12`,
-    }),
-    callPublicServerApi('PUBLIC_GET_VIDEOS', {
-      query: `?artist=${encodeURIComponent(artistId)}&status=published&page=1&limit=12`,
-    }),
-    callPublicServerApi('PUBLIC_GET_ALBUMS', {
-      query: `?artist=${encodeURIComponent(artistId)}&page=1&limit=12`,
-    }),
-  ]);
-
-  const musicList =
-    musicRes.type === 'success' ? ((musicRes.data as IPublicMusicListRes)?.music ?? []) : [];
-  const videoList =
-    videoRes.type === 'success' ? ((videoRes.data as IPublicVideosListRes)?.videos ?? []) : [];
-
-  const musicItems: MusicItemWithArtist[] = musicList.map(m => mapPublicMusicToDetailItem(m));
-  const videoItems: VideoItemWithCreator[] = videoList.map(
-    v => mapPublicVideoToDetailItem(v) as VideoItemWithCreator
-  );
-  const albumItems: PublicAlbumCard[] =
-    albumsRes.type === 'success'
-      ? filterPublicAlbumList((albumsRes.data as IPublicAlbumsListRes)?.albums ?? []).map(
-          mapPublicAlbumToCard
-        )
-      : [];
-
   return (
     <MainLayout>
       <ArtistDetailPageClient
         artist={artist}
-        musicItems={musicItems}
-        videoItems={videoItems}
-        albumItems={albumItems}
+        albumsSlot={
+          <Suspense fallback={<ArtistAlbumsSectionSkeleton />}>
+            <ArtistAlbumsSection artistId={artistId} />
+          </Suspense>
+        }
+        musicSlot={
+          <Suspense fallback={<ArtistCatalogSectionSkeleton />}>
+            <ArtistMusicSection artistId={artistId} />
+          </Suspense>
+        }
+        videosSlot={
+          <Suspense fallback={<ArtistVideosSectionSkeleton />}>
+            <ArtistVideosSection artistId={artistId} />
+          </Suspense>
+        }
       />
     </MainLayout>
   );
