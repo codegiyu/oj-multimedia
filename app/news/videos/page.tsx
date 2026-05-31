@@ -2,7 +2,9 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { SubPageHero } from '@/components/general/SubPageHero';
+import { ISR_PUBLIC_FETCH } from '@/lib/constants/isr';
 import { normalizePublicCategoryByScope } from '@/lib/utils/contentCategoriesServer';
+import { parseBrowsePageParam } from '@/lib/utils/browsePage';
 import { NewsCategoriesSection } from '../_sections/NewsCategoriesSection';
 import { VideoNewsSection } from '../_sections/VideoNewsSection';
 import { NewsCategoriesSkeleton, VideoNewsSectionSkeleton } from '../_sections/skeletons';
@@ -14,12 +16,18 @@ export const metadata: Metadata = {
 };
 
 interface VideoNewsPageProps {
-  searchParams: Promise<{ category?: string }>;
+  searchParams: Promise<{ category?: string; page?: string }>;
 }
 
 export default async function VideoNewsPage({ searchParams }: VideoNewsPageProps) {
   const params = await searchParams;
-  const category = await normalizePublicCategoryByScope('news', params.category);
+  const page = parseBrowsePageParam(params.page);
+  const category = await normalizePublicCategoryByScope(
+    'news',
+    params.category,
+    ISR_PUBLIC_FETCH.fast
+  );
+  const fetchOptions = ISR_PUBLIC_FETCH.fast;
 
   return (
     <MainLayout>
@@ -34,10 +42,15 @@ export default async function VideoNewsPage({ searchParams }: VideoNewsPageProps
         stats={[{ icon: 'Play', text: 'Video content' }, { text: 'Multiple categories' }]}
       />
       <Suspense fallback={<NewsCategoriesSkeleton />}>
-        <NewsCategoriesSection category={category} />
+        <NewsCategoriesSection category={category} fetchOptions={fetchOptions} />
       </Suspense>
-      <Suspense fallback={<VideoNewsSectionSkeleton />}>
-        <VideoNewsSection category={category} limit={50} variant="subpage" />
+      <Suspense fallback={<VideoNewsSectionSkeleton />} key={`${category}|${page}`}>
+        <VideoNewsSection
+          category={category}
+          page={page}
+          fetchOptions={fetchOptions}
+          variant="subpage"
+        />
       </Suspense>
     </MainLayout>
   );

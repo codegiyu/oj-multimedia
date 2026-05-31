@@ -4,7 +4,8 @@ import { SectionLoadError } from '@/components/general/SectionLoadError';
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import { NEWS_TYPES } from '@/lib/constants/contentTaxonomy';
 import { filterPublicNewsList, mapPublicNewsToBreakingStory } from '@/lib/utils/publicApiMappers';
-import { buildNewsBaseQuery, type NewsSectionProps } from './shared';
+import { buildNewsBrowseQuery } from '@/lib/utils/newsBrowse';
+import type { NewsSectionProps } from './shared';
 
 type BreakingNewsSectionProps = NewsSectionProps & {
   variant?: 'hub' | 'subpage';
@@ -15,12 +16,16 @@ type BreakingNewsSectionProps = NewsSectionProps & {
 export async function BreakingNewsSection({
   category,
   limit = 15,
+  page = 1,
   fetchOptions,
   variant = 'hub',
   maxItems = 8,
   showCategoryNav = false,
 }: BreakingNewsSectionProps) {
-  const query = `${buildNewsBaseQuery(category, limit)}&type=${NEWS_TYPES.breaking}` as const;
+  const query =
+    variant === 'hub'
+      ? buildNewsBrowseQuery(category, 1, { limit, type: NEWS_TYPES.breaking })
+      : buildNewsBrowseQuery(category, page, { type: NEWS_TYPES.breaking });
   const res = await callPublicServerApi('PUBLIC_GET_NEWS', { query }, fetchOptions);
 
   if (res.type === 'error') {
@@ -38,7 +43,11 @@ export async function BreakingNewsSection({
 
   if (variant === 'subpage') {
     return (
-      <BreakingNewsPageClient breakingStories={breakingStories} showCategoryNav={showCategoryNav} />
+      <BreakingNewsPageClient
+        breakingStories={breakingStories}
+        showCategoryNav={showCategoryNav}
+        pagination={res.data?.pagination ?? null}
+      />
     );
   }
 

@@ -4,6 +4,7 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { SubPageHero } from '@/components/general/SubPageHero';
 import { ISR_PUBLIC_FETCH } from '@/lib/constants/isr';
 import { normalizePublicCategoryByScope } from '@/lib/utils/contentCategoriesServer';
+import { parseBrowsePageParam } from '@/lib/utils/browsePage';
 import { NewsCategoriesSection } from '../../_sections/NewsCategoriesSection';
 import { BreakingNewsSection } from '../../_sections/BreakingNewsSection';
 import { NewsCategoriesSkeleton, NewsSubpageGridSkeleton } from '../../_sections/skeletons';
@@ -15,11 +16,12 @@ export const metadata: Metadata = {
 };
 
 interface BreakingNewsPageProps {
-  searchParams: Promise<{ category?: string }>;
+  searchParams: Promise<{ category?: string; page?: string }>;
 }
 
 export default async function BreakingNewsPage({ searchParams }: BreakingNewsPageProps) {
   const params = await searchParams;
+  const page = parseBrowsePageParam(params.page);
   const category = await normalizePublicCategoryByScope(
     'news',
     params.category,
@@ -42,10 +44,10 @@ export default async function BreakingNewsPage({ searchParams }: BreakingNewsPag
       <Suspense fallback={<NewsCategoriesSkeleton />}>
         <NewsCategoriesSection category={category} fetchOptions={fetchOptions} />
       </Suspense>
-      <Suspense fallback={<NewsSubpageGridSkeleton />}>
+      <Suspense fallback={<NewsSubpageGridSkeleton />} key={`${category}|${page}`}>
         <BreakingNewsSection
           category={category}
-          limit={50}
+          page={page}
           fetchOptions={fetchOptions}
           variant="subpage"
         />
