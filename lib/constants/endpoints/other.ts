@@ -74,4 +74,14 @@ export const OTHER_ENDPOINTS: Record<string, EndpointDetails> = {
   },
   VENDOR_UPDATE_SETTINGS: { path: '/api/v1/vendor/settings', method: 'PATCH' },
   VENDOR_GET_DASHBOARD_STATS: { path: '/api/v1/vendor/dashboard-stats', method: 'GET' },
+
+  // Pastor dashboard
+  PASTOR_GET_ME: { path: '/api/v1/pastor/me', method: 'GET' },
+  PASTOR_SUBMIT_APPLICATION: { path: '/api/v1/pastor/application', method: 'POST' },
+  PASTOR_GET_PROFILE: { path: '/api/v1/pastor/me/profile', method: 'GET' },
+  PASTOR_UPDATE_PROFILE: { path: '/api/v1/pastor/me/profile', method: 'PATCH' },
+  PASTOR_GET_DASHBOARD_STATS: { path: '/api/v1/pastor/dashboard-stats', method: 'GET' },
+  PASTOR_GET_QUESTIONS: { path: '/api/v1/pastor/questions', method: 'GET' },
+  PASTOR_GET_QUESTION_ITEM: { path: '/api/v1/pastor/questions', method: 'GET' },
+  PASTOR_ANSWER_QUESTION: { path: '/api/v1/pastor/questions', method: 'POST' },
 };
