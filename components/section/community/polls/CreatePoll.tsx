@@ -15,6 +15,7 @@ import { toast } from '@/components/atoms/Toast';
 import { POLL_CATEGORY_SELECT_OPTIONS } from '@/lib/constants/communityCategorySelectOptions';
 import { LoginModal } from '@/components/auth/LoginModal';
 import { useAuthStore } from '@/lib/store/useAuthStore';
+import { hasDuplicatePollOptions } from '@/lib/utils/pollOptions';
 
 const POLL_CATEGORY_OPTIONS = POLL_CATEGORY_SELECT_OPTIONS;
 
@@ -73,6 +74,15 @@ export const CreatePoll = () => {
       return;
     }
 
+    if (hasDuplicatePollOptions(validOptions)) {
+      toast({
+        title: 'Duplicate options',
+        description: 'Each poll option must be unique.',
+        variant: 'error',
+      });
+      return;
+    }
+
     setIsSubmitting(true);
 
     const res = await callApi('PUBLIC_CREATE_POLL', {
@@ -96,9 +106,8 @@ export const CreatePoll = () => {
     }
 
     toast({
-      title: 'Poll Created!',
-      description:
-        'Your poll has been created successfully. It will be reviewed and published soon.',
+      title: 'Poll submitted',
+      description: 'Your poll was submitted for review. You can track it under My community.',
       variant: 'success',
     });
 

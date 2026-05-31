@@ -101,6 +101,11 @@ export const AUTH_USER_ENDPOINTS: Record<string, EndpointDetails> = {
     path: '/api/v1/user/me/community/prayer-requests',
     method: 'GET',
   },
+  USER_ME_COMMUNITY_POLLS: { path: '/api/v1/user/me/community/polls', method: 'GET' },
+  USER_ME_COMMUNITY_POLL_CLOSE: {
+    path: '/api/v1/user/me/community/polls',
+    method: 'PATCH',
+  },
 
   // File Upload (Public)
   GENERATE_PRESIGNED_URL: {

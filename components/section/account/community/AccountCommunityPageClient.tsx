@@ -8,13 +8,22 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import type { QuestionDetail, TestimonyDetail, PrayerRequestDetail } from '@/lib/types/community';
-import { Lock, MessageSquare } from 'lucide-react';
+import type {
+  QuestionDetail,
+  TestimonyDetail,
+  PrayerRequestDetail,
+  PollListItem,
+} from '@/lib/types/community';
+import { callApi } from '@/lib/services/callApi';
+import { getErrorMessage } from '@/lib/utils/general';
+import { toast } from '@/components/atoms/Toast';
+import { Lock, MessageSquare, BarChart3 } from 'lucide-react';
 
 export interface AccountCommunityPageClientProps {
   questions: QuestionDetail[];
   testimonies: TestimonyDetail[];
   prayerRequests: PrayerRequestDetail[];
+  polls: PollListItem[];
   errorMessage: string | null;
 }
 
@@ -22,16 +31,42 @@ export function AccountCommunityPageClient({
   questions,
   testimonies,
   prayerRequests,
+  polls,
   errorMessage,
 }: AccountCommunityPageClientProps) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('questions');
+  const [closingPollId, setClosingPollId] = useState<string | null>(null);
+
+  const handleClosePoll = async (pollId: string) => {
+    setClosingPollId(pollId);
+    const res = await callApi('USER_ME_COMMUNITY_POLL_CLOSE', {
+      query: `/${pollId}/close` as `/${string}/close`,
+    });
+    setClosingPollId(null);
+
+    if (res.error) {
+      toast({
+        title: 'Could not close poll',
+        description: getErrorMessage(res.error),
+        variant: 'error',
+      });
+      return;
+    }
+
+    toast({
+      title: 'Poll closed',
+      description: 'Your poll is no longer accepting votes.',
+      variant: 'success',
+    });
+    router.refresh();
+  };
 
   return (
     <div className="space-y-6">
       <DashboardPageHeader
         title="My community"
-        description="Questions, testimonies, and prayer requests you've submitted"
+        description="Questions, testimonies, prayer requests, and polls you've submitted"
       />
 
       {errorMessage && (
@@ -48,6 +83,7 @@ export function AccountCommunityPageClient({
           <TabsTrigger value="questions">My Questions</TabsTrigger>
           <TabsTrigger value="testimonies">Testimonies</TabsTrigger>
           <TabsTrigger value="prayer-requests">Prayer Requests</TabsTrigger>
+          <TabsTrigger value="polls">My Polls</TabsTrigger>
         </TabsList>
 
         <TabsContent value="questions" className="mt-6 space-y-4">
@@ -119,6 +155,50 @@ export function AccountCommunityPageClient({
               <Card key={p._id} className="p-5">
                 <p className="font-medium">{p.title}</p>
                 <p className="text-sm text-muted-foreground mt-2 line-clamp-3">{p.content}</p>
+              </Card>
+            ))
+          )}
+        </TabsContent>
+
+        <TabsContent value="polls" className="mt-6 space-y-4">
+          {polls.length === 0 ? (
+            <Card className="p-8 text-center text-sm text-muted-foreground">
+              No polls submitted yet.{' '}
+              <Link
+                href="/community/polls-and-voting#create-poll"
+                className="text-primary underline">
+                Create a poll
+              </Link>
+            </Card>
+          ) : (
+            polls.map(poll => (
+              <Card key={poll._id} className="p-5">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="space-y-2">
+                    <div className="flex flex-wrap gap-2">
+                      <Badge variant="outline" className="gap-1">
+                        <BarChart3 className="h-3 w-3" />
+                        {poll.status}
+                      </Badge>
+                    </div>
+                    <p className="font-medium">{poll.question}</p>
+                    <p className="text-xs text-muted-foreground">{poll.totalVotes} votes</p>
+                  </div>
+                  <div className="flex flex-col gap-2 shrink-0">
+                    {poll.status === 'active' ? (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        disabled={closingPollId === poll._id}
+                        onClick={() => void handleClosePoll(poll._id)}>
+                        {closingPollId === poll._id ? 'Closing…' : 'Close poll'}
+                      </Button>
+                    ) : null}
+                    <Button size="sm" variant="ghost" asChild>
+                      <Link href={`/community/polls-and-voting/${poll._id}`}>View</Link>
+                    </Button>
+                  </div>
+                </div>
               </Card>
             ))
           )}

@@ -371,18 +371,29 @@ export function mapToPoll(item: Record<string, unknown>): {
   description?: string;
   options: Array<{ _id: string; text: string; votes: number; percentage: number }>;
   totalVotes: number;
-  status: 'active' | 'closed';
+  status: 'pending' | 'active' | 'closed' | 'rejected';
+  creatorLabel?: string;
   timeAgo: string;
   endDate?: string;
 } {
   const options = (item.options as Record<string, unknown>[] | undefined) ?? [];
+  const statusRaw = str(item.status);
+  const status =
+    statusRaw === 'pending' ||
+    statusRaw === 'active' ||
+    statusRaw === 'closed' ||
+    statusRaw === 'rejected'
+      ? statusRaw
+      : 'active';
+
   return {
     _id: str(item._id),
     question: str(item.question),
     description: item.description != null ? str(item.description) : undefined,
     options: options.map(mapToPollOption),
     totalVotes: num(item.totalVotes),
-    status: (item.status === 'closed' ? 'closed' : 'active') as 'active' | 'closed',
+    status,
+    creatorLabel: item.creatorLabel != null ? str(item.creatorLabel) : undefined,
     timeAgo: str(item.timeAgo ?? item.createdAt),
     endDate: item.endDate != null ? str(item.endDate) : undefined,
   };

@@ -1,7 +1,13 @@
 import { Suspense } from 'react';
 import { callServerApi } from '@/lib/services/serverApi';
 import { AccountCommunityPageClient } from '@/components/section/account/community/AccountCommunityPageClient';
-import type { QuestionDetail, TestimonyDetail, PrayerRequestDetail } from '@/lib/types/community';
+import type {
+  QuestionDetail,
+  TestimonyDetail,
+  PrayerRequestDetail,
+  PollListItem,
+} from '@/lib/types/community';
+import { mapToPoll } from '@/lib/utils/communityApiMappers';
 
 function mapQuestionDetail(item: Record<string, unknown>): QuestionDetail {
   const answersRaw = Array.isArray(item.answers) ? item.answers : [];
@@ -38,10 +44,11 @@ function mapQuestionDetail(item: Record<string, unknown>): QuestionDetail {
 }
 
 async function AccountCommunityServer() {
-  const [questionsRes, testimoniesRes, prayerRes] = await Promise.all([
+  const [questionsRes, testimoniesRes, prayerRes, pollsRes] = await Promise.all([
     callServerApi('USER_ME_COMMUNITY_QUESTIONS', { query: '?limit=50' as `?${string}` }),
     callServerApi('USER_ME_COMMUNITY_TESTIMONIES', { query: '?limit=50' as `?${string}` }),
     callServerApi('USER_ME_COMMUNITY_PRAYER_REQUESTS', { query: '?limit=50' as `?${string}` }),
+    callServerApi('USER_ME_COMMUNITY_POLLS', { query: '?limit=50' as `?${string}` }),
   ]);
 
   const questions =
@@ -59,7 +66,14 @@ async function AccountCommunityServer() {
       ? ((prayerRes.data.prayerRequests as PrayerRequestDetail[]) ?? [])
       : [];
 
-  const errorMessage = [questionsRes, testimoniesRes, prayerRes].every(r => r.type === 'error')
+  const polls: PollListItem[] =
+    pollsRes.type === 'success'
+      ? (pollsRes.data.polls ?? []).map(p => mapToPoll(p as unknown as Record<string, unknown>))
+      : [];
+
+  const errorMessage = [questionsRes, testimoniesRes, prayerRes, pollsRes].every(
+    r => r.type === 'error'
+  )
     ? questionsRes.type === 'error'
       ? (questionsRes.message ?? 'Unable to load community data.')
       : null
@@ -70,6 +84,7 @@ async function AccountCommunityServer() {
       questions={questions}
       testimonies={testimonies}
       prayerRequests={prayerRequests}
+      polls={polls}
       errorMessage={errorMessage}
     />
   );

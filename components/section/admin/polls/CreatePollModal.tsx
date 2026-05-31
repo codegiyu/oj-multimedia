@@ -15,6 +15,8 @@ import { RegularTextarea } from '@/components/atoms/RegularTextarea';
 import { RegularSelect } from '@/components/atoms/RegularSelect';
 import type { SelectOption } from '@/lib/types/general';
 import { callApi } from '@/lib/services/callApi';
+import { hasDuplicatePollOptions } from '@/lib/utils/pollOptions';
+import { toast } from '@/components/atoms/Toast';
 import { POLL_CATEGORY_SELECT_OPTIONS } from '@/lib/constants/communityCategorySelectOptions';
 import { ensureSelectContainsSlug } from '@/lib/utils/adminContentCategorySelect';
 
@@ -102,6 +104,14 @@ export function CreatePollModal({ open, onOpenChange, editId, onSuccess }: Creat
     e.preventDefault();
     const trimmedOptions = form.options.map(o => o.trim()).filter(Boolean);
     if (!form.question.trim() || trimmedOptions.length < 2) return;
+    if (hasDuplicatePollOptions(trimmedOptions)) {
+      toast({
+        title: 'Duplicate options',
+        description: 'Each poll option must be unique.',
+        variant: 'error',
+      });
+      return;
+    }
     setLoading(true);
     try {
       if (editId) {

@@ -618,6 +618,15 @@ export interface IUserMeCommunityPrayerRequestsRes {
   pagination: Pagination;
 }
 
+export interface IUserMeCommunityPollsRes {
+  polls: PollListItem[];
+  pagination: Pagination;
+}
+
+export interface IUserMeCommunityPollCloseRes {
+  poll: PollListItem;
+}
+
 // Public (music, videos, news) – list and detail types
 export type PublicMusicListItem = ArtistMusicListItem;
 export type IPublicMusicListRes = GetListRes<PublicMusicListItem, 'music'>;
@@ -998,6 +1007,12 @@ export interface AllEndpoints {
     IUserMeCommunityPrayerRequestsRes,
     `?${string}`
   >;
+  USER_ME_COMMUNITY_POLLS: EndpointDefinition<undefined, IUserMeCommunityPollsRes, `?${string}`>;
+  USER_ME_COMMUNITY_POLL_CLOSE: EndpointDefinition<
+    undefined,
+    IUserMeCommunityPollCloseRes,
+    `/${string}/close`
+  >;
 
   // File Upload (Public)
   GENERATE_PRESIGNED_URL: EndpointDefinition<
@@ -1292,6 +1307,8 @@ export interface AllEndpoints {
   ADMIN_POLL_DELETE: EndpointDefinition<undefined, { success: boolean }, `/${string}`>;
   ADMIN_POLL_OPEN: EndpointDefinition<undefined, PollDetailData, `/${string}`>;
   ADMIN_POLL_CLOSE: EndpointDefinition<{ reason?: string }, PollDetailData, `/${string}`>;
+  ADMIN_POLL_APPROVE: EndpointDefinition<undefined, PollDetailData, `/${string}`>;
+  ADMIN_POLL_REJECT: EndpointDefinition<{ reason?: string }, PollDetailData, `/${string}`>;
 
   // Admin content - Resources
   ADMIN_RESOURCES_LIST: EndpointDefinition<undefined, ResourcesListData, `?${string}`>;

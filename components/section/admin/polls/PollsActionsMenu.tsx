@@ -13,6 +13,8 @@ import type { PollListItem } from '@/lib/types/community';
 
 interface PollsActionsMenuProps {
   poll: PollListItem;
+  onApprove: (poll: PollListItem) => void;
+  onReject: (poll: PollListItem) => void;
   onOpen: (poll: PollListItem) => void;
   onClose: (poll: PollListItem) => void;
   onEdit: (poll: PollListItem) => void;
@@ -21,11 +23,14 @@ interface PollsActionsMenuProps {
 
 export function PollsActionsMenu({
   poll,
+  onApprove,
+  onReject,
   onOpen,
   onClose,
   onEdit,
   onDelete,
 }: PollsActionsMenuProps) {
+  const isPending = poll.status === 'pending';
   const isActive = poll.status === 'active';
 
   return (
@@ -37,7 +42,16 @@ export function PollsActionsMenu({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" onClick={e => e.stopPropagation()}>
-        {!isActive && <DropdownMenuItem onClick={() => onOpen(poll)}>Open</DropdownMenuItem>}
+        {isPending && (
+          <>
+            <DropdownMenuItem onClick={() => onApprove(poll)}>Approve</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onReject(poll)}>Reject</DropdownMenuItem>
+            <DropdownMenuSeparator />
+          </>
+        )}
+        {!isActive && !isPending && (
+          <DropdownMenuItem onClick={() => onOpen(poll)}>Open</DropdownMenuItem>
+        )}
         {isActive && <DropdownMenuItem onClick={() => onClose(poll)}>Close</DropdownMenuItem>}
         <DropdownMenuItem onClick={() => onEdit(poll)}>Edit</DropdownMenuItem>
         <DropdownMenuSeparator />

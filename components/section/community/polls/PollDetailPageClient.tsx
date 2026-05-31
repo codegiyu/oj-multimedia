@@ -149,6 +149,7 @@ export const PollDetailPageClient = ({ poll }: PollDetailPageClientProps) => {
           </>
         }
         metaItems={[
+          ...(poll.creatorLabel ? [{ icon: BarChart3, label: `By ${poll.creatorLabel}` }] : []),
           ...(poll.date
             ? [{ icon: Calendar, label: new Date(poll.date).toLocaleDateString() }]
             : []),

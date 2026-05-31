@@ -39,7 +39,7 @@ import {
   PUBLIC_URL_KEYS,
 } from '@/lib/constants/publicUrlKeys';
 import { normalizePublicCategoryByScope } from '@/lib/utils/contentCategoriesServer';
-import { fetchPublicCategoryNav, type CategoryNavItem } from '@/lib/utils/contentCategoryNav';
+import { fetchPublicCategoryNav } from '@/lib/utils/contentCategoryNav';
 import {
   musicCategoryNavFallback,
   videoCategoryNavFallback,

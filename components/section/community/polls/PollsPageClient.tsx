@@ -22,7 +22,8 @@ export interface Poll {
   description?: string;
   options: PollOption[];
   totalVotes: number;
-  status: 'active' | 'closed';
+  status: 'pending' | 'active' | 'closed' | 'rejected';
+  creatorLabel?: string;
   timeAgo: string;
   endDate?: string;
 }

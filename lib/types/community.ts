@@ -22,7 +22,7 @@ export type TestimonyType = (typeof TESTIMONY_TYPES)[number];
 export const PRAYER_STATUS = ['active', 'answered'] as const;
 export type PrayerStatus = (typeof PRAYER_STATUS)[number];
 
-export const POLL_STATUS = ['active', 'closed'] as const;
+export const POLL_STATUS = ['pending', 'active', 'closed', 'rejected'] as const;
 export type PollStatus = (typeof POLL_STATUS)[number];
 
 export const RESOURCE_TYPES = ['ebook', 'template', 'beat', 'wallpaper', 'affiliate'] as const;
@@ -277,7 +277,8 @@ export interface PollListItem {
   description?: string;
   options: PollOption[];
   totalVotes: number;
-  status: 'active' | 'closed';
+  status: PollStatus;
+  creatorLabel?: string;
   timeAgo: string;
   endDate?: string;
 }
