@@ -10,12 +10,10 @@ import type { RecentUpload } from '@/components/section/music/RecentUploads';
 import type { FeaturedArtist } from '@/components/section/music/FeaturedArtists';
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import { CHART_PERIOD_VALUES, MUSIC_TYPES } from '@/lib/constants/contentTaxonomy';
-import { filterByCategory } from '@/lib/utils/music';
 import { normalizePublicCategoryByScope } from '@/lib/utils/contentCategoriesServer';
 import { fetchPublicCategoryNav } from '@/lib/utils/contentCategoryNav';
 import { musicCategoryNavFallback } from '@/lib/constants/categoryNavFallbacks';
 import {
-  filterPublicMusicList,
   filterPublicAlbumList,
   mapPublicMusicToTrendingSong,
   mapPublicMusicToChartSong,
@@ -60,29 +58,17 @@ async function fetchMusicSections(category: string, period: string) {
   else if (recentRes.type === 'error')
     errorMessage = recentRes.error?.message ?? 'Failed to load recent';
 
-  const rawTrending = filterPublicMusicList(
-    trendingRes.type === 'success' ? (trendingRes.data?.music ?? []) : []
-  );
-  const rawCharts = filterPublicMusicList(
-    chartsRes.type === 'success' ? (chartsRes.data?.music ?? []) : []
-  );
-  const rawRecent = filterPublicMusicList(
-    recentRes.type === 'success' ? (recentRes.data?.music ?? []) : []
-  );
+  const rawTrending = trendingRes.type === 'success' ? (trendingRes.data?.music ?? []) : [];
+  const rawCharts = chartsRes.type === 'success' ? (chartsRes.data?.music ?? []) : [];
+  const rawRecent = recentRes.type === 'success' ? (recentRes.data?.music ?? []) : [];
 
-  const trendingSongs: TrendingSong[] = filterByCategory(
-    rawTrending.map(mapPublicMusicToTrendingSong),
-    category
-  ).slice(0, 8);
+  const trendingSongs: TrendingSong[] = rawTrending.map(mapPublicMusicToTrendingSong).slice(0, 8);
 
-  const chartSongs: ChartSong[] = filterByCategory(
-    rawCharts.map((item, i) => mapPublicMusicToChartSong(item, i + 1)),
-    category
-  ).slice(0, 10);
+  const chartSongs: ChartSong[] = rawCharts
+    .map((item, i) => mapPublicMusicToChartSong(item, i + 1))
+    .slice(0, 10);
 
-  const recentUploads: RecentUpload[] = filterByCategory(rawRecent, category)
-    .map(mapPublicMusicToRecentUpload)
-    .slice(0, 6);
+  const recentUploads: RecentUpload[] = rawRecent.map(mapPublicMusicToRecentUpload).slice(0, 6);
 
   const rawArtists = artistsRes.type === 'success' ? (artistsRes.data?.artists ?? []) : [];
   const featuredArtists: FeaturedArtist[] = rawArtists

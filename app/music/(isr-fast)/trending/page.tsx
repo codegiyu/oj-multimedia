@@ -7,8 +7,7 @@ import { MusicTrendingPageSkeleton } from '@/components/section/music/MusicPageS
 import type { TrendingSong } from '@/components/section/music/TrendingSongs';
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import { ISR_PUBLIC_FETCH } from '@/lib/constants/isr';
-import { filterByCategory } from '@/lib/utils/music';
-import { filterPublicMusicList, mapPublicMusicToTrendingSong } from '@/lib/utils/publicApiMappers';
+import { mapPublicMusicToTrendingSong } from '@/lib/utils/publicApiMappers';
 import { MUSIC_TYPES } from '@/lib/constants/contentTaxonomy';
 import { normalizePublicCategoryByScope } from '@/lib/utils/contentCategoriesServer';
 import { fetchPublicCategoryNav } from '@/lib/utils/contentCategoryNav';
@@ -33,10 +32,8 @@ async function fetchTrendingSongs(category: string) {
     };
   }
 
-  const raw = filterPublicMusicList(res.data?.music ?? []);
-  const trendingSongs = filterByCategory(
-    raw.map(mapPublicMusicToTrendingSong),
-    category
+  const trendingSongs = (res.data?.music ?? []).map(
+    mapPublicMusicToTrendingSong
   ) as (TrendingSong & { category?: string })[];
   return { trendingSongs, initialErrorMessage: null as string | null };
 }
