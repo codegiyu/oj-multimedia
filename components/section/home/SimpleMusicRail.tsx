@@ -6,6 +6,7 @@ import { MusicCard } from '@/components/cards/MusicCard';
 import { SectionComp } from '@/components/general/SectionComp';
 import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import type { TrendingMusicItem } from './TrendingMusicSection';
+import { MUSIC_RAIL_ITEM_CLASS } from '@/lib/constants/mediaCardLayout';
 
 interface SimpleMusicRailProps {
   heading: string;
@@ -41,7 +42,7 @@ export function SimpleMusicRail({ heading, subtext, viewAllLink, music }: Simple
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.05 }}
-              className="w-[160px] sm:w-[180px] md:w-[200px] lg:w-[220px] xl:w-[240px] 2xl:w-[260px] snap-start shrink-0">
+              className={MUSIC_RAIL_ITEM_CLASS}>
               <MusicCard {...track} />
             </motion.div>
           ))}

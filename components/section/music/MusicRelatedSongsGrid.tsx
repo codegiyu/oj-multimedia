@@ -3,6 +3,7 @@
 import { motion } from 'motion/react';
 import { MusicCard } from '@/components/cards/MusicCard';
 import type { MusicItemWithArtist } from '@/lib/utils/music';
+import { MEDIA_BROWSE_GRID_CLASS } from '@/lib/constants/mediaCardLayout';
 
 interface MusicRelatedSongsGridProps {
   songs: MusicItemWithArtist[];
@@ -20,7 +21,7 @@ export function MusicRelatedSongsGrid({ songs }: MusicRelatedSongsGridProps) {
       transition={{ duration: 0.5, delay: 0.4 }}
       className="mt-12">
       <h2 className="text-2xl font-display font-bold mb-6">Related Songs</h2>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className={MEDIA_BROWSE_GRID_CLASS}>
         {songs.map((song, index) => (
           <motion.div
             key={song._id}

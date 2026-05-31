@@ -10,6 +10,7 @@ import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import { SectionComp } from '@/components/general/SectionComp';
 import { MusicCard } from '@/components/cards/MusicCard';
 import type { RecentUpload } from './RecentUploads';
+import { MEDIA_BROWSE_GRID_CLASS } from '@/lib/constants/mediaCardLayout';
 
 interface RecentUploadsPageClientProps {
   categoryOptions: CategoryNavItem[];
@@ -52,7 +53,7 @@ export const RecentUploadsPageClient = ({
           />
         ) : (
           <>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className={MEDIA_BROWSE_GRID_CLASS}>
               {itemsToShow.map((song, index) => (
                 <motion.div
                   key={song._id}

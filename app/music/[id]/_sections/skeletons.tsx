@@ -2,6 +2,7 @@
 
 import { Skeleton } from '@/components/ui/skeleton';
 import { MusicCardSkeleton } from '@/components/skeletons';
+import { MEDIA_BROWSE_GRID_CLASS } from '@/lib/constants/mediaCardLayout';
 
 export function MusicDetailPageSkeleton() {
   return (
@@ -21,7 +22,7 @@ export function MusicRelatedSectionSkeleton() {
   return (
     <div className="mt-12 space-y-6">
       <Skeleton className="h-8 w-48" />
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className={MEDIA_BROWSE_GRID_CLASS}>
         {[1, 2, 3].map(i => (
           <MusicCardSkeleton key={i} />
         ))}

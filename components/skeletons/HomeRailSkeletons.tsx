@@ -2,6 +2,7 @@
 
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
+import { MUSIC_RAIL_ITEM_CLASS } from '@/lib/constants/mediaCardLayout';
 
 export function HomeAdvertStripSkeleton({ className }: { className?: string }) {
   return (
@@ -27,9 +28,7 @@ export function SimpleMusicRailSkeleton() {
         </div>
         <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
           {Array.from({ length: 6 }, (_, i) => (
-            <div
-              key={i}
-              className="w-[160px] sm:w-[180px] md:w-[200px] lg:w-[220px] xl:w-[240px] 2xl:w-[260px] snap-start shrink-0">
+            <div key={i} className={MUSIC_RAIL_ITEM_CLASS}>
               <div className="bg-card rounded-2xl overflow-hidden">
                 <Skeleton className="aspect-square w-full rounded-none" />
                 <div className="p-4">

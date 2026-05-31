@@ -18,14 +18,13 @@ import {
   SimpleMusicRailSkeleton,
   SimpleVideoRailSkeleton,
 } from '@/components/skeletons';
+import { MUSIC_RAIL_ITEM_CLASS } from '@/lib/constants/mediaCardLayout';
 
 export function TrendingMusicSectionSkeleton() {
   return (
     <SectionSkeleton>
       <SectionHeaderSkeleton showPrevNext tabs={7} />
-      <HorizontalRailSkeleton
-        itemWidthClass="w-[160px] sm:w-[180px] md:w-[200px] lg:w-[220px] xl:w-[240px] 2xl:w-[260px]"
-        count={8}>
+      <HorizontalRailSkeleton itemWidthClass={MUSIC_RAIL_ITEM_CLASS} count={8}>
         <MusicCardSkeleton />
       </HorizontalRailSkeleton>
     </SectionSkeleton>

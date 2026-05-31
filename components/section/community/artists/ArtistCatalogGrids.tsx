@@ -7,6 +7,7 @@ import { VideoCard } from '@/components/cards/VideoCard';
 import type { PublicAlbumCard } from '@/lib/utils/publicApiMappers';
 import type { MusicItemWithArtist } from '@/lib/utils/music';
 import type { VideoItemWithCreator } from '@/lib/utils/videos';
+import { MEDIA_BROWSE_GRID_CLASS } from '@/lib/constants/mediaCardLayout';
 
 export function ArtistAlbumsGrid({ items }: { items: PublicAlbumCard[] }) {
   if (items.length === 0) {
@@ -39,7 +40,7 @@ export function ArtistMusicGrid({ items }: { items: MusicItemWithArtist[] }) {
         <Music className="w-5 h-5 text-primary" />
         Music
       </h2>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+      <div className={MEDIA_BROWSE_GRID_CLASS}>
         {items.map(item => (
           <MusicCard
             key={item._id}

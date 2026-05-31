@@ -11,6 +11,7 @@ import { MultilineText } from '@/components/general/MultilineText';
 import type { PublicAlbumCard } from '@/lib/utils/publicApiMappers';
 import type { PublicAlbumTrackItem } from '@/lib/constants/endpoints';
 import { mapPublicAlbumTrackToMusicCardProps } from '@/lib/utils/publicApiMappers';
+import { MEDIA_BROWSE_GRID_CLASS } from '@/lib/constants/mediaCardLayout';
 import { sendContentAnalyticsEvent } from '@/lib/services/contentAnalytics';
 import { AlbumManageButton } from './AlbumManageButton';
 
@@ -115,7 +116,7 @@ export function AlbumDetailPageClient({ album, tracks }: AlbumDetailPageClientPr
               This album has no published tracks yet.
             </p>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+            <div className={MEDIA_BROWSE_GRID_CLASS}>
               {tracks.map(track => {
                 const card = mapPublicAlbumTrackToMusicCardProps(track, album.artist);
                 return (

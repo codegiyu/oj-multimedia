@@ -2,12 +2,13 @@
 
 import { Skeleton } from '@/components/ui/skeleton';
 import { AlbumCardSkeleton, MusicCardSkeleton, VideoCardSkeleton } from '@/components/skeletons';
+import { MEDIA_BROWSE_GRID_CLASS } from '@/lib/constants/mediaCardLayout';
 
 export function ArtistCatalogSectionSkeleton() {
   return (
     <div className="space-y-4">
       <Skeleton className="h-7 w-32" />
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+      <div className={MEDIA_BROWSE_GRID_CLASS}>
         {[1, 2, 3, 4].map(i => (
           <MusicCardSkeleton key={i} />
         ))}

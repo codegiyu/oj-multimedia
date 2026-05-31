@@ -2,6 +2,7 @@
 
 import { type ReactNode } from 'react';
 import { cn } from '@/lib/utils';
+import { MUSIC_RAIL_ITEM_CLASS } from '@/lib/constants/mediaCardLayout';
 
 export interface HorizontalRailSkeletonProps {
   children: ReactNode;
@@ -12,7 +13,7 @@ export interface HorizontalRailSkeletonProps {
 
 export function HorizontalRailSkeleton({
   children,
-  itemWidthClass = 'w-[200px] md:w-[240px]',
+  itemWidthClass = MUSIC_RAIL_ITEM_CLASS,
   count = 8,
   className,
 }: HorizontalRailSkeletonProps) {
