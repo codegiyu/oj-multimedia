@@ -48,6 +48,7 @@ const defaultForm = {
   category: '',
   status: 'draft' as 'draft' | 'published' | 'archived',
   coverImage: '',
+  fileUrl: '',
 };
 
 const typeOptions: SelectOption[] = RESOURCE_TYPES.map(t => ({ text: t, value: t }));
@@ -110,6 +111,7 @@ export function CreateResourceModal({
           category: r.category ?? '',
           status: normalizeEnumValue(st, PUBLISHABLE_STATUS_VALUES, 'draft'),
           coverImage: r.coverImage ?? '',
+          fileUrl: (r as { fileUrl?: string }).fileUrl ?? '',
         });
         setCategoryOptions(prev => ensureSelectContainsSlug(prev, r.category ?? undefined));
       } finally {
@@ -131,6 +133,7 @@ export function CreateResourceModal({
       const title = requireText(form.title, 'Title');
       const description = form.description.trim();
       const category = normalizeOptionalText(form.category);
+      const fileUrl = normalizeOptionalHttpUrl(form.fileUrl, 'Download or product URL');
       let finalCoverImage = normalizeOptionalHttpUrl(form.coverImage, 'Cover image URL');
 
       if (editId) {
@@ -152,6 +155,7 @@ export function CreateResourceModal({
             category,
             status: form.status,
             coverImage: finalCoverImage,
+            fileUrl: fileUrl || undefined,
           },
         });
         if (res.type !== 'success') throw new Error(res.error?.message ?? 'Update failed');
@@ -164,6 +168,7 @@ export function CreateResourceModal({
             category,
             status: createStatus,
             coverImage: finalCoverImage || undefined,
+            fileUrl: fileUrl || undefined,
           },
         });
         if (res.type !== 'success') throw new Error(res.error?.message ?? 'Create failed');
@@ -266,6 +271,17 @@ export function CreateResourceModal({
               onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
               placeholder="Enter description"
               rows={4}
+            />
+            <RegularInput
+              label="Download or product URL"
+              value={form.fileUrl}
+              onChange={e => setForm(f => ({ ...f, fileUrl: e.target.value }))}
+              placeholder="https://… (required for published non-affiliate items)"
+              subtext={
+                form.type === 'affiliate'
+                  ? 'Affiliate product link shown on the resources page.'
+                  : 'File or external download URL required for published resources.'
+              }
             />
             <MediaUrlOrUploadField
               label="Cover image"
