@@ -9,6 +9,7 @@ export interface CommunityHighlightItem {
   badge: string;
   author?: string;
   avatar?: string;
+  coverImage?: string;
   timestamp: number;
   metaLabel?: string;
 }
@@ -52,6 +53,7 @@ export function mergeCommunityHighlights(input: {
     preview: String(item.excerpt ?? item.content ?? ''),
     badge: 'Devotional',
     author: String(item.author ?? 'OJ Community'),
+    coverImage: item.coverImage ? String(item.coverImage) : undefined,
     timestamp: parseTimestamp(item.createdAt ?? item.date),
     metaLabel: item.views != null ? `${item.views} views` : undefined,
   }));

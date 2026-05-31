@@ -49,4 +49,23 @@ describe('mergeCommunityHighlights', () => {
     expect(result[0]?._id).toBe('t-new');
     expect(result[1]?._id).toBe('t-old');
   });
+
+  it('maps devotional coverImage when provided', () => {
+    const result = mergeCommunityHighlights({
+      testimonies: [],
+      devotionals: [
+        {
+          _id: 'd1',
+          title: 'Daily word',
+          excerpt: 'Excerpt',
+          coverImage: 'https://cdn.example/cover.jpg',
+          createdAt: '2026-05-29T10:00:00.000Z',
+        },
+      ],
+      prayerRequests: [],
+      limit: 1,
+    });
+
+    expect(result[0]?.coverImage).toBe('https://cdn.example/cover.jpg');
+  });
 });

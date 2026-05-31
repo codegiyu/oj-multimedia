@@ -75,6 +75,7 @@ export function mapToDevotional(item: Record<string, unknown>): {
   readTime: string;
   views: number;
   category: string;
+  coverImage?: string;
 } {
   const author = item.author;
   const authorStr =
@@ -89,6 +90,7 @@ export function mapToDevotional(item: Record<string, unknown>): {
     readTime: formatReadingTime(item.readingTime ?? item.readTime),
     views: num(item.views),
     category: str(item.category),
+    coverImage: item.coverImage ? str(item.coverImage) : undefined,
   };
 }
 
@@ -430,6 +432,7 @@ export function mapToDailyDevotional(item: Record<string, unknown>): {
   category: string;
   excerpt: string;
   views: number;
+  coverImage?: string;
 } {
   return {
     _id: str(item._id),
@@ -440,6 +443,7 @@ export function mapToDailyDevotional(item: Record<string, unknown>): {
     category: str(item.category),
     excerpt: str(item.excerpt ?? item.description),
     views: num(item.views),
+    coverImage: item.coverImage ? str(item.coverImage) : undefined,
   };
 }
 
