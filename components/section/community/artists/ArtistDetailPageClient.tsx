@@ -1,22 +1,17 @@
 'use client';
 
-import { Music, Video, Users, ExternalLink, DiscAlbum } from 'lucide-react';
+import { Music, Video, Users, ExternalLink } from 'lucide-react';
 import { FillImage } from '@/components/general/FillImage';
-import { MusicCard } from '@/components/cards/MusicCard';
-import { AlbumCard } from '@/components/cards/AlbumCard';
-import { VideoCard } from '@/components/cards/VideoCard';
-import type { PublicAlbumCard } from '@/lib/utils/publicApiMappers';
 import type { ArtistProfile } from '@/lib/types/artist';
-import type { MusicItemWithArtist } from '@/lib/utils/music';
-import type { VideoItemWithCreator } from '@/lib/utils/videos';
 import { MultilineText } from '@/components/general/MultilineText';
 import { CommunityContentDetailHero } from '../shared/CommunityContentDetailHero';
+import type { ReactNode } from 'react';
 
 interface ArtistDetailPageClientProps {
   artist: ArtistProfile;
-  musicItems: MusicItemWithArtist[];
-  videoItems: VideoItemWithCreator[];
-  albumItems: PublicAlbumCard[];
+  musicSlot?: ReactNode;
+  videosSlot?: ReactNode;
+  albumsSlot?: ReactNode;
 }
 
 // const socialIcons: Record<string, React.ComponentType<{ className?: string }>> = {};
@@ -24,9 +19,9 @@ interface ArtistDetailPageClientProps {
 
 export function ArtistDetailPageClient({
   artist,
-  musicItems,
-  videoItems,
-  albumItems,
+  musicSlot,
+  videosSlot,
+  albumsSlot,
 }: ArtistDetailPageClientProps) {
   const hasSocials =
     artist.socials &&
@@ -102,86 +97,13 @@ export function ArtistDetailPageClient({
         </div>
       </CommunityContentDetailHero>
 
-      {(musicItems.length > 0 || videoItems.length > 0 || albumItems.length > 0) && (
+      {(albumsSlot || musicSlot || videosSlot) && (
         <section className="py-12">
           <div className="container mx-auto px-4">
             <div className="max-w-6xl mx-auto space-y-12">
-              {albumItems.length > 0 && (
-                <div>
-                  <h2 className="text-xl font-display font-bold mb-6 flex items-center gap-2">
-                    <DiscAlbum className="w-5 h-5 text-primary" />
-                    Albums
-                  </h2>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                    {albumItems.map(item => (
-                      <AlbumCard key={item._id} {...item} />
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {musicItems.length > 0 && (
-                <div>
-                  <h2 className="text-xl font-display font-bold mb-6 flex items-center gap-2">
-                    <Music className="w-5 h-5 text-primary" />
-                    Music
-                  </h2>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                    {musicItems.map(item => (
-                      <MusicCard
-                        key={item._id}
-                        _id={item._id}
-                        title={item.title}
-                        artist={item.artist}
-                        cover={item.cover}
-                        plays={item.plays ?? '0'}
-                        genre={item.genre ?? item.category ?? ''}
-                        isNew={item.isNew}
-                        album={item.album}
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {videoItems.length > 0 && (
-                <div>
-                  <h2 className="text-xl font-display font-bold mb-6 flex items-center gap-2">
-                    <Video className="w-5 h-5 text-primary" />
-                    Videos
-                  </h2>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {videoItems.map(item => (
-                      <VideoCard
-                        key={item._id}
-                        _id={item._id}
-                        title={item.title}
-                        creator={item.creator}
-                        thumbnail={item.thumbnail}
-                        views={item.views ?? '0'}
-                        duration={item.duration ?? ''}
-                        category={
-                          item.category === 'music'
-                            ? 'Music Videos'
-                            : item.category === 'short'
-                              ? 'Short Clips'
-                              : item.category === 'talks'
-                                ? 'Talks & Speeches'
-                                : item.category === 'creative'
-                                  ? 'Creative Content'
-                                  : item.category === 'inspirational'
-                                    ? 'Inspirational'
-                                    : item.category === 'live'
-                                      ? 'Live Performances'
-                                      : item.category === 'sermon'
-                                        ? 'Sermons'
-                                        : 'Podcasts / Video Talks'
-                        }
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
+              {albumsSlot}
+              {musicSlot}
+              {videosSlot}
             </div>
           </div>
         </section>

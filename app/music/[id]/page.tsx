@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { MusicDetailPageClient } from '@/components/section/music/MusicDetailPageClient';
@@ -7,9 +8,10 @@ import {
   assertCompletePublicMusic,
   mapPublicMusicToDetailItem,
 } from '@/lib/utils/publicApiMappers';
-import type { MusicItemWithArtist } from '@/lib/utils/music';
 import { buildDetailShareMetadata } from '@/lib/utils/metadata';
 import { generateMusicDetailStaticParams } from '@/lib/services/isrPrebuildParams';
+import { MusicRelatedSongsSection } from './_sections/MusicRelatedSongsSection';
+import { MusicRelatedSectionSkeleton } from './_sections/skeletons';
 
 export const generateStaticParams = generateMusicDetailStaticParams;
 
@@ -77,20 +79,18 @@ export default async function MusicDetailPage({ params }: MusicDetailPageProps) 
   }
 
   const musicItem = mapPublicMusicToDetailItem(data.music);
-
   const category = musicItem.category ?? 'gospel';
-  const relatedRes = await callPublicServerApi('PUBLIC_GET_MUSIC', {
-    query: `?limit=4&page=1&status=published&type=recent&category=${encodeURIComponent(category)}`,
-  });
-  const relatedList = relatedRes.type === 'success' ? (relatedRes.data?.music ?? []) : [];
-  const relatedSongs: MusicItemWithArtist[] = relatedList
-    .filter(m => String(m._id) !== id)
-    .slice(0, 3)
-    .map(m => mapPublicMusicToDetailItem(m));
 
   return (
     <MainLayout>
-      <MusicDetailPageClient musicItem={musicItem} relatedSongs={relatedSongs} />
+      <MusicDetailPageClient
+        musicItem={musicItem}
+        relatedSlot={
+          <Suspense fallback={<MusicRelatedSectionSkeleton />}>
+            <MusicRelatedSongsSection id={id} category={category} />
+          </Suspense>
+        }
+      />
     </MainLayout>
   );
 }

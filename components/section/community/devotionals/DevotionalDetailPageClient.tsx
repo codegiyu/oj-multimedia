@@ -8,19 +8,19 @@ import { toast } from '@/components/atoms/Toast';
 import type { DevotionalItem } from '@/lib/constants/community/devotionals';
 import { MultilineText } from '@/components/general/MultilineText';
 import { StructuredProseContent } from '@/components/general/StructuredProseContent';
-import { RelatedDevotionals } from './RelatedDevotionals';
 import { sendContentAnalyticsEvent } from '@/lib/services/contentAnalytics';
 import { CommunityContentDetailHero } from '../shared/CommunityContentDetailHero';
 import { DevotionalSaveButton } from '@/components/content/DevotionalSaveButton';
+import type { ReactNode } from 'react';
 
 interface DevotionalDetailPageClientProps {
   devotional: DevotionalItem;
-  relatedDevotionals: DevotionalItem[];
+  relatedSlot?: ReactNode;
 }
 
 export const DevotionalDetailPageClient = ({
   devotional,
-  relatedDevotionals,
+  relatedSlot,
 }: DevotionalDetailPageClientProps) => {
   useEffect(() => {
     sendContentAnalyticsEvent('devotional', devotional._id, 'view');
@@ -143,12 +143,7 @@ export const DevotionalDetailPageClient = ({
         </div>
       </section>
 
-      {/* Related Devotionals */}
-      {relatedDevotionals.length > 0 && (
-        <section className="container mx-auto px-4 py-12 bg-muted/30">
-          <RelatedDevotionals devotionals={relatedDevotionals} />
-        </section>
-      )}
+      {relatedSlot}
     </article>
   );
 };

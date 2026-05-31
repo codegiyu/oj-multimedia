@@ -19,16 +19,16 @@ import { Button } from '@/components/ui/button';
 import type { VideoItemWithCreator } from '@/lib/utils/videos';
 import { VideoPlayerDynamic } from './VideoPlayerDynamic';
 import { VideoDownloadButton } from './VideoDownloadButton';
-import { VideoCard } from '@/components/cards/VideoCard';
 import { sendContentAnalyticsEvent } from '@/lib/services/contentAnalytics';
 import { MultilineText } from '@/components/general/MultilineText';
+import type { ReactNode } from 'react';
 
 interface VideoDetailPageClientProps {
   videoItem: VideoItemWithCreator;
-  relatedVideos: VideoItemWithCreator[];
+  relatedSlot?: ReactNode;
 }
 
-export const VideoDetailPageClient = ({ videoItem, relatedVideos }: VideoDetailPageClientProps) => {
+export const VideoDetailPageClient = ({ videoItem, relatedSlot }: VideoDetailPageClientProps) => {
   const creatorName =
     typeof videoItem.creator === 'string' ? videoItem.creator : videoItem.creator.name;
 
@@ -264,36 +264,7 @@ export const VideoDetailPageClient = ({ videoItem, relatedVideos }: VideoDetailP
             </motion.div>
           )}
 
-          {/* Related Videos */}
-          {relatedVideos.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-              className="mt-12">
-              <h2 className="text-2xl font-display font-bold mb-6">Related Videos</h2>
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {relatedVideos.map((video, index) => (
-                  <motion.div
-                    key={video._id}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: index * 0.1 }}>
-                    <VideoCard
-                      _id={video._id}
-                      title={video.title}
-                      creator={video.creator}
-                      thumbnail={video.thumbnail}
-                      views={video.views || '0'}
-                      duration={video.duration || '0:00'}
-                      category={video.category || 'Video'}
-                    />
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-          )}
+          {relatedSlot}
         </div>
       </section>
     </article>
