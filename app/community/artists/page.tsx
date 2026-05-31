@@ -2,49 +2,14 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { SubPageHero } from '@/components/general/SubPageHero';
-import { ArtistsPageClient } from '@/components/section/community/artists/ArtistsPageClient';
 import { Skeleton } from '@/components/ui/skeleton';
-import { callPublicServerApi } from '@/lib/services/serverApi';
-import { mapToCommunityArtist } from '@/lib/utils/communityApiMappers';
-import type { Pagination } from '@/lib/types/community';
+import { ArtistsListSection } from './_sections/ArtistsListSection';
 
 export const metadata: Metadata = {
   title: 'Artists - Community Creators',
   description:
     'Discover artists and creators. Explore profiles, music, and videos from talented creators in our community.',
 };
-
-const ARTISTS_LIMIT = 24;
-
-async function fetchArtistsData(page: number): Promise<{
-  artists: Array<{
-    _id: string;
-    name: string;
-    image: string;
-    genre: string;
-    followers: string;
-    verified: boolean;
-    songs?: number;
-  }>;
-  pagination: Pagination | null;
-  initialErrorMessage: string | null;
-}> {
-  const res = await callPublicServerApi('PUBLIC_GET_ARTISTS', {
-    query: `?limit=${ARTISTS_LIMIT}&page=${page}` as `?${string}`,
-  });
-  if (res.type === 'error') {
-    return {
-      artists: [],
-      pagination: null,
-      initialErrorMessage: res.error?.message ?? 'Failed to load artists',
-    };
-  }
-  const artists = (res.data?.artists ?? []).map(i =>
-    mapToCommunityArtist(i as unknown as Record<string, unknown>)
-  );
-  const pagination = res.data?.pagination ?? null;
-  return { artists, pagination, initialErrorMessage: null };
-}
 
 interface ArtistsPageProps {
   searchParams: Promise<{ page?: string }>;
@@ -53,7 +18,6 @@ interface ArtistsPageProps {
 export default async function CommunityArtistsPage({ searchParams }: ArtistsPageProps) {
   const { page: pageParam } = await searchParams;
   const page = Math.max(1, parseInt(String(pageParam ?? '1'), 10) || 1);
-  const { artists, pagination, initialErrorMessage } = await fetchArtistsData(page);
 
   return (
     <MainLayout>
@@ -74,12 +38,9 @@ export default async function CommunityArtistsPage({ searchParams }: ArtistsPage
               <Skeleton key={i} className="aspect-square w-full rounded-xl" />
             ))}
           </div>
-        }>
-        <ArtistsPageClient
-          artists={artists}
-          pagination={pagination}
-          initialErrorMessage={initialErrorMessage}
-        />
+        }
+        key={page}>
+        <ArtistsListSection page={page} />
       </Suspense>
     </MainLayout>
   );

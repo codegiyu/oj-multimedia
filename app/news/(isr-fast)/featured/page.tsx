@@ -2,41 +2,17 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { SubPageHero } from '@/components/general/SubPageHero';
-import { FeaturedStoriesPageClient } from '@/components/section/news/FeaturedStoriesPageClient';
-import { NewsPageSkeleton } from '@/components/section/news/NewsPageSkeleton';
-import type { FeaturedStory } from '@/components/section/news/FeaturedStories';
-import { callPublicServerApi } from '@/lib/services/serverApi';
 import { ISR_PUBLIC_FETCH } from '@/lib/constants/isr';
-import { mapPublicNewsToFeaturedStory } from '@/lib/utils/publicApiMappers';
-import { NEWS_TYPES } from '@/lib/constants/contentTaxonomy';
 import { normalizePublicCategoryByScope } from '@/lib/utils/contentCategoriesServer';
-import { fetchPublicCategoryNav } from '@/lib/utils/contentCategoryNav';
-import { newsCategoryNavFallback } from '@/lib/constants/categoryNavFallbacks';
+import { NewsCategoriesSection } from '../../_sections/NewsCategoriesSection';
+import { FeaturedStoriesSection } from '../../_sections/FeaturedStoriesSection';
+import { NewsCategoriesSkeleton, NewsSubpageGridSkeleton } from '../../_sections/skeletons';
 
 export const metadata: Metadata = {
   title: 'Featured Stories - News & Lifestyle Updates',
   description:
     'Explore our featured stories - handpicked articles covering lifestyle, inspiration, culture, and trending topics.',
 };
-
-async function fetchFeaturedStories(category: string) {
-  const categoryParam =
-    category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';
-  const query =
-    `?limit=50&page=1&status=published&type=${NEWS_TYPES.featured}${categoryParam}` as const;
-  const res = await callPublicServerApi('PUBLIC_GET_NEWS', { query }, ISR_PUBLIC_FETCH.fast);
-
-  if (res.type === 'error') {
-    return {
-      featuredStories: [] as FeaturedStory[],
-      initialErrorMessage: res.error?.message ?? 'Failed to load featured stories',
-    };
-  }
-
-  const raw = res.data?.articles ?? [];
-  const featuredStories = raw.map(mapPublicNewsToFeaturedStory);
-  return { featuredStories, initialErrorMessage: null as string | null };
-}
 
 interface FeaturedStoriesPageProps {
   searchParams: Promise<{ category?: string }>;
@@ -49,6 +25,7 @@ export default async function FeaturedStoriesPage({ searchParams }: FeaturedStor
     params.category,
     ISR_PUBLIC_FETCH.fast
   );
+  const fetchOptions = ISR_PUBLIC_FETCH.fast;
 
   return (
     <MainLayout>
@@ -62,18 +39,17 @@ export default async function FeaturedStoriesPage({ searchParams }: FeaturedStor
         backLabel="Back to News"
         stats={[{ icon: 'Sparkles', text: 'Handpicked stories' }, { text: 'Updated regularly' }]}
       />
-      <Suspense fallback={<NewsPageSkeleton />}>
-        <FeaturedStoriesServer category={category} />
+      <Suspense fallback={<NewsCategoriesSkeleton />}>
+        <NewsCategoriesSection category={category} fetchOptions={fetchOptions} />
+      </Suspense>
+      <Suspense fallback={<NewsSubpageGridSkeleton />}>
+        <FeaturedStoriesSection
+          category={category}
+          limit={50}
+          fetchOptions={fetchOptions}
+          variant="subpage"
+        />
       </Suspense>
     </MainLayout>
   );
-}
-
-async function FeaturedStoriesServer({ category }: { category: string }) {
-  const [data, categoryOptions] = await Promise.all([
-    fetchFeaturedStories(category),
-    fetchPublicCategoryNav('news', 'All Stories', newsCategoryNavFallback, ISR_PUBLIC_FETCH.fast),
-  ]);
-
-  return <FeaturedStoriesPageClient {...data} categoryOptions={categoryOptions} />;
 }

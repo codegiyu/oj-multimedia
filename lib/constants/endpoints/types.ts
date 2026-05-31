@@ -192,6 +192,14 @@ export interface IUserMeRes {
   user: PopulatedUser;
 }
 
+export interface IUserDashboardRes {
+  user: PopulatedUser;
+  ordersTotal: number;
+  recentOrders: Record<string, unknown>[];
+  wishlistTotal: number;
+  wishlistPreview: IUserWishlistItem[];
+}
+
 export interface IUserUpdateMePayload {
   firstName?: string;
   lastName?: string;
@@ -332,6 +340,20 @@ export interface IArtistDashboardStatsRes {
   devotionals?: { views: number; plays: number; downloads?: number };
   tracksAddedThisMonth?: number;
   playsDeltaPercent?: number | null;
+}
+
+export interface IArtistRecentUploadItem {
+  kind: 'music' | 'video';
+  _id: string;
+  title: string;
+  createdAt: string;
+  status: string;
+  views?: number;
+  plays?: number;
+}
+
+export interface IArtistRecentUploadsRes {
+  uploads: IArtistRecentUploadItem[];
 }
 
 export interface IAdminUserSearchItem {
@@ -751,6 +773,35 @@ export type IPublicHomeAdvertsRes = { adverts: IHomeAdvertItem[] };
 // Community (public) – list and detail types (from COMMUNITY-API-FRONTEND.md)
 export type ICommunityCategoryCountsRes = CommunityHubData;
 
+export interface ICommunityHighlightItem {
+  kind: 'testimony' | 'devotional' | 'prayer-request';
+  _id: string;
+  href: string;
+  title: string;
+  preview: string;
+  badge: string;
+  author?: string;
+  avatar?: string;
+  coverImage?: string;
+  timestamp: number;
+  metaLabel?: string;
+}
+
+export type ICommunityHighlightsRes = { highlights: ICommunityHighlightItem[] };
+
+export type IAskAPastorHubRes = {
+  activeQuestions: QuestionsListData['questions'];
+  answeredQuestions: QuestionsListData['questions'];
+  pastors: PastorsListData['pastors'];
+  categoryCounts: Record<string, number>;
+};
+
+export type IPrayerRequestsHubRes = {
+  activeRequests: PrayerRequestsListData['prayerRequests'];
+  answeredPrayers: PrayerRequestsListData['prayerRequests'];
+  categoryCounts: Record<string, number>;
+};
+
 export type IPublicDevotionalsListRes = DevotionalsListData;
 export type IPublicDevotionalItemRes = DevotionalDetailData;
 
@@ -959,6 +1010,7 @@ export interface AllEndpoints {
 
   // User account (profile & wishlist)
   USER_GET_ME: EndpointDefinition<undefined, IUserMeRes, undefined>;
+  USER_GET_DASHBOARD: EndpointDefinition<undefined, IUserDashboardRes, undefined>;
   USER_UPDATE_ME: EndpointDefinition<IUserUpdateMePayload, IUserMeRes, undefined>;
   USER_WISHLIST_LIST: EndpointDefinition<undefined, IUserWishlistListRes, `?${string}`>;
   USER_WISHLIST_ADD: EndpointDefinition<IUserWishlistAddPayload, IUserWishlistAddRes, undefined>;
@@ -1477,6 +1529,11 @@ export interface AllEndpoints {
   ARTIST_CREATE_ME: EndpointDefinition<IArtistCreateMePayload, IArtistMeRes, undefined>;
   ARTIST_UPDATE_ME: EndpointDefinition<IArtistUpdateMePayload, IArtistMeRes, undefined>;
   ARTIST_GET_DASHBOARD_STATS: EndpointDefinition<undefined, IArtistDashboardStatsRes, undefined>;
+  ARTIST_GET_RECENT_UPLOADS: EndpointDefinition<
+    undefined,
+    IArtistRecentUploadsRes,
+    `?${string}` | undefined
+  >;
   ARTIST_GET_MUSIC: EndpointDefinition<undefined, IArtistMusicListRes, `?${string}`>;
   ARTIST_GET_MUSIC_ITEM: EndpointDefinition<undefined, IArtistMusicItemRes, `/${string}`>;
   ARTIST_CREATE_MUSIC: EndpointDefinition<
@@ -1570,6 +1627,13 @@ export interface AllEndpoints {
 
   // Public community (read)
   PUBLIC_GET_COMMUNITY: EndpointDefinition<undefined, ICommunityCategoryCountsRes, undefined>;
+  PUBLIC_GET_COMMUNITY_HIGHLIGHTS: EndpointDefinition<
+    undefined,
+    ICommunityHighlightsRes,
+    undefined
+  >;
+  PUBLIC_GET_ASK_A_PASTOR_HUB: EndpointDefinition<undefined, IAskAPastorHubRes, undefined>;
+  PUBLIC_GET_PRAYER_REQUESTS_HUB: EndpointDefinition<undefined, IPrayerRequestsHubRes, undefined>;
   PUBLIC_GET_DEVOTIONALS: EndpointDefinition<undefined, IPublicDevotionalsListRes, `?${string}`>;
   PUBLIC_GET_DEVOTIONAL_ITEM: EndpointDefinition<undefined, IPublicDevotionalItemRes, `/${string}`>;
   PUBLIC_GET_TESTIMONIES: EndpointDefinition<undefined, IPublicTestimoniesListRes, `?${string}`>;

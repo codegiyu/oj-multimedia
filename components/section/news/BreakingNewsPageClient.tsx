@@ -18,15 +18,17 @@ import { NewsPriorityIndicator } from './NewsPriorityIndicator';
 import type { BreakingNewsStory } from './BreakingNews';
 
 interface BreakingNewsPageClientProps {
-  categoryOptions: CategoryNavItem[];
+  categoryOptions?: CategoryNavItem[];
   breakingStories: BreakingNewsStory[];
   initialErrorMessage?: string | null;
+  showCategoryNav?: boolean;
 }
 
 export const BreakingNewsPageClient = ({
-  categoryOptions,
+  categoryOptions = [],
   breakingStories,
   initialErrorMessage = null,
+  showCategoryNav = true,
 }: BreakingNewsPageClientProps) => {
   const router = useRouter();
   const [displayedItems, setDisplayedItems] = useState(20);
@@ -57,7 +59,7 @@ export const BreakingNewsPageClient = ({
 
   return (
     <>
-      <NewsCategories categoryOptions={categoryOptions} />
+      {showCategoryNav ? <NewsCategories categoryOptions={categoryOptions} /> : null}
       {initialErrorMessage && (
         <div className="container mx-auto px-4 mb-4">
           <div className="rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive flex items-center justify-between gap-4">

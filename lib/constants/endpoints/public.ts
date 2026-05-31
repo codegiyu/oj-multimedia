@@ -31,6 +31,21 @@ export const PUBLIC_ENDPOINTS: Record<string, EndpointDetails> = {
     method: 'GET',
     isNotAuthenticated: true,
   },
+  PUBLIC_GET_COMMUNITY_HIGHLIGHTS: {
+    path: '/api/v1/public/community/highlights',
+    method: 'GET',
+    isNotAuthenticated: true,
+  },
+  PUBLIC_GET_ASK_A_PASTOR_HUB: {
+    path: '/api/v1/public/ask-a-pastor/hub',
+    method: 'GET',
+    isNotAuthenticated: true,
+  },
+  PUBLIC_GET_PRAYER_REQUESTS_HUB: {
+    path: '/api/v1/public/prayer-requests/hub',
+    method: 'GET',
+    isNotAuthenticated: true,
+  },
   PUBLIC_GET_DEVOTIONALS: {
     path: '/api/v1/public/devotionals',
     method: 'GET',

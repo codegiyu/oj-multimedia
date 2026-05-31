@@ -19,7 +19,7 @@ import {
   SimpleVideoRailSkeleton,
 } from '@/components/skeletons';
 
-function TrendingMusicSectionSkeleton() {
+export function TrendingMusicSectionSkeleton() {
   return (
     <SectionSkeleton>
       <SectionHeaderSkeleton showPrevNext tabs={7} />
@@ -32,7 +32,7 @@ function TrendingMusicSectionSkeleton() {
   );
 }
 
-function TrendingVideosSectionSkeleton() {
+export function TrendingVideosSectionSkeleton() {
   return (
     <SectionSkeleton background="bg-muted/30">
       <SectionHeaderSkeleton showPrevNext tabs={6} />
@@ -43,7 +43,7 @@ function TrendingVideosSectionSkeleton() {
   );
 }
 
-function DevotionalsRailSkeleton() {
+export function DevotionalsRailSkeleton() {
   return (
     <SectionSkeleton>
       <SectionHeaderSkeleton />
@@ -54,30 +54,42 @@ function DevotionalsRailSkeleton() {
   );
 }
 
-function TopChartsSectionSkeleton() {
+export function ChartsColumnSkeleton() {
+  return (
+    <div className="bg-card rounded-3xl p-6 shadow-sm">
+      <SectionHeaderSkeleton showViewAll className="mb-6" />
+      <div className="space-y-1">
+        {Array.from({ length: 5 }, (_, i) => (
+          <ChartCardSkeleton key={i} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export function RisingArtistsColumnSkeleton() {
+  return (
+    <div className="bg-card rounded-3xl p-6 shadow-sm">
+      <SectionHeaderSkeleton showViewAll className="mb-6" />
+      <CardGridSkeleton count={4} gridClassName="grid grid-cols-2 gap-4">
+        <ArtistCardSkeleton />
+      </CardGridSkeleton>
+    </div>
+  );
+}
+
+export function TopChartsSectionSkeleton() {
   return (
     <SectionSkeleton sectionClassName="overflow-hidden">
       <div className="grid lg:grid-cols-2 gap-8">
-        <div className="bg-card rounded-3xl p-6 shadow-sm">
-          <SectionHeaderSkeleton showViewAll className="mb-6" />
-          <div className="space-y-1">
-            {Array.from({ length: 5 }, (_, i) => (
-              <ChartCardSkeleton key={i} />
-            ))}
-          </div>
-        </div>
-        <div className="bg-card rounded-3xl p-6 shadow-sm">
-          <SectionHeaderSkeleton showViewAll className="mb-6" />
-          <CardGridSkeleton count={4} gridClassName="grid grid-cols-2 gap-4">
-            <ArtistCardSkeleton />
-          </CardGridSkeleton>
-        </div>
+        <ChartsColumnSkeleton />
+        <RisingArtistsColumnSkeleton />
       </div>
     </SectionSkeleton>
   );
 }
 
-function NewsSectionSkeleton() {
+export function NewsSectionSkeleton() {
   return (
     <SectionSkeleton background="bg-muted/30">
       <SectionHeaderSkeleton />
@@ -100,7 +112,7 @@ function NewsSectionSkeleton() {
   );
 }
 
-function MarketplaceSectionSkeleton() {
+export function MarketplaceSectionSkeleton() {
   return (
     <SectionSkeleton>
       <SectionHeaderSkeleton />
@@ -111,46 +123,58 @@ function MarketplaceSectionSkeleton() {
   );
 }
 
-function CommunitySectionSkeleton() {
+export function CommunityHighlightsSkeleton() {
+  return (
+    <div className="lg:col-span-2 space-y-4">
+      <Skeleton className="h-6 w-40" />
+      {[1, 2, 3].map(i => (
+        <div key={i} className="bg-card rounded-2xl p-4">
+          <div className="flex gap-3">
+            <Skeleton className="w-10 h-10 rounded-full shrink-0" />
+            <div className="flex-1">
+              <Skeleton className="h-4 w-24 mb-2" />
+              <Skeleton className="h-4 w-full mb-2" />
+              <Skeleton className="h-3 w-3/4" />
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export function PollSectionSkeleton() {
+  return (
+    <div className="space-y-6">
+      <div className="bg-card rounded-2xl p-6">
+        <Skeleton className="h-6 w-24 mb-4" />
+        <Skeleton className="h-4 w-full mb-4" />
+        <div className="space-y-2">
+          {[1, 2, 3, 4].map(i => (
+            <Skeleton key={i} className="h-10 w-full rounded-lg" />
+          ))}
+        </div>
+        <Skeleton className="h-3 w-24 mt-3" />
+      </div>
+      <div className="bg-card rounded-2xl p-6">
+        <Skeleton className="h-6 w-24 mb-4" />
+        <div className="space-y-2">
+          {[1, 2, 3].map(i => (
+            <Skeleton key={i} className="h-10 w-full rounded-lg" />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function CommunitySectionSkeleton() {
   return (
     <SectionSkeleton background="bg-muted/30">
       <SectionHeaderSkeleton />
       <div className="grid lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-4">
-          <Skeleton className="h-6 w-40" />
-          {[1, 2, 3].map(i => (
-            <div key={i} className="bg-card rounded-2xl p-4">
-              <div className="flex gap-3">
-                <Skeleton className="w-10 h-10 rounded-full shrink-0" />
-                <div className="flex-1">
-                  <Skeleton className="h-4 w-24 mb-2" />
-                  <Skeleton className="h-4 w-full mb-2" />
-                  <Skeleton className="h-3 w-3/4" />
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-        <div className="space-y-6">
-          <div className="bg-card rounded-2xl p-6">
-            <Skeleton className="h-6 w-24 mb-4" />
-            <Skeleton className="h-4 w-full mb-4" />
-            <div className="space-y-2">
-              {[1, 2, 3, 4].map(i => (
-                <Skeleton key={i} className="h-10 w-full rounded-lg" />
-              ))}
-            </div>
-            <Skeleton className="h-3 w-24 mt-3" />
-          </div>
-          <div className="bg-card rounded-2xl p-6">
-            <Skeleton className="h-6 w-24 mb-4" />
-            <div className="space-y-2">
-              {[1, 2, 3].map(i => (
-                <Skeleton key={i} className="h-10 w-full rounded-lg" />
-              ))}
-            </div>
-          </div>
-        </div>
+        <CommunityHighlightsSkeleton />
+        <PollSectionSkeleton />
       </div>
     </SectionSkeleton>
   );

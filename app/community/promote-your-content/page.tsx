@@ -1,15 +1,15 @@
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
-import { PromoteYourContentClient } from '@/components/section/community/promote/PromoteYourContentClient';
-import { callPublicServerApi } from '@/lib/services/serverApi';
+import { HeroSection } from '@/components/section/community/promote/HeroSection';
+import { PromoteYourSongSection } from './_sections/PromoteYourSongSection';
+import { GetFeaturedSection } from './_sections/GetFeaturedSection';
+import { ContactSponsorshipSection } from './_sections/ContactSponsorshipSection';
 import {
-  FEATURED_OPTIONS_FALLBACK,
-  PRICING_OPTIONS_FALLBACK,
-  CONTACT_METHODS_FALLBACK,
-  PARTNERSHIP_BENEFITS_FALLBACK,
-  ADDITIONAL_CONTACT_FALLBACK,
-} from '@/lib/constants/promotionFallbacks';
-import type { FeaturedOption, PromotionPricingOption, ContactMethod } from '@/lib/types/promotion';
+  PromoteYourSongSectionSkeleton,
+  GetFeaturedSectionSkeleton,
+  ContactSponsorshipSectionSkeleton,
+} from './_sections/skeletons';
 
 export const metadata: Metadata = {
   title: 'Promote Your Content - Reach Your Audience',
@@ -17,53 +17,21 @@ export const metadata: Metadata = {
     'Promote your songs and ministry, get featured, and explore sponsorship opportunities. Content publishing is curated by our team—contact us to submit material for review.',
 };
 
-async function fetchPromotionData() {
-  const [featuredRes, pricingRes, contactRes] = await Promise.all([
-    callPublicServerApi('PUBLIC_GET_FEATURED_OPTIONS', {}),
-    callPublicServerApi('PUBLIC_GET_PROMOTION_PRICING_OPTIONS', {}),
-    callPublicServerApi('PUBLIC_GET_PROMOTION_CONTACT', {}),
-  ]);
-
-  const featuredOptions: FeaturedOption[] =
-    featuredRes.type === 'success' && featuredRes.data?.featuredOptions?.length
-      ? featuredRes.data.featuredOptions
-      : FEATURED_OPTIONS_FALLBACK;
-
-  const pricingOptions: PromotionPricingOption[] =
-    pricingRes.type === 'success' && pricingRes.data?.pricingOptions?.length
-      ? pricingRes.data.pricingOptions
-      : PRICING_OPTIONS_FALLBACK;
-
-  const contactMethods: ContactMethod[] =
-    contactRes.type === 'success' && contactRes.data?.contactMethods?.length
-      ? contactRes.data.contactMethods
-      : CONTACT_METHODS_FALLBACK;
-
-  const partnershipBenefits: string[] =
-    contactRes.type === 'success' && contactRes.data?.partnershipBenefits?.length
-      ? contactRes.data.partnershipBenefits
-      : PARTNERSHIP_BENEFITS_FALLBACK;
-
-  const additionalContact: string | undefined =
-    contactRes.type === 'success' && contactRes.data?.additionalContact
-      ? contactRes.data.additionalContact
-      : ADDITIONAL_CONTACT_FALLBACK;
-
-  return {
-    featuredOptions,
-    pricingOptions,
-    contactMethods,
-    partnershipBenefits,
-    additionalContact,
-  };
-}
-
-export default async function PromoteYourContentPage() {
-  const promotionData = await fetchPromotionData();
-
+export default function PromoteYourContentPage() {
   return (
     <MainLayout>
-      <PromoteYourContentClient {...promotionData} />
+      <HeroSection />
+      <div className="container mx-auto px-4 pb-16">
+        <Suspense fallback={<PromoteYourSongSectionSkeleton />}>
+          <PromoteYourSongSection />
+        </Suspense>
+        <Suspense fallback={<GetFeaturedSectionSkeleton />}>
+          <GetFeaturedSection />
+        </Suspense>
+        <Suspense fallback={<ContactSponsorshipSectionSkeleton />}>
+          <ContactSponsorshipSection />
+        </Suspense>
+      </div>
     </MainLayout>
   );
 }

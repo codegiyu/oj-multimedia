@@ -22,14 +22,15 @@ interface TopChartsPageClientProps {
   chartSongs: (ChartSong & { category?: string })[];
   period: string;
   initialErrorMessage?: string | null;
+  showCategories?: boolean;
 }
 
 export const TopChartsPageClient = ({
   categoryOptions,
-
   chartSongs,
   period: initialPeriod,
   initialErrorMessage = null,
+  showCategories = true,
 }: TopChartsPageClientProps) => {
   const router = useRouter();
   const [activePeriod, setActivePeriod] = useQueryState(
@@ -110,7 +111,7 @@ export const TopChartsPageClient = ({
 
   return (
     <>
-      <MusicCategories categoryOptions={categoryOptions} />
+      {showCategories ? <MusicCategories categoryOptions={categoryOptions} /> : null}
       {initialErrorMessage && (
         <div className="container mx-auto px-4 mb-4">
           <div className="rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive flex items-center justify-between gap-4">

@@ -2,17 +2,17 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { CommunityHero } from '@/components/section/community/CommunityHero';
-import { CommunityPageClient } from '@/components/section/community/CommunityPageClient';
-import { CommunityPageSkeleton } from '@/components/section/community/CommunityPageSkeleton';
-import type { Testimony } from '@/components/section/community/FeaturedTestimonies';
-import type { Devotional } from '@/components/section/community/TrendingDevotionals';
-import type { PrayerRequest } from '@/components/section/community/prayer-requests/PrayerRequestsPageClient';
-import { callPublicServerApi } from '@/lib/services/serverApi';
+import { CommunityCTA } from '@/components/section/shared';
+import { CommunityCategoriesSection } from './_sections/CommunityCategoriesSection';
+import { FeaturedTestimoniesHubSection } from './_sections/FeaturedTestimoniesHubSection';
+import { TrendingDevotionalsHubSection } from './_sections/TrendingDevotionalsHubSection';
+import { RecentPrayerRequestsHubSection } from './_sections/RecentPrayerRequestsHubSection';
 import {
-  mapToTestimony,
-  mapToDevotional,
-  mapToPrayerRequest,
-} from '@/lib/utils/communityApiMappers';
+  CommunityCategoriesSkeleton,
+  FeaturedTestimoniesHubSkeleton,
+  TrendingDevotionalsHubSkeleton,
+  RecentPrayerRequestsHubSkeleton,
+} from './_sections/skeletons';
 
 export const metadata: Metadata = {
   title: 'Community - Connect & Engage',
@@ -20,79 +20,23 @@ export const metadata: Metadata = {
     'Join our vibrant community - share stories, connect with others, participate in discussions, polls, and engage with content creators.',
 };
 
-const DEFAULT_CATEGORY_COUNTS: Record<string, number> = {
-  devotionals: 0,
-  testimonies: 0,
-  prayerRequests: 0,
-  askAPastor: 0,
-  polls: 0,
-  resources: 0,
-  artists: 0,
-  promoteYourContent: 0,
-};
-
-async function fetchCommunityData(): Promise<{
-  categoryCounts: Record<string, number>;
-  testimonies: Testimony[];
-  devotionals: Devotional[];
-  prayerRequests: PrayerRequest[];
-  initialErrorMessage: string | null;
-}> {
-  const res = await callPublicServerApi('PUBLIC_GET_COMMUNITY', {});
-  if (res.type === 'error') {
-    return {
-      categoryCounts: DEFAULT_CATEGORY_COUNTS,
-      testimonies: [],
-      devotionals: [],
-      prayerRequests: [],
-      initialErrorMessage: res.error?.message ?? 'Failed to load community data',
-    };
-  }
-  const data = res.data;
-  if (!data) {
-    return {
-      categoryCounts: DEFAULT_CATEGORY_COUNTS,
-      testimonies: [],
-      devotionals: [],
-      prayerRequests: [],
-      initialErrorMessage: null,
-    };
-  }
-  const categoryCounts = { ...DEFAULT_CATEGORY_COUNTS, ...data.categoryCounts };
-
-  const rawFeatured = (data.featuredTestimonies ?? []) as unknown[];
-  const testimonies: Testimony[] = rawFeatured.map(t =>
-    mapToTestimony(t as Record<string, unknown>)
-  );
-
-  const rawTrending = (data.trendingDevotionals ?? []) as unknown[];
-  const devotionals: Devotional[] = rawTrending.map(d =>
-    mapToDevotional(d as Record<string, unknown>)
-  );
-
-  const rawPrayerRequests = (data.recentPrayerRequests ?? []) as unknown[];
-  const prayerRequests: PrayerRequest[] = rawPrayerRequests.map(p =>
-    mapToPrayerRequest(p as Record<string, unknown>)
-  );
-
-  return {
-    categoryCounts,
-    testimonies,
-    devotionals,
-    prayerRequests,
-    initialErrorMessage: null,
-  };
-}
-
-export default async function CommunityPage() {
-  const communityData = await fetchCommunityData();
-
+export default function CommunityPage() {
   return (
     <MainLayout>
       <CommunityHero />
-      <Suspense fallback={<CommunityPageSkeleton />}>
-        <CommunityPageClient {...communityData} />
+      <Suspense fallback={<CommunityCategoriesSkeleton />}>
+        <CommunityCategoriesSection />
       </Suspense>
+      <Suspense fallback={<FeaturedTestimoniesHubSkeleton />}>
+        <FeaturedTestimoniesHubSection />
+      </Suspense>
+      <Suspense fallback={<TrendingDevotionalsHubSkeleton />}>
+        <TrendingDevotionalsHubSection />
+      </Suspense>
+      <Suspense fallback={<RecentPrayerRequestsHubSkeleton />}>
+        <RecentPrayerRequestsHubSection />
+      </Suspense>
+      <CommunityCTA />
     </MainLayout>
   );
 }

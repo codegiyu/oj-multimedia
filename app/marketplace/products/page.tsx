@@ -1,125 +1,71 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
-import { MarketplaceProductsPageClient } from '@/components/section/marketplace/MarketplaceProductsPageClient';
-import { MarketplaceProductsPageSkeleton } from '@/components/section/marketplace/MarketplaceProductsPageSkeleton';
+import { MarketplaceProductsShell } from '@/components/section/marketplace/MarketplaceProductsShell';
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import { ISR_PUBLIC_FETCH } from '@/lib/constants/isr';
-import type {
-  IMarketplaceCategory,
-  IMarketplaceSubCategory,
-  IMarketplaceProduct,
-} from '@/lib/constants/endpoints';
+import { ProductsCategoriesAsideSection } from './_sections/ProductsCategoriesAsideSection';
+import { ProductsSubcategoriesSection } from './_sections/ProductsSubcategoriesSection';
+import { ProductsGridSection } from './_sections/ProductsGridSection';
+import {
+  ProductsCategoriesAsideSkeleton,
+  ProductsSubcategoriesSkeleton,
+  ProductsGridSectionSkeleton,
+} from './_sections/skeletons';
+import type { MarketplaceProductsQueryParams } from '../_sections/shared';
 
 export const metadata: Metadata = {
   title: 'Products - Marketplace',
   description: 'Browse all products from our marketplace vendors. Filter by category.',
 };
 
-const DEFAULT_LIMIT = 24;
-
 interface PageProps {
-  searchParams: Promise<{
-    category?: string;
-    subCategory?: string;
-    sort?: string;
-    page?: string;
-    limit?: string;
-  }>;
+  searchParams: Promise<MarketplaceProductsQueryParams>;
 }
 
-async function fetchProductsPageData(params: {
-  category?: string;
-  subCategory?: string;
-  sort?: string;
-  page?: string;
-  limit?: string;
-}): Promise<{
-  categories: IMarketplaceCategory[];
-  subcategories: IMarketplaceSubCategory[];
-  products: IMarketplaceProduct[];
-  pagination: { page: number; limit: number; total: number; totalPages: number };
-  error: string | null;
-}> {
-  const page = Math.max(1, parseInt(params.page ?? '1', 10) || 1);
-  const limit = Math.min(
-    50,
-    Math.max(1, parseInt(params.limit ?? String(DEFAULT_LIMIT), 10) || DEFAULT_LIMIT)
-  );
-  const query = new URLSearchParams();
-  query.set('page', String(page));
-  query.set('limit', String(limit));
-  if (params.category) query.set('category', params.category);
-  if (params.subCategory) query.set('subCategory', params.subCategory);
-  if (params.sort) query.set('sort', params.sort);
-  query.set('status', 'published');
+async function resolveCategoryLabel(category?: string) {
+  if (!category) return undefined;
+  const res = await callPublicServerApi('MARKETPLACE_GET_CATEGORIES', {}, ISR_PUBLIC_FETCH.fast);
+  if (res.type !== 'success') return undefined;
 
-  try {
-    const [categoriesRes, productsRes] = await Promise.all([
-      callPublicServerApi('MARKETPLACE_GET_CATEGORIES', {}, ISR_PUBLIC_FETCH.fast),
-      callPublicServerApi(
-        'MARKETPLACE_GET_PRODUCTS',
-        {
-          query: `?${query.toString()}` as `?${string}`,
-        },
-        ISR_PUBLIC_FETCH.fast
-      ),
-    ]);
-
-    const subcategoriesRes = params.category
-      ? await callPublicServerApi(
-          'MARKETPLACE_GET_SUBCATEGORIES',
-          {
-            query: `?category=${encodeURIComponent(params.category)}` as `?${string}`,
-          },
-          ISR_PUBLIC_FETCH.fast
-        )
-      : null;
-
-    const error =
-      (categoriesRes.type === 'error' ? categoriesRes.error?.message : null) ??
-      (productsRes.type === 'error' ? productsRes.error?.message : null) ??
-      null;
-
-    const categories =
-      categoriesRes.type === 'success' ? (categoriesRes.data?.categories ?? []) : [];
-    const subcategories =
-      subcategoriesRes?.type === 'success' ? (subcategoriesRes.data?.subcategories ?? []) : [];
-    const products = productsRes.type === 'success' ? (productsRes.data?.products ?? []) : [];
-    const pagination = (productsRes.type === 'success' ? productsRes.data?.pagination : null) ?? {
-      page: 1,
-      limit: DEFAULT_LIMIT,
-      total: 0,
-      totalPages: 0,
-    };
-
-    return {
-      categories,
-      subcategories,
-      products,
-      pagination,
-      error: error ?? null,
-    };
-  } catch {
-    return {
-      categories: [],
-      subcategories: [],
-      products: [],
-      pagination: { page: 1, limit: DEFAULT_LIMIT, total: 0, totalPages: 0 },
-      error: 'Failed to load products.',
-    };
-  }
+  return res.data?.categories?.find(c => c.slug === category)?.name;
 }
 
 export default async function MarketplaceProductsPage({ searchParams }: PageProps) {
   const params = await searchParams;
-  const data = await fetchProductsPageData(params);
+  const categoryLabel = await resolveCategoryLabel(params.category);
+  const productsQueryKey = [
+    params.category ?? '',
+    params.subCategory ?? '',
+    params.sort ?? '',
+    params.page ?? '1',
+    params.limit ?? '',
+  ].join('|');
 
   return (
     <MainLayout>
-      <Suspense fallback={<MarketplaceProductsPageSkeleton />}>
-        <MarketplaceProductsPageClient {...data} />
-      </Suspense>
+      <MarketplaceProductsShell
+        categoriesAside={
+          <Suspense fallback={<ProductsCategoriesAsideSkeleton />}>
+            <ProductsCategoriesAsideSection activeCategory={params.category} />
+          </Suspense>
+        }
+        subcategoriesBar={
+          params.category ? (
+            <Suspense fallback={<ProductsSubcategoriesSkeleton />}>
+              <ProductsSubcategoriesSection
+                category={params.category}
+                activeSubCategory={params.subCategory}
+              />
+            </Suspense>
+          ) : undefined
+        }
+        productsMain={
+          <Suspense fallback={<ProductsGridSectionSkeleton />} key={productsQueryKey}>
+            <ProductsGridSection params={params} categoryLabel={categoryLabel} />
+          </Suspense>
+        }
+      />
     </MainLayout>
   );
 }

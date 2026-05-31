@@ -1,37 +1,27 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
-import { VendorStorePageClient } from '@/components/section/marketplace/VendorStorePageClient';
-import { VendorStorePageSkeleton } from '@/components/section/marketplace/VendorStorePageSkeleton';
-import { callPublicServerApi } from '@/lib/services/serverApi';
-import type { IMarketplaceVendor, IMarketplaceProduct } from '@/lib/constants/endpoints';
 import { MainLayout } from '@/components/layout/MainLayout';
+import { callPublicServerApi } from '@/lib/services/serverApi';
 import { buildDetailShareMetadata } from '@/lib/utils/metadata';
+import { VendorProfileSection } from './_sections/VendorProfileSection';
+import { VendorProductsSection } from './_sections/VendorProductsSection';
+import { VendorProfileSectionSkeleton, VendorProductsSectionSkeleton } from './_sections/skeletons';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
-async function fetchVendorAndProducts(slug: string): Promise<{
-  vendor: IMarketplaceVendor | null;
-  products: IMarketplaceProduct[];
-}> {
-  const [vendorRes, productsRes] = await Promise.all([
-    callPublicServerApi('MARKETPLACE_GET_VENDOR_BY_SLUG', {
-      query: `/${encodeURIComponent(slug)}` as `/${string}`,
-    }),
-    callPublicServerApi('MARKETPLACE_GET_PRODUCTS', {
-      query: `?vendor=${encodeURIComponent(slug)}&limit=100&status=published` as `?${string}`,
-    }),
-  ]);
+async function fetchVendorForMetadata(slug: string) {
+  const vendorRes = await callPublicServerApi('MARKETPLACE_GET_VENDOR_BY_SLUG', {
+    query: `/${encodeURIComponent(slug)}` as `/${string}`,
+  });
 
-  const vendor = vendorRes.type === 'success' ? (vendorRes.data ?? null) : null;
-  const products = productsRes.type === 'success' ? (productsRes.data?.products ?? []) : [];
-  return { vendor, products };
+  return vendorRes.type === 'success' ? (vendorRes.data ?? null) : null;
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const { vendor } = await fetchVendorAndProducts(slug);
+  const vendor = await fetchVendorForMetadata(slug);
   if (!vendor) {
     return { title: 'Vendor not found - Marketplace' };
   }
@@ -51,12 +41,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function VendorStorePage({ params }: PageProps) {
   const { slug } = await params;
-  const { vendor, products } = await fetchVendorAndProducts(slug);
 
   return (
     <MainLayout>
-      <Suspense fallback={<VendorStorePageSkeleton />}>
-        <VendorStorePageClient vendor={vendor} products={products} />
+      <Suspense fallback={<VendorProfileSectionSkeleton />}>
+        <VendorProfileSection slug={slug} />
+      </Suspense>
+      <Suspense fallback={<VendorProductsSectionSkeleton />}>
+        <VendorProductsSection slug={slug} />
       </Suspense>
     </MainLayout>
   );

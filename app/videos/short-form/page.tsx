@@ -2,39 +2,16 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { SubPageHero } from '@/components/general/SubPageHero';
-import { ShortFormVideosPageClient } from '@/components/section/video/ShortFormVideosPageClient';
-import { VideoPageSkeleton } from '@/components/section/video/VideoPageSkeleton';
-import type { ShortFormVideo } from '@/components/section/video/ShortFormVideos';
-import { callPublicServerApi } from '@/lib/services/serverApi';
-import { mapPublicVideoToShortForm } from '@/lib/utils/publicApiMappers';
-import { VIDEO_TYPES } from '@/lib/constants/contentTaxonomy';
 import { normalizePublicCategoryByScope } from '@/lib/utils/contentCategoriesServer';
-import { fetchPublicCategoryNav } from '@/lib/utils/contentCategoryNav';
-import { videoCategoryNavFallback } from '@/lib/constants/categoryNavFallbacks';
+import { VideoCategoriesSection } from '../_sections/VideoCategoriesSection';
+import { ShortFormVideosSection } from '../_sections/ShortFormVideosSection';
+import { VideoCategoriesSkeleton, ShortFormVideosSectionSkeleton } from '../_sections/skeletons';
 
 export const metadata: Metadata = {
   title: 'Short Form Videos - Quick Clips',
   description:
     'Discover short form videos - quick, engaging content perfect for quick viewing. Bite-sized entertainment and inspiration.',
 };
-
-async function fetchShortFormVideos(category: string) {
-  const categoryParam =
-    category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';
-  const query =
-    `?limit=50&page=1&status=published&type=${VIDEO_TYPES.shortForm}${categoryParam}` as const;
-  const res = await callPublicServerApi('PUBLIC_GET_VIDEOS', { query });
-  if (res.type === 'error') {
-    return {
-      shortFormVideos: [] as ShortFormVideo[],
-      initialErrorMessage: res.error?.message ?? 'Failed to load short form videos',
-    };
-  }
-
-  const raw = res.data?.videos ?? [];
-  const shortFormVideos = raw.map(mapPublicVideoToShortForm);
-  return { shortFormVideos, initialErrorMessage: null as string | null };
-}
 
 interface ShortFormVideosPageProps {
   searchParams: Promise<{ category?: string }>;
@@ -56,18 +33,12 @@ export default async function ShortFormVideosPage({ searchParams }: ShortFormVid
         backLabel="Back to Videos"
         stats={[{ icon: 'Zap', text: 'Quick content' }, { text: 'Under 2 minutes' }]}
       />
-      <Suspense fallback={<VideoPageSkeleton />}>
-        <ShortFormVideosServer category={category} />
+      <Suspense fallback={<VideoCategoriesSkeleton />}>
+        <VideoCategoriesSection category={category} />
+      </Suspense>
+      <Suspense fallback={<ShortFormVideosSectionSkeleton />}>
+        <ShortFormVideosSection category={category} limit={50} variant="subpage" />
       </Suspense>
     </MainLayout>
   );
-}
-
-async function ShortFormVideosServer({ category }: { category: string }) {
-  const [data, categoryOptions] = await Promise.all([
-    fetchShortFormVideos(category),
-    fetchPublicCategoryNav('video', 'All Videos', videoCategoryNavFallback),
-  ]);
-
-  return <ShortFormVideosPageClient {...data} categoryOptions={categoryOptions} />;
 }
