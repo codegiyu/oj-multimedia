@@ -11,7 +11,7 @@ import { DataLoadError } from '@/components/general/DataLoadError';
 import { NewsCategories } from './NewsCategories';
 import type { CategoryNavItem } from '@/lib/utils/contentCategoryNav';
 import { NewsletterCTA } from '../shared';
-import { EmptyState } from './EmptyState';
+import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import { SectionComp } from '@/components/general/SectionComp';
 import { MultilinePreview } from '@/components/general/MultilinePreview';
 import { NewsPriorityIndicator } from './NewsPriorityIndicator';
@@ -75,10 +75,11 @@ export const BreakingNewsPageClient = ({
         subtext="High-priority coverage from the past week"
         contentProps={{ enableAnimation: false }}>
         {breakingStories.length === 0 ? (
-          <EmptyState
+          <SectionEmptyState
             title="No breaking stories"
             description="There are no high-priority stories in this category right now."
-            icon={<Newspaper className="w-12 h-12 text-muted-foreground" />}
+            icon={Newspaper}
+            showDefaultActions
           />
         ) : (
           <div className="grid gap-4">

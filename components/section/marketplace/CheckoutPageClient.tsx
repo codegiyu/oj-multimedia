@@ -16,7 +16,7 @@ import { formatPrice } from '@/lib/utils/marketplace';
 import { toast } from 'sonner';
 import { callApi } from '@/lib/services/callApi';
 import type { ICartRes, IMarketplacePlaceOrderRes } from '@/lib/constants/endpoints';
-import { EmptyState } from '@/components/section/news/EmptyState';
+import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import { CreditCard, ShoppingCart } from 'lucide-react';
 
 export function CheckoutPageClient() {
@@ -54,13 +54,12 @@ export function CheckoutPageClient() {
     return (
       <MainLayout>
         <SectionContainer className="py-16 md:py-20">
-          <EmptyState
+          <SectionEmptyState
             title="Your cart is empty"
             description="Add items from the marketplace before checking out."
-            icon={<ShoppingCart className="w-12 h-12 text-muted-foreground" />}
+            icon={ShoppingCart}
             actionLabel="Browse Marketplace"
             actionHref="/marketplace"
-            showDefaultActions={false}
           />
         </SectionContainer>
       </MainLayout>

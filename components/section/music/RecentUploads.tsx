@@ -4,7 +4,7 @@ import { motion } from 'motion/react';
 import { Sparkles } from 'lucide-react';
 import { SectionComp } from '@/components/general/SectionComp';
 import { MusicCard } from '@/components/cards/MusicCard';
-import { EmptyState } from '../news/EmptyState';
+import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import type { MusicAlbumSummary } from '@/lib/constants/endpoints';
 
 export interface RecentUpload {
@@ -31,10 +31,11 @@ export const RecentUploads = ({ uploads: recentUploads }: RecentUploadsProps) =>
         subtext="Just added by creators"
         viewAllLink="/music"
         contentProps={{ enableAnimation: false }}>
-        <EmptyState
+        <SectionEmptyState
           title="No recent uploads"
           description="No recent uploads in this category yet. Check back later for new music."
-          icon={<Sparkles className="w-12 h-12 text-muted-foreground" />}
+          icon={Sparkles}
+          showDefaultActions
         />
       </SectionComp>
     );

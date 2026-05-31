@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { motion } from 'motion/react';
 import { Newspaper } from 'lucide-react';
-import { EmptyState } from './EmptyState';
+import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import { NewsCard } from '@/components/cards/NewsCard';
 
 export interface NewsItem {
@@ -42,10 +42,11 @@ export const NewsFeed = ({ items: newsItems }: NewsFeedProps) => {
 
   if (newsItems.length === 0) {
     return (
-      <EmptyState
+      <SectionEmptyState
         title="No Stories Found"
         description="We couldn't find any stories in this category. Try selecting a different category or check back later for new content."
-        icon={<Newspaper className="w-12 h-12 text-muted-foreground" />}
+        icon={Newspaper}
+        showDefaultActions
       />
     );
   }

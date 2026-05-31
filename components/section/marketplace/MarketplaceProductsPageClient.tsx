@@ -9,7 +9,7 @@ import { DataLoadError } from '@/components/general/DataLoadError';
 import { ListPagination } from '@/components/general/ListPagination';
 import { Package, ShoppingBag } from 'lucide-react';
 import Link from 'next/link';
-import { EmptyState } from '@/components/section/news/EmptyState';
+import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import { useQueryState, parseAsString, parseAsInteger } from 'nuqs';
 import type {
   IMarketplaceCategory,
@@ -144,13 +144,12 @@ export function MarketplaceProductsPageClient({
               />
 
               {products.length === 0 ? (
-                <EmptyState
+                <SectionEmptyState
                   title="No products in this category"
                   description="Try a different category or check back later for new items."
-                  icon={<Package className="w-12 h-12 text-muted-foreground" />}
+                  icon={Package}
                   actionLabel="View all products"
                   actionHref="/marketplace/products"
-                  showDefaultActions={false}
                 />
               ) : (
                 <>

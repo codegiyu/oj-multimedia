@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { FixedImage } from '@/components/general/FillImage';
 import { Card, CardContent } from '@/components/ui/card';
 import { SectionComp } from '@/components/general/SectionComp';
-import { EmptyState } from '@/components/section/news/EmptyState';
+import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import type { Testimony } from './TestimoniesPageClient';
 import { MultilinePreview } from '@/components/general/MultilinePreview';
 
@@ -24,72 +24,73 @@ export const FeaturedTestimonies = ({ testimonies }: FeaturedTestimoniesProps) =
       subtext="Inspiring stories of God's faithfulness and transformation in the lives of believers"
       contentProps={{ enableAnimation: false }}>
       {testimonies.length === 0 ? (
-        <EmptyState
+        <SectionEmptyState
           title="No featured testimonies yet"
           description="Inspiring stories from the community will appear here."
-          icon={<Star className="w-12 h-12 text-muted-foreground" />}
+          icon={Star}
           actionLabel="Browse all testimonies"
           actionHref="/community/testimonies/latest"
-          showDefaultActions={false}
         />
       ) : (
         <div className="grid md:grid-cols-3 gap-6">
           {testimonies.map((testimony, index) => (
-          <motion.div
-            key={testimony._id}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: index * 0.1 }}
-            whileHover={{ y: -4 }}>
-            <Link href={`/community/testimonies/${testimony._id}`}>
-              <Card className="card-interactive h-full">
-                <CardContent className="p-6">
-                  <div className="flex items-start justify-between mb-4">
-                    <Quote className="w-8 h-8 text-primary/20 shrink-0" />
-                    {testimony.category && (
-                      <span className="px-2 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full">
-                        {testimony.category}
-                      </span>
-                    )}
-                  </div>
-                  <MultilinePreview
-                    text={testimony.content}
-                    className="text-muted-foreground mb-6 line-clamp-5"
-                  />
+            <motion.div
+              key={testimony._id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.1 }}
+              whileHover={{ y: -4 }}>
+              <Link href={`/community/testimonies/${testimony._id}`}>
+                <Card className="card-interactive h-full">
+                  <CardContent className="p-6">
+                    <div className="flex items-start justify-between mb-4">
+                      <Quote className="w-8 h-8 text-primary/20 shrink-0" />
+                      {testimony.category && (
+                        <span className="px-2 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full">
+                          {testimony.category}
+                        </span>
+                      )}
+                    </div>
+                    <MultilinePreview
+                      text={testimony.content}
+                      className="text-muted-foreground mb-6 line-clamp-5"
+                    />
 
-                  <div className="flex items-center justify-between pt-4 border-t border-border">
-                    <div className="flex items-center gap-3">
-                      <FixedImage
-                        imageContext="public"
-                        src={testimony.avatar}
-                        alt={testimony.author}
-                        width={40}
-                        height={40}
-                        className="h-10 w-10 rounded-full object-cover"
-                      />
-                      <div>
-                        <p className="font-semibold text-sm text-foreground">{testimony.author}</p>
-                        <p className="text-xs text-muted-foreground">{testimony.timeAgo}</p>
+                    <div className="flex items-center justify-between pt-4 border-t border-border">
+                      <div className="flex items-center gap-3">
+                        <FixedImage
+                          imageContext="public"
+                          src={testimony.avatar}
+                          alt={testimony.author}
+                          width={40}
+                          height={40}
+                          className="h-10 w-10 rounded-full object-cover"
+                        />
+                        <div>
+                          <p className="font-semibold text-sm text-foreground">
+                            {testimony.author}
+                          </p>
+                          <p className="text-xs text-muted-foreground">{testimony.timeAgo}</p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                        <span className="flex items-center gap-1">
+                          <Heart className="w-4 h-4" />
+                          {testimony.likes}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <MessageSquare className="w-4 h-4" />
+                          {testimony.comments}
+                        </span>
                       </div>
                     </div>
-
-                    <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                      <span className="flex items-center gap-1">
-                        <Heart className="w-4 h-4" />
-                        {testimony.likes}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <MessageSquare className="w-4 h-4" />
-                        {testimony.comments}
-                      </span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </Link>
-          </motion.div>
-        ))}
+                  </CardContent>
+                </Card>
+              </Link>
+            </motion.div>
+          ))}
         </div>
       )}
     </SectionComp>

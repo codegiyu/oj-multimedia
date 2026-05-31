@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { SectionComp } from '@/components/general/SectionComp';
-import { EmptyState } from '@/components/section/news/EmptyState';
+import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import { ListPagination } from '@/components/general/ListPagination';
 import { LoginModal } from '@/components/auth/LoginModal';
 import { useSendPrayer } from '@/lib/hooks/useSendPrayer';
@@ -137,59 +137,58 @@ export const ActivePrayerRequestsSection = ({
       viewAllLink="/community/prayer-requests/active"
       contentProps={{ enableAnimation: false }}>
       {requests.length === 0 ? (
-        <EmptyState
+        <SectionEmptyState
           title="No active prayer requests"
           description="Share a need or check back when others post requests to pray for."
-          icon={<HandHeart className="w-12 h-12 text-muted-foreground" />}
+          icon={HandHeart}
           actionLabel="Submit a request"
           actionHref="/community/prayer-requests#submit-prayer-request"
-          showDefaultActions={false}
         />
       ) : (
         <>
-      <div className="grid md:grid-cols-2 gap-6">
-        {itemsToShow.map((request, index) => (
-          <motion.div
-            key={request._id}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: index * 0.1 }}>
-            <ActivePrayerRequestCard request={request} />
-          </motion.div>
-        ))}
-      </div>
+          <div className="grid md:grid-cols-2 gap-6">
+            {itemsToShow.map((request, index) => (
+              <motion.div
+                key={request._id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}>
+                <ActivePrayerRequestCard request={request} />
+              </motion.div>
+            ))}
+          </div>
 
-      {useServerPagination && pagination && (
-        <div className="mt-10">
-          <ListPagination
-            page={pagination.page}
-            totalPages={pagination.totalPages}
-            total={pagination.total}
-            limit={pagination.limit}
-          />
-        </div>
-      )}
+          {useServerPagination && pagination && (
+            <div className="mt-10">
+              <ListPagination
+                page={pagination.page}
+                totalPages={pagination.totalPages}
+                total={pagination.total}
+                limit={pagination.limit}
+              />
+            </div>
+          )}
 
-      {hasMore && itemsToShow.length > 0 && (
-        <div className="flex justify-center mt-10">
-          <motion.button
-            onClick={loadMoreItems}
-            disabled={isLoading}
-            whileHover={{ scale: isLoading ? 1 : 1.02 }}
-            whileTap={{ scale: isLoading ? 1 : 0.98 }}
-            className="px-8 py-3 rounded-full bg-muted text-foreground font-medium hover:bg-muted/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
-            {isLoading ? (
-              'Loading...'
-            ) : (
-              <>
-                Load More Requests
-                <ArrowRight className="w-4 h-4" />
-              </>
-            )}
-          </motion.button>
-        </div>
-      )}
+          {hasMore && itemsToShow.length > 0 && (
+            <div className="flex justify-center mt-10">
+              <motion.button
+                onClick={loadMoreItems}
+                disabled={isLoading}
+                whileHover={{ scale: isLoading ? 1 : 1.02 }}
+                whileTap={{ scale: isLoading ? 1 : 0.98 }}
+                className="px-8 py-3 rounded-full bg-muted text-foreground font-medium hover:bg-muted/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
+                {isLoading ? (
+                  'Loading...'
+                ) : (
+                  <>
+                    Load More Requests
+                    <ArrowRight className="w-4 h-4" />
+                  </>
+                )}
+              </motion.button>
+            </div>
+          )}
         </>
       )}
     </SectionComp>

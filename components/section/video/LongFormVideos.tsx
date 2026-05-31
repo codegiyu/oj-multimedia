@@ -4,7 +4,7 @@ import { motion } from 'motion/react';
 import { Film } from 'lucide-react';
 import { SectionComp } from '@/components/general/SectionComp';
 import { VideoCard } from '@/components/cards/VideoCard';
-import { EmptyState } from '../news/EmptyState';
+import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import type { RecentVideoUpload } from './RecentVideoUploads';
 
 interface LongFormVideosProps {
@@ -21,10 +21,12 @@ export const LongFormVideos = ({ videos }: LongFormVideosProps) => {
         subtext="Films, documentaries, and extended content"
         viewAllLink="/videos/long-form"
         contentProps={{ enableAnimation: false }}>
-        <EmptyState
+        <SectionEmptyState
           title="No long-form videos"
           description="No long-form videos in this category yet. Check back later."
-          icon={<Film className="w-12 h-12 text-muted-foreground" />}
+          icon={Film}
+          actionLabel="Browse long-form videos"
+          actionHref="/videos/long-form"
         />
       </SectionComp>
     );

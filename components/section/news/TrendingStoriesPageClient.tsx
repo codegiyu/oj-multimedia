@@ -12,7 +12,7 @@ import { DataLoadError } from '@/components/general/DataLoadError';
 import { NewsCategories } from './NewsCategories';
 import type { CategoryNavItem } from '@/lib/utils/contentCategoryNav';
 import { NewsletterCTA } from '../shared';
-import { EmptyState } from './EmptyState';
+import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import { SectionComp } from '@/components/general/SectionComp';
 import { MultilinePreview } from '@/components/general/MultilinePreview';
 import type { TrendingStory } from './TrendingSidebar';
@@ -77,10 +77,11 @@ export const TrendingStoriesPageClient = ({
         viewAllLink="/news/trending"
         contentProps={{ enableAnimation: false }}>
         {itemsToShow.length === 0 ? (
-          <EmptyState
+          <SectionEmptyState
             title="No Trending Stories"
             description="We couldn't find any trending stories in this category. Try selecting a different category or check back later for new content."
-            icon={<TrendingUp className="w-12 h-12 text-muted-foreground" />}
+            icon={TrendingUp}
+            showDefaultActions
           />
         ) : (
           <>

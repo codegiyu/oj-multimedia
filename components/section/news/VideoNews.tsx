@@ -4,7 +4,7 @@ import { motion } from 'motion/react';
 import { Play, Clock, User, Calendar } from 'lucide-react';
 import Link from 'next/link';
 import { SectionComp } from '@/components/general/SectionComp';
-import { EmptyState } from './EmptyState';
+import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import { FillImage } from '@/components/general/FillImage';
 
 export interface VideoNewsItem {
@@ -33,10 +33,11 @@ export const VideoNews = ({ videos }: VideoNewsProps) => {
       background="bg-muted/30"
       contentProps={{ enableAnimation: false }}>
       {videos.length === 0 ? (
-        <EmptyState
+        <SectionEmptyState
           title="No Video Stories"
           description="We couldn't find any video stories in this category. Try selecting a different category or check back later for new content."
-          icon={<Play className="w-12 h-12 text-muted-foreground" />}
+          icon={Play}
+          showDefaultActions
         />
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">

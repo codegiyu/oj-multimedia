@@ -4,7 +4,7 @@ import { useRef } from 'react';
 import { DiscAlbum } from 'lucide-react';
 import { SectionComp } from '@/components/general/SectionComp';
 import { AlbumCard } from '@/components/cards/AlbumCard';
-import { EmptyState } from '@/components/section/news/EmptyState';
+import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import type { PublicAlbumCard } from '@/lib/utils/publicApiMappers';
 
 interface FeaturedAlbumsProps {
@@ -31,10 +31,12 @@ export function FeaturedAlbums({ albums }: FeaturedAlbumsProps) {
         subtext="Full releases from your favorite artists"
         viewAllLink="/music/albums"
         contentProps={{ enableAnimation: false }}>
-        <EmptyState
+        <SectionEmptyState
           title="No albums yet"
           description="Published albums will appear here."
-          icon={<DiscAlbum className="w-12 h-12 text-muted-foreground" />}
+          icon={DiscAlbum}
+          actionLabel="Browse albums"
+          actionHref="/music/albums"
         />
       </SectionComp>
     );

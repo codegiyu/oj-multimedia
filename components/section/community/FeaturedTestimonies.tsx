@@ -5,7 +5,7 @@ import { Heart, MessageSquare, Quote } from 'lucide-react';
 import Link from 'next/link';
 import { FixedImage } from '@/components/general/FillImage';
 import { SectionComp } from '@/components/general/SectionComp';
-import { EmptyState } from '@/components/section/news/EmptyState';
+import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import { MultilinePreview } from '@/components/general/MultilinePreview';
 
 export interface Testimony {
@@ -32,62 +32,61 @@ export const FeaturedTestimonies = ({ testimonies }: FeaturedTestimoniesProps) =
       viewAllLink="/community/testimonies/featured"
       contentProps={{ enableAnimation: false }}>
       {testimonies.length === 0 ? (
-        <EmptyState
+        <SectionEmptyState
           title="No testimonies yet"
           description="Stories from the community will appear here. Be the first to share yours."
-          icon={<Heart className="w-12 h-12 text-muted-foreground" />}
+          icon={Heart}
           actionLabel="Browse testimonies"
           actionHref="/community/testimonies"
-          showDefaultActions={false}
         />
       ) : (
         <div className="grid md:grid-cols-3 gap-6">
           {testimonies.map((testimony, index) => (
-          <motion.div
-            key={testimony._id}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: index * 0.1 }}
-            whileHover={{ y: -4 }}
-            className="bg-card rounded-2xl p-6 shadow-sm border border-border/50 hover:shadow-md transition-all cursor-pointer">
-            <Link href={`/community/testimonies/${testimony._id}`}>
-              <Quote className="w-8 h-8 text-primary/20 mb-4" />
-              <MultilinePreview
-                text={testimony.content}
-                className="text-muted-foreground mb-6 line-clamp-4"
-              />
+            <motion.div
+              key={testimony._id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.1 }}
+              whileHover={{ y: -4 }}
+              className="bg-card rounded-2xl p-6 shadow-sm border border-border/50 hover:shadow-md transition-all cursor-pointer">
+              <Link href={`/community/testimonies/${testimony._id}`}>
+                <Quote className="w-8 h-8 text-primary/20 mb-4" />
+                <MultilinePreview
+                  text={testimony.content}
+                  className="text-muted-foreground mb-6 line-clamp-4"
+                />
 
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <FixedImage
-                    imageContext="public"
-                    src={testimony.avatar}
-                    alt={testimony.author}
-                    width={40}
-                    height={40}
-                    className="h-10 w-10 rounded-full object-cover"
-                  />
-                  <div>
-                    <p className="font-semibold text-sm">{testimony.author}</p>
-                    <p className="text-xs text-muted-foreground">{testimony.timeAgo}</p>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <FixedImage
+                      imageContext="public"
+                      src={testimony.avatar}
+                      alt={testimony.author}
+                      width={40}
+                      height={40}
+                      className="h-10 w-10 rounded-full object-cover"
+                    />
+                    <div>
+                      <p className="font-semibold text-sm">{testimony.author}</p>
+                      <p className="text-xs text-muted-foreground">{testimony.timeAgo}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                    <span className="flex items-center gap-1">
+                      <Heart className="w-4 h-4" />
+                      {testimony.likes}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <MessageSquare className="w-4 h-4" />
+                      {testimony.comments}
+                    </span>
                   </div>
                 </div>
-
-                <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                  <span className="flex items-center gap-1">
-                    <Heart className="w-4 h-4" />
-                    {testimony.likes}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <MessageSquare className="w-4 h-4" />
-                    {testimony.comments}
-                  </span>
-                </div>
-              </div>
-            </Link>
-          </motion.div>
-        ))}
+              </Link>
+            </motion.div>
+          ))}
         </div>
       )}
     </SectionComp>

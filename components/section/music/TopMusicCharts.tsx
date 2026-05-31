@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { useQueryState, parseAsString } from 'nuqs';
 import { SectionComp } from '@/components/general/SectionComp';
 import { ChartCard } from '@/components/cards/ChartCard';
-import { EmptyState } from '../news/EmptyState';
+import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 
 export interface ChartSong {
   _id: string;
@@ -78,10 +78,11 @@ export const TopMusicCharts = ({ songs: chartSongs }: TopMusicChartsProps) => {
         extraButtons={periodButtons}
         background="bg-muted/30"
         contentProps={{ enableAnimation: false }}>
-        <EmptyState
+        <SectionEmptyState
           title="No chart data"
           description="No chart data for this period or category yet. Try another period or check back later."
-          icon={<Trophy className="w-12 h-12 text-muted-foreground" />}
+          icon={Trophy}
+          showDefaultActions
         />
       </SectionComp>
     );

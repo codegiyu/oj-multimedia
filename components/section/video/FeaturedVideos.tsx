@@ -4,7 +4,7 @@ import { motion } from 'motion/react';
 import { Star } from 'lucide-react';
 import { SectionComp } from '@/components/general/SectionComp';
 import { VideoCard } from '@/components/cards/VideoCard';
-import { EmptyState } from '../news/EmptyState';
+import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 
 export interface FeaturedVideo {
   _id: string;
@@ -32,10 +32,11 @@ export const FeaturedVideos = ({ videos: featuredVideos }: FeaturedVideosProps) 
         viewAllLink="/videos/featured"
         background="bg-muted/30"
         contentProps={{ enableAnimation: false }}>
-        <EmptyState
+        <SectionEmptyState
           title="No featured videos"
           description="No featured videos in this category yet. Check back later."
-          icon={<Star className="w-12 h-12 text-muted-foreground" />}
+          icon={Star}
+          showDefaultActions
         />
       </SectionComp>
     );

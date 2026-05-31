@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { ProductCard } from './ProductCard';
 import { ChevronRight, MessageCircle, Package } from 'lucide-react';
 import Link from 'next/link';
-import { EmptyState } from '@/components/section/news/EmptyState';
+import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import type { IMarketplaceVendor, IMarketplaceProduct } from '@/lib/constants/endpoints';
 import { FillImage } from '@/components/general/FillImage';
 import { MultilineText } from '@/components/general/MultilineText';
@@ -93,13 +93,12 @@ export function VendorStorePageClient({ vendor, products = [] }: VendorStorePage
 
           <h2 className="section-header mb-6">Products</h2>
           {products.length === 0 ? (
-            <EmptyState
+            <SectionEmptyState
               title="No products listed yet"
               description="This store has no products available. Check back later."
-              icon={<Package className="w-12 h-12 text-muted-foreground" />}
+              icon={Package}
               actionLabel="Browse other vendors"
               actionHref="/marketplace/vendors"
-              showDefaultActions={false}
             />
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">

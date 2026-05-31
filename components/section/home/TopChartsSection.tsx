@@ -6,7 +6,7 @@ import { ArtistCard } from '@/components/cards/ArtistCard';
 import { ChartCard } from '@/components/cards/ChartCard';
 import { SectionHeader } from '@/components/general/SectionHeader';
 import { SectionContent } from '@/components/general/SectionContent';
-import { EmptyState } from '@/components/section/news/EmptyState';
+import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import type { ArtistProfile } from '@/lib/types/artist';
 
 export interface ChartItem {
@@ -50,13 +50,12 @@ export const TopChartsSection = ({ chartData, risingArtists }: TopChartsSectionP
               className="mb-6"
             />
             {chartData.length === 0 ? (
-              <EmptyState
+              <SectionEmptyState
                 title="No chart data yet"
                 description="Check back later for top songs and chart rankings."
-                icon={<Trophy className="w-12 h-12 text-muted-foreground" />}
+                icon={Trophy}
                 actionLabel="View charts"
                 actionHref="/music/top-charts"
-                showDefaultActions={false}
               />
             ) : (
               <SectionContent className="space-y-1" enableAnimation={false}>
@@ -84,13 +83,12 @@ export const TopChartsSection = ({ chartData, risingArtists }: TopChartsSectionP
               className="mb-6"
             />
             {risingArtists.length === 0 ? (
-              <EmptyState
+              <SectionEmptyState
                 title="No rising artists yet"
                 description="Discover new talent soon. Check back for featured artists."
-                icon={<TrendingUp className="w-12 h-12 text-muted-foreground" />}
+                icon={TrendingUp}
                 actionLabel="View all artists"
                 actionHref="/community/artists"
-                showDefaultActions={false}
               />
             ) : (
               <SectionContent className="grid grid-cols-2 gap-4" enableAnimation={false}>

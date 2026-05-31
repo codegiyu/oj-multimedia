@@ -4,7 +4,7 @@ import { motion } from 'motion/react';
 import { Clapperboard } from 'lucide-react';
 import { VideoCard } from '@/components/cards/VideoCard';
 import { SectionComp } from '@/components/general/SectionComp';
-import { EmptyState } from '@/components/section/news/EmptyState';
+import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import type { TrendingVideoItem } from './TrendingVideosSection';
 
 interface SimpleVideoRailProps {
@@ -25,13 +25,12 @@ export function SimpleVideoRail({ heading, subtext, viewAllLink, videos }: Simpl
       showPrevNext={false}
       contentProps={{ className: '', enableAnimation: false }}>
       {videos.length === 0 ? (
-        <EmptyState
+        <SectionEmptyState
           title="No videos yet"
           description="New videos will appear here."
-          icon={<Clapperboard className="w-12 h-12 text-muted-foreground" />}
+          icon={Clapperboard}
           actionLabel="Browse videos"
           actionHref="/videos"
-          showDefaultActions={false}
         />
       ) : (
         <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">

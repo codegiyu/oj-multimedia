@@ -10,7 +10,7 @@ import { DataLoadError } from '@/components/general/DataLoadError';
 import { VideoCategories } from './VideoCategories';
 import type { CategoryNavItem } from '@/lib/utils/contentCategoryNav';
 import { VideoUploadCTA } from './VideoUploadCTA';
-import { EmptyState } from '../news/EmptyState';
+import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import { SectionComp } from '@/components/general/SectionComp';
 import { VideoCard } from '@/components/cards/VideoCard';
 import type { ShortFormVideo } from './ShortFormVideos';
@@ -75,10 +75,11 @@ export const ShortFormVideosPageClient = ({
         viewAllLink="/videos/short-form"
         contentProps={{ enableAnimation: false }}>
         {itemsToShow.length === 0 ? (
-          <EmptyState
+          <SectionEmptyState
             title="No Short Form Videos"
             description="We couldn't find any short form videos in this category. Try selecting a different category or check back later for new content."
-            icon={<Zap className="w-12 h-12 text-muted-foreground" />}
+            icon={Zap}
+            showDefaultActions
           />
         ) : (
           <>

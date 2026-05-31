@@ -8,7 +8,7 @@ import { DataLoadError } from '@/components/general/DataLoadError';
 import { ListPagination } from '@/components/general/ListPagination';
 import { Store } from 'lucide-react';
 import Link from 'next/link';
-import { EmptyState } from '@/components/section/news/EmptyState';
+import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import { FillImage } from '@/components/general/FillImage';
 import type { IMarketplaceVendor } from '@/lib/constants/endpoints';
 
@@ -60,13 +60,12 @@ export function MarketplaceVendorsPageClient({
           />
 
           {vendors.length === 0 ? (
-            <EmptyState
+            <SectionEmptyState
               title="No vendor stores yet"
               description="Check back later for verified vendor stores to shop from."
-              icon={<Store className="w-12 h-12 text-muted-foreground" />}
+              icon={Store}
               actionLabel="Browse products"
               actionHref="/marketplace/products"
-              showDefaultActions={false}
             />
           ) : (
             <>

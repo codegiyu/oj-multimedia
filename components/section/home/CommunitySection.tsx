@@ -8,7 +8,7 @@ import Link from 'next/link';
 import { FixedImage } from '@/components/general/FillImage';
 import { useAuthStore } from '@/lib/store/useAuthStore';
 import { LoginModal } from '@/components/auth/LoginModal';
-import { EmptyState } from '@/components/section/news/EmptyState';
+import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import { MultilinePreview } from '@/components/general/MultilinePreview';
 import type { CommunityHighlightItem } from '@/lib/utils/mergeCommunityHighlights';
 import { cn } from '@/lib/utils';
@@ -88,13 +88,12 @@ export const CommunitySection = ({
             </h3>
             <div className="space-y-4">
               {highlights.length === 0 ? (
-                <EmptyState
+                <SectionEmptyState
                   title="No community content yet"
                   description="Join the community to share your story, devotionals, and prayer requests."
-                  icon={<Sparkles className="w-12 h-12 text-muted-foreground" />}
+                  icon={Sparkles}
                   actionLabel="Visit community"
                   actionHref="/community"
-                  showDefaultActions={false}
                 />
               ) : (
                 highlights.map((item, index) => {
@@ -174,13 +173,12 @@ export const CommunitySection = ({
                 Recent Poll
               </h3>
               {pollOptions.length === 0 ? (
-                <EmptyState
+                <SectionEmptyState
                   title="No active poll"
                   description="Check back later for new polls, or visit the polls page to see past votes."
-                  icon={<BarChart3 className="w-12 h-12 text-muted-foreground" />}
+                  icon={BarChart3}
                   actionLabel="View all polls"
                   actionHref="/community/polls-and-voting"
-                  showDefaultActions={false}
                 />
               ) : (
                 <>

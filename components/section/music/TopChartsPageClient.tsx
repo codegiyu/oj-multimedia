@@ -7,7 +7,7 @@ import { Trophy, ArrowRight } from 'lucide-react';
 import { MusicCategories } from './MusicCategories';
 import type { CategoryNavItem } from '@/lib/utils/contentCategoryNav';
 import { MusicUploadCTA } from '../shared/MusicUploadCTA';
-import { EmptyState } from '../news/EmptyState';
+import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import { Button } from '@/components/ui/button';
 import { useQueryState, parseAsString } from 'nuqs';
 import { SectionComp } from '@/components/general/SectionComp';
@@ -131,10 +131,11 @@ export const TopChartsPageClient = ({
         sectionClassName="overflow-hidden"
         contentProps={{ enableAnimation: false }}>
         {itemsToShow.length === 0 ? (
-          <EmptyState
+          <SectionEmptyState
             title="No Chart Songs"
             description="We couldn't find any chart songs in this category. Try selecting a different category or check back later for new content."
-            icon={<Trophy className="w-12 h-12 text-muted-foreground" />}
+            icon={Trophy}
+            showDefaultActions
           />
         ) : (
           <>

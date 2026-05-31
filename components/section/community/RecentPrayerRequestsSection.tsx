@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { SectionComp } from '@/components/general/SectionComp';
-import { EmptyState } from '@/components/section/news/EmptyState';
+import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import { LoginModal } from '@/components/auth/LoginModal';
 import { useSendPrayer } from '@/lib/hooks/useSendPrayer';
 import type { PrayerRequest } from './prayer-requests/PrayerRequestsPageClient';
@@ -96,13 +96,12 @@ export const RecentPrayerRequestsSection = ({ requests }: RecentPrayerRequestsSe
       viewAllLink="/community/prayer-requests/active"
       contentProps={{ enableAnimation: false }}>
       {requests.length === 0 ? (
-        <EmptyState
+        <SectionEmptyState
           title="No active prayer requests"
           description="When someone shares a need, it will appear here. You can also submit your own."
-          icon={<HandHeart className="w-12 h-12 text-muted-foreground" />}
+          icon={HandHeart}
           actionLabel="View prayer requests"
           actionHref="/community/prayer-requests"
-          showDefaultActions={false}
         />
       ) : (
         <div className="grid md:grid-cols-2 gap-4">
