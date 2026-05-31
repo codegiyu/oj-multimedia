@@ -200,6 +200,24 @@ export function VendorChartSkeleton() {
   );
 }
 
+/** Main content area only — sidebar and header stay visible in UserDashboardShell. */
+export function DashboardMainSkeleton({ className }: { className?: string }) {
+  return (
+    <PageSkeletonShell label="Loading page" className={cn('space-y-8', className)}>
+      <DashboardPageHeaderSkeleton actionCount={1} />
+      <DashboardStatGridSkeleton count={4} />
+      <div className="rounded-xl border border-border/50 bg-card p-6">
+        <Skeleton className="mb-4 h-6 w-40" />
+        <div className="space-y-3">
+          {[1, 2, 3, 4].map(i => (
+            <Skeleton key={i} className="h-12 w-full rounded-lg" />
+          ))}
+        </div>
+      </div>
+    </PageSkeletonShell>
+  );
+}
+
 export function AccountPageShell({
   label,
   children,
