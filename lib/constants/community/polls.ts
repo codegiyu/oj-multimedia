@@ -11,7 +11,8 @@ export interface PollItem {
   category?: string;
   options: PollOption[];
   totalVotes: number;
-  status: 'active' | 'closed';
+  status: 'pending' | 'active' | 'closed' | 'rejected';
+  creatorLabel?: string;
   timeAgo: string;
   endDate?: string;
   // Section flags

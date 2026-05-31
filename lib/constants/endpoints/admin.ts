@@ -170,6 +170,8 @@ export const ADMIN_ENDPOINTS: Record<string, EndpointDetails> = {
   ADMIN_POLL_DELETE: { path: '/api/v1/admin/polls', method: 'DELETE' },
   ADMIN_POLL_OPEN: { path: '/api/v1/admin/polls', method: 'POST' },
   ADMIN_POLL_CLOSE: { path: '/api/v1/admin/polls', method: 'POST' },
+  ADMIN_POLL_APPROVE: { path: '/api/v1/admin/polls', method: 'POST' },
+  ADMIN_POLL_REJECT: { path: '/api/v1/admin/polls', method: 'POST' },
 
   ADMIN_RESOURCES_LIST: { path: '/api/v1/admin/resources', method: 'GET' },
   ADMIN_RESOURCE_ITEM: { path: '/api/v1/admin/resources', method: 'GET' },

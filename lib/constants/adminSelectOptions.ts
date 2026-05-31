@@ -15,8 +15,10 @@ export const PUBLISHABLE_STATUS_FILTER_SELECT_OPTIONS: ReadonlyArray<SelectOptio
 
 export const POLL_STATUS_FILTER_SELECT_OPTIONS: ReadonlyArray<SelectOption> = [
   { text: 'All', value: 'all' },
+  { text: 'Pending', value: 'pending' },
   { text: 'Active', value: 'active' },
   { text: 'Closed', value: 'closed' },
+  { text: 'Rejected', value: 'rejected' },
 ];
 
 export const PRAYER_REQUEST_STATUS_VALUES = ['active', 'answered'] as const;

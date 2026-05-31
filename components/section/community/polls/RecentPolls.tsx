@@ -47,7 +47,12 @@ export const RecentPolls = ({ polls }: RecentPollsProps) => {
                       <span className="text-xs text-muted-foreground">{poll.timeAgo}</span>
                     </div>
 
-                    <h3 className="font-bold text-foreground mb-4 line-clamp-2">{poll.question}</h3>
+                    <h3 className="font-bold text-foreground mb-1 line-clamp-2">{poll.question}</h3>
+                    {poll.creatorLabel ? (
+                      <p className="text-xs text-muted-foreground mb-4">By {poll.creatorLabel}</p>
+                    ) : (
+                      <div className="mb-4" />
+                    )}
 
                     <div className="space-y-3 mb-4">
                       {poll.options.map(option => (

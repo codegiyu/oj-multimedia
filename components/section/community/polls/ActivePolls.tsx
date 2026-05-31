@@ -72,7 +72,10 @@ export const ActivePolls = ({ polls }: ActivePollsProps) => {
                       )}
                     </div>
 
-                    <h3 className="font-bold text-foreground mb-2">{poll.question}</h3>
+                    <h3 className="font-bold text-foreground mb-1">{poll.question}</h3>
+                    {poll.creatorLabel ? (
+                      <p className="text-xs text-muted-foreground mb-2">By {poll.creatorLabel}</p>
+                    ) : null}
                     {poll.description && (
                       <MultilinePreview
                         text={poll.description}

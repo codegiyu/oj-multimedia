@@ -8,7 +8,7 @@ import {
   DataTableColumnHeader,
   type DataTableColumn,
 } from '@/components/general/DataTable';
-import type { PollListItem } from '@/lib/types/community';
+import type { PollListItem, PollStatus } from '@/lib/types/community';
 import { PollsActionsMenu } from './PollsActionsMenu';
 import { dashboardTableActionsColumn } from '@/components/general/dashboardTableActionsColumn';
 import { Badge } from '@/components/ui/badge';
@@ -18,8 +18,8 @@ function truncate(str: string, maxLen: number) {
   return str.slice(0, maxLen).trim() + '…';
 }
 
-function StatusBadge({ status }: { status: 'active' | 'closed' }) {
-  const variant = status === 'active' ? 'default' : 'secondary';
+function StatusBadge({ status }: { status: PollStatus }) {
+  const variant = status === 'active' ? 'default' : status === 'pending' ? 'outline' : 'secondary';
   return <Badge variant={variant}>{status}</Badge>;
 }
 
@@ -31,6 +31,8 @@ interface PollsTableContentProps {
   page: number;
   totalPages: number;
   onPageChange: (page: number) => void;
+  onApprove: (poll: PollListItem) => void;
+  onReject: (poll: PollListItem) => void;
   onOpen: (poll: PollListItem) => void;
   onClose: (poll: PollListItem) => void;
   onEdit: (poll: PollListItem) => void;
@@ -45,6 +47,8 @@ export function PollsTableContent({
   page,
   totalPages,
   onPageChange,
+  onApprove,
+  onReject,
   onOpen,
   onClose,
   onEdit,
@@ -91,6 +95,8 @@ export function PollsTableContent({
       dashboardTableActionsColumn((row, _idx) => (
         <PollsActionsMenu
           poll={row}
+          onApprove={onApprove}
+          onReject={onReject}
           onOpen={onOpen}
           onClose={onClose}
           onEdit={onEdit}

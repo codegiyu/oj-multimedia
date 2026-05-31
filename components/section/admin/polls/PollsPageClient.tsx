@@ -8,7 +8,7 @@ import type { PollListItem } from '@/lib/types/community';
 import { PollsDetailsDrawer } from './PollsDetailsDrawer';
 import { PollsTableContent } from './PollsTableContent';
 import { CreatePollModal } from './CreatePollModal';
-import { ApprovalModal } from '@/components/section/admin/shared';
+import { ApprovalModal, RejectModal } from '@/components/section/admin/shared';
 import { callApi } from '@/lib/services/callApi';
 import { RegularBtn } from '@/components/atoms/RegularBtn';
 import { Plus } from 'lucide-react';
@@ -64,12 +64,49 @@ export function PollsPageClient({
 
   const [createOpen, setCreateOpen] = useState(false);
   const [editPollId, setEditPollId] = useState<string | null>(null);
+  const [approveTarget, setApproveTarget] = useState<PollListItem | null>(null);
+  const [rejectTarget, setRejectTarget] = useState<PollListItem | null>(null);
   const [openTarget, setOpenTarget] = useState<PollListItem | null>(null);
   const [closeTarget, setCloseTarget] = useState<PollListItem | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<PollListItem | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
 
   const handleRefresh = () => router.refresh();
+
+  const handleApprove = async () => {
+    if (!approveTarget) return;
+    setActionLoading(true);
+    try {
+      const { error } = await callApi('ADMIN_POLL_APPROVE', {
+        query: `/${approveTarget._id}/approve` as `/${string}`,
+      });
+      if (error) throw new Error(error.message);
+      setApproveTarget(null);
+      handleRefresh();
+    } catch (err) {
+      console.error('Approve poll failed:', err);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleReject = async (reason: string) => {
+    if (!rejectTarget) return;
+    setActionLoading(true);
+    try {
+      const { error } = await callApi('ADMIN_POLL_REJECT', {
+        query: `/${rejectTarget._id}/reject` as `/${string}`,
+        payload: { reason },
+      });
+      if (error) throw new Error(error.message);
+      setRejectTarget(null);
+      handleRefresh();
+    } catch (err) {
+      console.error('Reject poll failed:', err);
+    } finally {
+      setActionLoading(false);
+    }
+  };
 
   const handleOpen = async () => {
     if (!openTarget) return;
@@ -190,6 +227,25 @@ export function PollsPageClient({
           />
 
           <ApprovalModal
+            open={!!approveTarget}
+            onOpenChange={val => !val && setApproveTarget(null)}
+            title="Approve poll"
+            description={approveTarget ? `Publish "${approveTarget.question}" for voting?` : ''}
+            confirmText="Approve"
+            onConfirm={handleApprove}
+            loading={actionLoading}
+          />
+
+          <RejectModal
+            open={!!rejectTarget}
+            onOpenChange={val => !val && setRejectTarget(null)}
+            title="Reject poll"
+            description={rejectTarget ? `Reject "${rejectTarget.question}"?` : ''}
+            onConfirm={handleReject}
+            loading={actionLoading}
+          />
+
+          <ApprovalModal
             open={!!openTarget}
             onOpenChange={val => !val && setOpenTarget(null)}
             title="Open poll"
@@ -232,6 +288,8 @@ export function PollsPageClient({
         page={page}
         totalPages={totalPages}
         onPageChange={setPage}
+        onApprove={p => setApproveTarget(p)}
+        onReject={p => setRejectTarget(p)}
         onOpen={p => setOpenTarget(p)}
         onClose={p => setCloseTarget(p)}
         onEdit={handleEdit}
