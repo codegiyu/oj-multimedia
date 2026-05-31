@@ -70,7 +70,10 @@ export const DailyDevotionalsSection = ({
               <Link
                 href={`/community/devotionals/${devotional._id}`}
                 className="flex gap-4 flex-1 min-w-0">
-                <DevotionalListThumbnail coverImage={devotional.coverImage} title={devotional.title} />
+                <DevotionalListThumbnail
+                  coverImage={devotional.coverImage}
+                  title={devotional.title}
+                />
 
                 <div className="flex-1 min-w-0">
                   <div className="mb-2">
