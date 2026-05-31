@@ -8,12 +8,13 @@ import { DataLoadErrorWithRetry } from '@/components/general/DataLoadErrorWithRe
 import { HandHeart } from 'lucide-react';
 import { filterByCategory } from '@/lib/utils/community/prayer-requests';
 import { callPublicServerApi } from '@/lib/services/serverApi';
-import { ISR_PUBLIC_FETCH, ISR_REVALIDATE } from '@/lib/constants/isr';
+import { ISR_PUBLIC_FETCH } from '@/lib/constants/isr';
 import { mapToPrayerRequest } from '@/lib/utils/communityApiMappers';
 import { buildCommunityListQuery } from '@/lib/utils/communityListQuery';
 import type { PrayerRequest } from '@/components/section/community/prayer-requests/PrayerRequestsPageClient';
 
-export const revalidate = ISR_REVALIDATE.fast;
+/** Next.js requires a literal — keep in sync with `ISR_REVALIDATE.fast` (60s). */
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: 'Active Prayer Requests - Join in Prayer',

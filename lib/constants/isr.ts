@@ -8,6 +8,11 @@ export const ISR_REVALIDATE = {
   slow: 3600,
 } as const;
 
+/**
+ * Route segment `export const revalidate` must use these literal values in each
+ * layout/page file — Next.js cannot statically analyze imports or re-exports.
+ */
+
 export type IsrRevalidateTier = keyof typeof ISR_REVALIDATE;
 export type IsrRevalidateSeconds = (typeof ISR_REVALIDATE)[IsrRevalidateTier];
 

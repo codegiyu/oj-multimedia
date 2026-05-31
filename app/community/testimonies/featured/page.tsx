@@ -7,12 +7,13 @@ import { FeaturedTestimonies } from '@/components/section/community/testimonies/
 import { DataLoadErrorWithRetry } from '@/components/general/DataLoadErrorWithRetry';
 import { Sparkles } from 'lucide-react';
 import { callPublicServerApi } from '@/lib/services/serverApi';
-import { ISR_PUBLIC_FETCH, ISR_REVALIDATE } from '@/lib/constants/isr';
+import { ISR_PUBLIC_FETCH } from '@/lib/constants/isr';
 import { mapToTestimony } from '@/lib/utils/communityApiMappers';
 import { buildCommunityListQuery } from '@/lib/utils/communityListQuery';
 import type { Testimony } from '@/components/section/community/testimonies/TestimoniesPageClient';
 
-export const revalidate = ISR_REVALIDATE.slow;
+/** Next.js requires a literal — keep in sync with `ISR_REVALIDATE.slow` (3600s). */
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: 'Featured Testimonies - Inspiring Stories',

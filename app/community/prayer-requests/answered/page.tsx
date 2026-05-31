@@ -7,12 +7,13 @@ import { AnsweredPrayersSection } from '@/components/section/community/prayer-re
 import { DataLoadErrorWithRetry } from '@/components/general/DataLoadErrorWithRetry';
 import { CheckCircle } from 'lucide-react';
 import { callPublicServerApi } from '@/lib/services/serverApi';
-import { ISR_PUBLIC_FETCH, ISR_REVALIDATE } from '@/lib/constants/isr';
+import { ISR_PUBLIC_FETCH } from '@/lib/constants/isr';
 import { mapToAnsweredPrayer } from '@/lib/utils/communityApiMappers';
 import { buildCommunityListQuery } from '@/lib/utils/communityListQuery';
 import type { AnsweredPrayer } from '@/components/section/community/prayer-requests/PrayerRequestsPageClient';
 
-export const revalidate = ISR_REVALIDATE.slow;
+/** Next.js requires a literal — keep in sync with `ISR_REVALIDATE.slow` (3600s). */
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: 'Answered Prayers - Praise Reports',

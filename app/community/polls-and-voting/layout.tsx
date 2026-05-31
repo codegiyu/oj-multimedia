@@ -1,4 +1,6 @@
-export {
-  ISR_FAST_REVALIDATE as revalidate,
-  PassthroughLayout as default,
-} from '@/components/layout/IsrTierLayouts';
+import { PassthroughLayout } from '@/components/layout/IsrTierLayouts';
+
+/** Next.js requires a literal — keep in sync with `ISR_REVALIDATE.fast` (60s). */
+export const revalidate = 60;
+
+export default PassthroughLayout;

@@ -7,12 +7,13 @@ import { BibleStudySeriesSection } from '@/components/section/community/devotion
 import { DataLoadErrorWithRetry } from '@/components/general/DataLoadErrorWithRetry';
 import { BookOpen } from 'lucide-react';
 import { callPublicServerApi } from '@/lib/services/serverApi';
-import { ISR_PUBLIC_FETCH, ISR_REVALIDATE } from '@/lib/constants/isr';
+import { ISR_PUBLIC_FETCH } from '@/lib/constants/isr';
 import { mapToBibleStudy } from '@/lib/utils/communityApiMappers';
 import { buildCommunityListQuery } from '@/lib/utils/communityListQuery';
 import type { BibleStudy } from '@/components/section/community/devotionals/DevotionalsPageClient';
 
-export const revalidate = ISR_REVALIDATE.slow;
+/** Next.js requires a literal — keep in sync with `ISR_REVALIDATE.slow` (3600s). */
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: 'Bible Study Series - Deep Dive into Scripture',

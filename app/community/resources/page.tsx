@@ -13,7 +13,7 @@ import {
 } from '@/components/section/community/resources/ResourcesPageClient';
 import { ResourcesPageSkeleton } from '@/components/section/community/resources/ResourcesPageSkeleton';
 import { callPublicServerApi } from '@/lib/services/serverApi';
-import { ISR_PUBLIC_FETCH, ISR_REVALIDATE } from '@/lib/constants/isr';
+import { ISR_PUBLIC_FETCH } from '@/lib/constants/isr';
 import { RESOURCE_TYPES } from '@/lib/types/community';
 import {
   mapToEbook,
@@ -26,7 +26,8 @@ import { DOWNLOAD_CATEGORIES_FALLBACK } from '@/lib/constants/promotionFallbacks
 import type { ResourceDownloadCategory } from '@/lib/types/promotion';
 import { filterCompleteResources } from '@/lib/utils/contentCompleteness';
 
-export const revalidate = ISR_REVALIDATE.slow;
+/** Next.js requires a literal — keep in sync with `ISR_REVALIDATE.slow` (3600s). */
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: 'Resources - Free Downloads & More',
