@@ -3,6 +3,7 @@
 import { motion } from 'motion/react';
 import { Users } from 'lucide-react';
 import { SectionComp } from '@/components/general/SectionComp';
+import { EmptyState } from '@/components/section/news/EmptyState';
 import { ArtistCard } from '@/components/cards/ArtistCard';
 
 export interface FeaturedArtist {
@@ -30,8 +31,18 @@ export const FeaturedArtists = ({ artists: featuredArtists }: FeaturedArtistsPro
       viewAllLink="/community/artists"
       background="bg-muted/30"
       contentProps={{ enableAnimation: false }}>
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-        {featuredArtists.map((artist, index) => (
+      {featuredArtists.length === 0 ? (
+        <EmptyState
+          title="No featured artists yet"
+          description="Artists and creators will appear here when they join the platform."
+          icon={<Users className="w-12 h-12 text-muted-foreground" />}
+          actionLabel="Discover artists"
+          actionHref="/community/artists"
+          showDefaultActions={false}
+        />
+      ) : (
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+          {featuredArtists.map((artist, index) => (
           <motion.div
             key={artist._id}
             initial={{ opacity: 0, scale: 0.9 }}
@@ -48,7 +59,8 @@ export const FeaturedArtists = ({ artists: featuredArtists }: FeaturedArtistsPro
             />
           </motion.div>
         ))}
-      </div>
+        </div>
+      )}
     </SectionComp>
   );
 };

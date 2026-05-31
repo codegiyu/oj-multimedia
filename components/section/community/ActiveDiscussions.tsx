@@ -4,6 +4,7 @@ import { motion } from 'motion/react';
 import { MessageCircle, Users, TrendingUp, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { SectionComp } from '@/components/general/SectionComp';
+import { EmptyState } from '@/components/section/news/EmptyState';
 import Link from 'next/link';
 
 export interface Discussion {
@@ -29,6 +30,17 @@ export const ActiveDiscussions = ({ discussions }: ActiveDiscussionsProps) => {
       subtext="Join the conversation"
       viewAllLink="/community"
       contentProps={{ enableAnimation: false }}>
+      {discussions.length === 0 ? (
+        <EmptyState
+          title="No active discussions"
+          description="Community conversations will appear here. Be the first to start one."
+          icon={<MessageCircle className="w-12 h-12 text-muted-foreground" />}
+          actionLabel="Explore community"
+          actionHref="/community"
+          showDefaultActions={false}
+        />
+      ) : (
+        <>
       <div className="bg-card rounded-2xl border border-border/50 overflow-hidden">
         {discussions.map((discussion, index) => (
           <motion.div
@@ -83,6 +95,8 @@ export const ActiveDiscussions = ({ discussions }: ActiveDiscussionsProps) => {
           </Link>
         </Button>
       </div>
+        </>
+      )}
     </SectionComp>
   );
 };

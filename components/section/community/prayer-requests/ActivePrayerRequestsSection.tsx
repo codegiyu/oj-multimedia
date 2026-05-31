@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { SectionComp } from '@/components/general/SectionComp';
+import { EmptyState } from '@/components/section/news/EmptyState';
 import { ListPagination } from '@/components/general/ListPagination';
 import { LoginModal } from '@/components/auth/LoginModal';
 import { useSendPrayer } from '@/lib/hooks/useSendPrayer';
@@ -135,6 +136,17 @@ export const ActivePrayerRequestsSection = ({
       subtext="Join us in lifting these needs to God"
       viewAllLink="/community/prayer-requests/active"
       contentProps={{ enableAnimation: false }}>
+      {requests.length === 0 ? (
+        <EmptyState
+          title="No active prayer requests"
+          description="Share a need or check back when others post requests to pray for."
+          icon={<HandHeart className="w-12 h-12 text-muted-foreground" />}
+          actionLabel="Submit a request"
+          actionHref="/community/prayer-requests#submit-prayer-request"
+          showDefaultActions={false}
+        />
+      ) : (
+        <>
       <div className="grid md:grid-cols-2 gap-6">
         {itemsToShow.map((request, index) => (
           <motion.div
@@ -177,6 +189,8 @@ export const ActivePrayerRequestsSection = ({
             )}
           </motion.button>
         </div>
+      )}
+        </>
       )}
     </SectionComp>
   );

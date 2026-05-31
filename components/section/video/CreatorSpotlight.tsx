@@ -3,6 +3,7 @@
 import { motion } from 'motion/react';
 import { Users } from 'lucide-react';
 import { SectionComp } from '@/components/general/SectionComp';
+import { EmptyState } from '@/components/section/news/EmptyState';
 import { ArtistCard } from '@/components/cards/ArtistCard';
 
 export interface FeaturedCreator {
@@ -35,8 +36,18 @@ export const CreatorSpotlight = ({ creators: featuredCreators }: CreatorSpotligh
       viewAllLink="/community/artists"
       viewAllLabel="Discover Creators"
       contentProps={{ enableAnimation: false }}>
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-        {featuredCreators.map((creator, index) => (
+      {featuredCreators.length === 0 ? (
+        <EmptyState
+          title="No creators in the spotlight yet"
+          description="Active video creators will be featured here."
+          icon={<Users className="w-12 h-12 text-muted-foreground" />}
+          actionLabel="Discover creators"
+          actionHref="/community/artists"
+          showDefaultActions={false}
+        />
+      ) : (
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+          {featuredCreators.map((creator, index) => (
           <motion.div
             key={creator._id}
             initial={{ opacity: 0, scale: 0.9 }}
@@ -53,7 +64,8 @@ export const CreatorSpotlight = ({ creators: featuredCreators }: CreatorSpotligh
             />
           </motion.div>
         ))}
-      </div>
+        </div>
+      )}
     </SectionComp>
   );
 };

@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { SectionComp } from '@/components/general/SectionComp';
+import { EmptyState } from '@/components/section/news/EmptyState';
 import type { PrayerPoint } from './DevotionalsPageClient';
 import { MultilinePreview } from '@/components/general/MultilinePreview';
 
@@ -23,8 +24,18 @@ export const PrayerPointsSection = ({ prayerPoints }: PrayerPointsSectionProps) 
       subtext="Structured prayers for every need"
       viewAllLink="/community/devotionals"
       contentProps={{ enableAnimation: false }}>
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {prayerPoints.map((prayer, index) => (
+      {prayerPoints.length === 0 ? (
+        <EmptyState
+          title="No prayer points yet"
+          description="Structured prayers for every need will be added here."
+          icon={<Heart className="w-12 h-12 text-muted-foreground" />}
+          actionLabel="Browse devotionals"
+          actionHref="/community/devotionals"
+          showDefaultActions={false}
+        />
+      ) : (
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {prayerPoints.map((prayer, index) => (
           <motion.div
             key={prayer._id}
             initial={{ opacity: 0, y: 20 }}
@@ -71,7 +82,8 @@ export const PrayerPointsSection = ({ prayerPoints }: PrayerPointsSectionProps) 
             </Link>
           </motion.div>
         ))}
-      </div>
+        </div>
+      )}
     </SectionComp>
   );
 };

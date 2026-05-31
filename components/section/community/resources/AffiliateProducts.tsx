@@ -5,6 +5,7 @@ import { ShoppingBag, ExternalLink } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { SectionComp } from '@/components/general/SectionComp';
+import { EmptyState } from '@/components/section/news/EmptyState';
 import { FillImage } from '@/components/general/FillImage';
 import Link from 'next/link';
 import type { AffiliateProduct } from './ResourcesPageClient';
@@ -22,8 +23,18 @@ export const AffiliateProducts = ({ products }: AffiliateProductsProps) => {
       heading="Affiliate Products"
       subtext="Recommended books, gadgets, and resources to support your faith journey"
       contentProps={{ enableAnimation: false }}>
-      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {products.map((product, index) => (
+      {products.length === 0 ? (
+        <EmptyState
+          title="No affiliate products yet"
+          description="Recommended books and resources will be listed here."
+          icon={<ShoppingBag className="w-12 h-12 text-muted-foreground" />}
+          actionLabel="Browse marketplace"
+          actionHref="/marketplace"
+          showDefaultActions={false}
+        />
+      ) : (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {products.map((product, index) => (
           <motion.div
             key={product._id ?? index}
             initial={{ opacity: 0, y: 20 }}
@@ -62,7 +73,8 @@ export const AffiliateProducts = ({ products }: AffiliateProductsProps) => {
             </Card>
           </motion.div>
         ))}
-      </div>
+        </div>
+      )}
     </SectionComp>
   );
 };

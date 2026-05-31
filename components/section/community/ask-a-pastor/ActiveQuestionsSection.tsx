@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { useState } from 'react';
 import { SectionComp } from '@/components/general/SectionComp';
+import { EmptyState } from '@/components/section/news/EmptyState';
 import type { Question } from './AskAPastorPageClient';
 import { QuestionVoteButtons } from './QuestionVoteButtons';
 
@@ -35,6 +36,17 @@ export const ActiveQuestionsSection = ({ questions }: ActiveQuestionsSectionProp
       subtext="Questions awaiting answers from our pastors"
       viewAllLink="/community/ask-a-pastor/active"
       contentProps={{ enableAnimation: false }}>
+      {questions.length === 0 ? (
+        <EmptyState
+          title="No active questions"
+          description="Questions awaiting pastor answers will appear here. Ask yours today."
+          icon={<HelpCircle className="w-12 h-12 text-muted-foreground" />}
+          actionLabel="Ask a pastor"
+          actionHref="/community/ask-a-pastor#submit-question"
+          showDefaultActions={false}
+        />
+      ) : (
+        <>
       <div className="grid md:grid-cols-2 gap-6">
         {itemsToShow.map((question, index) => (
           <motion.div
@@ -114,6 +126,8 @@ export const ActiveQuestionsSection = ({ questions }: ActiveQuestionsSectionProp
             )}
           </motion.button>
         </div>
+      )}
+        </>
       )}
     </SectionComp>
   );

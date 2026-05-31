@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { SectionComp } from '@/components/general/SectionComp';
+import { EmptyState } from '@/components/section/news/EmptyState';
 import type { Poll } from './PollsPageClient';
 import { MultilinePreview } from '@/components/general/MultilinePreview';
 
@@ -36,6 +37,17 @@ export const ActivePolls = ({ polls }: ActivePollsProps) => {
       heading="Active Polls"
       subtext="Participate in ongoing polls and share your opinion with the community"
       contentProps={{ enableAnimation: false }}>
+      {polls.length === 0 ? (
+        <EmptyState
+          title="No active polls"
+          description="There are no open polls right now. Create one or check recent results below."
+          icon={<BarChart3 className="w-12 h-12 text-muted-foreground" />}
+          actionLabel="Create a poll"
+          actionHref="#create-poll"
+          showDefaultActions={false}
+        />
+      ) : (
+        <>
       <div className="grid md:grid-cols-2 gap-6">
         {itemsToShow.map((poll, index) => (
           <motion.div
@@ -125,6 +137,8 @@ export const ActivePolls = ({ polls }: ActivePollsProps) => {
             )}
           </motion.button>
         </div>
+      )}
+        </>
       )}
     </SectionComp>
   );

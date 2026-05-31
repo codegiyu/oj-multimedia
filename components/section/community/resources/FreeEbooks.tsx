@@ -4,6 +4,7 @@ import { motion } from 'motion/react';
 import { BookOpen, Download } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { SectionComp } from '@/components/general/SectionComp';
+import { EmptyState } from '@/components/section/news/EmptyState';
 import { FillImage } from '@/components/general/FillImage';
 import type { Ebook } from './ResourcesPageClient';
 import { ResourceDownloadButton } from '@/components/section/shared/ResourceDownloadButton';
@@ -21,8 +22,18 @@ export const FreeEbooks = ({ ebooks }: FreeEbooksProps) => {
       heading="Free E-books"
       subtext="Download free Christian e-books to enrich your faith journey and ministry"
       contentProps={{ enableAnimation: false }}>
-      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {ebooks.map((ebook, index) => (
+      {ebooks.length === 0 ? (
+        <EmptyState
+          title="No e-books available yet"
+          description="Free Christian e-books will be listed here for download."
+          icon={<BookOpen className="w-12 h-12 text-muted-foreground" />}
+          actionLabel="Browse resources"
+          actionHref="/community/resources"
+          showDefaultActions={false}
+        />
+      ) : (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {ebooks.map((ebook, index) => (
           <motion.div
             key={ebook._id ?? index}
             initial={{ opacity: 0, y: 20 }}
@@ -61,7 +72,8 @@ export const FreeEbooks = ({ ebooks }: FreeEbooksProps) => {
             </Card>
           </motion.div>
         ))}
-      </div>
+        </div>
+      )}
     </SectionComp>
   );
 };

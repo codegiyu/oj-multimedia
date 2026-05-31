@@ -4,6 +4,7 @@ import { motion } from 'motion/react';
 import { BookOpen, Clock, Eye } from 'lucide-react';
 import Link from 'next/link';
 import { SectionComp } from '@/components/general/SectionComp';
+import { EmptyState } from '@/components/section/news/EmptyState';
 import { DevotionalSaveButton } from '@/components/content/DevotionalSaveButton';
 
 export interface Devotional {
@@ -31,9 +32,14 @@ export const TrendingDevotionals = ({ devotionals }: TrendingDevotionalsProps) =
       sectionClassName="overflow-hidden"
       contentProps={{ enableAnimation: false }}>
       {devotionals.length === 0 ? (
-        <p className="text-muted-foreground text-sm">
-          No popular devotionals yet. Check back soon.
-        </p>
+        <EmptyState
+          title="No popular devotionals yet"
+          description="Most-viewed devotionals will show up here. Check back soon."
+          icon={<BookOpen className="w-12 h-12 text-muted-foreground" />}
+          actionLabel="Browse devotionals"
+          actionHref="/community/devotionals"
+          showDefaultActions={false}
+        />
       ) : (
         <div className="grid md:grid-cols-2 gap-4">
           {devotionals.map((devotional, index) => (

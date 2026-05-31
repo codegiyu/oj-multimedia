@@ -4,6 +4,7 @@ import { motion } from 'motion/react';
 import { Headphones, Download } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { SectionComp } from '@/components/general/SectionComp';
+import { EmptyState } from '@/components/section/news/EmptyState';
 import { FillImage } from '@/components/general/FillImage';
 import type { Beat } from './ResourcesPageClient';
 import { ResourceDownloadButton } from '@/components/section/shared/ResourceDownloadButton';
@@ -21,8 +22,18 @@ export const FreeBeats = ({ beats }: FreeBeatsProps) => {
       heading="Free Beats & Loops"
       subtext="Download free beats, instrumentals, and loops for your worship and music ministry"
       contentProps={{ enableAnimation: false }}>
-      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {beats.map((beat, index) => (
+      {beats.length === 0 ? (
+        <EmptyState
+          title="No free beats yet"
+          description="Beats and instrumentals for ministry will appear here."
+          icon={<Headphones className="w-12 h-12 text-muted-foreground" />}
+          actionLabel="Browse resources"
+          actionHref="/community/resources"
+          showDefaultActions={false}
+        />
+      ) : (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {beats.map((beat, index) => (
           <motion.div
             key={beat._id ?? index}
             initial={{ opacity: 0, y: 20 }}
@@ -66,7 +77,8 @@ export const FreeBeats = ({ beats }: FreeBeatsProps) => {
             </Card>
           </motion.div>
         ))}
-      </div>
+        </div>
+      )}
     </SectionComp>
   );
 };

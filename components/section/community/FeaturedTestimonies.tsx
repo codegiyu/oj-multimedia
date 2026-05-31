@@ -5,6 +5,7 @@ import { Heart, MessageSquare, Quote } from 'lucide-react';
 import Link from 'next/link';
 import { FixedImage } from '@/components/general/FillImage';
 import { SectionComp } from '@/components/general/SectionComp';
+import { EmptyState } from '@/components/section/news/EmptyState';
 import { MultilinePreview } from '@/components/general/MultilinePreview';
 
 export interface Testimony {
@@ -30,8 +31,18 @@ export const FeaturedTestimonies = ({ testimonies }: FeaturedTestimoniesProps) =
       subtext="Stories from our community"
       viewAllLink="/community/testimonies/featured"
       contentProps={{ enableAnimation: false }}>
-      <div className="grid md:grid-cols-3 gap-6">
-        {testimonies.map((testimony, index) => (
+      {testimonies.length === 0 ? (
+        <EmptyState
+          title="No testimonies yet"
+          description="Stories from the community will appear here. Be the first to share yours."
+          icon={<Heart className="w-12 h-12 text-muted-foreground" />}
+          actionLabel="Browse testimonies"
+          actionHref="/community/testimonies"
+          showDefaultActions={false}
+        />
+      ) : (
+        <div className="grid md:grid-cols-3 gap-6">
+          {testimonies.map((testimony, index) => (
           <motion.div
             key={testimony._id}
             initial={{ opacity: 0, y: 20 }}
@@ -77,7 +88,8 @@ export const FeaturedTestimonies = ({ testimonies }: FeaturedTestimoniesProps) =
             </Link>
           </motion.div>
         ))}
-      </div>
+        </div>
+      )}
     </SectionComp>
   );
 };

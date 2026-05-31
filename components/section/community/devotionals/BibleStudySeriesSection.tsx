@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { SectionComp } from '@/components/general/SectionComp';
+import { EmptyState } from '@/components/section/news/EmptyState';
 import type { BibleStudy } from './DevotionalsPageClient';
 
 interface BibleStudySeriesSectionProps {
@@ -23,8 +24,18 @@ export const BibleStudySeriesSection = ({ series }: BibleStudySeriesSectionProps
       viewAllLink="/community/devotionals/bible-study"
       viewAllLabel="View All Series"
       contentProps={{ enableAnimation: false }}>
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {series.map((study, index) => (
+      {series.length === 0 ? (
+        <EmptyState
+          title="No Bible study series yet"
+          description="In-depth study series will be listed here when available."
+          icon={<BookOpen className="w-12 h-12 text-muted-foreground" />}
+          actionLabel="View all series"
+          actionHref="/community/devotionals/bible-study"
+          showDefaultActions={false}
+        />
+      ) : (
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {series.map((study, index) => (
           <motion.div
             key={study._id}
             initial={{ opacity: 0, y: 20 }}
@@ -87,7 +98,8 @@ export const BibleStudySeriesSection = ({ series }: BibleStudySeriesSectionProps
             </Link>
           </motion.div>
         ))}
-      </div>
+        </div>
+      )}
     </SectionComp>
   );
 };

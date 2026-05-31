@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { useState } from 'react';
 import { SectionComp } from '@/components/general/SectionComp';
+import { EmptyState } from '@/components/section/news/EmptyState';
 import type { AnsweredQuestion } from './AskAPastorPageClient';
 import { QuestionVoteButtons } from './QuestionVoteButtons';
 import { MultilinePreview } from '@/components/general/MultilinePreview';
@@ -38,6 +39,17 @@ export const AnsweredQuestionsSection = ({ questions }: AnsweredQuestionsSection
       viewAllLink="/community/ask-a-pastor/answered"
       viewAllLabel="View All Answers"
       contentProps={{ enableAnimation: false }}>
+      {questions.length === 0 ? (
+        <EmptyState
+          title="No answered questions yet"
+          description="Pastoral answers and biblical guidance will be shared here."
+          icon={<CheckCircle2 className="w-12 h-12 text-muted-foreground" />}
+          actionLabel="Ask a question"
+          actionHref="/community/ask-a-pastor#submit-question"
+          showDefaultActions={false}
+        />
+      ) : (
+        <>
       <div className="grid md:grid-cols-2 gap-6">
         {itemsToShow.map((question, index) => (
           <motion.div
@@ -124,6 +136,8 @@ export const AnsweredQuestionsSection = ({ questions }: AnsweredQuestionsSection
             )}
           </motion.button>
         </div>
+      )}
+        </>
       )}
     </SectionComp>
   );

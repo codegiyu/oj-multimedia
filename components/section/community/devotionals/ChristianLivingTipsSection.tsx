@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { SectionComp } from '@/components/general/SectionComp';
+import { EmptyState } from '@/components/section/news/EmptyState';
 import type { LivingTip } from './DevotionalsPageClient';
 import { MultilinePreview } from '@/components/general/MultilinePreview';
 
@@ -23,8 +24,18 @@ export const ChristianLivingTipsSection = ({ tips }: ChristianLivingTipsSectionP
       viewAllLink="/community/devotionals"
       viewAllLabel="View All Tips"
       contentProps={{ enableAnimation: false }}>
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {tips.map((tip, index) => (
+      {tips.length === 0 ? (
+        <EmptyState
+          title="No living tips yet"
+          description="Practical Christian living content will appear here."
+          icon={<Lightbulb className="w-12 h-12 text-muted-foreground" />}
+          actionLabel="Browse devotionals"
+          actionHref="/community/devotionals"
+          showDefaultActions={false}
+        />
+      ) : (
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {tips.map((tip, index) => (
           <motion.div
             key={tip._id}
             initial={{ opacity: 0, y: 20 }}
@@ -75,7 +86,8 @@ export const ChristianLivingTipsSection = ({ tips }: ChristianLivingTipsSectionP
             </Link>
           </motion.div>
         ))}
-      </div>
+        </div>
+      )}
     </SectionComp>
   );
 };
