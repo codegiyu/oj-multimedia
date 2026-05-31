@@ -45,6 +45,7 @@ export function ResourcesBrowsePageClient({
 
   return (
     <ContentBrowseList
+      id="resources-browse"
       pagination={pagination}
       gridClassName={RESOURCE_GRID_CLASS}
       toolbar={<ResourceTypeFilterBar activeType={activeType} counts={counts} />}>

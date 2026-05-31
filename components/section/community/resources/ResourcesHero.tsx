@@ -1,10 +1,12 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { motion } from 'motion/react';
 import { Download, BookOpen, Headphones, ShoppingBag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export const ResourcesHero = () => {
+  const router = useRouter();
   return (
     <section className="relative min-h-[50vh] flex items-center overflow-hidden pt-[12.25rem] pb-12">
       {/* Background */}
@@ -67,20 +69,16 @@ export const ResourcesHero = () => {
               size="lg"
               className="gap-2"
               onClick={() => {
-                document.getElementById('free-downloads')?.scrollIntoView({ behavior: 'smooth' });
+                document.getElementById('resources-browse')?.scrollIntoView({ behavior: 'smooth' });
               }}>
               <Download className="w-4 h-4" />
-              Browse Downloads
+              Browse Resources
             </Button>
             <Button
               variant="hero-outline"
               size="lg"
               className="gap-2"
-              onClick={() => {
-                document
-                  .getElementById('affiliate-products')
-                  ?.scrollIntoView({ behavior: 'smooth' });
-              }}>
+              onClick={() => router.push('/community/resources?type=affiliate')}>
               <ShoppingBag className="w-4 h-4" />
               View Products
             </Button>
