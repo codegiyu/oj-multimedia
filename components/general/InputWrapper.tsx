@@ -1,5 +1,3 @@
-'use client';
-
 import { cn } from '@/lib/utils';
 import { ComponentPropsWithRef, PropsWithChildren, ReactNode } from 'react';
 
@@ -24,8 +22,8 @@ export const InputWrapper = ({
   errors = [],
 }: InputWrapperProps) => {
   return (
-    <label className={cn(`w-full`, wrapClassName)} {...otherLabelProps}>
-      <div className={`flex flex-col justify-center gap-2`}>
+    <div className={cn(`w-full`, wrapClassName)}>
+      <label className={cn(`flex flex-col justify-center gap-2`)} {...otherLabelProps}>
         {(label || subtext) && (
           <div className="flex flex-wrap items-center justify-between gap-2">
             {label && (
@@ -42,10 +40,10 @@ export const InputWrapper = ({
           </div>
         )}
         <div className="relative w-full">{children}</div>
-      </div>
+      </label>
       {errors.length > 0 && (
         <p className={cn('text-xs md:text-sm text-red-500 mt-1')}>{errors[0]}</p>
       )}
-    </label>
+    </div>
   );
 };
