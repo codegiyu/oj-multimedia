@@ -5,6 +5,7 @@ import { Star } from 'lucide-react';
 import { SectionComp } from '@/components/general/SectionComp';
 import { VideoCard } from '@/components/cards/VideoCard';
 import { SectionEmptyState } from '@/components/general/SectionEmptyState';
+import { MEDIA_BROWSE_GRID_CLASS } from '@/lib/constants/mediaCardLayout';
 
 export interface FeaturedVideo {
   _id: string;
@@ -51,7 +52,7 @@ export const FeaturedVideos = ({ videos: featuredVideos }: FeaturedVideosProps) 
       viewAllLink="/videos/featured"
       background="bg-muted/30"
       contentProps={{ enableAnimation: false }}>
-      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className={MEDIA_BROWSE_GRID_CLASS}>
         {featuredVideos.map((video, index) => (
           <motion.div
             key={video._id}

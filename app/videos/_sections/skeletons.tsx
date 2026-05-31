@@ -11,6 +11,10 @@ import {
   VideoCardSkeleton,
   ShortFormVideoSkeleton,
 } from '@/components/skeletons';
+import {
+  MEDIA_BROWSE_GRID_CLASS,
+  VIDEO_DEFAULT_RAIL_ITEM_CLASS,
+} from '@/lib/constants/mediaCardLayout';
 
 export function VideoCategoriesSkeleton() {
   return <CategoryPillRowSkeleton count={8} sticky={false} />;
@@ -20,7 +24,7 @@ export function TrendingVideosSectionSkeleton() {
   return (
     <SectionSkeleton>
       <SectionHeaderSkeleton showPrevNext />
-      <HorizontalRailSkeleton itemWidthClass="w-[280px] md:w-[320px]" count={8}>
+      <HorizontalRailSkeleton itemWidthClass={VIDEO_DEFAULT_RAIL_ITEM_CLASS} count={8}>
         <VideoCardSkeleton />
       </HorizontalRailSkeleton>
     </SectionSkeleton>
@@ -31,7 +35,7 @@ export function FeaturedVideosSectionSkeleton() {
   return (
     <SectionSkeleton background="bg-muted/30">
       <SectionHeaderSkeleton />
-      <CardGridSkeleton count={4} gridClassName="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <CardGridSkeleton count={4} gridClassName={MEDIA_BROWSE_GRID_CLASS}>
         <VideoCardSkeleton />
       </CardGridSkeleton>
     </SectionSkeleton>
@@ -42,7 +46,7 @@ export function RecentUploadsSectionSkeleton() {
   return (
     <SectionSkeleton>
       <SectionHeaderSkeleton />
-      <CardGridSkeleton count={6} gridClassName="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <CardGridSkeleton count={6} gridClassName={MEDIA_BROWSE_GRID_CLASS}>
         <div className="flex gap-4 p-4 bg-card rounded-2xl">
           <Skeleton className="w-32 h-20 rounded-xl shrink-0" />
           <div className="flex-1 min-w-0 flex flex-col justify-between">
@@ -79,7 +83,7 @@ export function LongFormVideosSectionSkeleton() {
   return (
     <SectionSkeleton>
       <SectionHeaderSkeleton />
-      <CardGridSkeleton count={4} gridClassName="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <CardGridSkeleton count={4} gridClassName={MEDIA_BROWSE_GRID_CLASS}>
         <VideoCardSkeleton />
       </CardGridSkeleton>
     </SectionSkeleton>
@@ -118,7 +122,7 @@ export function VideoSubpageGridSkeleton() {
   return (
     <SectionSkeleton>
       <SectionHeaderSkeleton showPrevNext />
-      <CardGridSkeleton count={8} gridClassName="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <CardGridSkeleton count={8} gridClassName={MEDIA_BROWSE_GRID_CLASS}>
         <VideoCardSkeleton />
       </CardGridSkeleton>
     </SectionSkeleton>

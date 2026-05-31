@@ -2,7 +2,10 @@
 
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
-import { MUSIC_RAIL_ITEM_CLASS } from '@/lib/constants/mediaCardLayout';
+import {
+  MUSIC_RAIL_ITEM_CLASS,
+  VIDEO_DEFAULT_RAIL_ITEM_CLASS,
+} from '@/lib/constants/mediaCardLayout';
 
 export function HomeAdvertStripSkeleton({ className }: { className?: string }) {
   return (
@@ -61,7 +64,7 @@ export function SimpleVideoRailSkeleton() {
         </div>
         <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
           {Array.from({ length: 5 }, (_, i) => (
-            <div key={i} className="w-[280px] md:w-[320px] snap-start shrink-0">
+            <div key={i} className={VIDEO_DEFAULT_RAIL_ITEM_CLASS}>
               <div className="bg-card rounded-2xl overflow-hidden">
                 <Skeleton className="aspect-video w-full rounded-none" />
                 <div className="p-4">

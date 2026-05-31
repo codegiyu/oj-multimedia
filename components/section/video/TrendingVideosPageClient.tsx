@@ -14,6 +14,7 @@ import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import { SectionComp } from '@/components/general/SectionComp';
 import { VideoCard } from '@/components/cards/VideoCard';
 import type { TrendingVideo } from './TrendingVideos';
+import { MEDIA_BROWSE_GRID_CLASS } from '@/lib/constants/mediaCardLayout';
 import { Video } from 'lucide-react';
 
 interface TrendingVideosPageClientProps {
@@ -85,7 +86,7 @@ export const TrendingVideosPageClient = ({
           />
         ) : (
           <>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div className={MEDIA_BROWSE_GRID_CLASS}>
               {itemsToShow.map((video, index) => (
                 <motion.div
                   key={video._id}

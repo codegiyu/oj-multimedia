@@ -34,7 +34,7 @@ export function ArtistVideosSectionSkeleton() {
   return (
     <div className="space-y-4">
       <Skeleton className="h-7 w-32" />
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className={MEDIA_BROWSE_GRID_CLASS}>
         {[1, 2, 3].map(i => (
           <VideoCardSkeleton key={i} />
         ))}
