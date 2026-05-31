@@ -6,6 +6,7 @@ import { Card } from '@/components/ui/card';
 import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import { SectionLoadError } from '@/components/general/SectionLoadError';
 import { callPublicServerApi } from '@/lib/services/serverApi';
+import { marketplaceSectionEmptyIcon, marketplaceSectionHeaderIcon } from './sectionIcons';
 
 export async function MarketplaceCategoriesSection() {
   const res = await callPublicServerApi('MARKETPLACE_GET_CATEGORIES', {});
@@ -25,7 +26,7 @@ export async function MarketplaceCategoriesSection() {
     <SectionContainer className="py-16 md:py-20">
       <div className="max-w-7xl mx-auto">
         <SectionHeader
-          icon={ShoppingBag}
+          iconSlot={marketplaceSectionHeaderIcon(ShoppingBag)}
           heading="Shop by Category"
           subtext="Browse products by category"
         />
@@ -33,7 +34,7 @@ export async function MarketplaceCategoriesSection() {
           <SectionEmptyState
             title="No categories yet"
             description="Check back later for product categories."
-            icon={ShoppingBag}
+            iconSlot={marketplaceSectionEmptyIcon(ShoppingBag)}
           />
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">

@@ -1,6 +1,7 @@
 import { Suspense } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { SearchPageClient } from '@/components/section/public/search/SearchPageClient';
+import { SearchFormAreaSkeleton } from '@/components/section/public/search/SearchFormSkeleton';
 import { SearchResultsSkeleton } from '@/components/section/public/search/SearchResultsSkeleton';
 import { SearchResultsSection } from './_sections/SearchResultsSection';
 
@@ -17,7 +18,9 @@ type SearchPageProps = {
 export default function SearchPage({ searchParams }: SearchPageProps) {
   return (
     <MainLayout>
-      <SearchPageClient />
+      <Suspense fallback={<SearchFormAreaSkeleton />}>
+        <SearchPageClient />
+      </Suspense>
       <Suspense fallback={<SearchResultsSkeleton />}>
         <SearchResultsSection searchParams={searchParams} />
       </Suspense>

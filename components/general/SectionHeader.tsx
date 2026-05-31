@@ -11,6 +11,8 @@ export type { Tab };
 
 export interface SectionHeaderProps {
   icon?: LucideIcon;
+  /** Pre-rendered icon markup from server components (cannot pass LucideIcon across the boundary). */
+  iconSlot?: ReactNode;
   iconColor?: 'primary' | 'secondary' | 'accent';
   iconBackground?: string;
   heading: string;
@@ -45,6 +47,7 @@ const iconColorStyles = {
 
 export const SectionHeader = ({
   icon: Icon,
+  iconSlot,
   iconColor = 'primary',
   iconBackground,
   heading,
@@ -68,15 +71,16 @@ export const SectionHeader = ({
       {/* Main Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
         <div className="flex items-center gap-3">
-          {Icon && (
-            <div
-              className={cn(
-                'w-10 h-10 rounded-xl flex items-center justify-center',
-                iconBackground || colorStyles.bg
-              )}>
-              <Icon className={cn('w-5 h-5', iconBackground ? '' : colorStyles.icon)} />
-            </div>
-          )}
+          {iconSlot ??
+            (Icon ? (
+              <div
+                className={cn(
+                  'w-10 h-10 rounded-xl flex items-center justify-center',
+                  iconBackground || colorStyles.bg
+                )}>
+                <Icon className={cn('w-5 h-5', iconBackground ? '' : colorStyles.icon)} />
+              </div>
+            ) : null)}
           <div>
             <h2 className="section-header">{heading}</h2>
             {subtext && <p className="text-muted-foreground text-sm">{subtext}</p>}

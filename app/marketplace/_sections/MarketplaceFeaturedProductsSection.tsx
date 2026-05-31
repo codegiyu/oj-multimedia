@@ -6,6 +6,7 @@ import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import { SectionLoadError } from '@/components/general/SectionLoadError';
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import { MARKETPLACE_LANDING_PAGE_SIZE } from './shared';
+import { marketplaceSectionEmptyIcon, marketplaceSectionHeaderIcon } from './sectionIcons';
 
 export async function MarketplaceFeaturedProductsSection() {
   const res = await callPublicServerApi('MARKETPLACE_GET_PRODUCTS', {
@@ -27,7 +28,7 @@ export async function MarketplaceFeaturedProductsSection() {
     <SectionContainer className="py-16 md:py-20 bg-muted/30">
       <div className="max-w-7xl mx-auto">
         <SectionHeader
-          icon={Package}
+          iconSlot={marketplaceSectionHeaderIcon(Package)}
           heading="Featured Products"
           subtext="Handpicked from our vendors"
           viewAllLink="/marketplace/products"
@@ -38,7 +39,7 @@ export async function MarketplaceFeaturedProductsSection() {
           <SectionEmptyState
             title="No featured products yet"
             description="Browse all products below for great finds."
-            icon={Package}
+            iconSlot={marketplaceSectionEmptyIcon(Package)}
             actionLabel="View all products"
             actionHref="/marketplace/products"
           />

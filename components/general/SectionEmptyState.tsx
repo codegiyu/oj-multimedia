@@ -1,12 +1,15 @@
 'use client';
 
 import type { LucideIcon } from 'lucide-react';
+import type { ReactNode } from 'react';
 import { EmptyState } from '@/components/section/news/EmptyState';
 
 export interface SectionEmptyStateProps {
   title: string;
   description: string;
-  icon: LucideIcon;
+  icon?: LucideIcon;
+  /** Pre-rendered icon markup from server components (cannot pass LucideIcon across the boundary). */
+  iconSlot?: ReactNode;
   actionLabel?: string;
   actionHref?: string;
   onAction?: () => void;
@@ -18,16 +21,20 @@ export function SectionEmptyState({
   title,
   description,
   icon: Icon,
+  iconSlot,
   actionLabel,
   actionHref,
   onAction,
   showDefaultActions = false,
 }: SectionEmptyStateProps) {
+  const iconNode =
+    iconSlot ?? (Icon ? <Icon className="w-12 h-12 text-muted-foreground" /> : undefined);
+
   return (
     <EmptyState
       title={title}
       description={description}
-      icon={<Icon className="w-12 h-12 text-muted-foreground" />}
+      icon={iconNode}
       actionLabel={actionLabel}
       actionHref={actionHref}
       onAction={onAction}

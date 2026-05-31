@@ -15,6 +15,8 @@ export interface DashboardStatCardProps {
   /** Colored value (e.g. pending count) */
   valueClassName?: string;
   icon?: LucideIcon;
+  /** Pre-rendered icon markup from server components (cannot pass LucideIcon across the boundary). */
+  iconSlot?: ReactNode;
   /** Top-right corner icon (e.g. trend arrow) */
   corner?: ReactNode;
   variant?: DashboardStatCardVariant;
@@ -27,10 +29,19 @@ export function DashboardStatCard({
   hint,
   valueClassName,
   icon: Icon,
+  iconSlot,
   corner,
   variant = 'default',
   className,
 }: DashboardStatCardProps) {
+  const iconNode =
+    iconSlot ??
+    (Icon ? (
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+        <Icon className="h-5 w-5" aria-hidden />
+      </div>
+    ) : null);
+
   return (
     <Card
       className={cn(
@@ -40,11 +51,7 @@ export function DashboardStatCard({
       )}>
       <div className="flex items-start justify-between gap-3">
         <div className="flex min-w-0 flex-1 items-start gap-3">
-          {Icon ? (
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-              <Icon className="h-5 w-5" aria-hidden />
-            </div>
-          ) : null}
+          {iconNode}
           <div className="min-w-0 space-y-1">
             <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
               {label}
