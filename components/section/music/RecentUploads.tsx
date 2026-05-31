@@ -6,6 +6,7 @@ import { SectionComp } from '@/components/general/SectionComp';
 import { MusicCard } from '@/components/cards/MusicCard';
 import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import type { MusicAlbumSummary } from '@/lib/constants/endpoints';
+import { MEDIA_BROWSE_GRID_CLASS } from '@/lib/constants/mediaCardLayout';
 
 export interface RecentUpload {
   _id: string;
@@ -49,7 +50,7 @@ export const RecentUploads = ({ uploads: recentUploads }: RecentUploadsProps) =>
       subtext="Just added by creators"
       viewAllLink="/music"
       contentProps={{ enableAnimation: false }}>
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className={MEDIA_BROWSE_GRID_CLASS}>
         {recentUploads.map((song, index) => (
           <motion.div
             key={song._id}

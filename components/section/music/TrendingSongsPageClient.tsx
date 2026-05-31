@@ -15,6 +15,7 @@ import { SectionComp } from '@/components/general/SectionComp';
 import { MusicCard } from '@/components/cards/MusicCard';
 import type { TrendingSong } from './TrendingSongs';
 import { Music } from 'lucide-react';
+import { MEDIA_BROWSE_GRID_CLASS } from '@/lib/constants/mediaCardLayout';
 
 interface TrendingSongsPageClientProps {
   categoryOptions: CategoryNavItem[];
@@ -85,7 +86,7 @@ export const TrendingSongsPageClient = ({
           />
         ) : (
           <>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div className={MEDIA_BROWSE_GRID_CLASS}>
               {itemsToShow.map((song, index) => (
                 <motion.div
                   key={song._id}

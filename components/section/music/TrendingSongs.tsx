@@ -7,6 +7,7 @@ import { SectionComp } from '@/components/general/SectionComp';
 import { MusicCard } from '@/components/cards/MusicCard';
 import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import type { MusicAlbumSummary } from '@/lib/constants/endpoints';
+import { MUSIC_RAIL_ITEM_CLASS, MUSIC_RAIL_SCROLL_PX } from '@/lib/constants/mediaCardLayout';
 
 export interface TrendingSong {
   _id: string;
@@ -29,7 +30,7 @@ export const TrendingSongs = ({ songs: trendingSongs }: TrendingSongsProps) => {
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
-      const scrollAmount = 320;
+      const scrollAmount = MUSIC_RAIL_SCROLL_PX;
       scrollRef.current.scrollBy({
         left: direction === 'left' ? -scrollAmount : scrollAmount,
         behavior: 'smooth',
@@ -77,7 +78,7 @@ export const TrendingSongs = ({ songs: trendingSongs }: TrendingSongsProps) => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: index * 0.05 }}
-            className="w-[200px] md:w-[240px] snap-start shrink-0">
+            className={MUSIC_RAIL_ITEM_CLASS}>
             <MusicCard
               _id={song._id}
               title={song.title}

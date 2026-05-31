@@ -12,6 +12,7 @@ import { PUBLIC_URL_KEYS } from '@/lib/constants/publicUrlKeys';
 import type { CategoryNavItem } from '@/lib/utils/contentCategoryNav';
 import { useHomeTrendingMusicRail } from '@/lib/hooks/useHomeTrendingRail';
 import { cn } from '@/lib/utils';
+import { MUSIC_RAIL_ITEM_CLASS, MUSIC_RAIL_SCROLL_PX } from '@/lib/constants/mediaCardLayout';
 
 export interface TrendingMusicItem {
   _id: string;
@@ -48,7 +49,7 @@ export const TrendingMusicSection = ({
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
-      const scrollAmount = 280;
+      const scrollAmount = MUSIC_RAIL_SCROLL_PX;
       scrollRef.current.scrollBy({
         left: direction === 'left' ? -scrollAmount : scrollAmount,
         behavior: 'smooth',
@@ -97,7 +98,7 @@ export const TrendingMusicSection = ({
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.05 }}
-              className="w-[160px] sm:w-[180px] md:w-[200px] lg:w-[220px] xl:w-[240px] 2xl:w-[260px] snap-start shrink-0">
+              className={MUSIC_RAIL_ITEM_CLASS}>
               <MusicCard {...track} />
             </motion.div>
           ))}

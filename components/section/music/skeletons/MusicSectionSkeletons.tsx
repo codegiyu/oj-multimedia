@@ -13,6 +13,7 @@ import {
   ChartCardSkeleton,
   ArtistCardSkeleton,
 } from '@/components/skeletons';
+import { MEDIA_BROWSE_GRID_CLASS, MUSIC_RAIL_ITEM_CLASS } from '@/lib/constants/mediaCardLayout';
 
 export function MusicCategoriesSkeleton() {
   return <CategoryPillRowSkeleton count={10} sticky={false} />;
@@ -22,7 +23,7 @@ export function TrendingSongsSectionSkeleton() {
   return (
     <SectionSkeleton>
       <SectionHeaderSkeleton showPrevNext showViewAll />
-      <HorizontalRailSkeleton itemWidthClass="w-[200px] md:w-[240px]" count={8}>
+      <HorizontalRailSkeleton itemWidthClass={MUSIC_RAIL_ITEM_CLASS} count={8}>
         <MusicCardSkeleton />
       </HorizontalRailSkeleton>
     </SectionSkeleton>
@@ -73,7 +74,7 @@ export function RecentUploadsSectionSkeleton() {
   return (
     <SectionSkeleton>
       <SectionHeaderSkeleton />
-      <CardGridSkeleton count={6} gridClassName="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <CardGridSkeleton count={6} gridClassName={MEDIA_BROWSE_GRID_CLASS}>
         <MusicCardSkeleton />
       </CardGridSkeleton>
     </SectionSkeleton>
@@ -101,9 +102,7 @@ export function MusicTrendingGridSectionSkeleton() {
   return (
     <SectionSkeleton>
       <SectionHeaderSkeleton />
-      <CardGridSkeleton
-        count={8}
-        gridClassName="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <CardGridSkeleton count={8} gridClassName={MEDIA_BROWSE_GRID_CLASS}>
         <MusicCardSkeleton />
       </CardGridSkeleton>
       <div className="flex justify-center mt-10">
