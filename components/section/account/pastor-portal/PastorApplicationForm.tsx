@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { z } from 'zod';
 import { Card, CardContent } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
 import { RegularInput } from '@/components/atoms/RegularInput';
 import { RegularTextarea } from '@/components/atoms/RegularTextarea';
 import { RegularBtn } from '@/components/atoms/RegularBtn';
@@ -33,9 +34,18 @@ type PastorApplicationValues = z.infer<typeof pastorApplicationSchema>;
 
 export interface PastorApplicationFormProps {
   initialApplication?: IPastorApplication | null;
+  /** When true, render form fields only (for use inside a dialog). */
+  bare?: boolean;
+  className?: string;
+  onSuccess?: () => void;
 }
 
-export function PastorApplicationForm({ initialApplication }: PastorApplicationFormProps) {
+export function PastorApplicationForm({
+  initialApplication,
+  bare = false,
+  className,
+  onSuccess,
+}: PastorApplicationFormProps) {
   const router = useRouter();
   const user = useAuthStore(s => s.user);
   const userId =
@@ -85,13 +95,80 @@ export function PastorApplicationForm({ initialApplication }: PastorApplicationF
         }
 
         toast.success('Application submitted. We will review it and notify you.');
+        onSuccess?.();
         router.refresh();
         return true;
       },
     });
 
+  const formFields = (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <RegularInput
+        id="pastor-name"
+        name="name"
+        label="Full name"
+        value={formValues.name}
+        onChange={handleInputChange}
+        errors={errorsVisible ? formErrors.name : undefined}
+        required
+      />
+      <RegularInput
+        id="pastor-title"
+        name="title"
+        label="Title"
+        value={formValues.title ?? ''}
+        onChange={handleInputChange}
+        placeholder="e.g. Senior Pastor"
+      />
+      <RegularInput
+        id="pastor-church"
+        name="church"
+        label="Church / Ministry"
+        value={formValues.church ?? ''}
+        onChange={handleInputChange}
+      />
+      <RegularTextarea
+        id="pastor-bio"
+        name="bio"
+        label="Bio"
+        value={formValues.bio ?? ''}
+        onChange={handleInputChange}
+        rows={4}
+      />
+      <RegularInput
+        id="pastor-expertise"
+        name="expertise"
+        label="Areas of expertise (comma-separated)"
+        value={expertiseInput}
+        onChange={e => setExpertiseInput(e.target.value)}
+        placeholder="Faith, Marriage, Prayer"
+      />
+      <RegularTextarea
+        id="pastor-motivation"
+        name="motivation"
+        label="Why do you want to join?"
+        value={formValues.motivation ?? ''}
+        onChange={handleInputChange}
+        rows={3}
+      />
+      <ImageUploadField
+        label="Profile photo"
+        value={formValues.image ?? ''}
+        onChange={value => handleInputChange({ target: { name: 'image', value } } as never)}
+        entityType="pastor"
+        entityId={userId || 'pastor-application'}
+        intent="image"
+      />
+      <RegularBtn type="submit" text="Submit application" loading={loading} size="full" />
+    </form>
+  );
+
+  if (bare) {
+    return <div className={cn('space-y-4', className)}>{formFields}</div>;
+  }
+
   return (
-    <Card className="max-w-2xl mx-auto border-border/60">
+    <Card className={cn('max-w-2xl mx-auto border-border/60', className)}>
       <CardContent className="p-6 space-y-6">
         <div>
           <h2 className="text-lg font-semibold">Pastor application</h2>
@@ -100,66 +177,7 @@ export function PastorApplicationForm({ initialApplication }: PastorApplicationF
             portal unlocks.
           </p>
         </div>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <RegularInput
-            id="pastor-name"
-            name="name"
-            label="Full name"
-            value={formValues.name}
-            onChange={handleInputChange}
-            errors={errorsVisible ? formErrors.name : undefined}
-            required
-          />
-          <RegularInput
-            id="pastor-title"
-            name="title"
-            label="Title"
-            value={formValues.title ?? ''}
-            onChange={handleInputChange}
-            placeholder="e.g. Senior Pastor"
-          />
-          <RegularInput
-            id="pastor-church"
-            name="church"
-            label="Church / Ministry"
-            value={formValues.church ?? ''}
-            onChange={handleInputChange}
-          />
-          <RegularTextarea
-            id="pastor-bio"
-            name="bio"
-            label="Bio"
-            value={formValues.bio ?? ''}
-            onChange={handleInputChange}
-            rows={4}
-          />
-          <RegularInput
-            id="pastor-expertise"
-            name="expertise"
-            label="Areas of expertise (comma-separated)"
-            value={expertiseInput}
-            onChange={e => setExpertiseInput(e.target.value)}
-            placeholder="Faith, Marriage, Prayer"
-          />
-          <RegularTextarea
-            id="pastor-motivation"
-            name="motivation"
-            label="Why do you want to join?"
-            value={formValues.motivation ?? ''}
-            onChange={handleInputChange}
-            rows={3}
-          />
-          <ImageUploadField
-            label="Profile photo"
-            value={formValues.image ?? ''}
-            onChange={value => handleInputChange({ target: { name: 'image', value } } as never)}
-            entityType="pastor"
-            entityId={userId || 'pastor-application'}
-            intent="image"
-          />
-          <RegularBtn type="submit" text="Submit application" loading={loading} size="full" />
-        </form>
+        {formFields}
       </CardContent>
     </Card>
   );
