@@ -1,8 +1,10 @@
 'use client';
 
-import type { ReactNode } from 'react';
-import { UserDashboardMobileNav, UserDashboardSidebar } from './UserDashboardSidebar';
+import { Suspense, type ReactNode } from 'react';
+import { UserDashboardSidebar } from './UserDashboardSidebar';
+import { UserDashboardHeader } from './UserDashboardHeader';
 import type { UserDashboardSidebarProps } from './UserDashboardSidebar';
+import { DashboardMainSkeleton } from '@/components/section/account/skeletons/DashboardSkeletons';
 
 export type UserDashboardShellProps = UserDashboardSidebarProps & {
   children: ReactNode;
@@ -22,10 +24,10 @@ export function UserDashboardShell({
         <UserDashboardSidebar {...navProps} />
       </div>
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-        <UserDashboardMobileNav {...navProps} />
+        <UserDashboardHeader {...navProps} />
         <main className="min-h-0 flex-1 overflow-y-auto">
           <div className="mx-auto w-full max-w-6xl px-4 py-6 md:px-8 md:py-8 lg:px-10 lg:py-10">
-            {children}
+            <Suspense fallback={<DashboardMainSkeleton />}>{children}</Suspense>
           </div>
         </main>
       </div>

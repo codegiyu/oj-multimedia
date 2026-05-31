@@ -1,4 +1,5 @@
 export {
+  DashboardMainSkeleton,
   DashboardPageHeaderSkeleton,
   DashboardStatGridSkeleton,
   FilterableDataPageSkeleton,
