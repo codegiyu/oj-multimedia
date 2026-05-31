@@ -122,6 +122,11 @@ export const PUBLIC_ENDPOINTS: Record<string, EndpointDetails> = {
     method: 'GET',
     isNotAuthenticated: true,
   },
+  PUBLIC_GET_RESOURCE_COUNTS: {
+    path: '/api/v1/public/resources/counts',
+    method: 'GET',
+    isNotAuthenticated: true,
+  },
 
   // Promotion content (public)
   PUBLIC_GET_FEATURED_OPTIONS: {
