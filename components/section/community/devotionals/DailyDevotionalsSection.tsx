@@ -5,22 +5,98 @@ import { motion } from 'motion/react';
 import { Calendar, Clock, Eye } from 'lucide-react';
 import Link from 'next/link';
 import { SectionComp } from '@/components/general/SectionComp';
+import { ContentBrowseList } from '@/components/general/ContentBrowseList';
 import { DataLoadError } from '@/components/general/DataLoadError';
 import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import { DevotionalListThumbnail } from '@/components/section/community/devotionals/DevotionalListThumbnail';
 import { DevotionalSaveButton } from '@/components/content/DevotionalSaveButton';
 import type { DailyDevotional } from './DevotionalsPageClient';
+import type { BrowsePresentation, Pagination } from '@/lib/types/pagination';
 
 interface DailyDevotionalsSectionProps {
   devotionals: DailyDevotional[];
   initialErrorMessage?: string | null;
+  presentation?: BrowsePresentation;
+  pagination?: Pagination | null;
+}
+
+const DEVOTIONALS_GRID_CLASS = 'grid md:grid-cols-2 gap-4';
+
+function DevotionalCards({ devotionals }: { devotionals: DailyDevotional[] }) {
+  return (
+    <>
+      {devotionals.map((devotional, index) => (
+        <motion.div
+          key={devotional._id}
+          initial={{ opacity: 0, x: index % 2 === 0 ? -20 : 20 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: index * 0.1 }}
+          whileHover={{ scale: 1.01 }}
+          className="bg-card rounded-2xl p-5 shadow-sm border border-border/50 hover:shadow-md transition-all group">
+          <div className="flex gap-4">
+            <Link
+              href={`/community/devotionals/${devotional._id}`}
+              className="flex gap-4 flex-1 min-w-0">
+              <DevotionalListThumbnail
+                coverImage={devotional.coverImage}
+                title={devotional.title}
+              />
+
+              <div className="flex-1 min-w-0">
+                <div className="mb-2">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-xs text-secondary font-medium">
+                      {devotional.category}
+                    </span>
+                    {devotional.date === 'Today' && (
+                      <span className="text-xs bg-green-500/20 text-green-600 dark:text-green-400 px-2 py-0.5 rounded-full">
+                        Today
+                      </span>
+                    )}
+                  </div>
+                  <h3 className="font-semibold group-hover:text-secondary transition-colors line-clamp-1">
+                    {devotional.title}
+                  </h3>
+                  <p className="text-sm text-primary font-medium mt-1">{devotional.verse}</p>
+                </div>
+
+                <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
+                  {devotional.excerpt}
+                </p>
+
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <span>{devotional.date}</span>
+                  <div className="flex items-center gap-3">
+                    <span className="flex items-center gap-1">
+                      <Clock className="w-3 h-3" />
+                      {devotional.readingTime}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Eye className="w-3 h-3" />
+                      {devotional.views.toLocaleString()}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </Link>
+            <DevotionalSaveButton entityId={devotional._id} />
+          </div>
+        </motion.div>
+      ))}
+    </>
+  );
 }
 
 export const DailyDevotionalsSection = ({
   devotionals,
   initialErrorMessage = null,
+  presentation = 'hub-section',
+  pagination = null,
 }: DailyDevotionalsSectionProps) => {
   const router = useRouter();
+  const isBrowseList = presentation === 'browse-list';
+
   if (initialErrorMessage && devotionals.length === 0) {
     return (
       <div className="container mx-auto px-4 pb-16">
@@ -33,9 +109,10 @@ export const DailyDevotionalsSection = ({
       </div>
     );
   }
+
   if (devotionals.length === 0) {
     return (
-      <div className="container mx-auto px-4 pb-16">
+      <div className={isBrowseList ? undefined : 'container mx-auto px-4 pb-16'}>
         <SectionEmptyState
           title="No latest devotionals"
           description="Check back later for new daily devotionals."
@@ -46,6 +123,15 @@ export const DailyDevotionalsSection = ({
       </div>
     );
   }
+
+  if (isBrowseList) {
+    return (
+      <ContentBrowseList pagination={pagination} gridClassName={DEVOTIONALS_GRID_CLASS}>
+        <DevotionalCards devotionals={devotionals} />
+      </ContentBrowseList>
+    );
+  }
+
   return (
     <SectionComp
       id="daily-devotionals"
@@ -56,66 +142,8 @@ export const DailyDevotionalsSection = ({
       viewAllLink="/community/devotionals/latest"
       sectionClassName="overflow-hidden"
       contentProps={{ enableAnimation: false }}>
-      <div className="grid md:grid-cols-2 gap-4">
-        {devotionals.map((devotional, index) => (
-          <motion.div
-            key={devotional._id}
-            initial={{ opacity: 0, x: index % 2 === 0 ? -20 : 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: index * 0.1 }}
-            whileHover={{ scale: 1.01 }}
-            className="bg-card rounded-2xl p-5 shadow-sm border border-border/50 hover:shadow-md transition-all group">
-            <div className="flex gap-4">
-              <Link
-                href={`/community/devotionals/${devotional._id}`}
-                className="flex gap-4 flex-1 min-w-0">
-                <DevotionalListThumbnail
-                  coverImage={devotional.coverImage}
-                  title={devotional.title}
-                />
-
-                <div className="flex-1 min-w-0">
-                  <div className="mb-2">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-xs text-secondary font-medium">
-                        {devotional.category}
-                      </span>
-                      {devotional.date === 'Today' && (
-                        <span className="text-xs bg-green-500/20 text-green-600 dark:text-green-400 px-2 py-0.5 rounded-full">
-                          Today
-                        </span>
-                      )}
-                    </div>
-                    <h3 className="font-semibold group-hover:text-secondary transition-colors line-clamp-1">
-                      {devotional.title}
-                    </h3>
-                    <p className="text-sm text-primary font-medium mt-1">{devotional.verse}</p>
-                  </div>
-
-                  <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
-                    {devotional.excerpt}
-                  </p>
-
-                  <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <span>{devotional.date}</span>
-                    <div className="flex items-center gap-3">
-                      <span className="flex items-center gap-1">
-                        <Clock className="w-3 h-3" />
-                        {devotional.readingTime}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Eye className="w-3 h-3" />
-                        {devotional.views.toLocaleString()}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </Link>
-              <DevotionalSaveButton entityId={devotional._id} />
-            </div>
-          </motion.div>
-        ))}
+      <div className={DEVOTIONALS_GRID_CLASS}>
+        <DevotionalCards devotionals={devotionals} />
       </div>
     </SectionComp>
   );

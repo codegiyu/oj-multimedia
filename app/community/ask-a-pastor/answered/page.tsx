@@ -3,14 +3,8 @@ import { Suspense } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { SubPageHero } from '@/components/general/SubPageHero';
 import { AskAPastorPageSkeleton } from '@/components/section/community/ask-a-pastor/AskAPastorPageSkeleton';
-import { AnsweredQuestionsSection } from '@/components/section/community/ask-a-pastor/AnsweredQuestionsSection';
-import { DataLoadErrorWithRetry } from '@/components/general/DataLoadErrorWithRetry';
-import { HelpCircle } from 'lucide-react';
-import { callPublicServerApi } from '@/lib/services/serverApi';
-import { ISR_PUBLIC_FETCH } from '@/lib/constants/isr';
-import { mapToAnsweredQuestion } from '@/lib/utils/communityApiMappers';
-import { buildCommunityListQuery } from '@/lib/utils/communityListQuery';
-import type { AnsweredQuestion } from '@/components/section/community/ask-a-pastor/AskAPastorPageClient';
+import { AnsweredQuestionsBrowseSection } from './_sections/AnsweredQuestionsBrowseSection';
+import { parseBrowsePageParam } from '@/lib/utils/browsePage';
 
 /** Next.js requires a literal — keep in sync with `ISR_REVALIDATE.slow` (3600s). */
 export const revalidate = 3600;
@@ -21,44 +15,14 @@ export const metadata: Metadata = {
     'Browse answered questions from our pastors. Get biblical guidance on faith, life, and spiritual matters.',
 };
 
-async function fetchAnsweredQuestions(category: string): Promise<{
-  answeredQuestions: AnsweredQuestion[];
-  initialErrorMessage: string | null;
-}> {
-  const res = await callPublicServerApi(
-    'PUBLIC_GET_ASK_A_PASTOR_QUESTIONS',
-    {
-      query: buildCommunityListQuery({ status: 'answered', limit: 50, category }),
-    },
-    ISR_PUBLIC_FETCH.slow
-  );
-
-  if (res.type === 'error') {
-    return {
-      answeredQuestions: [],
-      initialErrorMessage: res.error?.message ?? 'Failed to load questions',
-    };
-  }
-
-  const rawList = (res.data?.questions ?? []) as unknown[];
-  const list = rawList.map(i =>
-    mapToAnsweredQuestion(i as Record<string, unknown>)
-  ) as AnsweredQuestion[];
-
-  return {
-    answeredQuestions: list,
-    initialErrorMessage: null,
-  };
-}
-
 interface AnsweredQuestionsPageProps {
-  searchParams: Promise<{ category?: string }>;
+  searchParams: Promise<{ category?: string; page?: string }>;
 }
 
 export default async function AnsweredQuestionsPage({ searchParams }: AnsweredQuestionsPageProps) {
   const params = await searchParams;
   const category = params.category ?? 'all';
-  const { answeredQuestions, initialErrorMessage } = await fetchAnsweredQuestions(category);
+  const page = parseBrowsePageParam(params.page);
 
   return (
     <MainLayout>
@@ -72,18 +36,8 @@ export default async function AnsweredQuestionsPage({ searchParams }: AnsweredQu
         backLabel="Back to Ask a Pastor"
         stats={[{ icon: 'HelpCircle', text: 'Pastor answered' }, { text: 'Biblical guidance' }]}
       />
-      <Suspense fallback={<AskAPastorPageSkeleton />}>
-        <div className="container mx-auto px-4 pb-16">
-          {initialErrorMessage && answeredQuestions.length === 0 ? (
-            <DataLoadErrorWithRetry
-              title="Unable to load questions"
-              message={initialErrorMessage}
-              icon={<HelpCircle className="w-8 h-8 text-destructive" />}
-            />
-          ) : (
-            <AnsweredQuestionsSection questions={answeredQuestions} />
-          )}
-        </div>
+      <Suspense fallback={<AskAPastorPageSkeleton />} key={`${category}|${page}`}>
+        <AnsweredQuestionsBrowseSection category={category} page={page} />
       </Suspense>
     </MainLayout>
   );

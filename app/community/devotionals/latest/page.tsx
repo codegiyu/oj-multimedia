@@ -6,6 +6,7 @@ import { DevotionalsPageSkeleton } from '@/components/section/community/devotion
 import { DevotionalsCategoryFilter } from '@/components/section/community/devotionals/DevotionalsCategoryFilter';
 import { LatestDevotionalsSection } from './_sections/LatestDevotionalsSection';
 import { Skeleton } from '@/components/ui/skeleton';
+import { parseBrowsePageParam } from '@/lib/utils/browsePage';
 
 export const metadata: Metadata = {
   title: 'Latest Devotionals - Daily Inspiration',
@@ -13,12 +14,13 @@ export const metadata: Metadata = {
 };
 
 interface LatestDevotionalsPageProps {
-  searchParams: Promise<{ category?: string }>;
+  searchParams: Promise<{ category?: string; page?: string }>;
 }
 
 export default async function LatestDevotionalsPage({ searchParams }: LatestDevotionalsPageProps) {
   const params = await searchParams;
   const category = params.category ?? 'all';
+  const page = parseBrowsePageParam(params.page);
 
   return (
     <MainLayout>
@@ -36,8 +38,8 @@ export default async function LatestDevotionalsPage({ searchParams }: LatestDevo
         <Suspense fallback={<Skeleton className="mb-6 h-10 w-full max-w-xs rounded-md" />}>
           <DevotionalsCategoryFilter />
         </Suspense>
-        <Suspense fallback={<DevotionalsPageSkeleton />} key={category}>
-          <LatestDevotionalsSection category={category} />
+        <Suspense fallback={<DevotionalsPageSkeleton />} key={`${category}|${page}`}>
+          <LatestDevotionalsSection category={category} page={page} />
         </Suspense>
       </div>
     </MainLayout>

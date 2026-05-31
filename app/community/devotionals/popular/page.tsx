@@ -5,6 +5,7 @@ import { SubPageHero } from '@/components/general/SubPageHero';
 import { DevotionalsPageSkeleton } from '@/components/section/community/devotionals/DevotionalsPageSkeleton';
 import { DevotionalsCategoryFilter } from '@/components/section/community/devotionals/DevotionalsCategoryFilter';
 import { PopularDevotionalsSection } from './_sections/PopularDevotionalsSection';
+import { parseBrowsePageParam } from '@/lib/utils/browsePage';
 
 export const metadata: Metadata = {
   title: 'Popular Devotionals - Most Read',
@@ -12,7 +13,7 @@ export const metadata: Metadata = {
 };
 
 interface PopularDevotionalsPageProps {
-  searchParams: Promise<{ category?: string }>;
+  searchParams: Promise<{ category?: string; page?: string }>;
 }
 
 export default async function PopularDevotionalsPage({
@@ -20,6 +21,7 @@ export default async function PopularDevotionalsPage({
 }: PopularDevotionalsPageProps) {
   const params = await searchParams;
   const category = params.category ?? 'all';
+  const page = parseBrowsePageParam(params.page);
 
   return (
     <MainLayout>
@@ -35,8 +37,8 @@ export default async function PopularDevotionalsPage({
       />
       <div className="container mx-auto px-4 pb-16">
         <DevotionalsCategoryFilter />
-        <Suspense fallback={<DevotionalsPageSkeleton />} key={category}>
-          <PopularDevotionalsSection category={category} />
+        <Suspense fallback={<DevotionalsPageSkeleton />} key={`${category}|${page}`}>
+          <PopularDevotionalsSection category={category} page={page} />
         </Suspense>
       </div>
     </MainLayout>

@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { SectionComp } from '@/components/general/SectionComp';
+import { useHubViewAllLink } from '@/lib/hooks/useHubViewAllLink';
 import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import type { LivingTip } from './DevotionalsPageClient';
 import { MultilinePreview } from '@/components/general/MultilinePreview';
@@ -15,13 +16,15 @@ interface ChristianLivingTipsSectionProps {
 }
 
 export const ChristianLivingTipsSection = ({ tips }: ChristianLivingTipsSectionProps) => {
+  const viewAllLink = useHubViewAllLink('/community/devotionals');
+
   return (
     <SectionComp
       icon={Lightbulb}
       iconColor="primary"
       heading="Christian Living Tips"
       subtext="Practical wisdom for daily life"
-      viewAllLink="/community/devotionals"
+      viewAllLink={viewAllLink}
       viewAllLabel="View All Tips"
       contentProps={{ enableAnimation: false }}>
       {tips.length === 0 ? (

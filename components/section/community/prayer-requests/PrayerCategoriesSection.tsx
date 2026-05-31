@@ -5,6 +5,7 @@ import { Heart, DollarSign, Users, Briefcase, Sparkles, Shield } from 'lucide-re
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { SectionComp } from '@/components/general/SectionComp';
+import { useHubViewAllLink } from '@/lib/hooks/useHubViewAllLink';
 import type { PrayerCategory } from './PrayerRequestsPageClient';
 import { mapPrayerCategoryTextToValue } from '@/lib/constants/communityCategorySelectOptions';
 
@@ -33,13 +34,15 @@ const categoryColors: Record<string, string> = {
 };
 
 export const PrayerCategoriesSection = ({ categories }: PrayerCategoriesSectionProps) => {
+  const viewAllLink = useHubViewAllLink('/community/prayer-requests');
+
   return (
     <SectionComp
       icon={Heart}
       iconColor="primary"
       heading="Browse by Category"
       subtext="Find prayer requests in specific areas"
-      viewAllLink="/community/prayer-requests"
+      viewAllLink={viewAllLink}
       viewAllLabel="View All Categories"
       contentProps={{ enableAnimation: false }}>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
