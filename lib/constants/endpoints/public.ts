@@ -81,6 +81,19 @@ export const PUBLIC_ENDPOINTS: Record<string, EndpointDetails> = {
     method: 'GET',
     isNotAuthenticated: true,
   },
+  PUBLIC_GET_ASK_A_PASTOR_PASTOR_ITEM: {
+    path: '/api/v1/public/ask-a-pastor/pastors',
+    method: 'GET',
+    isNotAuthenticated: true,
+  },
+  PUBLIC_QUESTION_VOTE: {
+    path: '/api/v1/public/ask-a-pastor/questions',
+    method: 'POST',
+  },
+  PUBLIC_ANSWER_LIKE: {
+    path: '/api/v1/public/ask-a-pastor/questions',
+    method: 'POST',
+  },
   PUBLIC_GET_POLLS: { path: '/api/v1/public/polls', method: 'GET', isNotAuthenticated: true },
   PUBLIC_GET_POLL_ITEM: { path: '/api/v1/public/polls', method: 'GET', isNotAuthenticated: true }, // /:idOrSlug
   PUBLIC_GET_ARTISTS: { path: '/api/v1/public/artists', method: 'GET', isNotAuthenticated: true },

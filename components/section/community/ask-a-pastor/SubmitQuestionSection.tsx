@@ -1,8 +1,8 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'motion/react';
-import { HelpCircle, Send, CheckCircle } from 'lucide-react';
+import { HelpCircle, Send, CheckCircle, Lock } from 'lucide-react';
 import { useState } from 'react';
 import { RegularBtn } from '@/components/atoms/RegularBtn';
 import { callApi } from '@/lib/services/callApi';
@@ -11,29 +11,37 @@ import { RegularInput } from '@/components/atoms/RegularInput';
 import { RegularSelect } from '@/components/atoms/RegularSelect';
 import { RegularTextarea } from '@/components/atoms/RegularTextarea';
 import { Card, CardContent } from '@/components/ui/card';
-
-const QUESTION_CATEGORY_OPTIONS = [
-  { value: 'faith', text: 'Faith' },
-  { value: 'relationships', text: 'Relationships' },
-  { value: 'spiritual-growth', text: 'Spiritual Growth' },
-  { value: 'finance', text: 'Finance' },
-  { value: 'bible-study', text: 'Bible Study' },
-  { value: 'prayer', text: 'Prayer' },
-  { value: 'other', text: 'Other' },
-];
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import { toast } from '@/components/atoms/Toast';
 import { SectionComp } from '@/components/general/SectionComp';
 import { LoginModal } from '@/components/auth/LoginModal';
 import { useAuthStore } from '@/lib/store/useAuthStore';
+import { ASK_A_PASTOR_CATEGORY_SELECT_OPTIONS } from '@/lib/constants/communityCategorySelectOptions';
+import type { AvailablePastor } from './AskAPastorPageClient';
 
-export const SubmitQuestionSection = () => {
+interface SubmitQuestionSectionProps {
+  pastors?: AvailablePastor[];
+}
+
+export const SubmitQuestionSection = ({ pastors = [] }: SubmitQuestionSectionProps) => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const preselectedPastorId = searchParams.get('pastor') ?? '';
   const user = useAuthStore(state => state.user);
   const [name, setName] = useState('');
   const [category, setCategory] = useState('');
   const [question, setQuestion] = useState('');
+  const [requestedPastorId, setRequestedPastorId] = useState('');
+  const effectivePastorId = requestedPastorId || preselectedPastorId;
+  const [isPrivate, setIsPrivate] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+
+  const pastorOptions = [
+    { value: '', text: 'Any available pastor' },
+    ...pastors.map(p => ({ value: p._id, text: p.name })),
+  ];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,6 +59,7 @@ export const SubmitQuestionSection = () => {
       });
       return;
     }
+
     if (name.length > 200 || question.length > 2000) {
       toast({
         title: 'Length limit',
@@ -67,6 +76,8 @@ export const SubmitQuestionSection = () => {
         question: question.trim(),
         name: name.trim() || undefined,
         category: category.trim() || undefined,
+        isPrivate,
+        requestedPastorId: effectivePastorId || undefined,
       },
     });
 
@@ -83,14 +94,17 @@ export const SubmitQuestionSection = () => {
 
     toast({
       title: 'Question Submitted!',
-      description:
-        'Your question has been submitted successfully. Our pastors will review and answer it soon.',
+      description: isPrivate
+        ? 'Your private question was submitted. Only you and assigned pastors can view it.'
+        : 'Your question has been submitted successfully. Our pastors will review and answer it soon.',
       variant: 'success',
     });
 
     setName('');
     setCategory('');
     setQuestion('');
+    setRequestedPastorId('');
+    setIsPrivate(false);
     router.refresh();
   };
 
@@ -126,9 +140,19 @@ export const SubmitQuestionSection = () => {
                     value={category}
                     onSelectChange={setCategory}
                     placeholder="Select category"
-                    options={QUESTION_CATEGORY_OPTIONS}
+                    options={ASK_A_PASTOR_CATEGORY_SELECT_OPTIONS}
                   />
                 </div>
+
+                {pastors.length > 0 ? (
+                  <RegularSelect
+                    label="Preferred pastor (optional)"
+                    value={effectivePastorId}
+                    onSelectChange={setRequestedPastorId}
+                    placeholder="Any available pastor"
+                    options={pastorOptions}
+                  />
+                ) : null}
 
                 <RegularTextarea
                   id="question"
@@ -142,6 +166,24 @@ export const SubmitQuestionSection = () => {
                   maxLength={2000}
                 />
 
+                <div className="flex items-center justify-between gap-4 rounded-lg border border-border/60 px-4 py-3">
+                  <div className="space-y-1">
+                    <Label htmlFor="private-question" className="flex items-center gap-2">
+                      <Lock className="h-4 w-4" />
+                      Private question
+                    </Label>
+                    <p className="text-xs text-muted-foreground">
+                      Only you and pastors can see private questions. They won&apos;t appear in
+                      public lists.
+                    </p>
+                  </div>
+                  <Switch
+                    id="private-question"
+                    checked={isPrivate}
+                    onCheckedChange={setIsPrivate}
+                  />
+                </div>
+
                 <RegularBtn
                   type="submit"
                   size="full"
@@ -151,15 +193,6 @@ export const SubmitQuestionSection = () => {
                   RightIcon={Send}
                   rightIconProps={{ className: 'w-4 h-4' }}
                   text={isSubmitting ? 'Submitting...' : 'Submit Question'}
-                  onDisabledClick={() => {
-                    if (isSubmitting) {
-                      toast({
-                        title: 'Please wait',
-                        description: 'Submitting your question…',
-                        variant: 'info',
-                      });
-                    }
-                  }}
                 />
               </form>
             </CardContent>
@@ -179,8 +212,8 @@ export const SubmitQuestionSection = () => {
               <ul className="text-sm text-muted-foreground space-y-1">
                 <li>• Be respectful and specific in your questions</li>
                 <li>• Questions are answered by experienced pastors</li>
-                <li>• You can choose to remain anonymous</li>
-                <li>• All questions are moderated before being published</li>
+                <li>• You can choose to remain anonymous or ask privately</li>
+                <li>• All public questions are moderated before being published</li>
                 <li>• Answers are based on biblical principles and pastoral wisdom</li>
               </ul>
             </div>

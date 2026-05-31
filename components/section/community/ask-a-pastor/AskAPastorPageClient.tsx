@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { Suspense } from 'react';
 import { ActiveQuestionsSection } from './ActiveQuestionsSection';
 import { SubmitQuestionSection } from './SubmitQuestionSection';
 import { AnsweredQuestionsSection } from './AnsweredQuestionsSection';
@@ -21,6 +22,11 @@ export interface Question {
   answers: number;
   timeAgo: string;
   urgent: boolean;
+  isAnswered?: boolean;
+  isPrivate?: boolean;
+  upvotes?: number;
+  downvotes?: number;
+  slug?: string;
 }
 
 export interface AnsweredQuestion {
@@ -31,6 +37,10 @@ export interface AnsweredQuestion {
   category: string;
   answeredDate: string;
   helpful: number;
+  upvotes?: number;
+  downvotes?: number;
+  answersCount?: number;
+  slug?: string;
 }
 
 export interface AvailablePastor {
@@ -42,6 +52,8 @@ export interface AvailablePastor {
   expertise: string[];
   questionsAnswered: number;
   rating: number;
+  slug?: string;
+  bio?: string;
 }
 
 export interface QuestionCategory {
@@ -93,7 +105,9 @@ export const AskAPastorPageClient = ({
       <QuestionCategoriesSection categories={categories} />
       <AnsweredQuestionsSection questions={answeredQuestions} />
       <AvailablePastorsSection pastors={availablePastors} />
-      <SubmitQuestionSection />
+      <Suspense fallback={null}>
+        <SubmitQuestionSection pastors={availablePastors} />
+      </Suspense>
       <CommunityCTA />
     </>
   );

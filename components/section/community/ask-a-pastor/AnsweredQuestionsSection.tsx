@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { useState } from 'react';
 import { SectionComp } from '@/components/general/SectionComp';
 import type { AnsweredQuestion } from './AskAPastorPageClient';
+import { QuestionVoteButtons } from './QuestionVoteButtons';
 import { MultilinePreview } from '@/components/general/MultilinePreview';
 
 interface AnsweredQuestionsSectionProps {
@@ -47,7 +48,7 @@ export const AnsweredQuestionsSection = ({ questions }: AnsweredQuestionsSection
             transition={{ delay: index * 0.1 }}
             whileHover={{ y: -4 }}
             className="bg-card rounded-2xl p-6 shadow-sm border border-border/50 hover:shadow-md transition-all">
-            <Link href={`/community/ask-a-pastor/${question._id}`}>
+            <Link href={`/community/ask-a-pastor/${question.slug ?? question._id}`}>
               <div className="flex items-start gap-3 mb-4">
                 <div className="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center shrink-0">
                   <CheckCircle2 className="w-6 h-6 text-green-600 dark:text-green-400" />
@@ -77,15 +78,27 @@ export const AnsweredQuestionsSection = ({ questions }: AnsweredQuestionsSection
                 />
               </div>
 
-              <div className="flex items-center justify-between pt-4 border-t border-border/50">
-                <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                  <ThumbsUp className="w-3 h-3" />
-                  {question.helpful} found this helpful
+              <div className="flex items-center justify-between pt-4 border-t border-border/50 flex-wrap gap-3">
+                <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                  <span className="flex items-center gap-1">
+                    <ThumbsUp className="w-3 h-3" />
+                    {question.helpful} found this helpful
+                  </span>
+                  {(question.answersCount ?? 0) > 1 ? (
+                    <span>{question.answersCount} answers</span>
+                  ) : null}
                 </div>
-                <span className="inline-flex items-center gap-1 text-sm text-primary">
-                  Read Full Answer
-                  <ArrowRight className="w-3 h-3" />
-                </span>
+                <div className="flex items-center gap-3" onClick={e => e.preventDefault()}>
+                  <QuestionVoteButtons
+                    questionId={question.slug ?? question._id}
+                    initialUpvotes={question.upvotes ?? 0}
+                    initialDownvotes={question.downvotes ?? 0}
+                  />
+                  <span className="inline-flex items-center gap-1 text-sm text-primary">
+                    Read Full Answer
+                    <ArrowRight className="w-3 h-3" />
+                  </span>
+                </div>
               </div>
             </Link>
           </motion.div>

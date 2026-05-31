@@ -189,6 +189,14 @@ export interface PrayerRequestDetailData {
 
 // --- Ask a pastor ---
 
+export interface PastorQuestionAnswer {
+  _id: string;
+  answer: string;
+  answeredAt?: string;
+  likes: number;
+  pastor?: PastorListItem | null;
+}
+
 export interface PastorListItem {
   _id: string;
   name: string;
@@ -214,12 +222,20 @@ export interface QuestionListItem {
   author: string;
   views: number;
   answers: number;
+  answersCount?: number;
   timeAgo: string;
   urgent: boolean;
   answer?: string;
   answeredDate?: string;
   helpful?: number;
-  pastor?: PastorDetail;
+  pastor?: PastorDetail | string;
+  isAnswered?: boolean;
+  isPrivate?: boolean;
+  upvotes?: number;
+  downvotes?: number;
+  requestedPastor?: PastorDetail | null;
+  status?: string;
+  slug?: string;
 }
 
 export interface QuestionDetail extends QuestionListItem {
@@ -228,6 +244,8 @@ export interface QuestionDetail extends QuestionListItem {
   answeredAt?: string;
   createdAt?: string;
   updatedAt?: string;
+  closedAt?: string;
+  answersList?: PastorQuestionAnswer[];
 }
 
 export interface QuestionsListData {
