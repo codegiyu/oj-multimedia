@@ -121,6 +121,11 @@ export const sidebarLinksData: ISidebarLinkGroup[] = [
         path: { prefix: '/admin', suffix: '/dashboard/pastors' },
       },
       {
+        LucideIcon: UserRound,
+        page: 'Pastor Applications',
+        path: { prefix: '/admin', suffix: '/dashboard/pastor-applications' },
+      },
+      {
         LucideIcon: Users,
         page: 'Users',
         path: { prefix: '/admin', suffix: '/dashboard/users' },

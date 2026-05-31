@@ -13,6 +13,7 @@ import { RegularBtn } from '@/components/atoms/RegularBtn';
 import { RegularInput } from '@/components/atoms/RegularInput';
 import { RegularTextarea } from '@/components/atoms/RegularTextarea';
 import { MediaUrlOrUploadField } from '@/components/general/MediaUrlOrUploadField';
+import { AdminUserAccountPicker } from '@/components/section/admin/shared/AdminUserAccountPicker';
 import { callApi } from '@/lib/services/callApi';
 import { useFileUpload } from '@/lib/hooks/use-file-upload';
 import { normalizeOptionalHttpUrl } from '@/lib/utils/adminFormValidation';
@@ -31,6 +32,7 @@ const defaultForm = {
   church: '',
   bio: '',
   image: '',
+  ownerUserId: '',
 };
 
 export function CreatePastorModal({
@@ -77,6 +79,7 @@ export function CreatePastorModal({
           church: p.church ?? '',
           bio: (p as { bio?: string }).bio ?? '',
           image: p.image ?? '',
+          ownerUserId: (p as { ownerUserId?: string }).ownerUserId ?? '',
         });
       } finally {
         if (!cancelled) setDetailLoading(false);
@@ -120,6 +123,7 @@ export function CreatePastorModal({
             church: form.church?.trim() ?? '',
             bio: form.bio?.trim() ?? '',
             image: finalImage || undefined,
+            ...(form.ownerUserId ? { ownerUserId: form.ownerUserId } : {}),
           },
         });
         if (res.type !== 'success') throw new Error(res.error?.message ?? 'Create failed');
@@ -215,6 +219,14 @@ export function CreatePastorModal({
               defaultMode="upload"
               onPendingFileChange={setPendingImage}
             />
+            {!isEdit ? (
+              <AdminUserAccountPicker
+                label="Link user account (optional)"
+                value={form.ownerUserId}
+                onChange={userId => setForm(f => ({ ...f, ownerUserId: userId }))}
+                description="Link an existing user as the pastor portal owner."
+              />
+            ) : null}
             <DialogFooter>
               <RegularBtn
                 type="button"

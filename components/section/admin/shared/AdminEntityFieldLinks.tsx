@@ -52,6 +52,7 @@ export function resolveQuestionPastorId(pastor: QuestionListItem['pastor']): str
 
 export function questionPastorLabel(pastor: QuestionListItem['pastor']): string {
   if (!pastor) return '—';
+  if (typeof pastor === 'string') return pastor.trim() || '—';
 
   return pastor.name?.trim() || '—';
 }
