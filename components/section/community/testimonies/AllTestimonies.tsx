@@ -10,7 +10,7 @@ import { useState, useEffect } from 'react';
 import { SectionComp } from '@/components/general/SectionComp';
 import { MultilinePreview } from '@/components/general/MultilinePreview';
 import { ListPagination } from '@/components/general/ListPagination';
-import { EmptyState } from '@/components/section/news/EmptyState';
+import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import type { Testimony } from './TestimoniesPageClient';
 import type { Pagination } from '@/lib/types/community';
 import { TESTIMONY_CATEGORY_FILTER_OPTIONS } from '@/lib/constants/communityCategorySelectOptions';
@@ -134,13 +134,12 @@ export const AllTestimonies = ({ testimonies, pagination = null }: AllTestimonie
       </div>
 
       {itemsToShow.length === 0 && (
-        <EmptyState
+        <SectionEmptyState
           title="No testimonies in this category"
           description="Try a different category or check back later for new testimonies."
-          icon={<Quote className="w-12 h-12 text-muted-foreground" />}
+          icon={Quote}
           actionLabel="View all testimonies"
           actionHref="/community/testimonies"
-          showDefaultActions={false}
         />
       )}
 

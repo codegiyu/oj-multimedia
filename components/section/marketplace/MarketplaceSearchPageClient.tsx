@@ -9,7 +9,7 @@ import { DataLoadError } from '@/components/general/DataLoadError';
 import { ListPagination } from '@/components/general/ListPagination';
 import { Search } from 'lucide-react';
 import Link from 'next/link';
-import { EmptyState } from '@/components/section/news/EmptyState';
+import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import { useQueryState, parseAsString } from 'nuqs';
 import type {
   IMarketplaceCategory,
@@ -179,7 +179,7 @@ export function MarketplaceSearchPageClient({
           </div>
 
           {products.length === 0 ? (
-            <EmptyState
+            <SectionEmptyState
               title={
                 q || category || vendor ? 'No products match your filters' : 'Start your search'
               }
@@ -188,10 +188,9 @@ export function MarketplaceSearchPageClient({
                   ? 'Try adjusting your search or filters to find products.'
                   : 'Enter a search term or choose filters to find products.'
               }
-              icon={<Search className="w-12 h-12 text-muted-foreground" />}
+              icon={Search}
               actionLabel="Browse all products"
               actionHref="/marketplace/products"
-              showDefaultActions={false}
             />
           ) : (
             <>

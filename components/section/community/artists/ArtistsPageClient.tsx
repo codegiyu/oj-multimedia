@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { ArtistCard } from '@/components/cards/ArtistCard';
 import { SectionContainer } from '@/components/general/SectionContainer';
 import { DataLoadError } from '@/components/general/DataLoadError';
-import { EmptyState } from '@/components/section/news/EmptyState';
+import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import { ListPagination } from '@/components/general/ListPagination';
 import { Users } from 'lucide-react';
 import type { Pagination } from '@/lib/types/community';
@@ -49,13 +49,12 @@ export const ArtistsPageClient = ({
     return (
       <section className="py-12">
         <div className="container mx-auto px-4">
-          <EmptyState
+          <SectionEmptyState
             title="No artists yet"
             description="Community artists will appear here. Check back later."
-            icon={<Users className="w-12 h-12 text-muted-foreground" />}
+            icon={Users}
             actionLabel="Back to Community"
             actionHref="/community"
-            showDefaultActions={false}
           />
         </div>
       </section>

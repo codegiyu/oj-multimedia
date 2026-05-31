@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { motion } from 'motion/react';
 import { AlertTriangle } from 'lucide-react';
 import { SectionComp } from '@/components/general/SectionComp';
-import { EmptyState } from './EmptyState';
+import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import { NewsPriorityIndicator } from './NewsPriorityIndicator';
 
 export interface BreakingNewsStory {
@@ -45,10 +45,12 @@ export const BreakingNews = ({ stories }: BreakingNewsProps) => {
         viewAllLink="/news/breaking"
         background="bg-destructive/5 border-y border-destructive/10"
         contentProps={{ enableAnimation: false }}>
-        <EmptyState
+        <SectionEmptyState
           title="No breaking stories"
           description="There are no high-priority stories right now. Check back soon."
-          icon={<AlertTriangle className="w-12 h-12 text-muted-foreground" />}
+          icon={AlertTriangle}
+          actionLabel="View breaking news"
+          actionHref="/news/breaking"
         />
       </SectionComp>
     );

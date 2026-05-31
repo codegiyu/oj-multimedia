@@ -6,7 +6,7 @@ import { RecentPolls } from './RecentPolls';
 import { CreatePoll } from './CreatePoll';
 import { SectionContainer } from '@/components/general/SectionContainer';
 import { DataLoadError } from '@/components/general/DataLoadError';
-import { EmptyState } from '@/components/section/news/EmptyState';
+import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import { BarChart3 } from 'lucide-react';
 
 export interface PollOption {
@@ -58,13 +58,12 @@ export const PollsPageClient = ({
     return (
       <>
         <SectionContainer>
-          <EmptyState
+          <SectionEmptyState
             title="No polls yet"
             description="Be the first to create a poll and see what the community thinks."
-            icon={<BarChart3 className="w-12 h-12 text-muted-foreground" />}
+            icon={BarChart3}
             actionLabel="Create a poll"
             actionHref="#create-poll"
-            showDefaultActions={false}
           />
         </SectionContainer>
         <div id="create-poll">

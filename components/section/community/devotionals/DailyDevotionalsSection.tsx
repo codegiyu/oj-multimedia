@@ -6,7 +6,7 @@ import { Calendar, Clock, Eye } from 'lucide-react';
 import Link from 'next/link';
 import { SectionComp } from '@/components/general/SectionComp';
 import { DataLoadError } from '@/components/general/DataLoadError';
-import { EmptyState } from '@/components/section/news/EmptyState';
+import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import { DevotionalSaveButton } from '@/components/content/DevotionalSaveButton';
 import type { DailyDevotional } from './DevotionalsPageClient';
 
@@ -35,13 +35,12 @@ export const DailyDevotionalsSection = ({
   if (devotionals.length === 0) {
     return (
       <div className="container mx-auto px-4 pb-16">
-        <EmptyState
+        <SectionEmptyState
           title="No latest devotionals"
           description="Check back later for new daily devotionals."
-          icon={<Calendar className="w-12 h-12 text-muted-foreground" />}
+          icon={Calendar}
           actionLabel="Back to Devotionals"
           actionHref="/community/devotionals"
-          showDefaultActions={false}
         />
       </div>
     );

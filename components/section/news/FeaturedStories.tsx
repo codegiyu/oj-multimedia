@@ -4,7 +4,7 @@ import { motion } from 'motion/react';
 import { Clock, Eye, MessageCircle, Sparkles, User, Calendar } from 'lucide-react';
 import Link from 'next/link';
 import { SectionComp } from '@/components/general/SectionComp';
-import { EmptyState } from './EmptyState';
+import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import { FillImage } from '@/components/general/FillImage';
 
 export interface FeaturedStory {
@@ -36,10 +36,11 @@ export const FeaturedStories = ({ stories: featuredStories }: FeaturedStoriesPro
         heading="Featured Stories"
         viewAllLink="/news/featured"
         contentProps={{ enableAnimation: false }}>
-        <EmptyState
+        <SectionEmptyState
           title="No Featured Stories"
           description="We couldn't find any featured stories in this category. Try selecting a different category or check back later for new content."
-          icon={<Sparkles className="w-12 h-12 text-muted-foreground" />}
+          icon={Sparkles}
+          showDefaultActions
         />
       </SectionComp>
     );

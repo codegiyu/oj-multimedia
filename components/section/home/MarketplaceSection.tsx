@@ -6,7 +6,7 @@ import { ShoppingBag, Store, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { SectionComp } from '@/components/general/SectionComp';
-import { EmptyState } from '@/components/section/news/EmptyState';
+import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import { FillImage } from '@/components/general/FillImage';
 import { buildWhatsappLink } from '@/lib/utils/marketplace';
 
@@ -61,13 +61,12 @@ export const MarketplaceSection = ({ products }: MarketplaceSectionProps) => {
         enableAnimation: false,
       }}>
       {products.length === 0 ? (
-        <EmptyState
+        <SectionEmptyState
           title="No marketplace products yet"
           description="New items will appear here when vendors list them. Check back soon."
-          icon={<ShoppingBag className="w-12 h-12 text-muted-foreground" />}
+          icon={ShoppingBag}
           actionLabel="Browse marketplace"
           actionHref="/marketplace"
-          showDefaultActions={false}
         />
       ) : (
         <div

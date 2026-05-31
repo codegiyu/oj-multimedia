@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { formatPrice } from '@/lib/utils/marketplace';
 import { MessageCircle, Package, Loader2 } from 'lucide-react';
 import Link from 'next/link';
-import { EmptyState } from '@/components/section/news/EmptyState';
+import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import { callApi } from '@/lib/services/callApi';
 import type { PopulatedMarketplaceOrder } from '@/lib/constants/endpoints';
 import { toast } from 'sonner';
@@ -133,13 +133,12 @@ export function OrdersPageClient() {
     return (
       <MainLayout>
         <SectionContainer className="py-16 md:py-20">
-          <EmptyState
+          <SectionEmptyState
             title="No orders yet"
             description="Your order history will appear here after you place an order."
-            icon={<Package className="w-12 h-12 text-muted-foreground" />}
+            icon={Package}
             actionLabel="Browse Marketplace"
             actionHref="/marketplace"
-            showDefaultActions={false}
           />
         </SectionContainer>
       </MainLayout>

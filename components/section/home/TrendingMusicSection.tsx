@@ -4,7 +4,7 @@ import { useMemo, useRef } from 'react';
 import { Flame } from 'lucide-react';
 import { MusicCard } from '@/components/cards/MusicCard';
 import { SectionComp } from '@/components/general/SectionComp';
-import { EmptyState } from '@/components/section/news/EmptyState';
+import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import { useQueryState, parseAsString } from 'nuqs';
 import { motion } from 'motion/react';
 
@@ -73,13 +73,12 @@ export const TrendingMusicSection = ({ music: trendingMusic }: TrendingMusicSect
         enableAnimation: false,
       }}>
       {filteredMusic.length === 0 ? (
-        <EmptyState
+        <SectionEmptyState
           title="No trending music in this genre"
           description="Try a different genre or check back soon for new releases."
-          icon={<Flame className="w-12 h-12 text-muted-foreground" />}
+          icon={Flame}
           actionLabel="View all music"
           actionHref="/music/trending"
-          showDefaultActions={false}
         />
       ) : (
         <div

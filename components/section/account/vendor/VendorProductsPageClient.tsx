@@ -14,7 +14,7 @@ import type { IVendorProductsRes } from '@/lib/constants/endpoints';
 import { getProductCategoryName, getProductSubCategoryName } from '@/lib/constants/endpoints';
 import type { ApiErrorResponse } from '@/lib/types/http';
 import { toast } from 'sonner';
-import { EmptyState } from '@/components/section/news/EmptyState';
+import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import { FillImage } from '@/components/general/FillImage';
 import {
   DropdownMenu,
@@ -114,13 +114,12 @@ function VendorProductsList({
 
       {products.length === 0 ? (
         showOnboardingEmpty ? (
-          <EmptyState
+          <SectionEmptyState
             title="No products yet"
             description="Add your first product to start selling on the marketplace."
             icon={<Package className="h-12 w-12 text-muted-foreground" />}
             actionLabel="Add your first product"
             actionHref="/account/vendor/products/new"
-            showDefaultActions={false}
           />
         ) : (
           <Card className="border-border/80 p-8 text-center text-sm text-muted-foreground">

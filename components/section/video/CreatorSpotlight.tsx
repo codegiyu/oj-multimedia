@@ -3,7 +3,7 @@
 import { motion } from 'motion/react';
 import { Users } from 'lucide-react';
 import { SectionComp } from '@/components/general/SectionComp';
-import { EmptyState } from '@/components/section/news/EmptyState';
+import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import { ArtistCard } from '@/components/cards/ArtistCard';
 
 export interface FeaturedCreator {
@@ -37,33 +37,32 @@ export const CreatorSpotlight = ({ creators: featuredCreators }: CreatorSpotligh
       viewAllLabel="Discover Creators"
       contentProps={{ enableAnimation: false }}>
       {featuredCreators.length === 0 ? (
-        <EmptyState
+        <SectionEmptyState
           title="No creators in the spotlight yet"
           description="Active video creators will be featured here."
-          icon={<Users className="w-12 h-12 text-muted-foreground" />}
+          icon={Users}
           actionLabel="Discover creators"
           actionHref="/community/artists"
-          showDefaultActions={false}
         />
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
           {featuredCreators.map((creator, index) => (
-          <motion.div
-            key={creator._id}
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: index * 0.05 }}>
-            <ArtistCard
-              _id={creator._id}
-              name={creator.name}
-              image={creator.avatar}
-              genre={creator.category}
-              followers={creator.followers}
-              verified={creator.verified}
-            />
-          </motion.div>
-        ))}
+            <motion.div
+              key={creator._id}
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.05 }}>
+              <ArtistCard
+                _id={creator._id}
+                name={creator.name}
+                image={creator.avatar}
+                genre={creator.category}
+                followers={creator.followers}
+                verified={creator.verified}
+              />
+            </motion.div>
+          ))}
         </div>
       )}
     </SectionComp>

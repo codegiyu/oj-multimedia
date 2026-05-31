@@ -12,7 +12,7 @@ import { FillImage } from '@/components/general/FillImage';
 import { NewsCategories } from './NewsCategories';
 import type { CategoryNavItem } from '@/lib/utils/contentCategoryNav';
 import { NewsletterCTA } from '../shared';
-import { EmptyState } from './EmptyState';
+import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import { SectionComp } from '@/components/general/SectionComp';
 import type { VideoNewsItem } from './VideoNews';
 
@@ -77,10 +77,11 @@ export const VideoNewsPageClient = ({
         background="bg-muted/30"
         contentProps={{ enableAnimation: false }}>
         {itemsToShow.length === 0 ? (
-          <EmptyState
+          <SectionEmptyState
             title="No Video Stories"
             description="We couldn't find any video stories in this category. Try selecting a different category or check back later for new content."
-            icon={<Play className="w-12 h-12 text-muted-foreground" />}
+            icon={Play}
+            showDefaultActions
           />
         ) : (
           <>

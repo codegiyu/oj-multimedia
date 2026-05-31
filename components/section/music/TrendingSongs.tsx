@@ -5,7 +5,7 @@ import { Flame } from 'lucide-react';
 import { useRef } from 'react';
 import { SectionComp } from '@/components/general/SectionComp';
 import { MusicCard } from '@/components/cards/MusicCard';
-import { EmptyState } from '../news/EmptyState';
+import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import type { MusicAlbumSummary } from '@/lib/constants/endpoints';
 
 export interface TrendingSong {
@@ -46,10 +46,11 @@ export const TrendingSongs = ({ songs: trendingSongs }: TrendingSongsProps) => {
         subtext="What everyone's listening to"
         viewAllLink="/music/trending"
         contentProps={{ enableAnimation: false }}>
-        <EmptyState
+        <SectionEmptyState
           title="No trending songs"
           description="No trending songs in this category yet. Try another category or check back later."
-          icon={<Flame className="w-12 h-12 text-muted-foreground" />}
+          icon={Flame}
+          showDefaultActions
         />
       </SectionComp>
     );

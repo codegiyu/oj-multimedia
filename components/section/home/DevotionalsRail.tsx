@@ -5,7 +5,7 @@ import { FillImage } from '@/components/general/FillImage';
 import { motion } from 'motion/react';
 import { BookOpen } from 'lucide-react';
 import { SectionComp } from '@/components/general/SectionComp';
-import { EmptyState } from '@/components/section/news/EmptyState';
+import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import { MultilinePreview } from '@/components/general/MultilinePreview';
 
 export interface HomeDevotionalCard {
@@ -31,13 +31,12 @@ export function DevotionalsRail({ items }: DevotionalsRailProps) {
       showPrevNext={false}
       contentProps={{ className: '', enableAnimation: false }}>
       {items.length === 0 ? (
-        <EmptyState
+        <SectionEmptyState
           title="No devotionals yet"
           description="New devotionals will show up here."
-          icon={<BookOpen className="w-12 h-12 text-muted-foreground" />}
+          icon={BookOpen}
           actionLabel="Community hub"
           actionHref="/community"
-          showDefaultActions={false}
         />
       ) : (
         <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">

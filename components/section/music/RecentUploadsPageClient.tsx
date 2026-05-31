@@ -6,7 +6,7 @@ import { Sparkles, ArrowRight } from 'lucide-react';
 import { MusicCategories } from './MusicCategories';
 import type { CategoryNavItem } from '@/lib/utils/contentCategoryNav';
 import { MusicUploadCTA } from '../shared/MusicUploadCTA';
-import { EmptyState } from '../news/EmptyState';
+import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import { SectionComp } from '@/components/general/SectionComp';
 import { MusicCard } from '@/components/cards/MusicCard';
 import type { RecentUpload } from './RecentUploads';
@@ -44,10 +44,11 @@ export const RecentUploadsPageClient = ({
         viewAllLink="/music"
         contentProps={{ enableAnimation: false }}>
         {itemsToShow.length === 0 ? (
-          <EmptyState
+          <SectionEmptyState
             title="No Recent Uploads"
             description="We couldn't find any recent uploads in this category. Try selecting a different category or check back later for new content."
-            icon={<Sparkles className="w-12 h-12 text-muted-foreground" />}
+            icon={Sparkles}
+            showDefaultActions
           />
         ) : (
           <>

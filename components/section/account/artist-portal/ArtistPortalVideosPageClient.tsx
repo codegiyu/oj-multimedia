@@ -13,7 +13,7 @@ import { Video, Loader2, MessageCircle, Plus, Pencil } from 'lucide-react';
 import { ArtistVideoFormModalDynamic } from './ArtistVideoFormModalDynamic';
 import { ArtistContentMonetizationBadge } from './ArtistContentMonetizationBadge';
 import { DashboardThumbnail } from '@/components/general/DashboardThumbnail';
-import { EmptyState } from '@/components/section/news/EmptyState';
+import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import { FilterableDataPage } from '@/components/general/FilterableDataPage';
 import {
   buildAccountArtistContentQuery,
@@ -189,13 +189,12 @@ export function ArtistPortalVideosPageClient({
 
       {videos.length === 0 ? (
         showOnboardingEmpty ? (
-          <EmptyState
+          <SectionEmptyState
             title="No videos yet"
             description="Add a draft from this page or message the team on the submit page. Admins publish after review."
-            icon={<Video className="w-12 h-12 text-muted-foreground" />}
+            icon={Video}
             actionLabel="Add video"
             onAction={openCreate}
-            showDefaultActions={false}
           />
         ) : (
           <Card className="p-8 text-center text-sm text-muted-foreground">

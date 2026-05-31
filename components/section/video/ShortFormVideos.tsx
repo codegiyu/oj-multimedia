@@ -5,7 +5,7 @@ import { Zap } from 'lucide-react';
 import { useRef } from 'react';
 import { SectionComp } from '@/components/general/SectionComp';
 import { VideoCard } from '@/components/cards/VideoCard';
-import { EmptyState } from '../news/EmptyState';
+import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 
 export interface ShortFormVideo {
   _id: string;
@@ -45,10 +45,11 @@ export const ShortFormVideos = ({ videos: shortFormVideos }: ShortFormVideosProp
         viewAllLink="/videos/short-form"
         background="bg-muted/30"
         contentProps={{ enableAnimation: false }}>
-        <EmptyState
+        <SectionEmptyState
           title="No short form videos"
           description="No short form videos in this category yet. Check back later."
-          icon={<Zap className="w-12 h-12 text-muted-foreground" />}
+          icon={Zap}
+          showDefaultActions
         />
       </SectionComp>
     );

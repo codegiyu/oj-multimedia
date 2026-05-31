@@ -12,7 +12,7 @@ import { NewsCategories } from './NewsCategories';
 import type { CategoryNavItem } from '@/lib/utils/contentCategoryNav';
 import { FillImage } from '@/components/general/FillImage';
 import { NewsletterCTA } from '../shared';
-import { EmptyState } from './EmptyState';
+import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import { SectionComp } from '@/components/general/SectionComp';
 import { MultilinePreview } from '@/components/general/MultilinePreview';
 import type { FeaturedStory } from './FeaturedStories';
@@ -77,10 +77,11 @@ export const FeaturedStoriesPageClient = ({
         viewAllLink="/news/featured"
         contentProps={{ enableAnimation: false }}>
         {itemsToShow.length === 0 ? (
-          <EmptyState
+          <SectionEmptyState
             title="No Featured Stories"
             description="We couldn't find any featured stories in this category. Try selecting a different category or check back later for new content."
-            icon={<Sparkles className="w-12 h-12 text-muted-foreground" />}
+            icon={Sparkles}
+            showDefaultActions
           />
         ) : (
           <>

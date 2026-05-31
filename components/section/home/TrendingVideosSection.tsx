@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { VideoCard } from '@/components/cards/VideoCard';
 import { SectionComp } from '@/components/general/SectionComp';
-import { EmptyState } from '@/components/section/news/EmptyState';
+import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import { useQueryState, parseAsString } from 'nuqs';
 import { motion } from 'motion/react';
 
@@ -83,13 +83,12 @@ export const TrendingVideosSection = ({ videos: trendingVideos }: TrendingVideos
         enableAnimation: false,
       }}>
       {filteredVideos.length === 0 ? (
-        <EmptyState
+        <SectionEmptyState
           title="No trending videos in this category"
           description="Try a different filter or check back later for new content."
-          icon={<Video className="w-12 h-12 text-muted-foreground" />}
+          icon={Video}
           actionLabel="View all videos"
           actionHref="/videos/trending"
-          showDefaultActions={false}
         />
       ) : (
         <div

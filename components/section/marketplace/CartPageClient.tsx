@@ -20,7 +20,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { EmptyState } from '@/components/section/news/EmptyState';
+import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import { FillImage, FixedImage } from '@/components/general/FillImage';
 
 export function CartPageClient() {
@@ -85,15 +85,14 @@ export function CartPageClient() {
     return (
       <MainLayout>
         <SectionContainer className="py-16 md:py-20">
-          <EmptyState
+          <SectionEmptyState
             title="Your cart is empty"
             description={
               loading ? 'Loading your cart...' : 'Add items from the marketplace to get started.'
             }
-            icon={<ShoppingCart className="w-12 h-12 text-muted-foreground" />}
+            icon={ShoppingCart}
             actionLabel="Browse Marketplace"
             actionHref="/marketplace"
-            showDefaultActions={false}
           />
         </SectionContainer>
       </MainLayout>
