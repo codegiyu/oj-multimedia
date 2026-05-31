@@ -6,7 +6,8 @@ import { BookOpen, Clock, ShieldAlert } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import type { IPastorApplication, PastorPortalState } from '@/lib/constants/endpoints';
-import { PastorApplicationForm } from './PastorApplicationForm';
+import { DashboardProfileRequiredPanel } from '@/components/section/account/shared/DashboardProfileRequiredPanel';
+import { PastorApplicationModal } from '@/components/section/account/shared/PastorApplicationModal';
 
 export type PastorPortalGateState = 'none' | 'pending' | 'rejected' | 'approved';
 
@@ -31,6 +32,7 @@ export function PastorPortalRouteGate({
 }: PastorPortalRouteGateProps) {
   const router = useRouter();
   const [portalState, setPortalState] = useState(normalizePortalState(initialPortalState));
+  const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
     setPortalState(normalizePortalState(initialPortalState));
@@ -98,21 +100,44 @@ export function PastorPortalRouteGate({
           </CardContent>
         </Card>
 
-        {canReapply ? <PastorApplicationForm initialApplication={initialApplication} /> : null}
+        {canReapply ? (
+          <>
+            <DashboardProfileRequiredPanel
+              icon={BookOpen}
+              title="Reapply to become a pastor"
+              description="Update your application details and submit again for review."
+              actionLabel="Reapply as pastor"
+              onAction={() => setModalOpen(true)}
+              secondaryHint="Our team will review your updated application."
+              className="min-h-0 py-8"
+            />
+            <PastorApplicationModal
+              open={modalOpen}
+              onOpenChange={setModalOpen}
+              initialApplication={initialApplication}
+              onApplied={() => router.refresh()}
+            />
+          </>
+        ) : null}
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <div className="text-center max-w-lg mx-auto space-y-2">
-        <BookOpen className="mx-auto h-10 w-10 text-primary" />
-        <h2 className="text-xl font-semibold">Become a pastor on OJ</h2>
-        <p className="text-sm text-muted-foreground">
-          Apply to answer community questions, manage your profile, and serve through Ask a Pastor.
-        </p>
-      </div>
-      <PastorApplicationForm />
-    </div>
+    <>
+      <DashboardProfileRequiredPanel
+        icon={BookOpen}
+        title="No pastor profile yet"
+        description="Apply to answer community questions, manage your profile, and serve through Ask a Pastor."
+        actionLabel="Become a pastor"
+        onAction={() => setModalOpen(true)}
+        secondaryHint="You will complete a short form. Our team will review your application before your pastor tools unlock."
+      />
+      <PastorApplicationModal
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        onApplied={() => router.refresh()}
+      />
+    </>
   );
 }
