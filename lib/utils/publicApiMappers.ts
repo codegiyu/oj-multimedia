@@ -487,7 +487,7 @@ export type PublicAlbumCard = {
   _id: string;
   slug: string;
   title: string;
-  artist: { _id: string; name: string };
+  artist: { _id: string; name: string; slug?: string };
   cover: string;
   trackCount: number;
   releaseDate?: string | null;
@@ -500,6 +500,10 @@ function toAlbumArtistSummary(item: PublicAlbumListItem) {
     ? {
         _id: typeof a === 'string' ? a : typeof a._id === 'string' ? a._id : String(a._id),
         name: typeof a === 'string' ? 'Unknown' : (a.name ?? 'Unknown'),
+        slug:
+          typeof a === 'object' && a && 'slug' in a && a.slug
+            ? String(a.slug)
+            : undefined,
       }
     : { _id: '', name: 'Unknown' };
 }

@@ -72,7 +72,15 @@ export function AlbumDetailPageClient({ album, tracks }: AlbumDetailPageClientPr
                 Album
               </p>
               <h1 className="text-3xl md:text-5xl font-display font-bold mb-2">{album.title}</h1>
-              <p className="text-lg opacity-90">{album.artist.name}</p>
+              {album.artist._id ? (
+                <Link
+                  href={`/community/artists/${album.artist.slug || album.artist._id}`}
+                  className="text-lg opacity-90 hover:underline">
+                  {album.artist.name}
+                </Link>
+              ) : (
+                <p className="text-lg opacity-90">{album.artist.name}</p>
+              )}
               <div className="flex flex-wrap gap-4 mt-4 text-sm opacity-80">
                 <span className="inline-flex items-center gap-1">
                   <ListMusic className="w-4 h-4" />
