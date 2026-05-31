@@ -6,6 +6,7 @@ import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import { SectionLoadError } from '@/components/general/SectionLoadError';
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import { MARKETPLACE_LANDING_PAGE_SIZE } from './shared';
+import { marketplaceSectionEmptyIcon, marketplaceSectionHeaderIcon } from './sectionIcons';
 
 export async function MarketplaceRecentProductsSection() {
   const res = await callPublicServerApi('MARKETPLACE_GET_PRODUCTS', {
@@ -27,7 +28,7 @@ export async function MarketplaceRecentProductsSection() {
     <SectionContainer className="py-16 md:py-20">
       <div className="max-w-7xl mx-auto">
         <SectionHeader
-          icon={Package}
+          iconSlot={marketplaceSectionHeaderIcon(Package)}
           heading="Recently Added"
           subtext="Latest from our vendors"
           viewAllLink="/marketplace/products?sort=recent"
@@ -38,7 +39,7 @@ export async function MarketplaceRecentProductsSection() {
           <SectionEmptyState
             title="No recent products yet"
             description="Check back soon for new items from our vendors."
-            icon={Package}
+            iconSlot={marketplaceSectionEmptyIcon(Package)}
             actionLabel="View all products"
             actionHref="/marketplace/products"
           />

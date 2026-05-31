@@ -7,6 +7,7 @@ import { FillImage } from '@/components/general/FillImage';
 import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import { SectionLoadError } from '@/components/general/SectionLoadError';
 import { callPublicServerApi } from '@/lib/services/serverApi';
+import { marketplaceSectionEmptyIcon, marketplaceSectionHeaderIcon } from './sectionIcons';
 
 export async function MarketplaceVendorsStripSection() {
   const res = await callPublicServerApi('MARKETPLACE_GET_VENDORS', {
@@ -28,7 +29,7 @@ export async function MarketplaceVendorsStripSection() {
     <SectionContainer className="py-16 md:py-20">
       <div className="max-w-7xl mx-auto">
         <SectionHeader
-          icon={Store}
+          iconSlot={marketplaceSectionHeaderIcon(Store)}
           heading="Vendor Stores"
           subtext="Shop directly from individual stores"
           viewAllLink="/marketplace/vendors"
@@ -39,7 +40,7 @@ export async function MarketplaceVendorsStripSection() {
           <SectionEmptyState
             title="No vendor stores yet"
             description="Check back later for vendor stores to shop from."
-            icon={Store}
+            iconSlot={marketplaceSectionEmptyIcon(Store)}
             actionLabel="Browse products"
             actionHref="/marketplace/products"
           />

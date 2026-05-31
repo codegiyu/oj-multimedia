@@ -2,6 +2,7 @@ import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { DashboardStatCard } from '@/components/layout/user-dashboard';
 import { ShoppingBag, Store } from 'lucide-react';
+import { dashboardStatIconSlot } from '@/lib/server/dashboardStatIconSlot';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AccountHubQuickLinks } from '@/components/section/account/AccountHubQuickLinks';
 import { AccountHubProfileSection } from './_sections/AccountHubProfileSection';
@@ -51,9 +52,14 @@ export default function AccountPage() {
           label="Marketplace"
           value="Shop"
           hint="Browse vendors"
-          icon={ShoppingBag}
+          iconSlot={dashboardStatIconSlot(ShoppingBag)}
         />
-        <DashboardStatCard label="Portals" value="2" hint="Artist & vendor" icon={Store} />
+        <DashboardStatCard
+          label="Portals"
+          value="2"
+          hint="Artist & vendor"
+          iconSlot={dashboardStatIconSlot(Store)}
+        />
       </div>
 
       <div className="grid gap-8 lg:grid-cols-2">
