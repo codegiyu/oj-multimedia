@@ -71,7 +71,7 @@ export function DevotionalsRail({ items }: DevotionalsRailProps) {
                       className="text-sm text-muted-foreground line-clamp-2 mt-2"
                     />
                   )}
-                  <span className="mt-3 flex items-center gap-1 text-sm font-medium text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span className="mt-3 flex items-center gap-1 text-sm font-medium text-primary">
                     Read more
                     <ArrowRight className="w-4 h-4" />
                   </span>
