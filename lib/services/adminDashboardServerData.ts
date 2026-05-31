@@ -377,6 +377,23 @@ export async function serverFetchAdminPastorsList(
   };
 }
 
+export async function serverFetchAdminPastorApplicationsList(
+  p: AdminStandardListParams
+): Promise<AdminListPayload<import('@/lib/constants/endpoints').IPastorApplicationListItem>> {
+  const params = buildAdminListQuery('pastors', p, { sort: '-createdAt' });
+  const res = await callServerApi('ADMIN_PASTOR_APPLICATIONS_LIST', {
+    query: `?${params.toString()}` as `?${string}`,
+  });
+  if (res.type === 'error') {
+    return { items: [], totalPages: 1, listError: res.message ?? 'Failed to load applications' };
+  }
+  return {
+    items: res.data.applications ?? [],
+    totalPages: res.data.pagination?.totalPages ?? 1,
+    listError: null,
+  };
+}
+
 export async function serverFetchAdminUsersList(
   p: AdminStandardListParams
 ): Promise<AdminListPayload<UserListItem>> {

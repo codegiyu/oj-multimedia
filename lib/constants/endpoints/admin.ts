@@ -114,6 +114,23 @@ export const ADMIN_ENDPOINTS: Record<string, EndpointDetails> = {
   ADMIN_PASTOR_UPDATE: { path: '/api/v1/admin/pastors', method: 'PATCH' },
   ADMIN_PASTOR_DELETE: { path: '/api/v1/admin/pastors', method: 'DELETE' },
 
+  ADMIN_PASTOR_APPLICATIONS_LIST: {
+    path: '/api/v1/admin/pastor-applications',
+    method: 'GET',
+  },
+  ADMIN_PASTOR_APPLICATION_ITEM: {
+    path: '/api/v1/admin/pastor-applications',
+    method: 'GET',
+  },
+  ADMIN_PASTOR_APPLICATION_APPROVE: {
+    path: '/api/v1/admin/pastor-applications',
+    method: 'POST',
+  },
+  ADMIN_PASTOR_APPLICATION_REJECT: {
+    path: '/api/v1/admin/pastor-applications',
+    method: 'POST',
+  },
+
   ADMIN_DEVOTIONALS_LIST: { path: '/api/v1/admin/devotionals', method: 'GET' },
   ADMIN_DEVOTIONAL_ITEM: { path: '/api/v1/admin/devotionals', method: 'GET' },
   ADMIN_DEVOTIONAL_CREATE: { path: '/api/v1/admin/devotionals', method: 'POST' },
