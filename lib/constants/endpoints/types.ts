@@ -19,12 +19,17 @@ import type {
   AlbumDetailData,
   TestimoniesListData,
   TestimonyDetailData,
+  TestimonyDetail,
   PrayerRequestsListData,
   PrayerRequestDetailData,
+  PrayerRequestDetail,
   QuestionsListData,
   QuestionDetailData,
+  QuestionDetail,
   PastorsListData,
   PastorListItem,
+  PastorDetail,
+  Pagination,
   PollsListData,
   PollDetailData,
   ArtistsListData,
@@ -479,6 +484,140 @@ export interface IArtistUpdateVideoPayload extends Partial<IArtistCreateVideoPay
   status?: 'draft' | 'published' | 'archived';
 }
 
+// Pastor dashboard types
+export type PastorPortalState = 'none' | 'pending' | 'rejected' | 'active';
+
+export interface ClientPastorProfile {
+  _id: string;
+  name: string;
+  slug?: string;
+  title?: string;
+  church?: string;
+  bio?: string;
+  image?: string;
+  expertise?: string[];
+  questionsAnswered?: number;
+  rating?: number;
+  isActive?: boolean;
+  isFeatured?: boolean;
+}
+
+export interface IPastorApplicationCooldown {
+  canReapply: boolean;
+  reapplyAvailableAt: string | null;
+  cooldownDaysRemaining: number;
+}
+
+export interface IPastorApplication {
+  _id: string;
+  status: 'pending' | 'approved' | 'rejected';
+  name: string;
+  title?: string;
+  church?: string;
+  bio?: string;
+  image?: string;
+  expertise?: string[];
+  motivation?: string;
+  rejectionReason?: string;
+  rejectedAt?: string | null;
+  reviewedAt?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+  canReapply?: boolean;
+  reapplyAvailableAt?: string | null;
+  cooldownDaysRemaining?: number;
+}
+
+export interface IPastorMeRes {
+  portalState: PastorPortalState;
+  pastor: ClientPastorProfile | null;
+  application: IPastorApplication | null;
+}
+
+export interface IPastorSubmitApplicationPayload {
+  name: string;
+  title?: string;
+  church?: string;
+  bio?: string;
+  image?: string;
+  expertise?: string[];
+  motivation?: string;
+}
+
+export interface IPastorSubmitApplicationRes {
+  application: IPastorApplication;
+}
+
+export interface IPastorProfileRes {
+  pastor: ClientPastorProfile;
+}
+
+export interface IPastorUpdateProfilePayload {
+  name?: string;
+  title?: string;
+  church?: string;
+  bio?: string;
+  image?: string;
+  expertise?: string[];
+}
+
+export interface IPastorDashboardStatsRes {
+  questionsAnswered: number;
+  pendingQuestions: number;
+  assignedQuestions: number;
+  totalUpvotes: number;
+}
+
+export interface IPastorAnswerQuestionPayload {
+  answer: string;
+}
+
+export interface IPastorAnswerQuestionRes {
+  question: QuestionDetail;
+}
+
+export interface IPastorApplicationListItem extends IPastorApplication {
+  user?: {
+    _id: string;
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+  };
+  pastor?: { _id: string; name?: string; slug?: string; image?: string };
+}
+
+export interface IPastorApplicationsListData {
+  applications: IPastorApplicationListItem[];
+  pagination: Pagination;
+}
+
+export interface IPastorApplicationDetailData {
+  application: IPastorApplicationListItem;
+}
+
+export interface IUserMeCommunityQuestionsRes {
+  questions: QuestionDetail[];
+  pagination: Pagination;
+}
+
+export interface IUserMeCommunityQuestionItemRes {
+  question: QuestionDetail;
+}
+
+export interface IUserMeCommunityQuestionCloseRes {
+  question: QuestionDetail;
+}
+
+export interface IUserMeCommunityTestimoniesRes {
+  testimonies: TestimonyDetail[];
+  pagination: Pagination;
+}
+
+export interface IUserMeCommunityPrayerRequestsRes {
+  prayerRequests: PrayerRequestDetail[];
+  pagination: Pagination;
+}
+
 // Public (music, videos, news) – list and detail types
 export type PublicMusicListItem = ArtistMusicListItem;
 export type IPublicMusicListRes = GetListRes<PublicMusicListItem, 'music'>;
@@ -647,9 +786,27 @@ export interface ISubmitQuestionPayload {
   email?: string;
   question: string;
   category?: string;
+  isPrivate?: boolean;
+  requestedPastorId?: string;
 }
 export interface ISubmitQuestionRes {
   question: QuestionListItem;
+}
+
+export interface IQuestionVotePayload {
+  direction: 'up' | 'down';
+}
+export interface IQuestionVoteRes {
+  upvotes: number;
+  downvotes: number;
+}
+
+export interface IAnswerLikeRes {
+  likes: number;
+}
+
+export interface IPublicPastorItemRes {
+  pastor: PastorDetail;
 }
 
 export interface ISubmitTestimonyPayload {
@@ -815,6 +972,32 @@ export interface AllEndpoints {
   >;
   USER_CART_REMOVE: EndpointDefinition<undefined, { success: boolean } | ICartRes, `/${string}`>;
   USER_CART_CLEAR: EndpointDefinition<undefined, { success: boolean } | ICartRes, undefined>;
+
+  USER_ME_COMMUNITY_QUESTIONS: EndpointDefinition<
+    undefined,
+    IUserMeCommunityQuestionsRes,
+    `?${string}`
+  >;
+  USER_ME_COMMUNITY_QUESTION_ITEM: EndpointDefinition<
+    undefined,
+    IUserMeCommunityQuestionItemRes,
+    `/${string}`
+  >;
+  USER_ME_COMMUNITY_QUESTION_CLOSE: EndpointDefinition<
+    undefined,
+    IUserMeCommunityQuestionCloseRes,
+    `/${string}/close`
+  >;
+  USER_ME_COMMUNITY_TESTIMONIES: EndpointDefinition<
+    undefined,
+    IUserMeCommunityTestimoniesRes,
+    `?${string}`
+  >;
+  USER_ME_COMMUNITY_PRAYER_REQUESTS: EndpointDefinition<
+    undefined,
+    IUserMeCommunityPrayerRequestsRes,
+    `?${string}`
+  >;
 
   // File Upload (Public)
   GENERATE_PRESIGNED_URL: EndpointDefinition<
@@ -998,6 +1181,27 @@ export interface AllEndpoints {
     `/${string}`
   >;
   ADMIN_PASTOR_DELETE: EndpointDefinition<undefined, { success: boolean }, `/${string}`>;
+
+  ADMIN_PASTOR_APPLICATIONS_LIST: EndpointDefinition<
+    undefined,
+    IPastorApplicationsListData,
+    `?${string}`
+  >;
+  ADMIN_PASTOR_APPLICATION_ITEM: EndpointDefinition<
+    undefined,
+    IPastorApplicationDetailData,
+    `/${string}`
+  >;
+  ADMIN_PASTOR_APPLICATION_APPROVE: EndpointDefinition<
+    undefined,
+    IPastorApplicationDetailData,
+    `/${string}/approve`
+  >;
+  ADMIN_PASTOR_APPLICATION_REJECT: EndpointDefinition<
+    { reason: string },
+    IPastorApplicationDetailData,
+    `/${string}/reject`
+  >;
 
   // Admin content - Devotionals
   ADMIN_DEVOTIONALS_LIST: EndpointDefinition<undefined, DevotionalsListData, `?${string}`>;
@@ -1309,6 +1513,28 @@ export interface AllEndpoints {
   >;
   VENDOR_GET_DASHBOARD_STATS: EndpointDefinition<undefined, IVendorDashboardStatsRes, undefined>;
 
+  // Pastor dashboard
+  PASTOR_GET_ME: EndpointDefinition<undefined, IPastorMeRes, undefined>;
+  PASTOR_SUBMIT_APPLICATION: EndpointDefinition<
+    IPastorSubmitApplicationPayload,
+    IPastorSubmitApplicationRes,
+    undefined
+  >;
+  PASTOR_GET_PROFILE: EndpointDefinition<undefined, IPastorProfileRes, undefined>;
+  PASTOR_UPDATE_PROFILE: EndpointDefinition<
+    IPastorUpdateProfilePayload,
+    IPastorProfileRes,
+    undefined
+  >;
+  PASTOR_GET_DASHBOARD_STATS: EndpointDefinition<undefined, IPastorDashboardStatsRes, undefined>;
+  PASTOR_GET_QUESTIONS: EndpointDefinition<undefined, QuestionsListData, `?${string}`>;
+  PASTOR_GET_QUESTION_ITEM: EndpointDefinition<undefined, QuestionDetailData, `/${string}`>;
+  PASTOR_ANSWER_QUESTION: EndpointDefinition<
+    IPastorAnswerQuestionPayload,
+    IPastorAnswerQuestionRes,
+    `/${string}/answers`
+  >;
+
   // Public (music, videos, news)
   PUBLIC_GET_MUSIC: EndpointDefinition<undefined, IPublicMusicListRes, `?${string}`>;
   PUBLIC_GET_MUSIC_ITEM: EndpointDefinition<undefined, IPublicMusicItemRes, `/${string}`>;
@@ -1360,6 +1586,21 @@ export interface AllEndpoints {
     undefined,
     IPublicPastorsListRes,
     `?${string}` | undefined
+  >;
+  PUBLIC_GET_ASK_A_PASTOR_PASTOR_ITEM: EndpointDefinition<
+    undefined,
+    IPublicPastorItemRes,
+    `/${string}`
+  >;
+  PUBLIC_QUESTION_VOTE: EndpointDefinition<
+    IQuestionVotePayload,
+    IQuestionVoteRes,
+    `/${string}/vote`
+  >;
+  PUBLIC_ANSWER_LIKE: EndpointDefinition<
+    undefined,
+    IAnswerLikeRes,
+    `/${string}/answers/${string}/like`
   >;
   PUBLIC_GET_POLLS: EndpointDefinition<undefined, IPublicPollsListRes, `?${string}`>;
   PUBLIC_GET_POLL_ITEM: EndpointDefinition<undefined, IPublicPollItemRes, `/${string}`>;

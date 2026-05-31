@@ -13,6 +13,8 @@ import {
   // User,
   Video,
   Heart,
+  BookOpen,
+  Users,
 } from 'lucide-react';
 
 export type UserDashboardNavItem = {
@@ -29,9 +31,11 @@ export const USER_ACCOUNT_NAV: UserDashboardNavItem[] = [
   { href: '/account', label: 'Overview', icon: Home, exact: true },
   { href: '/account/orders', label: 'My Orders', icon: ShoppingBag },
   { href: '/account/wishlist', label: 'Wishlist', icon: Heart },
+  { href: '/account/community', label: 'My Community', icon: Users },
   { href: '/account/settings', label: 'Settings', icon: Settings },
   { href: '/account/artist-portal', label: 'Artist Portal', icon: Mic2, end: true },
   { href: '/account/vendor', label: 'Vendor Dashboard', icon: Store, end: true },
+  { href: '/account/pastor-portal', label: 'Pastor Portal', icon: BookOpen, end: true },
 ];
 
 export const USER_ARTIST_NAV: UserDashboardNavItem[] = [
@@ -43,6 +47,16 @@ export const USER_ARTIST_NAV: UserDashboardNavItem[] = [
   { href: '/account/artist-portal/settings', label: 'Settings', icon: Settings },
   { href: '/account', label: 'Account Dashboard', icon: Home, exact: true, end: true },
   { href: '/account/vendor', label: 'Vendor Dashboard', icon: Store, end: true },
+  { href: '/account/pastor-portal', label: 'Pastor Portal', icon: BookOpen, end: true },
+];
+
+export const USER_PASTOR_NAV: UserDashboardNavItem[] = [
+  { href: '/account/pastor-portal', label: 'Overview', icon: LayoutDashboard, exact: true },
+  { href: '/account/pastor-portal/questions', label: 'Questions', icon: MessageCircle },
+  { href: '/account/pastor-portal/settings', label: 'Settings', icon: Settings },
+  { href: '/account', label: 'Account Dashboard', icon: Home, exact: true, end: true },
+  { href: '/account/artist-portal', label: 'Artist Portal', icon: Mic2, end: true },
+  { href: '/account/vendor', label: 'Vendor Dashboard', icon: Store, end: true },
 ];
 
 export const USER_VENDOR_NAV: UserDashboardNavItem[] = [
@@ -52,6 +66,7 @@ export const USER_VENDOR_NAV: UserDashboardNavItem[] = [
   { href: '/account/vendor/settings', label: 'Settings', icon: Settings },
   { href: '/account', label: 'Account Dashboard', icon: Home, exact: true, end: true },
   { href: '/account/artist-portal', label: 'Artist Portal', icon: Mic2, end: true },
+  { href: '/account/pastor-portal', label: 'Pastor Portal', icon: BookOpen, end: true },
 ];
 
 export function isNavActive(pathname: string, item: UserDashboardNavItem): boolean {
