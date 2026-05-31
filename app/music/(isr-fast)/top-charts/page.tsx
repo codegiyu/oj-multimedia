@@ -11,6 +11,7 @@ import { ISR_PUBLIC_FETCH } from '@/lib/constants/isr';
 import { normalizePublicCategoryByScope } from '@/lib/utils/contentCategoriesServer';
 import { MusicCategoriesSection } from '../../_sections/MusicCategoriesSection';
 import { TopChartsGridSection } from '../../_sections/TopChartsGridSection';
+import { parseBrowsePageParam } from '@/lib/utils/browsePage';
 
 export const metadata: Metadata = {
   title: 'Top Charts - Music Rankings',
@@ -19,11 +20,12 @@ export const metadata: Metadata = {
 };
 
 interface TopChartsPageProps {
-  searchParams: Promise<{ category?: string; period?: string }>;
+  searchParams: Promise<{ category?: string; period?: string; page?: string }>;
 }
 
 export default async function TopChartsPage({ searchParams }: TopChartsPageProps) {
   const params = await searchParams;
+  const page = parseBrowsePageParam(params.page);
   const category = await normalizePublicCategoryByScope(
     'music',
     params.category,
@@ -60,8 +62,10 @@ export default async function TopChartsPage({ searchParams }: TopChartsPageProps
       <Suspense fallback={<MusicCategoriesSkeleton />}>
         <MusicCategoriesSection isr={ISR_PUBLIC_FETCH.fast} />
       </Suspense>
-      <Suspense fallback={<TopChartsSectionSkeleton showFooterButton={false} />}>
-        <TopChartsGridSection category={category} period={period} />
+      <Suspense
+        fallback={<TopChartsSectionSkeleton showFooterButton={false} />}
+        key={`${category}|${period}|${page}`}>
+        <TopChartsGridSection category={category} period={period} page={page} />
       </Suspense>
     </MainLayout>
   );

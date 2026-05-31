@@ -4,7 +4,7 @@ import { SectionLoadError } from '@/components/general/SectionLoadError';
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import { VIDEO_TYPES } from '@/lib/constants/contentTaxonomy';
 import { mapPublicVideoToTrendingVideo } from '@/lib/utils/publicApiMappers';
-import { buildVideoBaseQuery, type VideoSectionProps } from './shared';
+import { buildVideoBrowseQuery, type VideoSectionProps } from './shared';
 
 type TrendingVideosSectionProps = VideoSectionProps & {
   variant?: 'hub' | 'subpage';
@@ -15,12 +15,16 @@ type TrendingVideosSectionProps = VideoSectionProps & {
 export async function TrendingVideosSection({
   category,
   limit = 12,
+  page = 1,
   fetchOptions,
   variant = 'hub',
   maxItems = 8,
   showCategoryNav = false,
 }: TrendingVideosSectionProps) {
-  const query = `${buildVideoBaseQuery(category, limit)}&type=${VIDEO_TYPES.trending}` as const;
+  const query =
+    variant === 'hub'
+      ? buildVideoBrowseQuery(category, 1, { limit, type: VIDEO_TYPES.trending })
+      : buildVideoBrowseQuery(category, page, { type: VIDEO_TYPES.trending });
   const res = await callPublicServerApi('PUBLIC_GET_VIDEOS', { query }, fetchOptions);
 
   if (res.type === 'error') {
@@ -38,7 +42,11 @@ export async function TrendingVideosSection({
 
   if (variant === 'subpage') {
     return (
-      <TrendingVideosPageClient trendingVideos={trendingVideos} showCategoryNav={showCategoryNav} />
+      <TrendingVideosPageClient
+        trendingVideos={trendingVideos}
+        showCategoryNav={showCategoryNav}
+        pagination={res.data?.pagination ?? null}
+      />
     );
   }
 

@@ -5,15 +5,21 @@ import { ISR_PUBLIC_FETCH } from '@/lib/constants/isr';
 import { MUSIC_TYPES } from '@/lib/constants/contentTaxonomy';
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import { mapPublicMusicToTrendingSong } from '@/lib/utils/publicApiMappers';
+import { buildBrowseListQuery } from '@/lib/utils/browsePage';
+
 interface TrendingSongsGridSectionProps {
   category: string;
+  page: number;
 }
 
-export async function TrendingSongsGridSection({ category }: TrendingSongsGridSectionProps) {
-  const categoryParam =
-    category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';
-  const query =
-    `?limit=50&page=1&status=published&type=${MUSIC_TYPES.trending}${categoryParam}` as const;
+export async function TrendingSongsGridSection({ category, page }: TrendingSongsGridSectionProps) {
+  const query = buildBrowseListQuery({
+    page,
+    extra: {
+      type: MUSIC_TYPES.trending,
+      category: category && category !== 'all' ? category : undefined,
+    },
+  }) as `?${string}`;
   const res = await callPublicServerApi('PUBLIC_GET_MUSIC', { query }, ISR_PUBLIC_FETCH.fast);
 
   if (res.type === 'error') {
@@ -34,6 +40,7 @@ export async function TrendingSongsGridSection({ category }: TrendingSongsGridSe
       showCategories={false}
       categoryOptions={[]}
       trendingSongs={trendingSongs}
+      pagination={res.data?.pagination ?? null}
     />
   );
 }

@@ -1,9 +1,8 @@
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'motion/react';
-import { Sparkles, ArrowRight, Video } from 'lucide-react';
+import { Sparkles, Video } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { SectionContainer } from '@/components/general/SectionContainer';
 import { DataLoadError } from '@/components/general/DataLoadError';
@@ -11,14 +10,16 @@ import { VideoCategories } from './VideoCategories';
 import type { CategoryNavItem } from '@/lib/utils/contentCategoryNav';
 import { VideoUploadCTA } from './VideoUploadCTA';
 import { SectionEmptyState } from '@/components/general/SectionEmptyState';
-import { SectionComp } from '@/components/general/SectionComp';
+import { ContentBrowseList } from '@/components/general/ContentBrowseList';
 import { VideoCard } from '@/components/cards/VideoCard';
 import type { RecentVideoUpload } from './RecentVideoUploads';
 import { MEDIA_BROWSE_GRID_CLASS } from '@/lib/constants/mediaCardLayout';
+import type { Pagination } from '@/lib/types/pagination';
 
 interface RecentVideosPageClientProps {
   categoryOptions?: CategoryNavItem[];
   recentUploads: RecentVideoUpload[];
+  pagination?: Pagination | null;
   initialErrorMessage?: string | null;
   showCategoryNav?: boolean;
 }
@@ -26,22 +27,11 @@ interface RecentVideosPageClientProps {
 export const RecentVideosPageClient = ({
   categoryOptions = [],
   recentUploads,
+  pagination = null,
   initialErrorMessage = null,
   showCategoryNav = true,
 }: RecentVideosPageClientProps) => {
   const router = useRouter();
-  const [displayedItems, setDisplayedItems] = useState(20);
-  const [isLoading, setIsLoading] = useState(false);
-
-  const loadMoreItems = async () => {
-    setIsLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 800));
-    setDisplayedItems(prev => Math.min(prev + 12, recentUploads.length));
-    setIsLoading(false);
-  };
-
-  const hasMore = displayedItems < recentUploads.length;
-  const itemsToShow = recentUploads.slice(0, displayedItems);
 
   if (initialErrorMessage && recentUploads.length === 0) {
     return (
@@ -69,67 +59,39 @@ export const RecentVideosPageClient = ({
           </div>
         </div>
       )}
-      <SectionComp
-        icon={Sparkles}
-        iconColor="secondary"
-        heading="Fresh Uploads"
-        subtext="Just added by creators"
-        viewAllLink="/videos/recent"
-        contentProps={{ enableAnimation: false }}>
-        {itemsToShow.length === 0 ? (
+      {recentUploads.length === 0 ? (
+        <SectionContainer>
           <SectionEmptyState
             title="No Recent Uploads"
             description="We couldn't find any recent uploads in this category. Try selecting a different category or check back later for new content."
             icon={Sparkles}
             showDefaultActions
           />
-        ) : (
-          <>
-            <div className={MEDIA_BROWSE_GRID_CLASS}>
-              {itemsToShow.map((video, index) => (
-                <motion.div
-                  key={video._id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: index * 0.05 }}>
-                  <VideoCard
-                    _id={video._id}
-                    title={video.title}
-                    creator={video.creator}
-                    thumbnail={video.thumbnail}
-                    views={video.views}
-                    duration={video.duration}
-                    category={video.category}
-                    variant="recent"
-                    uploadedAt={video.uploadedAt}
-                  />
-                </motion.div>
-              ))}
-            </div>
-
-            {hasMore && (
-              <div className="flex justify-center mt-10">
-                <motion.button
-                  onClick={loadMoreItems}
-                  disabled={isLoading}
-                  whileHover={{ scale: isLoading ? 1 : 1.02 }}
-                  whileTap={{ scale: isLoading ? 1 : 0.98 }}
-                  className="px-8 py-3 rounded-full bg-muted text-foreground font-medium hover:bg-muted/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
-                  {isLoading ? (
-                    'Loading...'
-                  ) : (
-                    <>
-                      Load More Videos
-                      <ArrowRight className="w-4 h-4" />
-                    </>
-                  )}
-                </motion.button>
-              </div>
-            )}
-          </>
-        )}
-      </SectionComp>
+        </SectionContainer>
+      ) : (
+        <ContentBrowseList pagination={pagination} gridClassName={MEDIA_BROWSE_GRID_CLASS}>
+          {recentUploads.map((video, index) => (
+            <motion.div
+              key={video._id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: index * 0.05 }}>
+              <VideoCard
+                _id={video._id}
+                title={video.title}
+                creator={video.creator}
+                thumbnail={video.thumbnail}
+                views={video.views}
+                duration={video.duration}
+                category={video.category}
+                variant="recent"
+                uploadedAt={video.uploadedAt}
+              />
+            </motion.div>
+          ))}
+        </ContentBrowseList>
+      )}
       <VideoUploadCTA />
     </>
   );

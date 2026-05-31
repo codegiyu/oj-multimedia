@@ -6,6 +6,7 @@ import { normalizePublicCategoryByScope } from '@/lib/utils/contentCategoriesSer
 import { VideoCategoriesSection } from '../_sections/VideoCategoriesSection';
 import { ShortFormVideosSection } from '../_sections/ShortFormVideosSection';
 import { VideoCategoriesSkeleton, ShortFormVideosSectionSkeleton } from '../_sections/skeletons';
+import { parseBrowsePageParam } from '@/lib/utils/browsePage';
 
 export const metadata: Metadata = {
   title: 'Short Form Videos - Quick Clips',
@@ -14,11 +15,12 @@ export const metadata: Metadata = {
 };
 
 interface ShortFormVideosPageProps {
-  searchParams: Promise<{ category?: string }>;
+  searchParams: Promise<{ category?: string; page?: string }>;
 }
 
 export default async function ShortFormVideosPage({ searchParams }: ShortFormVideosPageProps) {
   const params = await searchParams;
+  const page = parseBrowsePageParam(params.page);
   const category = await normalizePublicCategoryByScope('video', params.category);
 
   return (
@@ -36,8 +38,8 @@ export default async function ShortFormVideosPage({ searchParams }: ShortFormVid
       <Suspense fallback={<VideoCategoriesSkeleton />}>
         <VideoCategoriesSection category={category} />
       </Suspense>
-      <Suspense fallback={<ShortFormVideosSectionSkeleton />}>
-        <ShortFormVideosSection category={category} limit={50} variant="subpage" />
+      <Suspense fallback={<ShortFormVideosSectionSkeleton />} key={`${category}|${page}`}>
+        <ShortFormVideosSection category={category} variant="subpage" page={page} />
       </Suspense>
     </MainLayout>
   );

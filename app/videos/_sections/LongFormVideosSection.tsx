@@ -1,10 +1,10 @@
 import { LongFormVideos } from '@/components/section/video/LongFormVideos';
-import { RecentVideosPageClient } from '@/components/section/video/RecentVideosPageClient';
+import { LongFormVideosPageClient } from '@/components/section/video/LongFormVideosPageClient';
 import { SectionLoadError } from '@/components/general/SectionLoadError';
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import { VIDEO_TYPES } from '@/lib/constants/contentTaxonomy';
 import { mapPublicVideoToRecentUpload } from '@/lib/utils/publicApiMappers';
-import { buildVideoBaseQuery, type VideoSectionProps } from './shared';
+import { buildVideoBrowseQuery, type VideoSectionProps } from './shared';
 
 type LongFormVideosSectionProps = VideoSectionProps & {
   variant?: 'hub' | 'subpage';
@@ -15,12 +15,16 @@ type LongFormVideosSectionProps = VideoSectionProps & {
 export async function LongFormVideosSection({
   category,
   limit = 12,
+  page = 1,
   fetchOptions,
   variant = 'hub',
   maxItems = 4,
   showCategoryNav = false,
 }: LongFormVideosSectionProps) {
-  const query = `${buildVideoBaseQuery(category, limit)}&type=${VIDEO_TYPES.longForm}` as const;
+  const query =
+    variant === 'hub'
+      ? buildVideoBrowseQuery(category, 1, { limit, type: VIDEO_TYPES.longForm })
+      : buildVideoBrowseQuery(category, page, { type: VIDEO_TYPES.longForm });
   const res = await callPublicServerApi('PUBLIC_GET_VIDEOS', { query }, fetchOptions);
 
   if (res.type === 'error') {
@@ -38,7 +42,11 @@ export async function LongFormVideosSection({
 
   if (variant === 'subpage') {
     return (
-      <RecentVideosPageClient recentUploads={longFormVideos} showCategoryNav={showCategoryNav} />
+      <LongFormVideosPageClient
+        longFormVideos={longFormVideos}
+        showCategoryNav={showCategoryNav}
+        pagination={res.data?.pagination ?? null}
+      />
     );
   }
 
