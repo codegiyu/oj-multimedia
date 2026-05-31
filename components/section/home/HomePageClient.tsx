@@ -25,6 +25,7 @@ import type { CommunityHighlightItem } from '@/lib/utils/mergeCommunityHighlight
 import { UploadCTA } from '../shared';
 import { SimpleMusicRailSkeleton, SimpleVideoRailSkeleton } from '@/components/skeletons';
 import type { IHomeAdvertItem } from '@/lib/constants/endpoints';
+import type { CategoryNavItem } from '@/lib/utils/contentCategoryNav';
 
 interface HomePageClientProps {
   advertsAfterHero: IHomeAdvertItem[];
@@ -47,6 +48,8 @@ interface HomePageClientProps {
   pollQuestion?: string;
   pollHref?: string;
   initialErrorMessage: string | null;
+  musicCategoryOptions: CategoryNavItem[];
+  videoCategoryOptions: CategoryNavItem[];
 }
 
 export const HomePageClient = ({
@@ -70,6 +73,8 @@ export const HomePageClient = ({
   pollQuestion,
   pollHref,
   initialErrorMessage,
+  musicCategoryOptions,
+  videoCategoryOptions,
 }: HomePageClientProps) => {
   return (
     <>
@@ -99,10 +104,10 @@ export const HomePageClient = ({
         />
       </Suspense>
       <Suspense fallback={<SimpleMusicRailSkeleton />}>
-        <TrendingMusicSection music={trendingMusic} />
+        <TrendingMusicSection music={trendingMusic} categoryOptions={musicCategoryOptions} />
       </Suspense>
       <Suspense fallback={<SimpleVideoRailSkeleton />}>
-        <TrendingVideosSection videos={trendingVideos} />
+        <TrendingVideosSection videos={trendingVideos} categoryOptions={videoCategoryOptions} />
       </Suspense>
       <Suspense fallback={<SimpleVideoRailSkeleton />}>
         <SimpleVideoRail

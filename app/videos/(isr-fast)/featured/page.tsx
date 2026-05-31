@@ -7,7 +7,6 @@ import { VideoPageSkeleton } from '@/components/section/video/VideoPageSkeleton'
 import type { FeaturedVideo } from '@/components/section/video/FeaturedVideos';
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import { ISR_PUBLIC_FETCH } from '@/lib/constants/isr';
-import { filterByCategory } from '@/lib/utils/videos';
 import { mapPublicVideoToFeaturedVideo } from '@/lib/utils/publicApiMappers';
 import { VIDEO_TYPES } from '@/lib/constants/contentTaxonomy';
 import { normalizePublicCategoryByScope } from '@/lib/utils/contentCategoriesServer';
@@ -34,7 +33,7 @@ async function fetchFeaturedVideos(category: string) {
   }
 
   const raw = res.data?.videos ?? [];
-  const featuredVideos = filterByCategory(raw, category).map(mapPublicVideoToFeaturedVideo);
+  const featuredVideos = raw.map(mapPublicVideoToFeaturedVideo);
   return { featuredVideos, initialErrorMessage: null as string | null };
 }
 

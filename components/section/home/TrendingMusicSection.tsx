@@ -1,12 +1,16 @@
 'use client';
 
-import { useMemo, useRef } from 'react';
+import { useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { Flame } from 'lucide-react';
+import { useQueryState, parseAsString } from 'nuqs';
 import { MusicCard } from '@/components/cards/MusicCard';
 import { SectionComp } from '@/components/general/SectionComp';
 import { SectionEmptyState } from '@/components/general/SectionEmptyState';
-import { useQueryState, parseAsString } from 'nuqs';
 import { motion } from 'motion/react';
+import { ALL_CATEGORY_ID } from '@/lib/constants/contentTaxonomy';
+import { PUBLIC_URL_KEYS } from '@/lib/constants/publicUrlKeys';
+import type { CategoryNavItem } from '@/lib/utils/contentCategoryNav';
 
 export interface TrendingMusicItem {
   _id: string;
@@ -20,29 +24,26 @@ export interface TrendingMusicItem {
 
 interface TrendingMusicSectionProps {
   music: TrendingMusicItem[];
+  categoryOptions: CategoryNavItem[];
 }
 
-const genres = [
-  { id: 'All', label: 'All' },
-  { id: 'Afrobeats', label: 'Afrobeats' },
-  { id: 'Hip-Hop', label: 'Hip-Hop' },
-  { id: 'Pop', label: 'Pop' },
-  { id: 'R&B', label: 'R&B' },
-  { id: 'Gospel', label: 'Gospel' },
-  { id: 'Instrumental', label: 'Instrumental' },
-];
-
-export const TrendingMusicSection = ({ music: trendingMusic }: TrendingMusicSectionProps) => {
-  const [selectedGenre] = useQueryState('genre', parseAsString.withDefault('All'));
+export const TrendingMusicSection = ({
+  music: trendingMusic,
+  categoryOptions,
+}: TrendingMusicSectionProps) => {
+  const router = useRouter();
+  const [, setMusicCategory] = useQueryState(
+    PUBLIC_URL_KEYS.MUSIC_CATEGORY,
+    parseAsString.withDefault(ALL_CATEGORY_ID)
+  );
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const filteredMusic = useMemo(
-    () =>
-      selectedGenre === 'All'
-        ? trendingMusic
-        : trendingMusic.filter(track => track.genre === selectedGenre),
-    [trendingMusic, selectedGenre]
-  );
+  const tabs = categoryOptions.map(opt => ({ id: opt.id, label: opt.label }));
+
+  const handleTabChange = async (tabId: string) => {
+    await setMusicCategory(tabId === ALL_CATEGORY_ID ? null : tabId);
+    router.refresh();
+  };
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
@@ -62,9 +63,10 @@ export const TrendingMusicSection = ({ music: trendingMusic }: TrendingMusicSect
       heading="Trending Music"
       subtext="Discover what's hot right now"
       viewAllLink="/music/trending"
-      tabs={genres}
-      tabsQueryKey="genre"
-      defaultTab="All"
+      tabs={tabs}
+      tabsQueryKey={PUBLIC_URL_KEYS.MUSIC_CATEGORY}
+      defaultTab={ALL_CATEGORY_ID}
+      onTabChange={handleTabChange}
       showPrevNext={true}
       onPrev={() => scroll('left')}
       onNext={() => scroll('right')}
@@ -72,7 +74,7 @@ export const TrendingMusicSection = ({ music: trendingMusic }: TrendingMusicSect
         className: '',
         enableAnimation: false,
       }}>
-      {filteredMusic.length === 0 ? (
+      {trendingMusic.length === 0 ? (
         <SectionEmptyState
           title="No trending music in this genre"
           description="Try a different genre or check back soon for new releases."
@@ -84,7 +86,7 @@ export const TrendingMusicSection = ({ music: trendingMusic }: TrendingMusicSect
         <div
           ref={scrollRef}
           className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
-          {filteredMusic.map((track, index) => (
+          {trendingMusic.map((track, index) => (
             <motion.div
               key={track._id || index}
               initial={{ opacity: 0, y: 20 }}

@@ -4,7 +4,6 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { NewsHero } from '@/components/section/news/NewsHero';
 import { NewsPageClient } from '@/components/section/news/NewsPageClient';
 import { NewsPageSkeleton } from '@/components/section/news/NewsPageSkeleton';
-import { filterByCategory } from '@/components/section/news/categoryUtils';
 import type { FeaturedStory } from '@/components/section/news/FeaturedStories';
 import type { NewsItem as NewsFeedItem } from '@/components/section/news/NewsFeed';
 import type { TrendingStory } from '@/components/section/news/TrendingSidebar';
@@ -71,26 +70,17 @@ async function fetchNewsSections(category: string) {
     breakingRes.type === 'success' ? (breakingRes.data?.articles ?? []) : []
   );
 
-  const featuredStories: FeaturedStory[] = filterByCategory(
-    rawFeatured.map(mapPublicNewsToFeaturedStory),
-    category
-  ).slice(0, 3);
-  const newsItems: NewsFeedItem[] = filterByCategory(
-    rawLatest.map(mapPublicNewsToFeedItem),
-    category
-  ).slice(0, 10);
-  const trendingStories: TrendingStory[] = filterByCategory(
-    rawTrending.map((item, i) => mapPublicNewsToTrendingStory(item, i + 1)),
-    category
-  ).slice(0, 6);
-  const videoNews: VideoNewsItem[] = filterByCategory(
-    rawVideo.map(mapPublicNewsToVideoNewsItem),
-    category
-  ).slice(0, 4);
-  const breakingStories: BreakingNewsStory[] = filterByCategory(
-    rawBreaking.map(mapPublicNewsToBreakingStory),
-    category
-  ).slice(0, 8);
+  const featuredStories: FeaturedStory[] = rawFeatured
+    .map(mapPublicNewsToFeaturedStory)
+    .slice(0, 3);
+  const newsItems: NewsFeedItem[] = rawLatest.map(mapPublicNewsToFeedItem).slice(0, 10);
+  const trendingStories: TrendingStory[] = rawTrending
+    .map((item, i) => mapPublicNewsToTrendingStory(item, i + 1))
+    .slice(0, 6);
+  const videoNews: VideoNewsItem[] = rawVideo.map(mapPublicNewsToVideoNewsItem).slice(0, 4);
+  const breakingStories: BreakingNewsStory[] = rawBreaking
+    .map(mapPublicNewsToBreakingStory)
+    .slice(0, 8);
 
   return {
     featuredStories,

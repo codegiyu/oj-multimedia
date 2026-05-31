@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { motion } from 'motion/react';
 import { useQueryState, parseAsString } from 'nuqs';
 import { ALL_CATEGORY_ID } from '@/lib/constants/contentTaxonomy';
@@ -24,13 +25,15 @@ export type MusicCategoriesProps = {
 };
 
 export const MusicCategories = ({ categoryOptions }: MusicCategoriesProps) => {
+  const router = useRouter();
   const [activeGenre, setActiveGenre] = useQueryState(
     'category',
     parseAsString.withDefault(ALL_CATEGORY_ID)
   );
 
-  const handleCategoryChange = (categoryId: string) => {
-    setActiveGenre(categoryId === ALL_CATEGORY_ID ? null : categoryId);
+  const handleCategoryChange = async (categoryId: string) => {
+    await setActiveGenre(categoryId === ALL_CATEGORY_ID ? null : categoryId);
+    router.refresh();
   };
 
   return (
@@ -43,7 +46,7 @@ export const MusicCategories = ({ categoryOptions }: MusicCategoriesProps) => {
             return (
               <motion.button
                 key={genre.id}
-                onClick={() => handleCategoryChange(genre.id)}
+                onClick={() => void handleCategoryChange(genre.id)}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 className={`

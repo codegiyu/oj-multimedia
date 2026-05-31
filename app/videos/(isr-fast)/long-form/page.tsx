@@ -7,7 +7,6 @@ import { VideoPageSkeleton } from '@/components/section/video/VideoPageSkeleton'
 import type { RecentVideoUpload } from '@/components/section/video/RecentVideoUploads';
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import { ISR_PUBLIC_FETCH } from '@/lib/constants/isr';
-import { filterByCategory } from '@/lib/utils/videos';
 import { mapPublicVideoToRecentUpload } from '@/lib/utils/publicApiMappers';
 import { VIDEO_TYPES } from '@/lib/constants/contentTaxonomy';
 import { normalizePublicCategoryByScope } from '@/lib/utils/contentCategoriesServer';
@@ -34,7 +33,7 @@ async function fetchLongFormVideos(category: string) {
   }
 
   const raw = res.data?.videos ?? [];
-  const recentUploads = filterByCategory(raw, category).map(mapPublicVideoToRecentUpload);
+  const recentUploads = raw.map(mapPublicVideoToRecentUpload);
   return { recentUploads, initialErrorMessage: null as string | null };
 }
 

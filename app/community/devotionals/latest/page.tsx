@@ -6,7 +6,6 @@ import { DevotionalsPageSkeleton } from '@/components/section/community/devotion
 import { DailyDevotionalsSection } from '@/components/section/community/devotionals/DailyDevotionalsSection';
 import { DevotionalsCategoryFilter } from '@/components/section/community/devotionals/DevotionalsCategoryFilter';
 import { Skeleton } from '@/components/ui/skeleton';
-import { filterByCategory } from '@/lib/utils/community/devotionals';
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import { mapToDailyDevotional } from '@/lib/utils/communityApiMappers';
 import type { DailyDevotional } from '@/components/section/community/devotionals/DevotionalsPageClient';
@@ -36,7 +35,7 @@ async function fetchLatestDevotionals(category: string): Promise<{
     mapToDailyDevotional(i as Record<string, unknown>)
   ) as DailyDevotional[];
   return {
-    latestDevotionals: filterByCategory(list, category),
+    latestDevotionals: list,
     initialErrorMessage: null,
   };
 }

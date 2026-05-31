@@ -6,7 +6,6 @@ import { ShortFormVideosPageClient } from '@/components/section/video/ShortFormV
 import { VideoPageSkeleton } from '@/components/section/video/VideoPageSkeleton';
 import type { ShortFormVideo } from '@/components/section/video/ShortFormVideos';
 import { callPublicServerApi } from '@/lib/services/serverApi';
-import { filterByCategory } from '@/lib/utils/videos';
 import { mapPublicVideoToShortForm } from '@/lib/utils/publicApiMappers';
 import { VIDEO_TYPES } from '@/lib/constants/contentTaxonomy';
 import { normalizePublicCategoryByScope } from '@/lib/utils/contentCategoriesServer';
@@ -33,7 +32,7 @@ async function fetchShortFormVideos(category: string) {
   }
 
   const raw = res.data?.videos ?? [];
-  const shortFormVideos = filterByCategory(raw, category).map(mapPublicVideoToShortForm);
+  const shortFormVideos = raw.map(mapPublicVideoToShortForm);
   return { shortFormVideos, initialErrorMessage: null as string | null };
 }
 

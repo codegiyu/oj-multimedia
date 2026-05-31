@@ -4,7 +4,7 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { SubPageHero } from '@/components/general/SubPageHero';
 import { DevotionalsPageSkeleton } from '@/components/section/community/devotionals/DevotionalsPageSkeleton';
 import { DailyDevotionalsSection } from '@/components/section/community/devotionals/DailyDevotionalsSection';
-import { filterByCategory } from '@/lib/utils/community/devotionals';
+import { DevotionalsCategoryFilter } from '@/components/section/community/devotionals/DevotionalsCategoryFilter';
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import { mapToDailyDevotional } from '@/lib/utils/communityApiMappers';
 import { buildCommunityListQuery } from '@/lib/utils/communityListQuery';
@@ -36,7 +36,7 @@ async function fetchPopularDevotionals(category: string): Promise<{
   ) as DailyDevotional[];
 
   return {
-    popularDevotionals: filterByCategory(list, category),
+    popularDevotionals: list,
     initialErrorMessage: null,
   };
 }
@@ -66,6 +66,7 @@ export default async function PopularDevotionalsPage({
       />
       <Suspense fallback={<DevotionalsPageSkeleton />}>
         <div className="container mx-auto px-4 pb-16">
+          <DevotionalsCategoryFilter />
           <DailyDevotionalsSection
             devotionals={popularDevotionals}
             initialErrorMessage={initialErrorMessage}

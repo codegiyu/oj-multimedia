@@ -4,7 +4,6 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { SubPageHero } from '@/components/general/SubPageHero';
 import { BreakingNewsPageClient } from '@/components/section/news/BreakingNewsPageClient';
 import { NewsPageSkeleton } from '@/components/section/news/NewsPageSkeleton';
-import { filterByCategory } from '@/components/section/news/categoryUtils';
 import type { BreakingNewsStory } from '@/components/section/news/BreakingNews';
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import { ISR_PUBLIC_FETCH } from '@/lib/constants/isr';
@@ -35,7 +34,7 @@ async function fetchBreakingStories(category: string) {
   }
 
   const raw = filterPublicNewsList(res.data?.articles ?? []);
-  const breakingStories = filterByCategory(raw.map(mapPublicNewsToBreakingStory), category);
+  const breakingStories = raw.map(mapPublicNewsToBreakingStory);
   return { breakingStories, initialErrorMessage: null as string | null };
 }
 
