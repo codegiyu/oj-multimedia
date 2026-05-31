@@ -32,6 +32,10 @@ import type {
 } from '@/lib/constants/endpoints';
 import type { HomeDevotionalCard } from '@/components/section/home';
 import { formatCompactNumber } from '@/lib/utils/general';
+import {
+  mapPublicMusicToHomeTrending,
+  mapPublicVideoToHomeTrending,
+} from '@/lib/utils/homeTrendingMappers';
 import { ALL_CATEGORY_ID } from '@/lib/constants/contentTaxonomy';
 import {
   LEGACY_HOME_MUSIC_GENRE_KEY,
@@ -115,44 +119,6 @@ interface HomePageData {
   pollQuestion?: string;
   pollHref?: string;
   initialErrorMessage: string | null;
-}
-
-function mapPublicMusicToHomeTrending(
-  item: IPublicMusicListRes['music'][number]
-): TrendingMusicItem {
-  return {
-    _id: item._id,
-    title: item.title,
-    artist: {
-      _id: typeof item.artist === 'string' ? item.artist : (item.artist?._id ?? ''),
-      name: typeof item.artist === 'string' ? 'Unknown' : (item.artist?.name ?? 'Unknown'),
-    },
-    cover: (item as { coverImage?: string }).coverImage ?? '',
-    plays: formatCompactNumber((item as { views?: number }).views),
-    genre:
-      (item as { genre?: string }).genre ?? (item as { category?: string }).category ?? 'Other',
-    isNew: Boolean(
-      item.createdAt &&
-        Date.now() - new Date(item.createdAt as string).getTime() < 7 * 24 * 60 * 60 * 1000
-    ),
-  };
-}
-
-function mapPublicVideoToHomeTrending(
-  item: IPublicVideosListRes['videos'][number]
-): TrendingVideoItem {
-  return {
-    _id: item._id,
-    title: item.title,
-    creator:
-      typeof (item as { artist?: unknown }).artist === 'string'
-        ? 'Unknown'
-        : ((item as { artist?: { name?: string } }).artist?.name ?? 'Unknown'),
-    thumbnail: (item as { thumbnail?: string }).thumbnail ?? '',
-    views: formatCompactNumber((item as { views?: number }).views),
-    duration: (item as { duration?: string }).duration ?? '--:--',
-    category: (item as { category?: string }).category ?? 'Video',
-  };
 }
 
 function mapArticleToNewsCard(article: IPublicNewsListRes['articles'][number]): NewsArticle {
