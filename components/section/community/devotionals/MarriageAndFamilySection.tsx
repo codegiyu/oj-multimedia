@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { SectionComp } from '@/components/general/SectionComp';
+import { useHubViewAllLink } from '@/lib/hooks/useHubViewAllLink';
 import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import type { MarriageFamily } from './DevotionalsPageClient';
 import { MultilinePreview } from '@/components/general/MultilinePreview';
@@ -22,13 +23,15 @@ const categoryIcons: Record<string, typeof Heart> = {
 };
 
 export const MarriageAndFamilySection = ({ content }: MarriageAndFamilySectionProps) => {
+  const viewAllLink = useHubViewAllLink('/community/devotionals');
+
   return (
     <SectionComp
       icon={Users}
       iconColor="secondary"
       heading="Marriage & Family"
       subtext="Guidance for strong Christian families"
-      viewAllLink="/community/devotionals"
+      viewAllLink={viewAllLink}
       contentProps={{ enableAnimation: false }}>
       {content.length === 0 ? (
         <SectionEmptyState

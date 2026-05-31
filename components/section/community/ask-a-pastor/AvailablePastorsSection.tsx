@@ -5,6 +5,7 @@ import { Users, Star, MessageSquare, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { SectionComp } from '@/components/general/SectionComp';
+import { useHubViewAllLink } from '@/lib/hooks/useHubViewAllLink';
 import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import type { AvailablePastor } from './AskAPastorPageClient';
 import { Button } from '@/components/ui/button';
@@ -19,6 +20,8 @@ function pastorProfileHref(pastor: AvailablePastor) {
 }
 
 export const AvailablePastorsSection = ({ pastors }: AvailablePastorsSectionProps) => {
+  const viewAllLink = useHubViewAllLink('/community/ask-a-pastor');
+
   return (
     <SectionComp
       id="available-pastors"
@@ -26,7 +29,7 @@ export const AvailablePastorsSection = ({ pastors }: AvailablePastorsSectionProp
       iconColor="accent"
       heading="Available Pastors"
       subtext="Experienced pastors ready to answer your questions"
-      viewAllLink="/community/ask-a-pastor"
+      viewAllLink={viewAllLink}
       viewAllLabel="View All Pastors"
       contentProps={{ enableAnimation: false }}>
       {pastors.length === 0 ? (

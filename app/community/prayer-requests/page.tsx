@@ -10,6 +10,7 @@ import {
   ActivePrayerRequestsSectionSkeleton,
   PrayerHubSupplementSectionSkeleton,
 } from './_sections/skeletons';
+import { parseBrowsePageParam } from '@/lib/utils/browsePage';
 
 export const metadata: Metadata = {
   title: 'Prayer Requests - Share & Pray Together',
@@ -24,8 +25,8 @@ interface PrayerRequestsPageProps {
 export default async function CommunityPrayerRequestsPage({
   searchParams,
 }: PrayerRequestsPageProps) {
-  const { page: pageParam } = await searchParams;
-  const page = Math.max(1, parseInt(String(pageParam ?? '1'), 10) || 1);
+  const params = await searchParams;
+  const page = parseBrowsePageParam(params.page);
 
   return (
     <MainLayout>

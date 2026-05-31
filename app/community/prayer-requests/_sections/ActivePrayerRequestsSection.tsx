@@ -2,18 +2,23 @@ import { ActivePrayerRequestsSection as ActivePrayerRequests } from '@/component
 import { SectionLoadError } from '@/components/general/SectionLoadError';
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import { mapToPrayerRequest } from '@/lib/utils/communityApiMappers';
+import { buildBrowseListQuery } from '@/lib/utils/browsePage';
 import type { PrayerRequest } from '@/components/section/community/prayer-requests/PrayerRequestsPageClient';
 
-const ACTIVE_LIMIT = 12;
+const HUB_ACTIVE_LIMIT = 12;
 
 type ActivePrayerRequestsSectionProps = {
   page: number;
 };
 
 export async function ActivePrayerRequestsSection({ page }: ActivePrayerRequestsSectionProps) {
-  const res = await callPublicServerApi('PUBLIC_GET_PRAYER_REQUESTS', {
-    query: `?limit=${ACTIVE_LIMIT}&page=${page}&status=active` as `?${string}`,
-  });
+  const query = buildBrowseListQuery({
+    page,
+    limit: HUB_ACTIVE_LIMIT,
+    extra: { status: 'active' },
+  }) as `?${string}`;
+
+  const res = await callPublicServerApi('PUBLIC_GET_PRAYER_REQUESTS', { query });
 
   if (res.type === 'error') {
     return (
@@ -29,5 +34,11 @@ export async function ActivePrayerRequestsSection({ page }: ActivePrayerRequests
   ) as PrayerRequest[];
   const activePagination = res.data?.pagination ?? null;
 
-  return <ActivePrayerRequests requests={activeRequests} pagination={activePagination} />;
+  return (
+    <ActivePrayerRequests
+      requests={activeRequests}
+      pagination={activePagination}
+      presentation="hub-section"
+    />
+  );
 }

@@ -6,18 +6,22 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { SectionComp } from '@/components/general/SectionComp';
-import { SectionEmptyState } from '@/components/general/SectionEmptyState';
+import { ContentBrowseList } from '@/components/general/ContentBrowseList';
 import { ListPagination } from '@/components/general/ListPagination';
+import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import { LoginModal } from '@/components/auth/LoginModal';
 import { useSendPrayer } from '@/lib/hooks/useSendPrayer';
 import type { PrayerRequest } from './PrayerRequestsPageClient';
-import type { Pagination } from '@/lib/types/community';
+import type { BrowsePresentation, Pagination } from '@/lib/types/pagination';
 import { useState } from 'react';
 
 interface ActivePrayerRequestsSectionProps {
   requests: PrayerRequest[];
   pagination?: Pagination | null;
+  presentation?: BrowsePresentation;
 }
+
+const ACTIVE_REQUESTS_GRID_CLASS = 'grid md:grid-cols-2 gap-6';
 
 function ActivePrayerRequestCard({ request }: { request: PrayerRequest }) {
   const {
@@ -108,14 +112,32 @@ function ActivePrayerRequestCard({ request }: { request: PrayerRequest }) {
   );
 }
 
+function ActivePrayerRequestCards({ requests }: { requests: PrayerRequest[] }) {
+  return (
+    <>
+      {requests.map((request, index) => (
+        <motion.div
+          key={request._id}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: index * 0.1 }}>
+          <ActivePrayerRequestCard request={request} />
+        </motion.div>
+      ))}
+    </>
+  );
+}
+
 export const ActivePrayerRequestsSection = ({
   requests,
   pagination = null,
+  presentation = 'hub-section',
 }: ActivePrayerRequestsSectionProps) => {
   const [displayedItems, setDisplayedItems] = useState(6);
   const [isLoading, setIsLoading] = useState(false);
-
-  const useServerPagination = pagination != null && pagination.totalPages > 1;
+  const isBrowseList = presentation === 'browse-list';
+  const useServerPagination = pagination != null;
   const itemsToShow = useServerPagination ? requests : requests.slice(0, displayedItems);
 
   const loadMoreItems = async () => {
@@ -127,6 +149,28 @@ export const ActivePrayerRequestsSection = ({
 
   const hasMore = !useServerPagination && displayedItems < requests.length;
 
+  if (requests.length === 0) {
+    return (
+      <SectionEmptyState
+        title="No active prayer requests"
+        description="Share a need or check back when others post requests to pray for."
+        icon={HandHeart}
+        actionLabel="Submit a request"
+        actionHref="/community/prayer-requests#submit-prayer-request"
+      />
+    );
+  }
+
+  const grid = <ActivePrayerRequestCards requests={itemsToShow} />;
+
+  if (isBrowseList) {
+    return (
+      <ContentBrowseList pagination={pagination} gridClassName={ACTIVE_REQUESTS_GRID_CLASS}>
+        {grid}
+      </ContentBrowseList>
+    );
+  }
+
   return (
     <SectionComp
       id="active-prayer-requests"
@@ -136,60 +180,37 @@ export const ActivePrayerRequestsSection = ({
       subtext="Join us in lifting these needs to God"
       viewAllLink="/community/prayer-requests/active"
       contentProps={{ enableAnimation: false }}>
-      {requests.length === 0 ? (
-        <SectionEmptyState
-          title="No active prayer requests"
-          description="Share a need or check back when others post requests to pray for."
-          icon={HandHeart}
-          actionLabel="Submit a request"
-          actionHref="/community/prayer-requests#submit-prayer-request"
-        />
-      ) : (
-        <>
-          <div className="grid md:grid-cols-2 gap-6">
-            {itemsToShow.map((request, index) => (
-              <motion.div
-                key={request._id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}>
-                <ActivePrayerRequestCard request={request} />
-              </motion.div>
-            ))}
-          </div>
+      <div className={ACTIVE_REQUESTS_GRID_CLASS}>{grid}</div>
 
-          {useServerPagination && pagination && (
-            <div className="mt-10">
-              <ListPagination
-                page={pagination.page}
-                totalPages={pagination.totalPages}
-                total={pagination.total}
-                limit={pagination.limit}
-              />
-            </div>
-          )}
+      {useServerPagination && pagination && pagination.totalPages > 1 && (
+        <div className="mt-10">
+          <ListPagination
+            page={pagination.page}
+            totalPages={pagination.totalPages}
+            total={pagination.total}
+            limit={pagination.limit}
+          />
+        </div>
+      )}
 
-          {hasMore && itemsToShow.length > 0 && (
-            <div className="flex justify-center mt-10">
-              <motion.button
-                onClick={loadMoreItems}
-                disabled={isLoading}
-                whileHover={{ scale: isLoading ? 1 : 1.02 }}
-                whileTap={{ scale: isLoading ? 1 : 0.98 }}
-                className="px-8 py-3 rounded-full bg-muted text-foreground font-medium hover:bg-muted/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
-                {isLoading ? (
-                  'Loading...'
-                ) : (
-                  <>
-                    Load More Requests
-                    <ArrowRight className="w-4 h-4" />
-                  </>
-                )}
-              </motion.button>
-            </div>
-          )}
-        </>
+      {hasMore && itemsToShow.length > 0 && (
+        <div className="flex justify-center mt-10">
+          <motion.button
+            onClick={loadMoreItems}
+            disabled={isLoading}
+            whileHover={{ scale: isLoading ? 1 : 1.02 }}
+            whileTap={{ scale: isLoading ? 1 : 0.98 }}
+            className="px-8 py-3 rounded-full bg-muted text-foreground font-medium hover:bg-muted/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
+            {isLoading ? (
+              'Loading...'
+            ) : (
+              <>
+                Load More Requests
+                <ArrowRight className="w-4 h-4" />
+              </>
+            )}
+          </motion.button>
+        </div>
       )}
     </SectionComp>
   );

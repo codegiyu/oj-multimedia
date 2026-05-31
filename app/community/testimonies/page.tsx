@@ -9,6 +9,7 @@ import {
   FeaturedTestimoniesSectionSkeleton,
   AllTestimoniesSectionSkeleton,
 } from './_sections/skeletons';
+import { parseBrowsePageParam } from '@/lib/utils/browsePage';
 
 export const metadata: Metadata = {
   title: 'Testimonies - Stories of Faith & Transformation',
@@ -21,8 +22,8 @@ interface TestimoniesPageProps {
 }
 
 export default async function TestimoniesPage({ searchParams }: TestimoniesPageProps) {
-  const { page: pageParam } = await searchParams;
-  const page = Math.max(1, parseInt(String(pageParam ?? '1'), 10) || 1);
+  const params = await searchParams;
+  const page = parseBrowsePageParam(params.page);
 
   return (
     <MainLayout>

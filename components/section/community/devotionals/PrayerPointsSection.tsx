@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { SectionComp } from '@/components/general/SectionComp';
+import { useHubViewAllLink } from '@/lib/hooks/useHubViewAllLink';
 import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import type { PrayerPoint } from './DevotionalsPageClient';
 import { MultilinePreview } from '@/components/general/MultilinePreview';
@@ -15,6 +16,8 @@ interface PrayerPointsSectionProps {
 }
 
 export const PrayerPointsSection = ({ prayerPoints }: PrayerPointsSectionProps) => {
+  const viewAllLink = useHubViewAllLink('/community/devotionals');
+
   return (
     <SectionComp
       id="prayer-points"
@@ -22,7 +25,7 @@ export const PrayerPointsSection = ({ prayerPoints }: PrayerPointsSectionProps) 
       iconColor="accent"
       heading="Prayer Points"
       subtext="Structured prayers for every need"
-      viewAllLink="/community/devotionals"
+      viewAllLink={viewAllLink}
       contentProps={{ enableAnimation: false }}>
       {prayerPoints.length === 0 ? (
         <SectionEmptyState

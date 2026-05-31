@@ -4,6 +4,7 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { SubPageHero } from '@/components/general/SubPageHero';
 import { DevotionalsPageSkeleton } from '@/components/section/community/devotionals/DevotionalsPageSkeleton';
 import { BibleStudyListSection } from './_sections/BibleStudyListSection';
+import { parseBrowsePageParam } from '@/lib/utils/browsePage';
 
 /** Next.js requires a literal — keep in sync with `ISR_REVALIDATE.slow` (3600s). */
 export const revalidate = 3600;
@@ -14,7 +15,14 @@ export const metadata: Metadata = {
     "Explore comprehensive Bible study series designed to deepen your understanding of God's Word.",
 };
 
-export default function BibleStudyPage() {
+interface BibleStudyPageProps {
+  searchParams: Promise<{ page?: string }>;
+}
+
+export default async function BibleStudyPage({ searchParams }: BibleStudyPageProps) {
+  const params = await searchParams;
+  const page = parseBrowsePageParam(params.page);
+
   return (
     <MainLayout>
       <SubPageHero
@@ -28,8 +36,8 @@ export default function BibleStudyPage() {
         stats={[{ icon: 'BookOpen', text: 'Deep learning' }, { text: 'Community studies' }]}
       />
       <div className="container mx-auto px-4 pb-16">
-        <Suspense fallback={<DevotionalsPageSkeleton />}>
-          <BibleStudyListSection />
+        <Suspense fallback={<DevotionalsPageSkeleton />} key={page}>
+          <BibleStudyListSection page={page} />
         </Suspense>
       </div>
     </MainLayout>

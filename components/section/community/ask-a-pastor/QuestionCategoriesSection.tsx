@@ -5,6 +5,7 @@ import { Sparkles, Users, TrendingUp, DollarSign, BookOpen, Heart } from 'lucide
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { SectionComp } from '@/components/general/SectionComp';
+import { useHubViewAllLink } from '@/lib/hooks/useHubViewAllLink';
 import type { QuestionCategory } from './AskAPastorPageClient';
 import { mapAskPastorCategoryTextToValue } from '@/lib/constants/communityCategorySelectOptions';
 
@@ -33,13 +34,15 @@ const categoryColors: Record<string, string> = {
 };
 
 export const QuestionCategoriesSection = ({ categories }: QuestionCategoriesSectionProps) => {
+  const viewAllLink = useHubViewAllLink('/community/ask-a-pastor');
+
   return (
     <SectionComp
       icon={BookOpen}
       iconColor="primary"
       heading="Browse by Category"
       subtext="Find questions and answers by topic"
-      viewAllLink="/community/ask-a-pastor"
+      viewAllLink={viewAllLink}
       viewAllLabel="View All Categories"
       contentProps={{ enableAnimation: false }}>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
