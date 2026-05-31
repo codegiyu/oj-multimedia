@@ -3,10 +3,10 @@
 import { motion } from 'motion/react';
 import { Heart, MessageCircle, Send, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useOptionalCommunityActionModals } from '@/components/section/community/shared/CommunityActionModalsProvider';
+import { useCommunityActionModals } from '@/components/section/community/shared/CommunityActionModalsProvider';
 
 export const CommunityCTA = () => {
-  const modals = useOptionalCommunityActionModals();
+  const { openShareTestimony, openSubmitPrayerRequest } = useCommunityActionModals();
 
   return (
     <section className="py-16">
@@ -62,11 +62,7 @@ export const CommunityCTA = () => {
             viewport={{ once: true }}
             transition={{ delay: 0.4 }}
             className="flex flex-wrap justify-center gap-4">
-            <Button
-              variant="hero"
-              size="lg"
-              className="gap-2"
-              onClick={() => modals?.openShareTestimony()}>
+            <Button variant="hero" size="lg" className="gap-2" onClick={() => openShareTestimony}>
               <Heart className="w-4 h-4" />
               Share Your Testimony
             </Button>
@@ -74,7 +70,7 @@ export const CommunityCTA = () => {
               variant="hero-outline"
               size="lg"
               className="gap-2"
-              onClick={() => modals?.openSubmitPrayerRequest()}>
+              onClick={() => openSubmitPrayerRequest}>
               <Send className="w-4 h-4" />
               Submit Prayer Request
             </Button>

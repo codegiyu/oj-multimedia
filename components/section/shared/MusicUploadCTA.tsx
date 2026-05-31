@@ -3,7 +3,7 @@
 import { motion } from 'motion/react';
 import { Upload, Music, Mic, DollarSign, BarChart3, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import Link from 'next/link';
+import { useContentSubmitWhatsApp } from '@/components/section/shared/ContentSubmitWhatsAppTrigger';
 
 const benefits = [
   { icon: Upload, title: 'Simple process', description: 'Message our team with your files' },
@@ -13,6 +13,8 @@ const benefits = [
 ];
 
 export const MusicUploadCTA = () => {
+  const musicSubmit = useContentSubmitWhatsApp('music');
+  const beatsSubmit = useContentSubmitWhatsApp('beats');
   return (
     <section className="py-16">
       <div className="container mx-auto px-4">
@@ -63,17 +65,23 @@ export const MusicUploadCTA = () => {
                 viewport={{ once: true }}
                 transition={{ delay: 0.4 }}
                 className="flex flex-wrap gap-3">
-                <Button variant="hero" size="lg" className="gap-2" asChild>
-                  <Link href="/contact">
-                    <Upload className="w-5 h-5" />
-                    Contact to submit
-                  </Link>
+                <Button
+                  type="button"
+                  variant="hero"
+                  size="lg"
+                  className="gap-2"
+                  onClick={musicSubmit.openSubmitModal}>
+                  <Upload className="w-5 h-5" />
+                  Contact to submit
                 </Button>
-                <Button variant="hero-outline" size="lg" className="gap-2" asChild>
-                  <Link href="/contact">
-                    <Mic className="w-5 h-5" />
-                    Submit beats
-                  </Link>
+                <Button
+                  type="button"
+                  variant="hero-outline"
+                  size="lg"
+                  className="gap-2"
+                  onClick={beatsSubmit.openSubmitModal}>
+                  <Mic className="w-5 h-5" />
+                  Submit beats
                 </Button>
               </motion.div>
             </div>
@@ -110,6 +118,8 @@ export const MusicUploadCTA = () => {
           </motion.p>
         </motion.div>
       </div>
+      {musicSubmit.modal}
+      {beatsSubmit.modal}
     </section>
   );
 };
