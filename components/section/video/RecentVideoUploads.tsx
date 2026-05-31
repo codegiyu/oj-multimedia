@@ -5,6 +5,7 @@ import { Sparkles } from 'lucide-react';
 import { SectionComp } from '@/components/general/SectionComp';
 import { VideoCard } from '@/components/cards/VideoCard';
 import { SectionEmptyState } from '@/components/general/SectionEmptyState';
+import { MEDIA_BROWSE_GRID_CLASS } from '@/lib/constants/mediaCardLayout';
 
 export interface RecentVideoUpload {
   _id: string;
@@ -49,7 +50,7 @@ export const RecentVideoUploads = ({ uploads: recentUploads }: RecentVideoUpload
       subtext="Just added by creators"
       viewAllLink="/videos/recent"
       contentProps={{ enableAnimation: false }}>
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className={MEDIA_BROWSE_GRID_CLASS}>
         {recentUploads.map((video, index) => (
           <motion.div
             key={video._id}

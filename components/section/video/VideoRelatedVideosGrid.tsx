@@ -3,6 +3,7 @@
 import { motion } from 'motion/react';
 import { VideoCard } from '@/components/cards/VideoCard';
 import type { VideoItemWithCreator } from '@/lib/utils/videos';
+import { MEDIA_BROWSE_GRID_CLASS } from '@/lib/constants/mediaCardLayout';
 
 interface VideoRelatedVideosGridProps {
   videos: VideoItemWithCreator[];
@@ -20,7 +21,7 @@ export function VideoRelatedVideosGrid({ videos }: VideoRelatedVideosGridProps) 
       transition={{ duration: 0.5, delay: 0.4 }}
       className="mt-12">
       <h2 className="text-2xl font-display font-bold mb-6">Related Videos</h2>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className={MEDIA_BROWSE_GRID_CLASS}>
         {videos.map((video, index) => (
           <motion.div
             key={video._id}

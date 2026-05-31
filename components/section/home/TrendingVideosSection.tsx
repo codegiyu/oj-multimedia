@@ -14,6 +14,10 @@ import type { CategoryNavItem } from '@/lib/utils/contentCategoryNav';
 import { useHomeTrendingVideoRail } from '@/lib/hooks/useHomeTrendingRail';
 import { useContentSubmitWhatsApp } from '@/components/section/shared/ContentSubmitWhatsAppTrigger';
 import { cn } from '@/lib/utils';
+import {
+  VIDEO_DEFAULT_RAIL_ITEM_CLASS,
+  VIDEO_RAIL_SCROLL_PX,
+} from '@/lib/constants/mediaCardLayout';
 
 export interface TrendingVideoItem {
   _id: string;
@@ -55,7 +59,7 @@ export const TrendingVideosSection = ({
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
-      const scrollAmount = 340;
+      const scrollAmount = VIDEO_RAIL_SCROLL_PX;
       scrollRef.current.scrollBy({
         left: direction === 'left' ? -scrollAmount : scrollAmount,
         behavior: 'smooth',
@@ -117,7 +121,7 @@ export const TrendingVideosSection = ({
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.05 }}
-                className="w-[240px] sm:w-[280px] lg:w-[300px] xl:w-[320px] 2xl:w-[340px] snap-start shrink-0">
+                className={VIDEO_DEFAULT_RAIL_ITEM_CLASS}>
                 <VideoCard {...video} />
               </motion.div>
             ))}

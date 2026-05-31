@@ -81,7 +81,7 @@ export function ArtistVideosGrid({ items }: { items: VideoItemWithCreator[] }) {
         <Video className="w-5 h-5 text-primary" />
         Videos
       </h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className={MEDIA_BROWSE_GRID_CLASS}>
         {items.map(item => (
           <VideoCard
             key={item._id}

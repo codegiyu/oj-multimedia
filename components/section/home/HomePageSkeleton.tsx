@@ -18,7 +18,10 @@ import {
   SimpleMusicRailSkeleton,
   SimpleVideoRailSkeleton,
 } from '@/components/skeletons';
-import { MUSIC_RAIL_ITEM_CLASS } from '@/lib/constants/mediaCardLayout';
+import {
+  MUSIC_RAIL_ITEM_CLASS,
+  VIDEO_DEFAULT_RAIL_ITEM_CLASS,
+} from '@/lib/constants/mediaCardLayout';
 
 export function TrendingMusicSectionSkeleton() {
   return (
@@ -35,7 +38,7 @@ export function TrendingVideosSectionSkeleton() {
   return (
     <SectionSkeleton background="bg-muted/30">
       <SectionHeaderSkeleton showPrevNext tabs={6} />
-      <HorizontalRailSkeleton itemWidthClass="w-[280px] md:w-[320px]" count={6}>
+      <HorizontalRailSkeleton itemWidthClass={VIDEO_DEFAULT_RAIL_ITEM_CLASS} count={6}>
         <VideoCardSkeleton />
       </HorizontalRailSkeleton>
     </SectionSkeleton>

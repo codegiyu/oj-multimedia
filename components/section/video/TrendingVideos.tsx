@@ -6,6 +6,10 @@ import { useRef } from 'react';
 import { SectionComp } from '@/components/general/SectionComp';
 import { VideoCard } from '@/components/cards/VideoCard';
 import { SectionEmptyState } from '@/components/general/SectionEmptyState';
+import {
+  VIDEO_DEFAULT_RAIL_ITEM_CLASS,
+  VIDEO_RAIL_SCROLL_PX,
+} from '@/lib/constants/mediaCardLayout';
 
 export interface TrendingVideo {
   _id: string;
@@ -27,7 +31,7 @@ export const TrendingVideos = ({ videos: trendingVideos }: TrendingVideosProps) 
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
-      const scrollAmount = 340;
+      const scrollAmount = VIDEO_RAIL_SCROLL_PX;
       scrollRef.current.scrollBy({
         left: direction === 'left' ? -scrollAmount : scrollAmount,
         behavior: 'smooth',
@@ -75,7 +79,7 @@ export const TrendingVideos = ({ videos: trendingVideos }: TrendingVideosProps) 
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: index * 0.05 }}
-            className="w-[280px] md:w-[320px] snap-start shrink-0">
+            className={VIDEO_DEFAULT_RAIL_ITEM_CLASS}>
             <VideoCard
               _id={video._id}
               title={video.title}

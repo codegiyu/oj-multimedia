@@ -6,6 +6,7 @@ import { useRef } from 'react';
 import { SectionComp } from '@/components/general/SectionComp';
 import { VideoCard } from '@/components/cards/VideoCard';
 import { SectionEmptyState } from '@/components/general/SectionEmptyState';
+import { VIDEO_SHORT_FORM_RAIL_ITEM_CLASS } from '@/lib/constants/mediaCardLayout';
 
 export interface ShortFormVideo {
   _id: string;
@@ -77,7 +78,7 @@ export const ShortFormVideos = ({ videos: shortFormVideos }: ShortFormVideosProp
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ delay: index * 0.05 }}
-            className="w-[140px] md:w-[160px] snap-start shrink-0">
+            className={VIDEO_SHORT_FORM_RAIL_ITEM_CLASS}>
             <VideoCard
               _id={video._id}
               title={video.title}

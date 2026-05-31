@@ -5,6 +5,7 @@ import { Film } from 'lucide-react';
 import { SectionComp } from '@/components/general/SectionComp';
 import { VideoCard } from '@/components/cards/VideoCard';
 import { SectionEmptyState } from '@/components/general/SectionEmptyState';
+import { MEDIA_BROWSE_GRID_CLASS } from '@/lib/constants/mediaCardLayout';
 import type { RecentVideoUpload } from './RecentVideoUploads';
 
 interface LongFormVideosProps {
@@ -40,7 +41,7 @@ export const LongFormVideos = ({ videos }: LongFormVideosProps) => {
       subtext="Films, documentaries, and extended content"
       viewAllLink="/videos/long-form"
       contentProps={{ enableAnimation: false }}>
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      <div className={MEDIA_BROWSE_GRID_CLASS}>
         {videos.map((video, index) => (
           <motion.div
             key={video._id}
