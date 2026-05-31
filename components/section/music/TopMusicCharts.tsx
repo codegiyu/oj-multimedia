@@ -18,6 +18,7 @@ export interface ChartSong {
   plays: string;
   trend: 'up' | 'down' | 'same';
   change: number;
+  chartEntry?: 'new' | 'reentry' | 'peak';
   category?: string;
 }
 
@@ -116,6 +117,7 @@ export const TopMusicCharts = ({ songs: chartSongs }: TopMusicChartsProps) => {
               plays={song.plays}
               trend={song.trend}
               change={song.change}
+              chartEntry={song.chartEntry}
             />
           </motion.div>
         ))}

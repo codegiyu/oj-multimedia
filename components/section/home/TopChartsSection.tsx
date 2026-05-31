@@ -18,6 +18,7 @@ export interface ChartItem {
   plays: string;
   trend: 'up' | 'down' | 'same';
   change?: number;
+  chartEntry?: 'new' | 'reentry' | 'peak';
 }
 
 /** @deprecated Use ArtistProfile from @/lib/types/artist */

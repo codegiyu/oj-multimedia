@@ -65,7 +65,7 @@ async function fetchMusicSections(category: string, period: string) {
   const trendingSongs: TrendingSong[] = rawTrending.map(mapPublicMusicToTrendingSong).slice(0, 8);
 
   const chartSongs: ChartSong[] = rawCharts
-    .map((item, i) => mapPublicMusicToChartSong(item, i + 1))
+    .map(item => mapPublicMusicToChartSong(item))
     .slice(0, 10);
 
   const recentUploads: RecentUpload[] = rawRecent.map(mapPublicMusicToRecentUpload).slice(0, 6);

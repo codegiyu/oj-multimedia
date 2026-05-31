@@ -157,6 +157,7 @@ export const TopChartsPageClient = ({
                     plays={song.plays}
                     trend={song.trend}
                     change={song.change}
+                    chartEntry={song.chartEntry}
                   />
                 </motion.div>
               ))}

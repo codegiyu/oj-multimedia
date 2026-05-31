@@ -31,6 +31,7 @@ export interface MusicItem {
   rank?: number;
   trend?: 'up' | 'down' | 'same';
   change?: number;
+  chartEntry?: 'new' | 'reentry' | 'peak';
   chartPeriod?: 'weekly' | 'monthly' | 'alltime';
   // Recent Upload fields
   uploadedAt?: string;
@@ -81,7 +82,8 @@ export const MUSIC_ITEMS: MusicItem[] = [
     chartPeriod: 'weekly',
     rank: 1,
     trend: 'up',
-    change: 12,
+    change: 3,
+    chartEntry: 'peak',
     audioUrl: 'https://example.com/audio/sunset-vibes.mp3',
     downloadUrl: 'https://example.com/downloads/sunset-vibes.mp3',
     description: 'An uplifting afrobeats track that captures the essence of golden hour vibes.',
@@ -105,7 +107,8 @@ export const MUSIC_ITEMS: MusicItem[] = [
     chartPeriod: 'weekly',
     rank: 5,
     trend: 'up',
-    change: 8,
+    change: 2,
+    chartEntry: 'new',
     audioUrl: 'https://example.com/audio/african-rhythm.mp3',
   },
   // Afrobeats - Recent Uploads
