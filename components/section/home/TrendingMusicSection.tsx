@@ -1,7 +1,6 @@
 'use client';
 
 import { useRef } from 'react';
-import { useRouter } from 'next/navigation';
 import { Flame } from 'lucide-react';
 import { useQueryState, parseAsString } from 'nuqs';
 import { MusicCard } from '@/components/cards/MusicCard';
@@ -11,6 +10,8 @@ import { motion } from 'motion/react';
 import { ALL_CATEGORY_ID } from '@/lib/constants/contentTaxonomy';
 import { PUBLIC_URL_KEYS } from '@/lib/constants/publicUrlKeys';
 import type { CategoryNavItem } from '@/lib/utils/contentCategoryNav';
+import { useHomeTrendingMusicRail } from '@/lib/hooks/useHomeTrendingRail';
+import { cn } from '@/lib/utils';
 
 export interface TrendingMusicItem {
   _id: string;
@@ -28,21 +29,21 @@ interface TrendingMusicSectionProps {
 }
 
 export const TrendingMusicSection = ({
-  music: trendingMusic,
+  music: initialMusic,
   categoryOptions,
 }: TrendingMusicSectionProps) => {
-  const router = useRouter();
   const [, setMusicCategory] = useQueryState(
     PUBLIC_URL_KEYS.MUSIC_CATEGORY,
-    parseAsString.withDefault(ALL_CATEGORY_ID)
+    parseAsString.withDefault(ALL_CATEGORY_ID).withOptions({ shallow: true, history: 'replace' })
   );
+  const { items: trendingMusic, isLoading, loadCategory } = useHomeTrendingMusicRail(initialMusic);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const tabs = categoryOptions.map(opt => ({ id: opt.id, label: opt.label }));
 
   const handleTabChange = async (tabId: string) => {
     await setMusicCategory(tabId === ALL_CATEGORY_ID ? null : tabId);
-    router.refresh();
+    loadCategory(tabId);
   };
 
   const scroll = (direction: 'left' | 'right') => {
@@ -74,7 +75,7 @@ export const TrendingMusicSection = ({
         className: '',
         enableAnimation: false,
       }}>
-      {trendingMusic.length === 0 ? (
+      {trendingMusic.length === 0 && !isLoading ? (
         <SectionEmptyState
           title="No trending music in this genre"
           description="Try a different genre or check back soon for new releases."
@@ -85,7 +86,10 @@ export const TrendingMusicSection = ({
       ) : (
         <div
           ref={scrollRef}
-          className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
+          className={cn(
+            'flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory transition-opacity',
+            isLoading && 'opacity-60 pointer-events-none'
+          )}>
           {trendingMusic.map((track, index) => (
             <motion.div
               key={track._id || index}
