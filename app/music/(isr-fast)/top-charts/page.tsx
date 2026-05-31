@@ -7,8 +7,7 @@ import { MusicTopChartsPageSkeleton } from '@/components/section/music/MusicPage
 import type { ChartSong } from '@/components/section/music/TopMusicCharts';
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import { ISR_PUBLIC_FETCH } from '@/lib/constants/isr';
-import { filterByCategory } from '@/lib/utils/music';
-import { filterPublicMusicList, mapPublicMusicToChartSong } from '@/lib/utils/publicApiMappers';
+import { mapPublicMusicToChartSong } from '@/lib/utils/publicApiMappers';
 import { CHART_PERIOD_VALUES, MUSIC_TYPES } from '@/lib/constants/contentTaxonomy';
 import { normalizePublicCategoryByScope } from '@/lib/utils/contentCategoriesServer';
 import { fetchPublicCategoryNav } from '@/lib/utils/contentCategoryNav';
@@ -33,10 +32,8 @@ async function fetchChartSongs(category: string, period: string) {
     };
   }
 
-  const raw = filterPublicMusicList(res.data?.music ?? []);
-  const chartSongs = filterByCategory(
-    raw.map((item, i) => mapPublicMusicToChartSong(item, i + 1)),
-    category
+  const chartSongs = (res.data?.music ?? []).map((item, i) =>
+    mapPublicMusicToChartSong(item, i + 1)
   ) as (ChartSong & { category?: string })[];
   return { chartSongs, initialErrorMessage: null as string | null };
 }

@@ -26,9 +26,9 @@ import type {
   IPublicTestimoniesListRes,
   IMarketplaceProductsListRes,
   IPublicHomeAdvertsRes,
-  IPublicDevotionalsListRes,
   IPublicPrayerRequestsListRes,
   IHomeAdvertItem,
+  ICommunityCategoryCountsRes,
 } from '@/lib/constants/endpoints';
 import type { HomeDevotionalCard } from '@/components/section/home';
 import { formatCompactNumber } from '@/lib/utils/general';
@@ -224,12 +224,6 @@ async function fetchHomeSections(filters: {
     status: 'published',
     type: 'trending',
   });
-  const devotionalsQuery = new URLSearchParams({
-    limit: '8',
-    page: '1',
-    type: 'latest',
-  });
-
   const [
     musicRes,
     videosRes,
@@ -246,7 +240,7 @@ async function fetchHomeSections(filters: {
     latestMoviesRes,
     featuredNewsRes,
     trendingNewsRes,
-    devotionalsRes,
+    communityRes,
   ] = await Promise.all([
     callPublicServerApi(
       'PUBLIC_GET_MUSIC',
@@ -347,13 +341,7 @@ async function fetchHomeSections(filters: {
       },
       ISR_PUBLIC_FETCH.fast
     ),
-    callPublicServerApi(
-      'PUBLIC_GET_DEVOTIONALS',
-      {
-        query: `?${devotionalsQuery.toString()}`,
-      },
-      ISR_PUBLIC_FETCH.fast
-    ),
+    callPublicServerApi('PUBLIC_GET_COMMUNITY', {}, ISR_PUBLIC_FETCH.fast),
   ]);
 
   let initialErrorMessage: string | null = null;
@@ -439,9 +427,9 @@ async function fetchHomeSections(filters: {
     ? (trendingNewsRes.data as IPublicNewsListRes | undefined)
     : undefined) ?? { articles: [] as IPublicNewsListRes['articles'] };
 
-  const devotionalsData = (devotionalsRes.type === 'success'
-    ? (devotionalsRes.data as IPublicDevotionalsListRes | undefined)
-    : undefined) ?? { devotionals: [] as IPublicDevotionalsListRes['devotionals'] };
+  const communityData = (communityRes.type === 'success'
+    ? (communityRes.data as ICommunityCategoryCountsRes | undefined)
+    : undefined) ?? { trendingDevotionals: [] as unknown[] };
 
   const advertsAfterHero = homeAdvertsData.adverts.filter(a => a.slot === 'after_hero');
   const advertsBeforeCta = homeAdvertsData.adverts.filter(a => a.slot === 'before_cta');
@@ -456,12 +444,17 @@ async function fetchHomeSections(filters: {
   const featuredNews: NewsArticle[] = featuredNewsData.articles.map(mapArticleToNewsCard);
   const trendingNewsRail: NewsArticle[] = trendingNewsData.articles.map(mapArticleToNewsCard);
 
-  const latestDevotionals: HomeDevotionalCard[] = devotionalsData.devotionals.map(d => ({
-    _id: d._id,
-    title: d.title,
-    slug: d.slug,
-    excerpt: d.excerpt,
-    coverImage: (d as { coverImage?: string }).coverImage,
+  const trendingDevotionalRecords = (communityData.trendingDevotionals ?? []) as Record<
+    string,
+    unknown
+  >[];
+
+  const latestDevotionals: HomeDevotionalCard[] = trendingDevotionalRecords.slice(0, 8).map(d => ({
+    _id: String(d._id ?? ''),
+    title: String(d.title ?? ''),
+    slug: String(d.slug ?? d._id ?? ''),
+    excerpt: String(d.excerpt ?? d.description ?? ''),
+    coverImage: typeof d.coverImage === 'string' ? d.coverImage : '',
   }));
 
   const trendingMusic: TrendingMusicItem[] = musicData.music.map(mapPublicMusicToHomeTrending);
@@ -522,7 +515,7 @@ async function fetchHomeSections(filters: {
 
   const communityHighlights = mergeCommunityHighlights({
     testimonies: testimoniesData.testimonies as unknown as Record<string, unknown>[],
-    devotionals: devotionalsData.devotionals.slice(0, 4) as unknown as Record<string, unknown>[],
+    devotionals: trendingDevotionalRecords.slice(0, 4),
     prayerRequests: prayerRequestsData.prayerRequests as unknown as Record<string, unknown>[],
     limit: 6,
   });

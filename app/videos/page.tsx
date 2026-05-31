@@ -11,12 +11,10 @@ import type { ShortFormVideo } from '@/components/section/video/ShortFormVideos'
 import type { FeaturedCreator } from '@/components/section/video/CreatorSpotlight';
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import { VIDEO_TYPES } from '@/lib/constants/contentTaxonomy';
-import { filterByCategory } from '@/lib/utils/videos';
 import { normalizePublicCategoryByScope } from '@/lib/utils/contentCategoriesServer';
 import { fetchPublicCategoryNav } from '@/lib/utils/contentCategoryNav';
 import { videoCategoryNavFallback } from '@/lib/constants/categoryNavFallbacks';
 import {
-  filterPublicVideoList,
   mapPublicVideoToTrendingVideo,
   mapPublicVideoToFeaturedVideo,
   mapPublicVideoToRecentUpload,
@@ -64,37 +62,23 @@ async function fetchVideoSections(category: string) {
   else if (longRes.type === 'error')
     errorMessage = longRes.error?.message ?? 'Failed to load long-form videos';
 
-  const rawTrending = filterPublicVideoList(
-    trendingRes.type === 'success' ? (trendingRes.data?.videos ?? []) : []
-  );
-  const rawFeatured = filterPublicVideoList(
-    featuredRes.type === 'success' ? (featuredRes.data?.videos ?? []) : []
-  );
-  const rawRecent = filterPublicVideoList(
-    recentRes.type === 'success' ? (recentRes.data?.videos ?? []) : []
-  );
-  const rawShort = filterPublicVideoList(
-    shortRes.type === 'success' ? (shortRes.data?.videos ?? []) : []
-  );
-  const rawLong = filterPublicVideoList(
-    longRes.type === 'success' ? (longRes.data?.videos ?? []) : []
-  );
+  const rawTrending = trendingRes.type === 'success' ? (trendingRes.data?.videos ?? []) : [];
+  const rawFeatured = featuredRes.type === 'success' ? (featuredRes.data?.videos ?? []) : [];
+  const rawRecent = recentRes.type === 'success' ? (recentRes.data?.videos ?? []) : [];
+  const rawShort = shortRes.type === 'success' ? (shortRes.data?.videos ?? []) : [];
+  const rawLong = longRes.type === 'success' ? (longRes.data?.videos ?? []) : [];
 
-  const trendingVideos: TrendingVideo[] = filterByCategory(rawTrending, category)
+  const trendingVideos: TrendingVideo[] = rawTrending
     .map(mapPublicVideoToTrendingVideo)
     .slice(0, 8);
-  const featuredVideos: FeaturedVideo[] = filterByCategory(rawFeatured, category)
+  const featuredVideos: FeaturedVideo[] = rawFeatured
     .map(mapPublicVideoToFeaturedVideo)
     .slice(0, 4);
-  const recentUploads: RecentVideoUpload[] = filterByCategory(rawRecent, category)
+  const recentUploads: RecentVideoUpload[] = rawRecent
     .map(mapPublicVideoToRecentUpload)
     .slice(0, 6);
-  const shortFormVideos: ShortFormVideo[] = filterByCategory(rawShort, category)
-    .map(mapPublicVideoToShortForm)
-    .slice(0, 8);
-  const longFormVideos = filterByCategory(rawLong, category)
-    .map(mapPublicVideoToRecentUpload)
-    .slice(0, 4);
+  const shortFormVideos: ShortFormVideo[] = rawShort.map(mapPublicVideoToShortForm).slice(0, 8);
+  const longFormVideos = rawLong.map(mapPublicVideoToRecentUpload).slice(0, 4);
 
   const rawArtists = artistsRes.type === 'success' ? (artistsRes.data?.artists ?? []) : [];
   const featuredCreators: FeaturedCreator[] = rawArtists

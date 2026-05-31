@@ -5,7 +5,6 @@ import { MusicDetailPageClient } from '@/components/section/music/MusicDetailPag
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import {
   assertCompletePublicMusic,
-  filterPublicMusicList,
   mapPublicMusicToDetailItem,
 } from '@/lib/utils/publicApiMappers';
 import type { MusicItemWithArtist } from '@/lib/utils/music';
@@ -83,9 +82,7 @@ export default async function MusicDetailPage({ params }: MusicDetailPageProps) 
   const relatedRes = await callPublicServerApi('PUBLIC_GET_MUSIC', {
     query: `?limit=4&page=1&status=published&type=recent&category=${encodeURIComponent(category)}`,
   });
-  const relatedList = filterPublicMusicList(
-    relatedRes.type === 'success' ? (relatedRes.data?.music ?? []) : []
-  );
+  const relatedList = relatedRes.type === 'success' ? (relatedRes.data?.music ?? []) : [];
   const relatedSongs: MusicItemWithArtist[] = relatedList
     .filter(m => String(m._id) !== id)
     .slice(0, 3)
