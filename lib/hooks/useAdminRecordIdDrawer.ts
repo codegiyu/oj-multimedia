@@ -57,6 +57,7 @@ export function useAdminRecordIdDrawer<T, Tab extends string = string>({
 
   useEffect(() => {
     if (!recordId) {
+      setClickedRowDetailsState(undefined);
       return;
     }
 
