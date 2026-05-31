@@ -86,6 +86,22 @@ export const AUTH_USER_ENDPOINTS: Record<string, EndpointDetails> = {
   USER_CART_REMOVE: { path: '/api/v1/user/cart', method: 'DELETE' }, // /:productId
   USER_CART_CLEAR: { path: '/api/v1/user/cart', method: 'DELETE' },
 
+  // User community dashboard
+  USER_ME_COMMUNITY_QUESTIONS: { path: '/api/v1/user/me/community/questions', method: 'GET' },
+  USER_ME_COMMUNITY_QUESTION_ITEM: { path: '/api/v1/user/me/community/questions', method: 'GET' },
+  USER_ME_COMMUNITY_QUESTION_CLOSE: {
+    path: '/api/v1/user/me/community/questions',
+    method: 'PATCH',
+  },
+  USER_ME_COMMUNITY_TESTIMONIES: {
+    path: '/api/v1/user/me/community/testimonies',
+    method: 'GET',
+  },
+  USER_ME_COMMUNITY_PRAYER_REQUESTS: {
+    path: '/api/v1/user/me/community/prayer-requests',
+    method: 'GET',
+  },
+
   // File Upload (Public)
   GENERATE_PRESIGNED_URL: {
     path: '/api/v1/upload/presigned-url',
