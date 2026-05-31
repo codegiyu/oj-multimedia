@@ -4,7 +4,6 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { SubPageHero } from '@/components/general/SubPageHero';
 import { TrendingStoriesPageClient } from '@/components/section/news';
 import { NewsPageSkeleton } from '@/components/section/news/NewsPageSkeleton';
-import { filterByCategory } from '@/components/section/news/categoryUtils';
 import type { TrendingStory } from '@/components/section/news/TrendingSidebar';
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import { ISR_PUBLIC_FETCH } from '@/lib/constants/isr';
@@ -35,10 +34,7 @@ async function fetchTrendingStories(category: string) {
   }
 
   const raw = res.data?.articles ?? [];
-  const trendingStories = filterByCategory(
-    raw.map((item, i) => mapPublicNewsToTrendingStory(item, i + 1)),
-    category
-  );
+  const trendingStories = raw.map((item, i) => mapPublicNewsToTrendingStory(item, i + 1));
   return { trendingStories, initialErrorMessage: null as string | null };
 }
 

@@ -6,7 +6,6 @@ import { AskAPastorPageSkeleton } from '@/components/section/community/ask-a-pas
 import { ActiveQuestionsSection } from '@/components/section/community/ask-a-pastor/ActiveQuestionsSection';
 import { DataLoadErrorWithRetry } from '@/components/general/DataLoadErrorWithRetry';
 import { HelpCircle } from 'lucide-react';
-import { filterByCategory } from '@/lib/utils/community/questions';
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import { ISR_PUBLIC_FETCH } from '@/lib/constants/isr';
 import { mapToQuestion } from '@/lib/utils/communityApiMappers';
@@ -45,7 +44,7 @@ async function fetchActiveQuestions(category: string): Promise<{
   const list = rawList.map(i => mapToQuestion(i as Record<string, unknown>)) as Question[];
 
   return {
-    activeQuestions: filterByCategory(list, category),
+    activeQuestions: list,
     initialErrorMessage: null,
   };
 }

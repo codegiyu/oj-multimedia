@@ -6,7 +6,6 @@ import { PrayerRequestsPageSkeleton } from '@/components/section/community/praye
 import { ActivePrayerRequestsSection } from '@/components/section/community/prayer-requests/ActivePrayerRequestsSection';
 import { DataLoadErrorWithRetry } from '@/components/general/DataLoadErrorWithRetry';
 import { HandHeart } from 'lucide-react';
-import { filterByCategory } from '@/lib/utils/community/prayer-requests';
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import { ISR_PUBLIC_FETCH } from '@/lib/constants/isr';
 import { mapToPrayerRequest } from '@/lib/utils/communityApiMappers';
@@ -47,7 +46,7 @@ async function fetchActivePrayerRequests(category: string): Promise<{
   ) as PrayerRequest[];
 
   return {
-    activeRequests: filterByCategory(list, category),
+    activeRequests: list,
     initialErrorMessage: null,
   };
 }

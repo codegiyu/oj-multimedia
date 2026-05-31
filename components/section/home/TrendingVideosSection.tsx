@@ -1,14 +1,18 @@
 'use client';
 
-import { useMemo, useRef } from 'react';
+import { useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { Video, Upload } from 'lucide-react';
+import { useQueryState, parseAsString } from 'nuqs';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { VideoCard } from '@/components/cards/VideoCard';
 import { SectionComp } from '@/components/general/SectionComp';
 import { SectionEmptyState } from '@/components/general/SectionEmptyState';
-import { useQueryState, parseAsString } from 'nuqs';
 import { motion } from 'motion/react';
+import { ALL_CATEGORY_ID } from '@/lib/constants/contentTaxonomy';
+import { PUBLIC_URL_KEYS } from '@/lib/constants/publicUrlKeys';
+import type { CategoryNavItem } from '@/lib/utils/contentCategoryNav';
 
 export interface TrendingVideoItem {
   _id: string;
@@ -22,28 +26,26 @@ export interface TrendingVideoItem {
 
 interface TrendingVideosSectionProps {
   videos: TrendingVideoItem[];
+  categoryOptions: CategoryNavItem[];
 }
 
-const categories = [
-  { id: 'All', label: 'All' },
-  { id: 'Music Videos', label: 'Music Videos' },
-  { id: 'Short Clips', label: 'Short Clips' },
-  { id: 'Talks', label: 'Talks' },
-  { id: 'Dance', label: 'Dance' },
-  { id: 'Creative', label: 'Creative' },
-];
-
-export const TrendingVideosSection = ({ videos: trendingVideos }: TrendingVideosSectionProps) => {
-  const [selectedCategory] = useQueryState('category', parseAsString.withDefault('All'));
+export const TrendingVideosSection = ({
+  videos: trendingVideos,
+  categoryOptions,
+}: TrendingVideosSectionProps) => {
+  const router = useRouter();
+  const [, setVideoCategory] = useQueryState(
+    PUBLIC_URL_KEYS.VIDEO_CATEGORY,
+    parseAsString.withDefault(ALL_CATEGORY_ID)
+  );
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const filteredVideos = useMemo(
-    () =>
-      selectedCategory === 'All'
-        ? trendingVideos
-        : trendingVideos.filter(video => video.category === selectedCategory),
-    [trendingVideos, selectedCategory]
-  );
+  const tabs = categoryOptions.map(opt => ({ id: opt.id, label: opt.label }));
+
+  const handleTabChange = async (tabId: string) => {
+    await setVideoCategory(tabId === ALL_CATEGORY_ID ? null : tabId);
+    router.refresh();
+  };
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
@@ -64,9 +66,10 @@ export const TrendingVideosSection = ({ videos: trendingVideos }: TrendingVideos
       subtext="Watch the latest creative content"
       viewAllLink="/videos/trending"
       background="bg-muted/30"
-      tabs={categories}
-      tabsQueryKey="category"
-      defaultTab="All"
+      tabs={tabs}
+      tabsQueryKey={PUBLIC_URL_KEYS.VIDEO_CATEGORY}
+      defaultTab={ALL_CATEGORY_ID}
+      onTabChange={handleTabChange}
       showPrevNext={true}
       onPrev={() => scroll('left')}
       onNext={() => scroll('right')}
@@ -82,7 +85,7 @@ export const TrendingVideosSection = ({ videos: trendingVideos }: TrendingVideos
         className: '',
         enableAnimation: false,
       }}>
-      {filteredVideos.length === 0 ? (
+      {trendingVideos.length === 0 ? (
         <SectionEmptyState
           title="No trending videos in this category"
           description="Try a different filter or check back later for new content."
@@ -94,9 +97,9 @@ export const TrendingVideosSection = ({ videos: trendingVideos }: TrendingVideos
         <div
           ref={scrollRef}
           className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
-          {filteredVideos.map((video, index) => (
+          {trendingVideos.map((video, index) => (
             <motion.div
-              key={index}
+              key={video._id || index}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}

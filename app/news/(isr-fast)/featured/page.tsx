@@ -4,7 +4,6 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { SubPageHero } from '@/components/general/SubPageHero';
 import { FeaturedStoriesPageClient } from '@/components/section/news/FeaturedStoriesPageClient';
 import { NewsPageSkeleton } from '@/components/section/news/NewsPageSkeleton';
-import { filterByCategory } from '@/components/section/news/categoryUtils';
 import type { FeaturedStory } from '@/components/section/news/FeaturedStories';
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import { ISR_PUBLIC_FETCH } from '@/lib/constants/isr';
@@ -35,7 +34,7 @@ async function fetchFeaturedStories(category: string) {
   }
 
   const raw = res.data?.articles ?? [];
-  const featuredStories = filterByCategory(raw.map(mapPublicNewsToFeaturedStory), category);
+  const featuredStories = raw.map(mapPublicNewsToFeaturedStory);
   return { featuredStories, initialErrorMessage: null as string | null };
 }
 

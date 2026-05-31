@@ -7,7 +7,6 @@ import { VideoPageSkeleton } from '@/components/section/video/VideoPageSkeleton'
 import type { TrendingVideo } from '@/components/section/video/TrendingVideos';
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import { ISR_PUBLIC_FETCH } from '@/lib/constants/isr';
-import { filterByCategory } from '@/lib/utils/videos';
 import { mapPublicVideoToTrendingVideo } from '@/lib/utils/publicApiMappers';
 import { VIDEO_TYPES } from '@/lib/constants/contentTaxonomy';
 import { normalizePublicCategoryByScope } from '@/lib/utils/contentCategoriesServer';
@@ -34,7 +33,7 @@ async function fetchTrendingVideos(category: string) {
   }
 
   const raw = res.data?.videos ?? [];
-  const trendingVideos = filterByCategory(raw, category).map(mapPublicVideoToTrendingVideo);
+  const trendingVideos = raw.map(mapPublicVideoToTrendingVideo);
   return { trendingVideos, initialErrorMessage: null as string | null };
 }
 

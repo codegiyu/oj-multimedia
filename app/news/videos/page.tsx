@@ -3,7 +3,6 @@ import { Suspense } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { SubPageHero } from '@/components/general/SubPageHero';
 import { VideoNewsPageClient } from '@/components/section/news';
-import { filterByCategory } from '@/components/section/news/categoryUtils';
 import { NewsPageSkeleton } from '@/components/section/news/NewsPageSkeleton';
 import type { VideoNewsItem } from '@/components/section/news/VideoNews';
 import { callPublicServerApi } from '@/lib/services/serverApi';
@@ -34,7 +33,7 @@ async function fetchVideoNews(category: string) {
   }
 
   const raw = res.data?.articles ?? [];
-  const videoNews = filterByCategory(raw.map(mapPublicNewsToVideoNewsItem), category);
+  const videoNews = raw.map(mapPublicNewsToVideoNewsItem);
   return { videoNews, initialErrorMessage: null as string | null };
 }
 

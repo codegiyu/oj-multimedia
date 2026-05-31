@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { motion } from 'motion/react';
 import { useQueryState, parseAsString } from 'nuqs';
 import { ALL_CATEGORY_ID } from '@/lib/constants/contentTaxonomy';
@@ -22,13 +23,15 @@ export type VideoCategoriesProps = {
 };
 
 export const VideoCategories = ({ categoryOptions }: VideoCategoriesProps) => {
+  const router = useRouter();
   const [activeCategory, setActiveCategory] = useQueryState(
     'category',
     parseAsString.withDefault(ALL_CATEGORY_ID)
   );
 
-  const handleCategoryChange = (categoryId: string) => {
-    setActiveCategory(categoryId === ALL_CATEGORY_ID ? null : categoryId);
+  const handleCategoryChange = async (categoryId: string) => {
+    await setActiveCategory(categoryId === ALL_CATEGORY_ID ? null : categoryId);
+    router.refresh();
   };
 
   return (

@@ -32,6 +32,18 @@ import type {
 } from '@/lib/constants/endpoints';
 import type { HomeDevotionalCard } from '@/components/section/home';
 import { formatCompactNumber } from '@/lib/utils/general';
+import { ALL_CATEGORY_ID } from '@/lib/constants/contentTaxonomy';
+import {
+  LEGACY_HOME_MUSIC_GENRE_KEY,
+  LEGACY_HOME_VIDEO_CATEGORY_KEY,
+  PUBLIC_URL_KEYS,
+} from '@/lib/constants/publicUrlKeys';
+import { normalizePublicCategoryByScope } from '@/lib/utils/contentCategoriesServer';
+import { fetchPublicCategoryNav, type CategoryNavItem } from '@/lib/utils/contentCategoryNav';
+import {
+  musicCategoryNavFallback,
+  videoCategoryNavFallback,
+} from '@/lib/constants/categoryNavFallbacks';
 
 export const metadata = {
   title: 'Home - Discover Music, Charts & Latest Content',
@@ -40,35 +52,47 @@ export const metadata = {
 };
 
 type HomeSearchParams = Promise<{
-  genre?: string;
-  category?: string;
-  marketplaceCategory?: string;
+  [PUBLIC_URL_KEYS.MUSIC_CATEGORY]?: string;
+  [PUBLIC_URL_KEYS.VIDEO_CATEGORY]?: string;
+  [PUBLIC_URL_KEYS.MARKETPLACE_CATEGORY]?: string;
+  [LEGACY_HOME_MUSIC_GENRE_KEY]?: string;
+  [LEGACY_HOME_VIDEO_CATEGORY_KEY]?: string;
 }>;
 
-const genreToCategorySlug = (genre: string | undefined): string | null => {
-  if (!genre || genre.toLowerCase() === 'all') return null;
-  const map: Record<string, string> = {
-    Afrobeats: 'afrobeats',
-    'Hip-Hop': 'hiphop',
-    Pop: 'pop',
-    'R&B': 'rnb',
-    Gospel: 'gospel',
-    Instrumental: 'instrumental',
-  };
-  return map[genre] ?? null;
+const legacyGenreLabelToSlug: Record<string, string> = {
+  Afrobeats: 'afrobeats',
+  'Hip-Hop': 'hiphop',
+  Pop: 'pop',
+  'R&B': 'rnb',
+  Gospel: 'gospel',
+  Instrumental: 'instrumental',
 };
 
-const videoCategoryToSlug = (category: string | undefined): string | null => {
-  if (!category || category.toLowerCase() === 'all') return null;
-  const map: Record<string, string> = {
-    'Music Videos': 'music',
-    'Short Clips': 'short',
-    Talks: 'talks',
-    Dance: 'dance',
-    Creative: 'creative',
-  };
-  return map[category] ?? null;
+const legacyVideoLabelToSlug: Record<string, string> = {
+  'Music Videos': 'music',
+  'Short Clips': 'short',
+  Talks: 'talks',
+  Dance: 'dance',
+  Creative: 'creative',
 };
+
+function resolveHomeMusicCategoryParam(
+  musicCategory?: string,
+  legacyGenre?: string
+): string | undefined {
+  if (musicCategory) return musicCategory;
+  if (!legacyGenre || legacyGenre.toLowerCase() === 'all') return undefined;
+  return legacyGenreLabelToSlug[legacyGenre] ?? legacyGenre.toLowerCase();
+}
+
+function resolveHomeVideoCategoryParam(
+  videoCategory?: string,
+  legacyCategory?: string
+): string | undefined {
+  if (videoCategory) return videoCategory;
+  if (!legacyCategory || legacyCategory.toLowerCase() === 'all') return undefined;
+  return legacyVideoLabelToSlug[legacyCategory] ?? legacyCategory.toLowerCase();
+}
 
 interface HomePageData {
   advertsAfterHero: IHomeAdvertItem[];
@@ -146,12 +170,14 @@ function mapArticleToNewsCard(article: IPublicNewsListRes['articles'][number]): 
 }
 
 async function fetchHomeSections(filters: {
-  genreQuery?: string;
-  videoCategoryQuery?: string;
+  musicCategorySlug: string;
+  videoCategorySlug: string;
   marketplaceCategory?: string;
 }): Promise<HomePageData> {
-  const musicCategorySlug = genreToCategorySlug(filters.genreQuery);
-  const videoCategorySlug = videoCategoryToSlug(filters.videoCategoryQuery);
+  const musicCategorySlug =
+    filters.musicCategorySlug === ALL_CATEGORY_ID ? null : filters.musicCategorySlug;
+  const videoCategorySlug =
+    filters.videoCategorySlug === ALL_CATEGORY_ID ? null : filters.videoCategorySlug;
 
   const baseMusicQuery = new URLSearchParams({
     limit: '12',
@@ -556,9 +582,11 @@ export default async function Home({ searchParams }: HomeProps) {
       <HeroSection />
       <Suspense fallback={<HomePageSkeleton />}>
         <HomePageServer
-          genreQuery={params.genre}
-          videoCategoryQuery={params.category}
-          marketplaceCategory={params.marketplaceCategory}
+          musicCategory={params[PUBLIC_URL_KEYS.MUSIC_CATEGORY]}
+          videoCategory={params[PUBLIC_URL_KEYS.VIDEO_CATEGORY]}
+          legacyGenre={params[LEGACY_HOME_MUSIC_GENRE_KEY]}
+          legacyVideoCategory={params[LEGACY_HOME_VIDEO_CATEGORY_KEY]}
+          marketplaceCategory={params[PUBLIC_URL_KEYS.MARKETPLACE_CATEGORY]}
         />
       </Suspense>
     </MainLayout>
@@ -566,19 +594,55 @@ export default async function Home({ searchParams }: HomeProps) {
 }
 
 async function HomePageServer({
-  genreQuery,
-  videoCategoryQuery,
+  musicCategory,
+  videoCategory,
+  legacyGenre,
+  legacyVideoCategory,
   marketplaceCategory,
 }: {
-  genreQuery?: string;
-  videoCategoryQuery?: string;
+  musicCategory?: string;
+  videoCategory?: string;
+  legacyGenre?: string;
+  legacyVideoCategory?: string;
   marketplaceCategory?: string;
 }) {
-  const homeData = await fetchHomeSections({
-    genreQuery,
-    videoCategoryQuery,
+  const [musicCategorySlug, videoCategorySlug, musicCategoryOptions, videoCategoryOptions] =
+    await Promise.all([
+      normalizePublicCategoryByScope(
+        'music',
+        resolveHomeMusicCategoryParam(musicCategory, legacyGenre),
+        ISR_PUBLIC_FETCH.fast
+      ),
+      normalizePublicCategoryByScope(
+        'video',
+        resolveHomeVideoCategoryParam(videoCategory, legacyVideoCategory),
+        ISR_PUBLIC_FETCH.fast
+      ),
+      fetchPublicCategoryNav(
+        'music',
+        'All Genres',
+        musicCategoryNavFallback,
+        ISR_PUBLIC_FETCH.fast
+      ),
+      fetchPublicCategoryNav(
+        'video',
+        'All Categories',
+        videoCategoryNavFallback,
+        ISR_PUBLIC_FETCH.fast
+      ),
+    ]);
+
+  const resolvedHomeData = await fetchHomeSections({
+    musicCategorySlug,
+    videoCategorySlug,
     marketplaceCategory,
   });
 
-  return <HomePageClient {...homeData} />;
+  return (
+    <HomePageClient
+      {...resolvedHomeData}
+      musicCategoryOptions={musicCategoryOptions}
+      videoCategoryOptions={videoCategoryOptions}
+    />
+  );
 }
