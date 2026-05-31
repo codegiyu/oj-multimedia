@@ -11,9 +11,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { User, Settings, HelpCircle, LogOut, Menu, ExternalLink } from 'lucide-react';
-import { useTheme } from 'next-themes';
-import { RegularSelect } from '@/components/atoms/RegularSelect';
-import type { SelectOption } from '@/lib/types/general';
 import { SidebarTrigger, useSidebar } from '../ui/sidebar';
 import { useAuthStore } from '@/lib/store/useAuthStore';
 import { useRouter } from 'next/navigation';
@@ -75,7 +72,6 @@ const ProfileMenu = () => {
     user,
     actions: { logout },
   } = useAuthStore(state => state);
-  const { theme, setTheme } = useTheme();
   const { push } = useRouter();
   const publicSiteHref = getPublicSiteHref();
   const publicSiteIsExternal = publicSiteHref.startsWith('http');
@@ -121,23 +117,12 @@ const ProfileMenu = () => {
             <span>View public site</span>
           </a>
         </DropdownMenuItem>
-        <DropdownMenuSeparator />
+        {/* Theme switch disabled until theme tokens are stable across admin surfaces */}
+        {/* <DropdownMenuSeparator />
         <div className="px-2 py-2">
-          <RegularSelect
-            label="Theme"
-            value={theme || 'system'}
-            onSelectChange={setTheme}
-            options={
-              [
-                { text: 'Light', value: 'light' },
-                { text: 'Dark', value: 'dark' },
-                { text: 'System', value: 'system' },
-              ] as SelectOption[]
-            }
-            wrapClassName="w-full"
-          />
+          <RegularSelect label="Theme" ... />
         </div>
-        <DropdownMenuSeparator />
+        <DropdownMenuSeparator /> */}
         <DropdownMenuItem>
           <HelpCircle className="mr-2 h-4 w-4" />
           <span>Help & Support</span>

@@ -41,7 +41,7 @@ export function buildAdminListNuqsParsers(
   const fields = ADMIN_LIST_FILTER_FIELDS[resource];
   const parsers: Record<string, NuqsParser> = {
     page: parseAsInteger.withDefault(1),
-    id: parseAsString.withDefault(''),
+    id: parseAsString.withDefault('').withOptions({ shallow: true, history: 'replace' }),
   };
 
   for (const field of fields) {
