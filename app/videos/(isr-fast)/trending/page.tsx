@@ -4,6 +4,7 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { SubPageHero } from '@/components/general/SubPageHero';
 import { ISR_PUBLIC_FETCH } from '@/lib/constants/isr';
 import { normalizePublicCategoryByScope } from '@/lib/utils/contentCategoriesServer';
+import { parseBrowsePageParam } from '@/lib/utils/browsePage';
 import { VideoCategoriesSection } from '../../_sections/VideoCategoriesSection';
 import { TrendingVideosSection } from '../../_sections/TrendingVideosSection';
 import { VideoCategoriesSkeleton, VideoSubpageGridSkeleton } from '../../_sections/skeletons';
@@ -15,11 +16,12 @@ export const metadata: Metadata = {
 };
 
 interface TrendingVideosPageProps {
-  searchParams: Promise<{ category?: string }>;
+  searchParams: Promise<{ category?: string; page?: string }>;
 }
 
 export default async function TrendingVideosPage({ searchParams }: TrendingVideosPageProps) {
   const params = await searchParams;
+  const page = parseBrowsePageParam(params.page);
   const category = await normalizePublicCategoryByScope(
     'video',
     params.category,
@@ -42,10 +44,10 @@ export default async function TrendingVideosPage({ searchParams }: TrendingVideo
       <Suspense fallback={<VideoCategoriesSkeleton />}>
         <VideoCategoriesSection category={category} fetchOptions={fetchOptions} />
       </Suspense>
-      <Suspense fallback={<VideoSubpageGridSkeleton />}>
+      <Suspense fallback={<VideoSubpageGridSkeleton />} key={`${category}|${page}`}>
         <TrendingVideosSection
           category={category}
-          limit={50}
+          page={page}
           fetchOptions={fetchOptions}
           variant="subpage"
         />

@@ -1,9 +1,8 @@
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'motion/react';
-import { Zap, ArrowRight, Video } from 'lucide-react';
+import { Zap, Video } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { SectionContainer } from '@/components/general/SectionContainer';
 import { DataLoadError } from '@/components/general/DataLoadError';
@@ -11,14 +10,16 @@ import { VideoCategories } from './VideoCategories';
 import type { CategoryNavItem } from '@/lib/utils/contentCategoryNav';
 import { VideoUploadCTA } from './VideoUploadCTA';
 import { SectionEmptyState } from '@/components/general/SectionEmptyState';
-import { SectionComp } from '@/components/general/SectionComp';
+import { ContentBrowseList } from '@/components/general/ContentBrowseList';
 import { VideoCard } from '@/components/cards/VideoCard';
 import type { ShortFormVideo } from './ShortFormVideos';
 import { MEDIA_BROWSE_GRID_CLASS } from '@/lib/constants/mediaCardLayout';
+import type { Pagination } from '@/lib/types/pagination';
 
 interface ShortFormVideosPageClientProps {
   categoryOptions?: CategoryNavItem[];
   shortFormVideos: ShortFormVideo[];
+  pagination?: Pagination | null;
   initialErrorMessage?: string | null;
   showCategoryNav?: boolean;
 }
@@ -26,22 +27,11 @@ interface ShortFormVideosPageClientProps {
 export const ShortFormVideosPageClient = ({
   categoryOptions = [],
   shortFormVideos,
+  pagination = null,
   initialErrorMessage = null,
   showCategoryNav = true,
 }: ShortFormVideosPageClientProps) => {
   const router = useRouter();
-  const [displayedItems, setDisplayedItems] = useState(20);
-  const [isLoading, setIsLoading] = useState(false);
-
-  const loadMoreItems = async () => {
-    setIsLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 800));
-    setDisplayedItems(prev => Math.min(prev + 12, shortFormVideos.length));
-    setIsLoading(false);
-  };
-
-  const hasMore = displayedItems < shortFormVideos.length;
-  const itemsToShow = shortFormVideos.slice(0, displayedItems);
 
   if (initialErrorMessage && shortFormVideos.length === 0) {
     return (
@@ -69,67 +59,39 @@ export const ShortFormVideosPageClient = ({
           </div>
         </div>
       )}
-      <SectionComp
-        icon={Zap}
-        iconColor="primary"
-        heading="Short Clips"
-        subtext="Quick, engaging content"
-        viewAllLink="/videos/short-form"
-        contentProps={{ enableAnimation: false }}>
-        {itemsToShow.length === 0 ? (
+      {shortFormVideos.length === 0 ? (
+        <SectionContainer>
           <SectionEmptyState
             title="No Short Form Videos"
             description="We couldn't find any short form videos in this category. Try selecting a different category or check back later for new content."
             icon={Zap}
             showDefaultActions
           />
-        ) : (
-          <>
-            <div className={MEDIA_BROWSE_GRID_CLASS}>
-              {itemsToShow.map((video, index) => (
-                <motion.div
-                  key={video._id}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: index * 0.05 }}>
-                  <VideoCard
-                    _id={video._id}
-                    title={video.title}
-                    creator={video.creator}
-                    thumbnail={video.thumbnail}
-                    views={video.views}
-                    duration={video.duration}
-                    category={video.category}
-                    variant="shortForm"
-                    likes={video.likes}
-                  />
-                </motion.div>
-              ))}
-            </div>
-
-            {hasMore && (
-              <div className="flex justify-center mt-10">
-                <motion.button
-                  onClick={loadMoreItems}
-                  disabled={isLoading}
-                  whileHover={{ scale: isLoading ? 1 : 1.02 }}
-                  whileTap={{ scale: isLoading ? 1 : 0.98 }}
-                  className="px-8 py-3 rounded-full bg-muted text-foreground font-medium hover:bg-muted/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
-                  {isLoading ? (
-                    'Loading...'
-                  ) : (
-                    <>
-                      Load More Videos
-                      <ArrowRight className="w-4 h-4" />
-                    </>
-                  )}
-                </motion.button>
-              </div>
-            )}
-          </>
-        )}
-      </SectionComp>
+        </SectionContainer>
+      ) : (
+        <ContentBrowseList pagination={pagination} gridClassName={MEDIA_BROWSE_GRID_CLASS}>
+          {shortFormVideos.map((video, index) => (
+            <motion.div
+              key={video._id}
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: index * 0.05 }}>
+              <VideoCard
+                _id={video._id}
+                title={video.title}
+                creator={video.creator}
+                thumbnail={video.thumbnail}
+                views={video.views}
+                duration={video.duration}
+                category={video.category}
+                variant="shortForm"
+                likes={video.likes}
+              />
+            </motion.div>
+          ))}
+        </ContentBrowseList>
+      )}
       <VideoUploadCTA />
     </>
   );

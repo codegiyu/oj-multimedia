@@ -5,16 +5,23 @@ import { ISR_PUBLIC_FETCH } from '@/lib/constants/isr';
 import { MUSIC_TYPES } from '@/lib/constants/contentTaxonomy';
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import { mapPublicMusicToChartSong } from '@/lib/utils/publicApiMappers';
+import { buildBrowseListQuery } from '@/lib/utils/browsePage';
+
 interface TopChartsGridSectionProps {
   category: string;
   period: string;
+  page: number;
 }
 
-export async function TopChartsGridSection({ category, period }: TopChartsGridSectionProps) {
-  const categoryParam =
-    category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';
-  const query =
-    `?limit=100&page=1&status=published&type=${MUSIC_TYPES.charts}&period=${encodeURIComponent(period)}${categoryParam}` as const;
+export async function TopChartsGridSection({ category, period, page }: TopChartsGridSectionProps) {
+  const query = buildBrowseListQuery({
+    page,
+    extra: {
+      type: MUSIC_TYPES.charts,
+      period,
+      category: category && category !== 'all' ? category : undefined,
+    },
+  }) as `?${string}`;
   const res = await callPublicServerApi('PUBLIC_GET_MUSIC', { query }, ISR_PUBLIC_FETCH.fast);
 
   if (res.type === 'error') {
@@ -36,6 +43,7 @@ export async function TopChartsGridSection({ category, period }: TopChartsGridSe
       categoryOptions={[]}
       chartSongs={chartSongs}
       period={period}
+      pagination={res.data?.pagination ?? null}
     />
   );
 }

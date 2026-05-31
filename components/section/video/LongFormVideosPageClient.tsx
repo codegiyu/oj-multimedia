@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { motion } from 'motion/react';
-import { Star, Video } from 'lucide-react';
+import { Film, Video } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { SectionContainer } from '@/components/general/SectionContainer';
 import { DataLoadError } from '@/components/general/DataLoadError';
@@ -12,32 +12,32 @@ import { VideoUploadCTA } from './VideoUploadCTA';
 import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import { ContentBrowseList } from '@/components/general/ContentBrowseList';
 import { VideoCard } from '@/components/cards/VideoCard';
-import type { FeaturedVideo } from './FeaturedVideos';
+import type { RecentVideoUpload } from './RecentVideoUploads';
 import { MEDIA_BROWSE_GRID_CLASS } from '@/lib/constants/mediaCardLayout';
 import type { Pagination } from '@/lib/types/pagination';
 
-interface FeaturedVideosPageClientProps {
+interface LongFormVideosPageClientProps {
   categoryOptions?: CategoryNavItem[];
-  featuredVideos: FeaturedVideo[];
+  longFormVideos: RecentVideoUpload[];
   pagination?: Pagination | null;
   initialErrorMessage?: string | null;
   showCategoryNav?: boolean;
 }
 
-export const FeaturedVideosPageClient = ({
+export const LongFormVideosPageClient = ({
   categoryOptions = [],
-  featuredVideos,
+  longFormVideos,
   pagination = null,
   initialErrorMessage = null,
   showCategoryNav = true,
-}: FeaturedVideosPageClientProps) => {
+}: LongFormVideosPageClientProps) => {
   const router = useRouter();
 
-  if (initialErrorMessage && featuredVideos.length === 0) {
+  if (initialErrorMessage && longFormVideos.length === 0) {
     return (
       <SectionContainer>
         <DataLoadError
-          title="Unable to load featured videos"
+          title="Unable to load long-form videos"
           message={initialErrorMessage}
           onRetry={() => router.refresh()}
           icon={<Video className="w-8 h-8 text-destructive" />}
@@ -59,18 +59,18 @@ export const FeaturedVideosPageClient = ({
           </div>
         </div>
       )}
-      {featuredVideos.length === 0 ? (
+      {longFormVideos.length === 0 ? (
         <SectionContainer>
           <SectionEmptyState
-            title="No Featured Videos"
-            description="We couldn't find any featured videos in this category. Try selecting a different category or check back later for new content."
-            icon={Star}
+            title="No Long-form Videos"
+            description="We couldn't find any long-form videos in this category. Try selecting a different category or check back later for new content."
+            icon={Film}
             showDefaultActions
           />
         </SectionContainer>
       ) : (
         <ContentBrowseList pagination={pagination} gridClassName={MEDIA_BROWSE_GRID_CLASS}>
-          {featuredVideos.map((video, index) => (
+          {longFormVideos.map((video, index) => (
             <motion.div
               key={video._id}
               initial={{ opacity: 0, y: 20 }}
@@ -82,11 +82,9 @@ export const FeaturedVideosPageClient = ({
                 title={video.title}
                 creator={video.creator}
                 thumbnail={video.thumbnail}
-                views={video.views || '0'}
+                views={video.views}
                 duration={video.duration}
-                category={video.category || 'Video'}
-                variant="featured"
-                featured={video.featured}
+                category={video.category}
               />
             </motion.div>
           ))}

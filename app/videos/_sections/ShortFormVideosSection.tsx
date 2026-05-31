@@ -4,7 +4,7 @@ import { SectionLoadError } from '@/components/general/SectionLoadError';
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import { VIDEO_TYPES } from '@/lib/constants/contentTaxonomy';
 import { mapPublicVideoToShortForm } from '@/lib/utils/publicApiMappers';
-import { buildVideoBaseQuery, type VideoSectionProps } from './shared';
+import { buildVideoBrowseQuery, type VideoSectionProps } from './shared';
 
 type ShortFormVideosSectionProps = VideoSectionProps & {
   variant?: 'hub' | 'subpage';
@@ -15,12 +15,16 @@ type ShortFormVideosSectionProps = VideoSectionProps & {
 export async function ShortFormVideosSection({
   category,
   limit = 12,
+  page = 1,
   fetchOptions,
   variant = 'hub',
   maxItems = 8,
   showCategoryNav = false,
 }: ShortFormVideosSectionProps) {
-  const query = `${buildVideoBaseQuery(category, limit)}&type=${VIDEO_TYPES.shortForm}` as const;
+  const query =
+    variant === 'hub'
+      ? buildVideoBrowseQuery(category, 1, { limit, type: VIDEO_TYPES.shortForm })
+      : buildVideoBrowseQuery(category, page, { type: VIDEO_TYPES.shortForm });
   const res = await callPublicServerApi('PUBLIC_GET_VIDEOS', { query }, fetchOptions);
 
   if (res.type === 'error') {
@@ -41,6 +45,7 @@ export async function ShortFormVideosSection({
       <ShortFormVideosPageClient
         shortFormVideos={shortFormVideos}
         showCategoryNav={showCategoryNav}
+        pagination={res.data?.pagination ?? null}
       />
     );
   }

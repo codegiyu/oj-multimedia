@@ -4,7 +4,7 @@ import { SectionLoadError } from '@/components/general/SectionLoadError';
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import { VIDEO_TYPES } from '@/lib/constants/contentTaxonomy';
 import { mapPublicVideoToFeaturedVideo } from '@/lib/utils/publicApiMappers';
-import { buildVideoBaseQuery, type VideoSectionProps } from './shared';
+import { buildVideoBrowseQuery, type VideoSectionProps } from './shared';
 
 type FeaturedVideosSectionProps = VideoSectionProps & {
   variant?: 'hub' | 'subpage';
@@ -15,12 +15,16 @@ type FeaturedVideosSectionProps = VideoSectionProps & {
 export async function FeaturedVideosSection({
   category,
   limit = 12,
+  page = 1,
   fetchOptions,
   variant = 'hub',
   maxItems = 4,
   showCategoryNav = false,
 }: FeaturedVideosSectionProps) {
-  const query = `${buildVideoBaseQuery(category, limit)}&type=${VIDEO_TYPES.featured}` as const;
+  const query =
+    variant === 'hub'
+      ? buildVideoBrowseQuery(category, 1, { limit, type: VIDEO_TYPES.featured })
+      : buildVideoBrowseQuery(category, page, { type: VIDEO_TYPES.featured });
   const res = await callPublicServerApi('PUBLIC_GET_VIDEOS', { query }, fetchOptions);
 
   if (res.type === 'error') {
@@ -38,7 +42,11 @@ export async function FeaturedVideosSection({
 
   if (variant === 'subpage') {
     return (
-      <FeaturedVideosPageClient featuredVideos={featuredVideos} showCategoryNav={showCategoryNav} />
+      <FeaturedVideosPageClient
+        featuredVideos={featuredVideos}
+        showCategoryNav={showCategoryNav}
+        pagination={res.data?.pagination ?? null}
+      />
     );
   }
 

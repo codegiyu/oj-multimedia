@@ -10,6 +10,7 @@ import { ISR_PUBLIC_FETCH } from '@/lib/constants/isr';
 import { normalizePublicCategoryByScope } from '@/lib/utils/contentCategoriesServer';
 import { MusicCategoriesSection } from '../../_sections/MusicCategoriesSection';
 import { TrendingSongsGridSection } from '../../_sections/TrendingSongsGridSection';
+import { parseBrowsePageParam } from '@/lib/utils/browsePage';
 
 export const metadata: Metadata = {
   title: 'Trending Songs - Latest Music',
@@ -18,11 +19,12 @@ export const metadata: Metadata = {
 };
 
 interface TrendingSongsPageProps {
-  searchParams: Promise<{ category?: string }>;
+  searchParams: Promise<{ category?: string; page?: string }>;
 }
 
 export default async function TrendingSongsPage({ searchParams }: TrendingSongsPageProps) {
   const params = await searchParams;
+  const page = parseBrowsePageParam(params.page);
   const category = await normalizePublicCategoryByScope(
     'music',
     params.category,
@@ -44,8 +46,8 @@ export default async function TrendingSongsPage({ searchParams }: TrendingSongsP
       <Suspense fallback={<MusicCategoriesSkeleton />}>
         <MusicCategoriesSection isr={ISR_PUBLIC_FETCH.fast} />
       </Suspense>
-      <Suspense fallback={<MusicTrendingGridSectionSkeleton />}>
-        <TrendingSongsGridSection category={category} />
+      <Suspense fallback={<MusicTrendingGridSectionSkeleton />} key={`${category}|${page}`}>
+        <TrendingSongsGridSection category={category} page={page} />
       </Suspense>
     </MainLayout>
   );
