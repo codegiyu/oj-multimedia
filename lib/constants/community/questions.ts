@@ -27,6 +27,34 @@ export interface QuestionItem {
   pastor_id?: string;
   answeredDate?: string;
   helpful?: number;
+  isPrivate?: boolean;
+  upvotes?: number;
+  downvotes?: number;
+  slug?: string;
+  status?: string;
+  requestedPastor?: {
+    _id: string;
+    name: string;
+    slug?: string;
+    title?: string;
+    church?: string;
+    image?: string;
+  };
+  answersList?: Array<{
+    _id: string;
+    answer: string;
+    answeredAt?: string;
+    likes: number;
+    pastor?: {
+      _id: string;
+      name: string;
+      slug?: string;
+      title?: string;
+      church?: string;
+      image?: string;
+    } | null;
+    pastorName?: string;
+  }>;
 }
 
 /**

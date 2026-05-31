@@ -174,23 +174,77 @@ export function mapToAnsweredPrayer(item: Record<string, unknown>): {
   };
 }
 
+/** Map pastor ref from API */
+function mapPastorRef(pastor: unknown): {
+  _id: string;
+  name: string;
+  slug?: string;
+  title?: string;
+  church?: string;
+  image?: string;
+} | null {
+  if (!pastor || typeof pastor !== 'object') return null;
+  const p = pastor as Record<string, unknown>;
+  if (!p._id && !p.name) return null;
+
+  return {
+    _id: str(p._id),
+    name: str(p.name),
+    slug: p.slug != null ? str(p.slug) : undefined,
+    title: p.title != null ? str(p.title) : undefined,
+    church: p.church != null ? str(p.church) : undefined,
+    image: p.image != null ? str(p.image) : undefined,
+  };
+}
+
+function mapQuestionAnswers(item: Record<string, unknown>) {
+  const rawAnswers = item.answers;
+  if (!Array.isArray(rawAnswers)) return [];
+
+  return rawAnswers.map((entry: unknown) => {
+    const a = entry as Record<string, unknown>;
+    const pastorRef = mapPastorRef(a.pastor);
+
+    return {
+      _id: str(a._id),
+      answer: str(a.answer),
+      answeredAt: a.answeredAt != null ? str(a.answeredAt) : undefined,
+      likes: num(a.likes),
+      pastor: pastorRef,
+      pastorName: pastorRef?.name ?? 'Pastor',
+    };
+  });
+}
+
 /** Map API question detail to QuestionDetailPageClient props */
 export function mapToQuestionDetail(item: Record<string, unknown>): QuestionItem {
   const base = mapToQuestion(item);
-  const pastor = item.pastor as Record<string, unknown> | undefined;
-  const pastorName =
-    pastor && typeof pastor === 'object' && 'name' in pastor ? str(pastor.name) : str(item.pastor);
+  const pastorRef = mapPastorRef(item.pastor);
+  const answersList = mapQuestionAnswers(item);
+  const firstAnswer = answersList[0];
+  const answersCount = num(item.answersCount ?? item.answers ?? answersList.length);
+  const isAnswered = bool(item.isAnswered) || answersCount > 0 || !!item.answer;
 
   return {
     ...base,
     fullQuestion: str(item.fullQuestion ?? item.question),
     date: str(item.date ?? item.createdAt),
-    answer: item.answer != null ? str(item.answer) : undefined,
-    pastor: pastorName || undefined,
-    pastor_id: pastor?._id != null ? str(pastor._id) : undefined,
-    answeredDate: str(item.answeredDate ?? item.answeredAt),
-    helpful: num(item.helpful),
-    answers: item.answer ? Math.max(1, num(item.answers)) : num(item.answers),
+    answer: firstAnswer?.answer ?? (item.answer != null ? str(item.answer) : undefined),
+    pastor: firstAnswer?.pastorName ?? pastorRef?.name ?? undefined,
+    pastor_id: firstAnswer?.pastor?._id ?? pastorRef?._id,
+    answeredDate: str(
+      firstAnswer?.answeredAt ?? item.answeredDate ?? item.answeredAt ?? item.updatedAt
+    ),
+    helpful: num(item.helpful ?? firstAnswer?.likes),
+    answers: answersCount,
+    isAnswered,
+    isPrivate: bool(item.isPrivate),
+    upvotes: num(item.upvotes),
+    downvotes: num(item.downvotes),
+    slug: item.slug != null ? str(item.slug) : undefined,
+    status: item.status != null ? str(item.status) : undefined,
+    answersList,
+    requestedPastor: mapPastorRef(item.requestedPastor) ?? undefined,
   };
 }
 
@@ -204,16 +258,28 @@ export function mapToQuestion(item: Record<string, unknown>): {
   answers: number;
   timeAgo: string;
   urgent: boolean;
+  isAnswered?: boolean;
+  isPrivate?: boolean;
+  upvotes?: number;
+  downvotes?: number;
+  slug?: string;
 } {
+  const answersCount = num(item.answersCount ?? item.answers ?? (item.answer ? 1 : 0));
+
   return {
     _id: str(item._id),
     question: str(item.question),
     category: str(item.category),
     author: str(item.author ?? item.name),
     views: num(item.views),
-    answers: num(item.answers ?? (item.answer ? 1 : 0)),
+    answers: answersCount,
     timeAgo: str(item.timeAgo ?? item.createdAt),
     urgent: bool(item.urgent),
+    isAnswered: bool(item.isAnswered) || answersCount > 0,
+    isPrivate: bool(item.isPrivate),
+    upvotes: num(item.upvotes),
+    downvotes: num(item.downvotes),
+    slug: item.slug != null ? str(item.slug) : undefined,
   };
 }
 
@@ -226,18 +292,30 @@ export function mapToAnsweredQuestion(item: Record<string, unknown>): {
   category: string;
   answeredDate: string;
   helpful: number;
+  upvotes?: number;
+  downvotes?: number;
+  answersCount?: number;
+  slug?: string;
 } {
-  const pastor = item.pastor as Record<string, unknown> | undefined;
-  const pastorName =
-    pastor && typeof pastor === 'object' && 'name' in pastor ? str(pastor.name) : str(item.pastor);
+  const answersList = mapQuestionAnswers(item);
+  const firstAnswer = answersList[0];
+  const pastorRef = mapPastorRef(item.pastor);
+  const pastorName = firstAnswer?.pastorName ?? pastorRef?.name ?? 'Pastor';
+
   return {
     _id: str(item._id),
     question: str(item.question),
-    answer: str(item.answer),
-    pastor: pastorName || 'Pastor',
+    answer: firstAnswer?.answer ?? str(item.answer),
+    pastor: pastorName,
     category: str(item.category),
-    answeredDate: str(item.answeredDate ?? item.updatedAt ?? item.createdAt),
-    helpful: num(item.helpful),
+    answeredDate: str(
+      firstAnswer?.answeredAt ?? item.answeredDate ?? item.updatedAt ?? item.createdAt
+    ),
+    helpful: num(item.helpful ?? firstAnswer?.likes),
+    upvotes: num(item.upvotes),
+    downvotes: num(item.downvotes),
+    answersCount: num(item.answersCount ?? answersList.length ?? item.answers),
+    slug: item.slug != null ? str(item.slug) : undefined,
   };
 }
 
@@ -251,9 +329,12 @@ export function mapToPastor(item: Record<string, unknown>): {
   expertise: string[];
   questionsAnswered: number;
   rating: number;
+  slug?: string;
+  bio?: string;
 } {
   const expertise = item.expertise ?? item.topics;
   const arr = Array.isArray(expertise) ? expertise : [];
+
   return {
     _id: str(item._id),
     name: str(item.name),
@@ -263,6 +344,8 @@ export function mapToPastor(item: Record<string, unknown>): {
     expertise: arr.map((x: unknown) => str(x)),
     questionsAnswered: num(item.questionsAnswered),
     rating: num(item.rating),
+    slug: item.slug != null ? str(item.slug) : undefined,
+    bio: item.bio != null ? str(item.bio) : undefined,
   };
 }
 

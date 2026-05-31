@@ -1,18 +1,22 @@
 'use client';
 
 import { motion } from 'motion/react';
-import { Eye, MessageCircle, ThumbsUp, User } from 'lucide-react';
+import { Eye, MessageCircle, ThumbsUp, User, Lock } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { useState } from 'react';
 import { toast } from '@/components/atoms/Toast';
 import type { QuestionItem } from '@/lib/constants/community/questions';
-import { getPastorById } from '@/lib/utils/community/pastors';
 import { ShareButton } from '@/lib/hooks/use-copy';
 import { MultilineText } from '@/components/general/MultilineText';
 import { LoginModal } from '@/components/auth/LoginModal';
 import { useAuthStore } from '@/lib/store/useAuthStore';
 import { CommunityContentDetailHero } from '../shared/CommunityContentDetailHero';
+import { QuestionVoteButtons } from './QuestionVoteButtons';
+import { callApi } from '@/lib/services/callApi';
+import { getErrorMessage } from '@/lib/utils/general';
+import { FixedImage } from '@/components/general/FillImage';
 
 interface QuestionDetailPageClientProps {
   question: QuestionItem;
@@ -24,17 +28,41 @@ export const QuestionDetailPageClient = ({
   relatedQuestions,
 }: QuestionDetailPageClientProps) => {
   const user = useAuthStore(state => state.user);
-  const [helpful, setHelpful] = useState(question.helpful || 0);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const pastor = question.pastor_id ? getPastorById(question.pastor_id) : null;
+  const [answerLikes, setAnswerLikes] = useState<Record<string, number>>(() => {
+    const map: Record<string, number> = {};
+    question.answersList?.forEach(a => {
+      map[a._id] = a.likes;
+    });
+    return map;
+  });
 
-  const handleHelpful = () => {
+  const answers = question.answersList ?? [];
+  const questionSlugOrId = question.slug ?? question._id;
+
+  const handleLikeAnswer = async (answerId: string) => {
     if (!user) {
       setIsLoginModalOpen(true);
       return;
     }
 
-    setHelpful(prev => prev + 1);
+    const res = await callApi('PUBLIC_ANSWER_LIKE', {
+      query: `/${questionSlugOrId}/answers/${answerId}/like` as `/${string}/answers/${string}/like`,
+    });
+
+    if (res.error) {
+      toast({
+        title: 'Unable to like answer',
+        description: getErrorMessage(res.error),
+        variant: 'error',
+      });
+      return;
+    }
+
+    if (res.data?.likes != null) {
+      setAnswerLikes(prev => ({ ...prev, [answerId]: res.data!.likes }));
+    }
+
     toast({
       title: 'Thank you!',
       description: 'Your feedback helps others find helpful answers.',
@@ -49,9 +77,17 @@ export const QuestionDetailPageClient = ({
         backLabel="Back to Ask a Pastor"
         title={question.question}
         badge={
-          <span className="inline-flex w-fit px-3 py-1 rounded-full bg-primary text-primary-foreground text-xs font-medium">
-            {question.category}
-          </span>
+          <div className="flex flex-wrap gap-2">
+            <span className="inline-flex w-fit px-3 py-1 rounded-full bg-primary text-primary-foreground text-xs font-medium">
+              {question.category}
+            </span>
+            {question.isPrivate ? (
+              <Badge variant="outline" className="gap-1">
+                <Lock className="h-3 w-3" />
+                Private
+              </Badge>
+            ) : null}
+          </div>
         }
         metaItems={[
           { icon: User, label: question.author },
@@ -75,40 +111,73 @@ export const QuestionDetailPageClient = ({
             </motion.div>
           )}
 
-          {question.isAnswered && question.answer && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="p-6 bg-muted/50 rounded-lg border border-border">
-              <div className="flex items-start gap-4 mb-4">
-                {pastor && (
-                  <div>
-                    <h3 className="font-semibold">{question.pastor}</h3>
-                    {pastor.title && (
-                      <p className="text-sm text-muted-foreground">{pastor.title}</p>
-                    )}
-                  </div>
-                )}
-                {question.answeredDate && (
-                  <span className="text-sm text-muted-foreground ml-auto">
-                    {question.answeredDate}
-                  </span>
-                )}
-              </div>
-              <MultilineText
-                text={question.answer}
-                className="mb-4"
-                paragraphClassName="text-foreground leading-relaxed"
-              />
-              <Button variant="outline" size="sm" onClick={handleHelpful} className="gap-2">
-                <ThumbsUp className="w-4 h-4" />
-                Helpful ({helpful})
-              </Button>
-            </motion.div>
-          )}
+          <div className="mb-8">
+            <QuestionVoteButtons
+              questionId={questionSlugOrId}
+              initialUpvotes={question.upvotes ?? 0}
+              initialDownvotes={question.downvotes ?? 0}
+            />
+          </div>
 
-          {!question.isAnswered && (
+          {answers.length > 0 ? (
+            <div className="space-y-6">
+              {answers.map((entry, index) => (
+                <motion.div
+                  key={entry._id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.05 }}
+                  className="p-6 bg-muted/50 rounded-lg border border-border">
+                  <div className="flex items-start gap-4 mb-4">
+                    {entry.pastor?.image ? (
+                      <FixedImage
+                        imageContext="public"
+                        src={entry.pastor.image}
+                        alt={entry.pastor.name ?? 'Pastor'}
+                        width={48}
+                        height={48}
+                        className="h-12 w-12 rounded-full object-cover"
+                      />
+                    ) : null}
+                    <div className="flex-1">
+                      {entry.pastor?.slug ? (
+                        <Link
+                          href={`/community/ask-a-pastor/pastors/${entry.pastor.slug}`}
+                          className="font-semibold hover:text-primary">
+                          {entry.pastor.name}
+                        </Link>
+                      ) : (
+                        <h3 className="font-semibold">
+                          {entry.pastor?.name ?? entry.pastorName ?? 'Pastor'}
+                        </h3>
+                      )}
+                      {entry.pastor?.title ? (
+                        <p className="text-sm text-muted-foreground">{entry.pastor.title}</p>
+                      ) : null}
+                    </div>
+                    {entry.answeredAt ? (
+                      <span className="text-sm text-muted-foreground">
+                        {new Date(entry.answeredAt).toLocaleDateString()}
+                      </span>
+                    ) : null}
+                  </div>
+                  <MultilineText
+                    text={entry.answer}
+                    className="mb-4"
+                    paragraphClassName="text-foreground leading-relaxed"
+                  />
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleLikeAnswer(entry._id)}
+                    className="gap-2">
+                    <ThumbsUp className="w-4 h-4" />
+                    Helpful ({answerLikes[entry._id] ?? entry.likes})
+                  </Button>
+                </motion.div>
+              ))}
+            </div>
+          ) : !question.isAnswered ? (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -118,7 +187,7 @@ export const QuestionDetailPageClient = ({
                 This question is waiting for a pastor to provide an answer. Check back soon!
               </p>
             </motion.div>
-          )}
+          ) : null}
 
           <motion.div
             initial={{ opacity: 0 }}
@@ -160,7 +229,7 @@ export const QuestionDetailPageClient = ({
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}>
                 <Link
-                  href={`/community/ask-a-pastor/${related._id}`}
+                  href={`/community/ask-a-pastor/${related.slug ?? related._id}`}
                   className="block p-6 bg-card rounded-lg border border-border hover:border-primary transition-colors">
                   <h3 className="font-semibold mb-2 line-clamp-2">{related.question}</h3>
                   <div className="flex items-center justify-between text-xs text-muted-foreground mt-4">

@@ -2,6 +2,7 @@
 
 import { motion } from 'motion/react';
 import { Users, Star, MessageSquare, ExternalLink } from 'lucide-react';
+import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { SectionComp } from '@/components/general/SectionComp';
 import type { AvailablePastor } from './AskAPastorPageClient';
@@ -10,6 +11,10 @@ import { FixedImage } from '@/components/general/FillImage';
 
 interface AvailablePastorsSectionProps {
   pastors: AvailablePastor[];
+}
+
+function pastorProfileHref(pastor: AvailablePastor) {
+  return `/community/ask-a-pastor/pastors/${pastor.slug ?? pastor._id}`;
 }
 
 export const AvailablePastorsSection = ({ pastors }: AvailablePastorsSectionProps) => {
@@ -34,19 +39,21 @@ export const AvailablePastorsSection = ({ pastors }: AvailablePastorsSectionProp
             whileHover={{ y: -4 }}
             className="bg-card rounded-2xl overflow-hidden shadow-sm border border-border/50 hover:shadow-md transition-all">
             <div className="p-6 text-center">
-              <div className="relative mb-4 inline-block">
+              <Link href={pastorProfileHref(pastor)} className="relative mb-4 inline-block">
                 <FixedImage
                   imageContext="public"
                   src={pastor.image}
                   alt={pastor.name}
                   width={96}
                   height={96}
-                  className="mx-auto h-24 w-24 rounded-full object-cover ring-4 ring-accent/20 transition-all group-hover:ring-accent/40"
+                  className="mx-auto h-24 w-24 rounded-full object-cover ring-4 ring-accent/20 transition-all hover:ring-accent/40"
                 />
-              </div>
-              <h3 className="font-semibold text-foreground mb-1 group-hover:text-accent transition-colors">
-                {pastor.name}
-              </h3>
+              </Link>
+              <Link href={pastorProfileHref(pastor)}>
+                <h3 className="font-semibold text-foreground mb-1 hover:text-accent transition-colors">
+                  {pastor.name}
+                </h3>
+              </Link>
               <p className="text-sm text-muted-foreground mb-1">{pastor.title}</p>
               <p className="text-xs text-muted-foreground mb-3">{pastor.church}</p>
 
@@ -70,16 +77,20 @@ export const AvailablePastorsSection = ({ pastors }: AvailablePastorsSectionProp
                 </span>
                 <span className="flex items-center gap-1">
                   <Star className="w-3 h-3 fill-yellow-500 text-yellow-500" />
-                  {pastor.rating}
+                  {pastor.rating > 0 ? pastor.rating.toFixed(1) : '—'}
                 </span>
               </div>
 
               <div className="flex gap-2">
-                <Button size="sm" className="flex-1">
-                  Ask Question
+                <Button size="sm" className="flex-1" asChild>
+                  <Link href={`/community/ask-a-pastor?pastor=${pastor._id}#submit-question`}>
+                    Ask Question
+                  </Link>
                 </Button>
-                <Button size="sm" variant="outline">
-                  <ExternalLink className="w-4 h-4" />
+                <Button size="sm" variant="outline" asChild>
+                  <Link href={pastorProfileHref(pastor)} aria-label={`View ${pastor.name} profile`}>
+                    <ExternalLink className="w-4 h-4" />
+                  </Link>
                 </Button>
               </div>
             </div>

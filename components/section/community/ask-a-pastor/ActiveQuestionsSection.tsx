@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { useState } from 'react';
 import { SectionComp } from '@/components/general/SectionComp';
 import type { Question } from './AskAPastorPageClient';
+import { QuestionVoteButtons } from './QuestionVoteButtons';
 
 interface ActiveQuestionsSectionProps {
   questions: Question[];
@@ -44,7 +45,7 @@ export const ActiveQuestionsSection = ({ questions }: ActiveQuestionsSectionProp
             transition={{ delay: index * 0.1 }}
             whileHover={{ y: -4 }}
             className="bg-card rounded-2xl p-6 shadow-sm border border-border/50 hover:shadow-md transition-all">
-            <Link href={`/community/ask-a-pastor/${question._id}`}>
+            <Link href={`/community/ask-a-pastor/${question.slug ?? question._id}`}>
               <div className="flex items-start justify-between gap-3 mb-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
@@ -58,7 +59,7 @@ export const ActiveQuestionsSection = ({ questions }: ActiveQuestionsSectionProp
                 </div>
               </div>
 
-              <div className="flex items-center justify-between pt-4 border-t border-border/50">
+              <div className="flex items-center justify-between pt-4 border-t border-border/50 flex-wrap gap-3">
                 <div className="flex items-center gap-4 text-xs text-muted-foreground">
                   <span className="flex items-center gap-1">
                     <Clock className="w-3 h-3" />
@@ -72,6 +73,13 @@ export const ActiveQuestionsSection = ({ questions }: ActiveQuestionsSectionProp
                     <MessageSquare className="w-3 h-3" />
                     {question.answers} answers
                   </span>
+                </div>
+                <div onClick={e => e.preventDefault()}>
+                  <QuestionVoteButtons
+                    questionId={question.slug ?? question._id}
+                    initialUpvotes={question.upvotes ?? 0}
+                    initialDownvotes={question.downvotes ?? 0}
+                  />
                 </div>
               </div>
 
