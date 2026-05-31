@@ -87,16 +87,28 @@ export function mapPublicMusicToTrendingSong(item: PublicMusicListItem): Trendin
   });
 }
 
-export function mapPublicMusicToChartSong(item: PublicMusicListItem, rank: number): ChartSong {
+export function mapPublicMusicToChartSong(item: PublicMusicListItem): ChartSong {
+  const chartItem = item as PublicMusicListItem & {
+    rank?: number;
+    chartPosition?: number;
+    trend?: 'up' | 'down' | 'same';
+    change?: number;
+    chartEntry?: 'new' | 'reentry' | 'peak';
+    periodPlays?: number;
+  };
+  const rank = chartItem.rank ?? chartItem.chartPosition ?? 0;
+  const periodPlays = chartItem.periodPlays ?? chartItem.plays ?? chartItem.views ?? 0;
+
   return withMusicAlbum(item, {
     _id: String(item._id),
     rank,
     title: item.title,
     artist: toArtistSummary(item),
     cover: item.coverImage ?? '',
-    plays: String(item.views ?? 0),
-    trend: (item as { trend?: 'up' | 'down' | 'same' }).trend ?? 'same',
-    change: (item as { change?: number }).change ?? 0,
+    plays: String(periodPlays),
+    trend: chartItem.trend ?? 'same',
+    change: chartItem.change ?? 0,
+    ...(chartItem.chartEntry ? { chartEntry: chartItem.chartEntry } : {}),
     category: item.category,
   });
 }

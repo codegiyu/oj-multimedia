@@ -1,13 +1,16 @@
 'use client';
 
 import { motion } from 'motion/react';
-import { Play, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { Play, TrendingUp, TrendingDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { AppLink } from '@/components/atoms/AppLink';
 import { FillImage } from '@/components/general/FillImage';
 import {
-  chartTrendAriaLabel,
-  formatChartChangePercent,
+  chartEntryBadgeLabel,
+  chartMovementAriaLabel,
+  formatChartRankChangeValue,
+  type ChartEntry,
   type ChartTrend,
 } from '@/lib/utils/chartCardDisplay';
 
@@ -20,6 +23,7 @@ interface ChartCardProps {
   plays: string;
   trend: ChartTrend;
   change?: number;
+  chartEntry?: ChartEntry;
 }
 
 function ChartRankCell({ rank }: { rank: number }) {
@@ -37,27 +41,54 @@ function ChartRankCell({ rank }: { rank: number }) {
   );
 }
 
-function ChartTrendCell({ trend }: { trend: ChartTrend }) {
-  const TrendIcon = trend === 'up' ? TrendingUp : trend === 'down' ? TrendingDown : Minus;
-  const trendColor =
-    trend === 'up'
-      ? 'text-secondary'
-      : trend === 'down'
-        ? 'text-destructive'
-        : 'text-muted-foreground';
+function ChartMovementDisplay({ trend, change }: { trend: ChartTrend; change?: number }) {
+  if (change == null) return null;
+
+  const ariaLabel = chartMovementAriaLabel(trend, change);
+  const value = formatChartRankChangeValue(change);
+
+  if (value == null) {
+    return (
+      <span
+        className="text-xs font-medium tabular-nums text-muted-foreground"
+        aria-label={ariaLabel}>
+        —
+      </span>
+    );
+  }
+
+  if (trend !== 'up' && trend !== 'down') {
+    return (
+      <span
+        className="text-xs font-medium tabular-nums text-muted-foreground"
+        aria-label={ariaLabel}>
+        {value}
+      </span>
+    );
+  }
+
+  const Icon = trend === 'up' ? TrendingUp : TrendingDown;
+  const colorClass = trend === 'up' ? 'text-secondary' : 'text-destructive';
 
   return (
-    <div className="flex w-10 shrink-0 flex-col items-center gap-0.5">
-      <span className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
-        Trend
-      </span>
-      <div
-        className={`flex h-8 w-8 items-center justify-center rounded-md bg-muted/40 ${trendColor}`}
-        title={chartTrendAriaLabel(trend)}
-        aria-label={chartTrendAriaLabel(trend)}>
-        <TrendIcon className="h-4 w-4" aria-hidden />
-      </div>
-    </div>
+    <span
+      className={`inline-flex items-center gap-0.5 text-xs font-medium tabular-nums ${colorClass}`}
+      aria-label={ariaLabel}>
+      <Icon className="h-3.5 w-3.5 shrink-0" aria-hidden />
+      {value}
+    </span>
+  );
+}
+
+function ChartEntryBadge({ chartEntry }: { chartEntry?: ChartEntry }) {
+  if (!chartEntry) return null;
+
+  const { label, variant, ariaLabel } = chartEntryBadgeLabel(chartEntry);
+
+  return (
+    <Badge variant={variant} className="h-5 shrink-0 px-1.5 text-[10px] font-medium uppercase">
+      <span aria-label={ariaLabel}>{label}</span>
+    </Badge>
   );
 }
 
@@ -70,13 +101,6 @@ function ChartStatsCell({
   trend: ChartTrend;
   change?: number;
 }) {
-  const trendColor =
-    trend === 'up'
-      ? 'text-secondary'
-      : trend === 'down'
-        ? 'text-destructive'
-        : 'text-muted-foreground';
-
   return (
     <div className="hidden shrink-0 flex-col items-end gap-2 text-right sm:flex">
       <div>
@@ -88,11 +112,9 @@ function ChartStatsCell({
       {change != null ? (
         <div>
           <p className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
-            Change
+            Movement
           </p>
-          <p className={`text-xs font-medium tabular-nums ${trendColor}`}>
-            {formatChartChangePercent(trend, change)}
-          </p>
+          <ChartMovementDisplay trend={trend} change={change} />
         </div>
       ) : null}
     </div>
@@ -107,6 +129,7 @@ function ChartCardBody({
   plays,
   trend,
   change,
+  chartEntry,
   detailHref,
 }: {
   rank: number;
@@ -116,6 +139,7 @@ function ChartCardBody({
   plays: string;
   trend: ChartTrend;
   change?: number;
+  chartEntry?: ChartEntry;
   detailHref?: string;
 }) {
   const coverBlock = (
@@ -131,23 +155,19 @@ function ChartCardBody({
 
   const metaBlock = (
     <div className="min-w-0 flex-1">
-      <h4
-        className={`truncate font-medium ${detailHref ? 'transition-colors group-hover:text-primary' : ''}`}>
-        {title}
-      </h4>
+      <div className="flex min-w-0 items-center gap-2">
+        <h4
+          className={`truncate font-medium ${detailHref ? 'transition-colors group-hover:text-primary' : ''}`}>
+          {title}
+        </h4>
+        <ChartEntryBadge chartEntry={chartEntry} />
+      </div>
       <p className="truncate text-sm text-muted-foreground">{artistName}</p>
-      <div className="mt-1 flex gap-3 text-xs text-muted-foreground sm:hidden">
+      <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-muted-foreground sm:hidden">
         <span>
           <span className="font-medium text-foreground/80">{plays}</span> plays
         </span>
-        {change != null ? (
-          <span
-            className={
-              trend === 'up' ? 'text-secondary' : trend === 'down' ? 'text-destructive' : ''
-            }>
-            {formatChartChangePercent(trend, change)}
-          </span>
-        ) : null}
+        {change != null ? <ChartMovementDisplay trend={trend} change={change} /> : null}
       </div>
     </div>
   );
@@ -155,7 +175,6 @@ function ChartCardBody({
   return (
     <>
       <ChartRankCell rank={rank} />
-      <ChartTrendCell trend={trend} />
       {coverBlock}
       {metaBlock}
       <ChartStatsCell plays={plays} trend={trend} change={change} />
@@ -166,13 +185,12 @@ function ChartCardBody({
 export function ChartCardsLegend({ className = '' }: { className?: string }) {
   return (
     <div
-      className={`mb-3 hidden grid-cols-[2.5rem_2.5rem_3rem_1fr_5.5rem] items-end gap-4 px-4 text-[10px] font-medium uppercase tracking-wide text-muted-foreground sm:grid ${className}`}
+      className={`mb-3 hidden grid-cols-[2.5rem_3rem_1fr_5.5rem] items-end gap-4 px-4 text-[10px] font-medium uppercase tracking-wide text-muted-foreground sm:grid ${className}`}
       aria-hidden>
       <span>Rank</span>
-      <span>Trend</span>
       <span className="col-span-1">Track</span>
       <span />
-      <span className="text-right">Plays / Change</span>
+      <span className="text-right">Plays / Movement</span>
     </div>
   );
 }
@@ -186,6 +204,7 @@ export const ChartCard = ({
   plays,
   trend,
   change,
+  chartEntry,
 }: ChartCardProps) => {
   const artistName = typeof artist === 'string' ? artist : artist.name;
   const detailHref = _id ? `/music/${_id}` : undefined;
@@ -209,6 +228,7 @@ export const ChartCard = ({
               plays={plays}
               trend={trend}
               change={change}
+              chartEntry={chartEntry}
               detailHref={detailHref}
             />
           </AppLink>
@@ -232,9 +252,12 @@ export const ChartCard = ({
             plays={plays}
             trend={trend}
             change={change}
+            chartEntry={chartEntry}
           />
         </div>
       )}
     </motion.article>
   );
 };
+
+export type { ChartEntry, ChartTrend };

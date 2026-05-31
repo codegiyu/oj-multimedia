@@ -32,8 +32,8 @@ async function fetchChartSongs(category: string, period: string) {
     };
   }
 
-  const chartSongs = (res.data?.music ?? []).map((item, i) =>
-    mapPublicMusicToChartSong(item, i + 1)
+  const chartSongs = (res.data?.music ?? []).map(item =>
+    mapPublicMusicToChartSong(item)
   ) as (ChartSong & { category?: string })[];
   return { chartSongs, initialErrorMessage: null as string | null };
 }

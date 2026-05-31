@@ -70,6 +70,7 @@ export function getChartDataForHome(limit: number = 10): Array<{
   plays: string;
   trend: 'up' | 'down' | 'same';
   change?: number;
+  chartEntry?: 'new' | 'reentry' | 'peak';
 }> {
   return MUSIC_ITEMS.filter(
     (item): item is MusicItem & { rank: number; trend: 'up' | 'down' | 'same' } =>
@@ -88,6 +89,7 @@ export function getChartDataForHome(limit: number = 10): Array<{
         plays: item.plays ?? '0',
         trend: item.trend,
         change: item.change,
+        ...(item.chartEntry ? { chartEntry: item.chartEntry } : {}),
       };
     });
 }
