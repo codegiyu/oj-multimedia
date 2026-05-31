@@ -117,7 +117,7 @@ function VendorProductsList({
           <SectionEmptyState
             title="No products yet"
             description="Add your first product to start selling on the marketplace."
-            icon={<Package className="h-12 w-12 text-muted-foreground" />}
+            icon={Package}
             actionLabel="Add your first product"
             actionHref="/account/vendor/products/new"
           />
