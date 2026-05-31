@@ -3,7 +3,7 @@
 import { motion } from 'motion/react';
 import { Trophy, TrendingUp } from 'lucide-react';
 import { ArtistCard } from '@/components/cards/ArtistCard';
-import { ChartCard } from '@/components/cards/ChartCard';
+import { ChartCard, ChartCardsLegend } from '@/components/cards/ChartCard';
 import { SectionHeader } from '@/components/general/SectionHeader';
 import { SectionContent } from '@/components/general/SectionContent';
 import { SectionEmptyState } from '@/components/general/SectionEmptyState';
@@ -58,7 +58,8 @@ export const TopChartsSection = ({ chartData, risingArtists }: TopChartsSectionP
                 actionHref="/music/top-charts"
               />
             ) : (
-              <SectionContent className="space-y-1" enableAnimation={false}>
+              <SectionContent className="space-y-2" enableAnimation={false}>
+                <ChartCardsLegend />
                 {chartData.slice(0, 5).map(item => (
                   <ChartCard key={item._id ?? item.rank} {...item} />
                 ))}

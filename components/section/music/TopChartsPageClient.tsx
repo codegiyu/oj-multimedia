@@ -11,7 +11,7 @@ import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import { Button } from '@/components/ui/button';
 import { useQueryState, parseAsString } from 'nuqs';
 import { SectionComp } from '@/components/general/SectionComp';
-import { ChartCard } from '@/components/cards/ChartCard';
+import { ChartCard, ChartCardsLegend } from '@/components/cards/ChartCard';
 import type { ChartSong } from './TopMusicCharts';
 import { SectionContainer } from '@/components/general/SectionContainer';
 import { DataLoadError } from '@/components/general/DataLoadError';
@@ -139,7 +139,8 @@ export const TopChartsPageClient = ({
           />
         ) : (
           <>
-            <div className="grid gap-4 md:grid-cols-2">
+            <ChartCardsLegend />
+            <div className="grid gap-3 md:grid-cols-2 md:gap-4">
               {itemsToShow.map((song, index) => (
                 <motion.div
                   key={song._id}
