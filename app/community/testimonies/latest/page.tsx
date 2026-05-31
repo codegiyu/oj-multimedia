@@ -7,12 +7,13 @@ import { AllTestimonies } from '@/components/section/community/testimonies/AllTe
 import { DataLoadErrorWithRetry } from '@/components/general/DataLoadErrorWithRetry';
 import { Clock } from 'lucide-react';
 import { callPublicServerApi } from '@/lib/services/serverApi';
-import { ISR_PUBLIC_FETCH, ISR_REVALIDATE } from '@/lib/constants/isr';
+import { ISR_PUBLIC_FETCH } from '@/lib/constants/isr';
 import { mapToTestimony } from '@/lib/utils/communityApiMappers';
 import { buildCommunityListQuery } from '@/lib/utils/communityListQuery';
 import type { Testimony } from '@/components/section/community/testimonies/TestimoniesPageClient';
 
-export const revalidate = ISR_REVALIDATE.fast;
+/** Next.js requires a literal — keep in sync with `ISR_REVALIDATE.fast` (60s). */
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: 'Latest Testimonies - Recent Stories',

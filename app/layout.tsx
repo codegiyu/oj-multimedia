@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { SEO_DETAILS } from '@/lib/constants/texts';
-import { ISR_REVALIDATE } from '@/lib/constants/isr';
 import { Providers } from '@/components/Providers';
 import { ScrollRestorationHandler } from '@/components/general/ScrollRestorationHandler';
 import { LoadAnimationScreenDynamic } from '@/components/general/LoadAnimationScreenDynamic';
@@ -36,7 +35,8 @@ export const viewport: Viewport = {
 };
 
 /** ISR: public routes inherit default tier unless overridden in nested layouts/pages. */
-export const revalidate = ISR_REVALIDATE.default;
+/** Next.js requires a literal — keep in sync with `ISR_REVALIDATE.default` (300s). */
+export const revalidate = 300;
 
 export default function RootLayout({
   children,

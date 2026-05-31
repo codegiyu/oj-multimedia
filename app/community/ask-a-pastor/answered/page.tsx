@@ -8,12 +8,13 @@ import { DataLoadErrorWithRetry } from '@/components/general/DataLoadErrorWithRe
 import { HelpCircle } from 'lucide-react';
 import { filterByCategory } from '@/lib/utils/community/questions';
 import { callPublicServerApi } from '@/lib/services/serverApi';
-import { ISR_PUBLIC_FETCH, ISR_REVALIDATE } from '@/lib/constants/isr';
+import { ISR_PUBLIC_FETCH } from '@/lib/constants/isr';
 import { mapToAnsweredQuestion } from '@/lib/utils/communityApiMappers';
 import { buildCommunityListQuery } from '@/lib/utils/communityListQuery';
 import type { AnsweredQuestion } from '@/components/section/community/ask-a-pastor/AskAPastorPageClient';
 
-export const revalidate = ISR_REVALIDATE.slow;
+/** Next.js requires a literal — keep in sync with `ISR_REVALIDATE.slow` (3600s). */
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: 'Answered Questions - Biblical Guidance',
