@@ -17,16 +17,17 @@ import { SectionComp } from '@/components/general/SectionComp';
 import type { VideoNewsItem } from './VideoNews';
 
 interface VideoNewsPageClientProps {
-  categoryOptions: CategoryNavItem[];
+  categoryOptions?: CategoryNavItem[];
   videoNews: VideoNewsItem[];
   initialErrorMessage?: string | null;
+  showCategoryNav?: boolean;
 }
 
 export const VideoNewsPageClient = ({
-  categoryOptions,
-
+  categoryOptions = [],
   videoNews,
   initialErrorMessage = null,
+  showCategoryNav = true,
 }: VideoNewsPageClientProps) => {
   const router = useRouter();
   const [displayedItems, setDisplayedItems] = useState(12);
@@ -57,7 +58,7 @@ export const VideoNewsPageClient = ({
 
   return (
     <>
-      <NewsCategories categoryOptions={categoryOptions} />
+      {showCategoryNav ? <NewsCategories categoryOptions={categoryOptions} /> : null}
       {initialErrorMessage && (
         <div className="container mx-auto px-4 mb-4">
           <div className="rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive flex items-center justify-between gap-4">

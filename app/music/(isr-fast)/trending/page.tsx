@@ -2,41 +2,20 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { SubPageHero } from '@/components/general/SubPageHero';
-import { TrendingSongsPageClient } from '@/components/section/music/TrendingSongsPageClient';
-import { MusicTrendingPageSkeleton } from '@/components/section/music/MusicPageSkeleton';
-import type { TrendingSong } from '@/components/section/music/TrendingSongs';
-import { callPublicServerApi } from '@/lib/services/serverApi';
+import {
+  MusicCategoriesSkeleton,
+  MusicTrendingGridSectionSkeleton,
+} from '@/components/section/music/skeletons';
 import { ISR_PUBLIC_FETCH } from '@/lib/constants/isr';
-import { mapPublicMusicToTrendingSong } from '@/lib/utils/publicApiMappers';
-import { MUSIC_TYPES } from '@/lib/constants/contentTaxonomy';
 import { normalizePublicCategoryByScope } from '@/lib/utils/contentCategoriesServer';
-import { fetchPublicCategoryNav } from '@/lib/utils/contentCategoryNav';
-import { musicCategoryNavFallback } from '@/lib/constants/categoryNavFallbacks';
+import { MusicCategoriesSection } from '../../_sections/MusicCategoriesSection';
+import { TrendingSongsGridSection } from '../../_sections/TrendingSongsGridSection';
 
 export const metadata: Metadata = {
   title: 'Trending Songs - Latest Music',
   description:
     "Discover what's trending now - the most popular songs everyone is listening to. Stay ahead of the music scene.",
 };
-
-async function fetchTrendingSongs(category: string) {
-  const categoryParam =
-    category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';
-  const query =
-    `?limit=50&page=1&status=published&type=${MUSIC_TYPES.trending}${categoryParam}` as const;
-  const res = await callPublicServerApi('PUBLIC_GET_MUSIC', { query }, ISR_PUBLIC_FETCH.fast);
-  if (res.type === 'error') {
-    return {
-      trendingSongs: [] as (TrendingSong & { category?: string })[],
-      initialErrorMessage: res.error?.message ?? 'Failed to load trending songs',
-    };
-  }
-
-  const trendingSongs = (res.data?.music ?? []).map(
-    mapPublicMusicToTrendingSong
-  ) as (TrendingSong & { category?: string })[];
-  return { trendingSongs, initialErrorMessage: null as string | null };
-}
 
 interface TrendingSongsPageProps {
   searchParams: Promise<{ category?: string }>;
@@ -62,18 +41,12 @@ export default async function TrendingSongsPage({ searchParams }: TrendingSongsP
         backLabel="Back to Music"
         stats={[{ icon: 'Flame', text: 'Most popular' }, { text: 'Updated in real-time' }]}
       />
-      <Suspense fallback={<MusicTrendingPageSkeleton />}>
-        <TrendingSongsServer category={category} />
+      <Suspense fallback={<MusicCategoriesSkeleton />}>
+        <MusicCategoriesSection isr={ISR_PUBLIC_FETCH.fast} />
+      </Suspense>
+      <Suspense fallback={<MusicTrendingGridSectionSkeleton />}>
+        <TrendingSongsGridSection category={category} />
       </Suspense>
     </MainLayout>
   );
-}
-
-async function TrendingSongsServer({ category }: { category: string }) {
-  const [data, categoryOptions] = await Promise.all([
-    fetchTrendingSongs(category),
-    fetchPublicCategoryNav('music', 'All Genres', musicCategoryNavFallback, ISR_PUBLIC_FETCH.fast),
-  ]);
-
-  return <TrendingSongsPageClient {...data} categoryOptions={categoryOptions} />;
 }

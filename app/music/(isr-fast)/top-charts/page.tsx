@@ -2,41 +2,21 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { SubPageHero } from '@/components/general/SubPageHero';
-import { TopChartsPageClient } from '@/components/section/music/TopChartsPageClient';
-import { MusicTopChartsPageSkeleton } from '@/components/section/music/MusicPageSkeleton';
-import type { ChartSong } from '@/components/section/music/TopMusicCharts';
-import { callPublicServerApi } from '@/lib/services/serverApi';
+import {
+  MusicCategoriesSkeleton,
+  TopChartsSectionSkeleton,
+} from '@/components/section/music/skeletons';
+import { CHART_PERIOD_VALUES } from '@/lib/constants/contentTaxonomy';
 import { ISR_PUBLIC_FETCH } from '@/lib/constants/isr';
-import { mapPublicMusicToChartSong } from '@/lib/utils/publicApiMappers';
-import { CHART_PERIOD_VALUES, MUSIC_TYPES } from '@/lib/constants/contentTaxonomy';
 import { normalizePublicCategoryByScope } from '@/lib/utils/contentCategoriesServer';
-import { fetchPublicCategoryNav } from '@/lib/utils/contentCategoryNav';
-import { musicCategoryNavFallback } from '@/lib/constants/categoryNavFallbacks';
+import { MusicCategoriesSection } from '../../_sections/MusicCategoriesSection';
+import { TopChartsGridSection } from '../../_sections/TopChartsGridSection';
 
 export const metadata: Metadata = {
   title: 'Top Charts - Music Rankings',
   description:
     'View the top music charts across all genres. See what songs are ranking highest this week, month, or all-time.',
 };
-
-async function fetchChartSongs(category: string, period: string) {
-  const categoryParam =
-    category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';
-  const query =
-    `?limit=100&page=1&status=published&type=${MUSIC_TYPES.charts}&period=${encodeURIComponent(period)}${categoryParam}` as const;
-  const res = await callPublicServerApi('PUBLIC_GET_MUSIC', { query }, ISR_PUBLIC_FETCH.fast);
-  if (res.type === 'error') {
-    return {
-      chartSongs: [] as (ChartSong & { category?: string })[],
-      initialErrorMessage: res.error?.message ?? 'Failed to load charts',
-    };
-  }
-
-  const chartSongs = (res.data?.music ?? []).map(item =>
-    mapPublicMusicToChartSong(item)
-  ) as (ChartSong & { category?: string })[];
-  return { chartSongs, initialErrorMessage: null as string | null };
-}
 
 interface TopChartsPageProps {
   searchParams: Promise<{ category?: string; period?: string }>;
@@ -77,18 +57,12 @@ export default async function TopChartsPage({ searchParams }: TopChartsPageProps
           },
         ]}
       />
-      <Suspense fallback={<MusicTopChartsPageSkeleton />}>
-        <TopChartsServer category={category} period={period} />
+      <Suspense fallback={<MusicCategoriesSkeleton />}>
+        <MusicCategoriesSection isr={ISR_PUBLIC_FETCH.fast} />
+      </Suspense>
+      <Suspense fallback={<TopChartsSectionSkeleton showFooterButton={false} />}>
+        <TopChartsGridSection category={category} period={period} />
       </Suspense>
     </MainLayout>
   );
-}
-
-async function TopChartsServer({ category, period }: { category: string; period: string }) {
-  const [data, categoryOptions] = await Promise.all([
-    fetchChartSongs(category, period),
-    fetchPublicCategoryNav('music', 'All Genres', musicCategoryNavFallback, ISR_PUBLIC_FETCH.fast),
-  ]);
-
-  return <TopChartsPageClient {...data} categoryOptions={categoryOptions} period={period} />;
 }

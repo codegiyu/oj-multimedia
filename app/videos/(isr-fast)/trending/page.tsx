@@ -2,40 +2,17 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { SubPageHero } from '@/components/general/SubPageHero';
-import { TrendingVideosPageClient } from '@/components/section/video/TrendingVideosPageClient';
-import { VideoPageSkeleton } from '@/components/section/video/VideoPageSkeleton';
-import type { TrendingVideo } from '@/components/section/video/TrendingVideos';
-import { callPublicServerApi } from '@/lib/services/serverApi';
 import { ISR_PUBLIC_FETCH } from '@/lib/constants/isr';
-import { mapPublicVideoToTrendingVideo } from '@/lib/utils/publicApiMappers';
-import { VIDEO_TYPES } from '@/lib/constants/contentTaxonomy';
 import { normalizePublicCategoryByScope } from '@/lib/utils/contentCategoriesServer';
-import { fetchPublicCategoryNav } from '@/lib/utils/contentCategoryNav';
-import { videoCategoryNavFallback } from '@/lib/constants/categoryNavFallbacks';
+import { VideoCategoriesSection } from '../../_sections/VideoCategoriesSection';
+import { TrendingVideosSection } from '../../_sections/TrendingVideosSection';
+import { VideoCategoriesSkeleton, VideoSubpageGridSkeleton } from '../../_sections/skeletons';
 
 export const metadata: Metadata = {
   title: 'Trending Videos - Latest Content',
   description:
     "Discover what's trending now - the most popular videos everyone is watching. Stay ahead of the video content scene.",
 };
-
-async function fetchTrendingVideos(category: string) {
-  const categoryParam =
-    category && category !== 'all' ? `&category=${encodeURIComponent(category)}` : '';
-  const query =
-    `?limit=50&page=1&status=published&type=${VIDEO_TYPES.trending}${categoryParam}` as const;
-  const res = await callPublicServerApi('PUBLIC_GET_VIDEOS', { query }, ISR_PUBLIC_FETCH.fast);
-  if (res.type === 'error') {
-    return {
-      trendingVideos: [] as TrendingVideo[],
-      initialErrorMessage: res.error?.message ?? 'Failed to load trending videos',
-    };
-  }
-
-  const raw = res.data?.videos ?? [];
-  const trendingVideos = raw.map(mapPublicVideoToTrendingVideo);
-  return { trendingVideos, initialErrorMessage: null as string | null };
-}
 
 interface TrendingVideosPageProps {
   searchParams: Promise<{ category?: string }>;
@@ -48,6 +25,7 @@ export default async function TrendingVideosPage({ searchParams }: TrendingVideo
     params.category,
     ISR_PUBLIC_FETCH.fast
   );
+  const fetchOptions = ISR_PUBLIC_FETCH.fast;
 
   return (
     <MainLayout>
@@ -61,18 +39,17 @@ export default async function TrendingVideosPage({ searchParams }: TrendingVideo
         backLabel="Back to Videos"
         stats={[{ icon: 'Flame', text: 'Most popular' }, { text: 'Updated in real-time' }]}
       />
-      <Suspense fallback={<VideoPageSkeleton />}>
-        <TrendingVideosServer category={category} />
+      <Suspense fallback={<VideoCategoriesSkeleton />}>
+        <VideoCategoriesSection category={category} fetchOptions={fetchOptions} />
+      </Suspense>
+      <Suspense fallback={<VideoSubpageGridSkeleton />}>
+        <TrendingVideosSection
+          category={category}
+          limit={50}
+          fetchOptions={fetchOptions}
+          variant="subpage"
+        />
       </Suspense>
     </MainLayout>
   );
-}
-
-async function TrendingVideosServer({ category }: { category: string }) {
-  const [data, categoryOptions] = await Promise.all([
-    fetchTrendingVideos(category),
-    fetchPublicCategoryNav('video', 'All Videos', videoCategoryNavFallback, ISR_PUBLIC_FETCH.fast),
-  ]);
-
-  return <TrendingVideosPageClient {...data} categoryOptions={categoryOptions} />;
 }

@@ -18,6 +18,10 @@ export const OTHER_ENDPOINTS: Record<string, EndpointDetails> = {
     path: '/api/v1/artist/dashboard-stats',
     method: 'GET',
   },
+  ARTIST_GET_RECENT_UPLOADS: {
+    path: '/api/v1/artist/recent-uploads',
+    method: 'GET',
+  },
   ARTIST_GET_MUSIC: {
     path: '/api/v1/artist/music',
     method: 'GET',

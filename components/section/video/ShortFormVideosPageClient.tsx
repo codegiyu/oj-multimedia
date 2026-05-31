@@ -16,16 +16,17 @@ import { VideoCard } from '@/components/cards/VideoCard';
 import type { ShortFormVideo } from './ShortFormVideos';
 
 interface ShortFormVideosPageClientProps {
-  categoryOptions: CategoryNavItem[];
+  categoryOptions?: CategoryNavItem[];
   shortFormVideos: ShortFormVideo[];
   initialErrorMessage?: string | null;
+  showCategoryNav?: boolean;
 }
 
 export const ShortFormVideosPageClient = ({
-  categoryOptions,
-
+  categoryOptions = [],
   shortFormVideos,
   initialErrorMessage = null,
+  showCategoryNav = true,
 }: ShortFormVideosPageClientProps) => {
   const router = useRouter();
   const [displayedItems, setDisplayedItems] = useState(20);
@@ -56,7 +57,7 @@ export const ShortFormVideosPageClient = ({
 
   return (
     <>
-      <VideoCategories categoryOptions={categoryOptions} />
+      {showCategoryNav ? <VideoCategories categoryOptions={categoryOptions} /> : null}
       {initialErrorMessage && (
         <div className="container mx-auto px-4 mb-4">
           <div className="rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive flex items-center justify-between gap-4">

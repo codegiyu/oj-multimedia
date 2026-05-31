@@ -17,9 +17,15 @@ describe('phase 8 public albums', () => {
   });
 
   it('music hub page loads featured albums from public API', () => {
-    const source = readFileSync(join(process.cwd(), 'app/music/page.tsx'), 'utf8');
-    expect(source).toContain('PUBLIC_GET_ALBUMS');
-    expect(source).toContain('featuredAlbums');
+    const pageSource = readFileSync(join(process.cwd(), 'app/music/page.tsx'), 'utf8');
+    const sectionSource = readFileSync(
+      join(process.cwd(), 'app/music/_sections/FeaturedAlbumsSection.tsx'),
+      'utf8'
+    );
+
+    expect(pageSource).toContain('FeaturedAlbumsSection');
+    expect(sectionSource).toContain('PUBLIC_GET_ALBUMS');
+    expect(sectionSource).toContain('FeaturedAlbums');
   });
 
   it('album list and detail routes exist', () => {

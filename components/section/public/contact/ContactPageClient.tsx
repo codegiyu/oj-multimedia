@@ -9,12 +9,14 @@ export interface ContactPageClientProps {
   contactInfo?: ContactInfo | null;
   socials?: Social[] | null;
   contactError?: string | null;
+  socialsError?: string | null;
 }
 
 export const ContactPageClient = ({
   contactInfo = null,
   socials = null,
   contactError = null,
+  socialsError = null,
 }: ContactPageClientProps) => {
   return (
     <>
@@ -28,7 +30,8 @@ export const ContactPageClient = ({
               <ContactInfoSection
                 initialContactInfo={contactInfo}
                 initialSocials={socials}
-                errorMessage={contactError}
+                contactError={contactError}
+                socialsError={socialsError}
               />
             </div>
           </div>

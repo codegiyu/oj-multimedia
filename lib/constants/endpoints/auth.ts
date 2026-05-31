@@ -50,6 +50,10 @@ export const AUTH_USER_ENDPOINTS: Record<string, EndpointDetails> = {
     path: '/api/v1/user/me',
     method: 'GET',
   },
+  USER_GET_DASHBOARD: {
+    path: '/api/v1/user/dashboard',
+    method: 'GET',
+  },
   USER_UPDATE_ME: {
     path: '/api/v1/user/me',
     method: 'PATCH',

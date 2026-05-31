@@ -1,4 +1,3 @@
-export { HomePageClient } from './HomePageClient';
 export { HeroSection } from './HeroSection';
 export { TrendingMusicSection, type TrendingMusicItem } from './TrendingMusicSection';
 export { TrendingVideosSection, type TrendingVideoItem } from './TrendingVideosSection';

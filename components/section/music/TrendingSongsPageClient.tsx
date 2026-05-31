@@ -20,13 +20,14 @@ interface TrendingSongsPageClientProps {
   categoryOptions: CategoryNavItem[];
   trendingSongs: (TrendingSong & { category?: string })[];
   initialErrorMessage?: string | null;
+  showCategories?: boolean;
 }
 
 export const TrendingSongsPageClient = ({
   categoryOptions,
-
   trendingSongs,
   initialErrorMessage = null,
+  showCategories = true,
 }: TrendingSongsPageClientProps) => {
   const router = useRouter();
   const [displayedItems, setDisplayedItems] = useState(20);
@@ -57,7 +58,7 @@ export const TrendingSongsPageClient = ({
 
   return (
     <>
-      <MusicCategories categoryOptions={categoryOptions} />
+      {showCategories ? <MusicCategories categoryOptions={categoryOptions} /> : null}
       {initialErrorMessage && (
         <div className="container mx-auto px-4 mb-4">
           <div className="rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive flex items-center justify-between gap-4">

@@ -3,43 +3,13 @@ import { Suspense } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { SubPageHero } from '@/components/general/SubPageHero';
 import { DevotionalsPageSkeleton } from '@/components/section/community/devotionals/DevotionalsPageSkeleton';
-import { DailyDevotionalsSection } from '@/components/section/community/devotionals/DailyDevotionalsSection';
 import { DevotionalsCategoryFilter } from '@/components/section/community/devotionals/DevotionalsCategoryFilter';
-import { callPublicServerApi } from '@/lib/services/serverApi';
-import { mapToDailyDevotional } from '@/lib/utils/communityApiMappers';
-import { buildCommunityListQuery } from '@/lib/utils/communityListQuery';
-import type { DailyDevotional } from '@/components/section/community/devotionals/DevotionalsPageClient';
+import { PopularDevotionalsSection } from './_sections/PopularDevotionalsSection';
 
 export const metadata: Metadata = {
   title: 'Popular Devotionals - Most Read',
   description: 'Discover the most popular and widely read devotionals in our community.',
 };
-
-async function fetchPopularDevotionals(category: string): Promise<{
-  popularDevotionals: DailyDevotional[];
-  initialErrorMessage: string | null;
-}> {
-  const res = await callPublicServerApi('PUBLIC_GET_DEVOTIONALS', {
-    query: buildCommunityListQuery({ type: 'popular', publishedOnly: true, category }),
-  });
-
-  if (res.type === 'error') {
-    return {
-      popularDevotionals: [],
-      initialErrorMessage: res.error?.message ?? 'Failed to load devotionals',
-    };
-  }
-
-  const rawList = (res.data?.devotionals ?? []) as unknown[];
-  const list = rawList.map(i =>
-    mapToDailyDevotional(i as Record<string, unknown>)
-  ) as DailyDevotional[];
-
-  return {
-    popularDevotionals: list,
-    initialErrorMessage: null,
-  };
-}
 
 interface PopularDevotionalsPageProps {
   searchParams: Promise<{ category?: string }>;
@@ -50,7 +20,6 @@ export default async function PopularDevotionalsPage({
 }: PopularDevotionalsPageProps) {
   const params = await searchParams;
   const category = params.category ?? 'all';
-  const { popularDevotionals, initialErrorMessage } = await fetchPopularDevotionals(category);
 
   return (
     <MainLayout>
@@ -64,15 +33,12 @@ export default async function PopularDevotionalsPage({
         backLabel="Back to Devotionals"
         stats={[{ icon: 'TrendingUp', text: 'Most popular' }, { text: 'Community favorites' }]}
       />
-      <Suspense fallback={<DevotionalsPageSkeleton />}>
-        <div className="container mx-auto px-4 pb-16">
-          <DevotionalsCategoryFilter />
-          <DailyDevotionalsSection
-            devotionals={popularDevotionals}
-            initialErrorMessage={initialErrorMessage}
-          />
-        </div>
-      </Suspense>
+      <div className="container mx-auto px-4 pb-16">
+        <DevotionalsCategoryFilter />
+        <Suspense fallback={<DevotionalsPageSkeleton />} key={category}>
+          <PopularDevotionalsSection category={category} />
+        </Suspense>
+      </div>
     </MainLayout>
   );
 }

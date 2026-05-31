@@ -18,16 +18,17 @@ import { MultilinePreview } from '@/components/general/MultilinePreview';
 import type { TrendingStory } from './TrendingSidebar';
 
 interface TrendingStoriesPageClientProps {
-  categoryOptions: CategoryNavItem[];
+  categoryOptions?: CategoryNavItem[];
   trendingStories: TrendingStory[];
   initialErrorMessage?: string | null;
+  showCategoryNav?: boolean;
 }
 
 export const TrendingStoriesPageClient = ({
-  categoryOptions,
-
+  categoryOptions = [],
   trendingStories,
   initialErrorMessage = null,
+  showCategoryNav = true,
 }: TrendingStoriesPageClientProps) => {
   const router = useRouter();
   const [displayedItems, setDisplayedItems] = useState(15);
@@ -58,7 +59,7 @@ export const TrendingStoriesPageClient = ({
 
   return (
     <>
-      <NewsCategories categoryOptions={categoryOptions} />
+      {showCategoryNav ? <NewsCategories categoryOptions={categoryOptions} /> : null}
       {initialErrorMessage && (
         <div className="container mx-auto px-4 mb-4">
           <div className="rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive flex items-center justify-between gap-4">

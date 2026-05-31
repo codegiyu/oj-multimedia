@@ -2,29 +2,15 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { ResourcesHero } from '@/components/section/community/resources/ResourcesHero';
+import { ResourceDownloadCategoriesSection } from './_sections/ResourceDownloadCategoriesSection';
+import { EbooksSection } from './_sections/EbooksSection';
+import { BeatsSection } from './_sections/BeatsSection';
+import { WallpapersSection } from './_sections/WallpapersSection';
+import { AffiliateProductsSection } from './_sections/AffiliateProductsSection';
 import {
-  ResourcesPageClient,
-  type ResourceData,
-  type Ebook,
-  type Template,
-  type Beat,
-  type Wallpaper,
-  type AffiliateProduct,
-} from '@/components/section/community/resources/ResourcesPageClient';
-import { ResourcesPageSkeleton } from '@/components/section/community/resources/ResourcesPageSkeleton';
-import { callPublicServerApi } from '@/lib/services/serverApi';
-import { ISR_PUBLIC_FETCH } from '@/lib/constants/isr';
-import { RESOURCE_TYPES } from '@/lib/types/community';
-import {
-  mapToEbook,
-  mapToTemplate,
-  mapToBeat,
-  mapToWallpaper,
-  mapToAffiliateProduct,
-} from '@/lib/utils/communityApiMappers';
-import { DOWNLOAD_CATEGORIES_FALLBACK } from '@/lib/constants/promotionFallbacks';
-import type { ResourceDownloadCategory } from '@/lib/types/promotion';
-import { filterCompleteResources } from '@/lib/utils/contentCompleteness';
+  ResourceDownloadCategoriesSectionSkeleton,
+  ResourceTypeSectionSkeleton,
+} from './_sections/skeletons';
 
 /** Next.js requires a literal — keep in sync with `ISR_REVALIDATE.slow` (3600s). */
 export const revalidate = 3600;
@@ -35,75 +21,24 @@ export const metadata: Metadata = {
     'Download free e-books, sermon templates, beats, wallpapers, and explore affiliate products. Access resources to support your faith journey.',
 };
 
-const RESOURCE_TYPE_ORDER: (typeof RESOURCE_TYPES)[number][] = [
-  'ebook',
-  'template',
-  'beat',
-  'wallpaper',
-  'affiliate',
-];
-
-async function fetchResourcesData(): Promise<
-  ResourceData & { initialErrorMessage: string | null }
-> {
-  const baseQuery = '?limit=50&page=1';
-  const [resourceRequests, downloadCategoriesRes] = await Promise.all([
-    Promise.all(
-      RESOURCE_TYPE_ORDER.map(type =>
-        callPublicServerApi(
-          'PUBLIC_GET_RESOURCES',
-          {
-            query: `${baseQuery}&type=${type}` as `?${string}`,
-          },
-          ISR_PUBLIC_FETCH.slow
-        )
-      )
-    ),
-    callPublicServerApi('PUBLIC_GET_RESOURCE_DOWNLOAD_CATEGORIES', {}, ISR_PUBLIC_FETCH.slow),
-  ]);
-  const results = resourceRequests;
-  let initialErrorMessage: string | null = null;
-  const [ebookRes, templateRes, beatRes, wallpaperRes, affiliateRes] = results;
-
-  if (ebookRes.type === 'error')
-    initialErrorMessage = ebookRes.error?.message ?? 'Failed to load resources';
-
-  function mapResourceList<T>(
-    res: (typeof results)[number],
-    mapper: (i: Record<string, unknown>) => T
-  ): T[] {
-    if (res.type === 'error') return [];
-    const list = (res.data?.resources ?? []) as unknown[];
-    return filterCompleteResources(list as Record<string, unknown>[]).map(i =>
-      mapper(i as Record<string, unknown>)
-    );
-  }
-
-  const downloadCategories: ResourceDownloadCategory[] =
-    downloadCategoriesRes.type === 'success' &&
-    downloadCategoriesRes.data?.downloadCategories?.length
-      ? downloadCategoriesRes.data.downloadCategories
-      : DOWNLOAD_CATEGORIES_FALLBACK;
-
-  return {
-    ebooks: mapResourceList(ebookRes, mapToEbook) as Ebook[],
-    templates: mapResourceList(templateRes, mapToTemplate) as Template[],
-    beats: mapResourceList(beatRes, mapToBeat) as Beat[],
-    wallpapers: mapResourceList(wallpaperRes, mapToWallpaper) as Wallpaper[],
-    affiliateProducts: mapResourceList(affiliateRes, mapToAffiliateProduct) as AffiliateProduct[],
-    downloadCategories,
-    initialErrorMessage,
-  };
-}
-
-export default async function ResourcesPage() {
-  const resourcesData = await fetchResourcesData();
-
+export default function ResourcesPage() {
   return (
     <MainLayout>
       <ResourcesHero />
-      <Suspense fallback={<ResourcesPageSkeleton />}>
-        <ResourcesPageClient {...resourcesData} />
+      <Suspense fallback={<ResourceDownloadCategoriesSectionSkeleton />}>
+        <ResourceDownloadCategoriesSection />
+      </Suspense>
+      <Suspense fallback={<ResourceTypeSectionSkeleton />}>
+        <EbooksSection />
+      </Suspense>
+      <Suspense fallback={<ResourceTypeSectionSkeleton />}>
+        <BeatsSection />
+      </Suspense>
+      <Suspense fallback={<ResourceTypeSectionSkeleton />}>
+        <WallpapersSection />
+      </Suspense>
+      <Suspense fallback={<ResourceTypeSectionSkeleton />}>
+        <AffiliateProductsSection />
       </Suspense>
     </MainLayout>
   );

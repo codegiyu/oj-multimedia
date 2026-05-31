@@ -1,8 +1,15 @@
+import { Suspense } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { ContactHero } from '@/components/section/public/contact/ContactHero';
-import { ContactPageClient } from '@/components/section/public/contact';
-import { callPublicServerApi } from '@/lib/services/serverApi';
-import type { ContactInfo, Social } from '@/lib/types/site-settings';
+import { ContactFormSection } from '@/components/section/public/contact/ContactFormSection';
+import { ContactSidebarShell } from '@/components/section/public/contact/ContactSidebarShell';
+import { MapSection } from '@/components/section/public/contact/MapSection';
+import {
+  ContactInfoDetailsSkeleton,
+  SocialsLinksSkeleton,
+} from '@/components/section/public/contact/ContactSectionSkeletons';
+import { ContactInfoDetailsSection } from './_sections/ContactInfoDetailsSection';
+import { SocialsSection } from './_sections/SocialsSection';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -11,63 +18,30 @@ export const metadata: Metadata = {
     "Have a question, prayer request, or want to partner with us? Reach out and let's connect.",
 };
 
-function isStringArray(value: unknown): value is string[] {
-  return Array.isArray(value) && value.every(v => typeof v === 'string');
-}
-
-function isContactInfo(value: unknown): value is ContactInfo {
-  if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
-  const v = value as Record<string, unknown>;
-  return (
-    isStringArray(v.address) &&
-    isStringArray(v.tel) &&
-    isStringArray(v.email) &&
-    typeof v.whatsapp === 'string' &&
-    typeof v.locationUrl === 'string' &&
-    typeof v.officeHours === 'object' &&
-    v.officeHours != null &&
-    !Array.isArray(v.officeHours)
-  );
-}
-
-function isSocial(value: unknown): value is Social {
-  if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
-  const v = value as Record<string, unknown>;
-  return typeof v.platform === 'string' && typeof v.href === 'string';
-}
-
-async function fetchContactPageData(): Promise<{
-  contactInfo: ContactInfo | null;
-  socials: Social[] | null;
-  error: string | null;
-}> {
-  const [contactRes, socialsRes] = await Promise.all([
-    callPublicServerApi('GET_SITE_SETTINGS', { query: '/contactInfo' as `/${string}` }),
-    callPublicServerApi('GET_SITE_SETTINGS', { query: '/socials' as `/${string}` }),
-  ]);
-
-  const contactError = contactRes.error?.message ?? null;
-  const socialsError = socialsRes.error?.message ?? null;
-  const error = contactError || socialsError;
-
-  const contactInfo =
-    contactRes.type === 'success' && isContactInfo(contactRes.data) ? contactRes.data : null;
-
-  const socials =
-    socialsRes.type === 'success' && Array.isArray(socialsRes.data)
-      ? socialsRes.data.filter(isSocial)
-      : null;
-
-  return { contactInfo, socials, error };
-}
-
-export default async function ContactPage() {
-  const { contactInfo, socials, error } = await fetchContactPageData();
-
+export default function ContactPage() {
   return (
     <MainLayout>
       <ContactHero />
-      <ContactPageClient contactInfo={contactInfo} socials={socials} contactError={error} />
+      <section className="py-12">
+        <div className="container mx-auto px-4">
+          <div className="grid lg:grid-cols-5 gap-8">
+            <div className="lg:col-span-3">
+              <ContactFormSection />
+            </div>
+            <div className="lg:col-span-2">
+              <ContactSidebarShell>
+                <Suspense fallback={<ContactInfoDetailsSkeleton />}>
+                  <ContactInfoDetailsSection />
+                </Suspense>
+                <Suspense fallback={<SocialsLinksSkeleton />}>
+                  <SocialsSection />
+                </Suspense>
+              </ContactSidebarShell>
+            </div>
+          </div>
+        </div>
+      </section>
+      <MapSection />
     </MainLayout>
   );
 }
