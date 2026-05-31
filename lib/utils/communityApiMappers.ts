@@ -556,13 +556,17 @@ export function mapToTemplate(item: Record<string, unknown>): {
   description: string;
   downloads: string;
   type: string;
+  fileUrl?: string;
 } {
+  const fileUrl = str(item.fileUrl);
+
   return {
     _id: str(item._id),
     title: str(item.title),
     description: str(item.description),
     downloads: str(item.downloads ?? 0),
     type: str(item.templateType ?? item.type),
+    ...(fileUrl ? { fileUrl } : {}),
   };
 }
 
@@ -620,13 +624,19 @@ export function mapToAffiliateProduct(item: Record<string, unknown>): {
   title: string;
   description: string;
   category: string;
+  categoryLabel?: string;
   price: string;
+  fileUrl?: string;
 } {
+  const fileUrl = str(item.fileUrl);
+
   return {
     _id: str(item._id),
     title: str(item.title),
     description: str(item.description),
     category: str(item.category ?? item.productCategory),
+    categoryLabel: item.categoryName != null ? str(item.categoryName) : undefined,
     price: str(item.price),
+    ...(fileUrl ? { fileUrl } : {}),
   };
 }
