@@ -9,15 +9,28 @@ export interface ChartCardSkeletonProps {
 
 export function ChartCardSkeleton({ className }: ChartCardSkeletonProps) {
   return (
-    <div className={cn('flex items-center gap-4 p-3 rounded-xl', className)}>
-      <Skeleton className="w-8 h-6 shrink-0" />
-      <Skeleton className="w-6 h-4 shrink-0" />
-      <Skeleton className="w-12 h-12 rounded-lg shrink-0" />
-      <div className="flex-1 min-w-0">
-        <Skeleton className="h-5 w-full mb-2" />
+    <div
+      className={cn(
+        'flex items-center gap-3 rounded-xl border border-border/70 bg-card p-3 shadow-sm',
+        className
+      )}>
+      <div className="flex w-10 shrink-0 flex-col items-center gap-1">
+        <Skeleton className="h-2 w-6" />
+        <Skeleton className="h-6 w-5" />
+      </div>
+      <div className="flex w-10 shrink-0 flex-col items-center gap-1">
+        <Skeleton className="h-2 w-6" />
+        <Skeleton className="h-8 w-8 rounded-md" />
+      </div>
+      <Skeleton className="h-12 w-12 shrink-0 rounded-lg" />
+      <div className="min-w-0 flex-1">
+        <Skeleton className="mb-2 h-5 w-full" />
         <Skeleton className="h-4 w-3/4" />
       </div>
-      <Skeleton className="h-4 w-12 hidden sm:block shrink-0" />
+      <div className="hidden shrink-0 flex-col items-end gap-2 sm:flex">
+        <Skeleton className="h-8 w-14" />
+        <Skeleton className="h-6 w-10" />
+      </div>
     </div>
   );
 }

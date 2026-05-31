@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { useQueryState, parseAsString } from 'nuqs';
 import { SectionComp } from '@/components/general/SectionComp';
-import { ChartCard } from '@/components/cards/ChartCard';
+import { ChartCard, ChartCardsLegend } from '@/components/cards/ChartCard';
 import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 
 export interface ChartSong {
@@ -98,7 +98,8 @@ export const TopMusicCharts = ({ songs: chartSongs }: TopMusicChartsProps) => {
       background="bg-muted/30"
       sectionClassName="overflow-hidden"
       contentProps={{ enableAnimation: false }}>
-      <div className="grid md:grid-cols-2 gap-4">
+      <ChartCardsLegend />
+      <div className="grid gap-3 md:grid-cols-2 md:gap-4">
         {chartSongs.map((song, index) => (
           <motion.div
             key={song._id}
