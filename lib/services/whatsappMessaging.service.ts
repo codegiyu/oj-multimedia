@@ -39,6 +39,9 @@ export type WhatsAppMessagePayload =
   | { type: 'paid_download'; data: PaidDownloadWhatsAppParams }
   | { type: 'album_request'; data: AlbumRequestWhatsAppContext }
   | { type: 'artist_content_submit' }
+  | { type: 'artist_music_submit' }
+  | { type: 'artist_video_submit' }
+  | { type: 'artist_beats_submit' }
   | { type: 'promotion_plan'; data: PromotionPlanWhatsAppParams }
   | { type: 'featured_plan'; data: FeaturedPlanWhatsAppParams };
 
@@ -104,6 +107,38 @@ function formatArtistContentSubmitMessage(): string {
     'Hello OJ Multimedia team,',
     '',
     'I would like to submit music or video for publishing on OJ Multimedia.',
+    '',
+    'Please let me know the next steps for uploading and review. Thank you.',
+  ].join('\n');
+}
+
+function formatArtistMusicSubmitMessage(): string {
+  return [
+    'Hello OJ Multimedia team,',
+    '',
+    'I would like to submit *music* for publishing on OJ Multimedia.',
+    '',
+    'I can share tracks, artwork, and metadata for your review.',
+    'Please let me know the next steps for uploading and approval. Thank you.',
+  ].join('\n');
+}
+
+function formatArtistVideoSubmitMessage(): string {
+  return [
+    'Hello OJ Multimedia team,',
+    '',
+    'I would like to submit a *video* for publishing on OJ Multimedia.',
+    '',
+    'I can share the file, thumbnail, and details for your review.',
+    'Please let me know the next steps for uploading and approval. Thank you.',
+  ].join('\n');
+}
+
+function formatArtistBeatsSubmitMessage(): string {
+  return [
+    'Hello OJ Multimedia team,',
+    '',
+    'I would like to submit *beats* or instrumentals for publishing on OJ Multimedia.',
     '',
     'Please let me know the next steps for uploading and review. Thank you.',
   ].join('\n');
@@ -176,6 +211,12 @@ export function buildWhatsAppMessage(payload: WhatsAppMessagePayload): string {
       return formatAlbumRequestMessage(payload.data);
     case 'artist_content_submit':
       return formatArtistContentSubmitMessage();
+    case 'artist_music_submit':
+      return formatArtistMusicSubmitMessage();
+    case 'artist_video_submit':
+      return formatArtistVideoSubmitMessage();
+    case 'artist_beats_submit':
+      return formatArtistBeatsSubmitMessage();
     case 'promotion_plan':
       return formatPromotionPlanMessage(payload.data);
     case 'featured_plan':

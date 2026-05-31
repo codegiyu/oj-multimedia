@@ -70,6 +70,28 @@ describe('whatsappMessaging.service', () => {
     });
   });
 
+  describe('artist_music_submit', () => {
+    it('asks about music publishing steps', () => {
+      const message = buildWhatsAppMessage({ type: 'artist_music_submit' });
+      expect(message).toContain('submit *music*');
+      expect(message).toContain('uploading and approval');
+    });
+  });
+
+  describe('artist_video_submit', () => {
+    it('asks about video publishing steps', () => {
+      const message = buildWhatsAppMessage({ type: 'artist_video_submit' });
+      expect(message).toContain('submit a *video*');
+    });
+  });
+
+  describe('artist_beats_submit', () => {
+    it('asks about beats publishing steps', () => {
+      const message = buildWhatsAppMessage({ type: 'artist_beats_submit' });
+      expect(message).toContain('*beats*');
+    });
+  });
+
   describe('promotion_plan', () => {
     it('formats selected plan details', () => {
       const message = buildWhatsAppMessage({
