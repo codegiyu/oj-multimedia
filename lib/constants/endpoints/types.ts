@@ -824,6 +824,11 @@ export type IPublicArtistItemRes = ArtistDetailData;
 
 export type IPublicResourcesRes = ResourcesListData;
 
+export interface IPublicResourceCountsRes {
+  all: number;
+  byType: Record<'ebook' | 'template' | 'beat' | 'wallpaper' | 'affiliate', number>;
+}
+
 // Community mutation payloads and responses
 export interface ISubmitPrayerRequestPayload {
   name?: string;
@@ -1688,6 +1693,7 @@ export interface AllEndpoints {
   PUBLIC_GET_ARTISTS: EndpointDefinition<undefined, IPublicArtistsListRes, `?${string}`>;
   PUBLIC_GET_ARTIST_ITEM: EndpointDefinition<undefined, IPublicArtistItemRes, `/${string}`>;
   PUBLIC_GET_RESOURCES: EndpointDefinition<undefined, IPublicResourcesRes, `?${string}`>;
+  PUBLIC_GET_RESOURCE_COUNTS: EndpointDefinition<undefined, IPublicResourceCountsRes, undefined>;
 
   // Promotion content (public)
   PUBLIC_GET_FEATURED_OPTIONS: EndpointDefinition<undefined, FeaturedOptionsRes, undefined>;

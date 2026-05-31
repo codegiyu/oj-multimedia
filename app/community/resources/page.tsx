@@ -2,15 +2,9 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { ResourcesHero } from '@/components/section/community/resources/ResourcesHero';
-import { ResourceDownloadCategoriesSection } from './_sections/ResourceDownloadCategoriesSection';
-import { EbooksSection } from './_sections/EbooksSection';
-import { BeatsSection } from './_sections/BeatsSection';
-import { WallpapersSection } from './_sections/WallpapersSection';
-import { AffiliateProductsSection } from './_sections/AffiliateProductsSection';
-import {
-  ResourceDownloadCategoriesSectionSkeleton,
-  ResourceTypeSectionSkeleton,
-} from './_sections/skeletons';
+import { ResourcesBrowseSection } from './_sections/ResourcesBrowseSection';
+import { ResourcesPageSkeleton } from '@/components/section/community/resources/ResourcesPageSkeleton';
+import { parseBrowsePageParam } from '@/lib/utils/browsePage';
 
 /** Next.js requires a literal — keep in sync with `ISR_REVALIDATE.slow` (3600s). */
 export const revalidate = 3600;
@@ -21,24 +15,19 @@ export const metadata: Metadata = {
     'Download free e-books, sermon templates, beats, wallpapers, and explore affiliate products. Access resources to support your faith journey.',
 };
 
-export default function ResourcesPage() {
+interface ResourcesPageProps {
+  searchParams: Promise<{ type?: string; page?: string }>;
+}
+
+export default async function ResourcesPage({ searchParams }: ResourcesPageProps) {
+  const params = await searchParams;
+  const page = parseBrowsePageParam(params.page);
+
   return (
     <MainLayout>
       <ResourcesHero />
-      <Suspense fallback={<ResourceDownloadCategoriesSectionSkeleton />}>
-        <ResourceDownloadCategoriesSection />
-      </Suspense>
-      <Suspense fallback={<ResourceTypeSectionSkeleton />}>
-        <EbooksSection />
-      </Suspense>
-      <Suspense fallback={<ResourceTypeSectionSkeleton />}>
-        <BeatsSection />
-      </Suspense>
-      <Suspense fallback={<ResourceTypeSectionSkeleton />}>
-        <WallpapersSection />
-      </Suspense>
-      <Suspense fallback={<ResourceTypeSectionSkeleton />}>
-        <AffiliateProductsSection />
+      <Suspense fallback={<ResourcesPageSkeleton />} key={`${params.type ?? 'all'}|${page}`}>
+        <ResourcesBrowseSection page={page} typeParam={params.type} />
       </Suspense>
     </MainLayout>
   );
