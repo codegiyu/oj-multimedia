@@ -196,7 +196,13 @@ export const Footer = () => {
             <h4 className="font-semibold mb-4">Company</h4>
             <ul className="space-y-2">
               {footerLinks.company.map(link => (
-                <FooterLink key={link.label} label={link.label} href={link.href} />
+                <li key={link.label}>
+                  <a
+                    href={link.href}
+                    className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                    {link.label}
+                  </a>
+                </li>
               ))}
             </ul>
           </div>
@@ -239,33 +245,6 @@ export const Footer = () => {
       {musicSubmit.modal}
       {videoSubmit.modal}
     </footer>
-  );
-};
-
-interface FooterLinkProps {
-  label: string;
-  href: string;
-  afterClick?: () => void;
-}
-
-const FooterLink = ({ label, href = '#', afterClick }: FooterLinkProps) => {
-  return (
-    <li className={``}>
-      <GhostBtn
-        className={`w-fit py-0`}
-        wrapClassName={`w-fit`}
-        {...(href && { linkProps: { href } })}
-        onClick={() => {
-          afterClick?.();
-        }}>
-        <div className="w-fit px-0 relative">
-          <p
-            className={`text-sm text-muted-foreground hover:text-primary transition-colors transition-smooth`}>
-            {label}
-          </p>
-        </div>
-      </GhostBtn>
-    </li>
   );
 };
 
