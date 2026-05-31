@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { useState } from 'react';
 import { SectionComp } from '@/components/general/SectionComp';
+import { EmptyState } from '@/components/section/news/EmptyState';
 import type { AnsweredPrayer } from './PrayerRequestsPageClient';
 
 interface AnsweredPrayersSectionProps {
@@ -35,6 +36,17 @@ export const AnsweredPrayersSection = ({ prayers }: AnsweredPrayersSectionProps)
       subtext="Praise reports and testimonies of God's faithfulness"
       viewAllLink="/community/prayer-requests/answered"
       contentProps={{ enableAnimation: false }}>
+      {prayers.length === 0 ? (
+        <EmptyState
+          title="No answered prayers yet"
+          description="Praise reports and answered prayers will be shared here."
+          icon={<Sparkles className="w-12 h-12 text-muted-foreground" />}
+          actionLabel="View active requests"
+          actionHref="/community/prayer-requests/active"
+          showDefaultActions={false}
+        />
+      ) : (
+        <>
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {itemsToShow.map((prayer, index) => (
           <motion.div
@@ -97,6 +109,8 @@ export const AnsweredPrayersSection = ({ prayers }: AnsweredPrayersSectionProps)
             )}
           </motion.button>
         </div>
+      )}
+        </>
       )}
     </SectionComp>
   );

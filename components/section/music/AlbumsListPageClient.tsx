@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { DiscAlbum } from 'lucide-react';
 import { SectionContainer } from '@/components/general/SectionContainer';
 import { DataLoadError } from '@/components/general/DataLoadError';
+import { EmptyState } from '@/components/section/news/EmptyState';
 import { AlbumCard } from '@/components/cards/AlbumCard';
 import type { PublicAlbumCard } from '@/lib/utils/publicApiMappers';
 
@@ -34,9 +35,14 @@ export function AlbumsListPageClient({
   if (albums.length === 0) {
     return (
       <SectionContainer>
-        <p className="text-center text-muted-foreground py-12">
-          No published albums yet. Check back soon.
-        </p>
+        <EmptyState
+          title="No published albums yet"
+          description="Album releases will appear here when artists publish them."
+          icon={<DiscAlbum className="w-12 h-12 text-muted-foreground" />}
+          actionLabel="Browse music"
+          actionHref="/music"
+          showDefaultActions={false}
+        />
       </SectionContainer>
     );
   }

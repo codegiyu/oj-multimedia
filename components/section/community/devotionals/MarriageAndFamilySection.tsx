@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { SectionComp } from '@/components/general/SectionComp';
+import { EmptyState } from '@/components/section/news/EmptyState';
 import type { MarriageFamily } from './DevotionalsPageClient';
 import { MultilinePreview } from '@/components/general/MultilinePreview';
 
@@ -29,8 +30,18 @@ export const MarriageAndFamilySection = ({ content }: MarriageAndFamilySectionPr
       subtext="Guidance for strong Christian families"
       viewAllLink="/community/devotionals"
       contentProps={{ enableAnimation: false }}>
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {content.map((item, index) => {
+      {content.length === 0 ? (
+        <EmptyState
+          title="No marriage & family content yet"
+          description="Guidance for Christian families will be published here."
+          icon={<Users className="w-12 h-12 text-muted-foreground" />}
+          actionLabel="Browse devotionals"
+          actionHref="/community/devotionals"
+          showDefaultActions={false}
+        />
+      ) : (
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {content.map((item, index) => {
           const Icon = categoryIcons[item.category] || categoryIcons.Default;
           return (
             <motion.div
@@ -78,7 +89,8 @@ export const MarriageAndFamilySection = ({ content }: MarriageAndFamilySectionPr
             </motion.div>
           );
         })}
-      </div>
+        </div>
+      )}
     </SectionComp>
   );
 };

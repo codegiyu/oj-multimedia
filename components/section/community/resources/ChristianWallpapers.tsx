@@ -4,6 +4,7 @@ import { motion } from 'motion/react';
 import { ImageIcon, Download } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { SectionComp } from '@/components/general/SectionComp';
+import { EmptyState } from '@/components/section/news/EmptyState';
 import { FillImage } from '@/components/general/FillImage';
 import type { Wallpaper } from './ResourcesPageClient';
 import { ResourceDownloadButton } from '@/components/section/shared/ResourceDownloadButton';
@@ -21,8 +22,18 @@ export const ChristianWallpapers = ({ wallpapers }: ChristianWallpapersProps) =>
       heading="Christian Wallpapers"
       subtext="Download beautiful Christian wallpapers for your phone, tablet, and desktop"
       contentProps={{ enableAnimation: false }}>
-      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {wallpapers.map((wallpaper, index) => (
+      {wallpapers.length === 0 ? (
+        <EmptyState
+          title="No wallpapers yet"
+          description="Christian wallpapers for your devices will be added here."
+          icon={<ImageIcon className="w-12 h-12 text-muted-foreground" />}
+          actionLabel="Browse resources"
+          actionHref="/community/resources"
+          showDefaultActions={false}
+        />
+      ) : (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {wallpapers.map((wallpaper, index) => (
           <motion.div
             key={wallpaper._id ?? index}
             initial={{ opacity: 0, y: 20 }}
@@ -66,7 +77,8 @@ export const ChristianWallpapers = ({ wallpapers }: ChristianWallpapersProps) =>
             </Card>
           </motion.div>
         ))}
-      </div>
+        </div>
+      )}
     </SectionComp>
   );
 };

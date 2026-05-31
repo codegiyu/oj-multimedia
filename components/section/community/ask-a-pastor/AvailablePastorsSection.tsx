@@ -5,6 +5,7 @@ import { Users, Star, MessageSquare, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { SectionComp } from '@/components/general/SectionComp';
+import { EmptyState } from '@/components/section/news/EmptyState';
 import type { AvailablePastor } from './AskAPastorPageClient';
 import { Button } from '@/components/ui/button';
 import { FixedImage } from '@/components/general/FillImage';
@@ -28,8 +29,18 @@ export const AvailablePastorsSection = ({ pastors }: AvailablePastorsSectionProp
       viewAllLink="/community/ask-a-pastor"
       viewAllLabel="View All Pastors"
       contentProps={{ enableAnimation: false }}>
-      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {pastors.map((pastor, index) => (
+      {pastors.length === 0 ? (
+        <EmptyState
+          title="No pastors available yet"
+          description="Our pastoral team profiles will appear here when they are ready to answer questions."
+          icon={<Users className="w-12 h-12 text-muted-foreground" />}
+          actionLabel="Ask a pastor"
+          actionHref="/community/ask-a-pastor"
+          showDefaultActions={false}
+        />
+      ) : (
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {pastors.map((pastor, index) => (
           <motion.div
             key={pastor._id}
             initial={{ opacity: 0, y: 20 }}
@@ -96,7 +107,8 @@ export const AvailablePastorsSection = ({ pastors }: AvailablePastorsSectionProp
             </div>
           </motion.div>
         ))}
-      </div>
+        </div>
+      )}
     </SectionComp>
   );
 };

@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { FixedImage } from '@/components/general/FillImage';
 import { Card, CardContent } from '@/components/ui/card';
 import { SectionComp } from '@/components/general/SectionComp';
+import { EmptyState } from '@/components/section/news/EmptyState';
 import type { Testimony } from './TestimoniesPageClient';
 import { MultilinePreview } from '@/components/general/MultilinePreview';
 
@@ -22,8 +23,18 @@ export const FeaturedTestimonies = ({ testimonies }: FeaturedTestimoniesProps) =
       heading="Featured Testimonies"
       subtext="Inspiring stories of God's faithfulness and transformation in the lives of believers"
       contentProps={{ enableAnimation: false }}>
-      <div className="grid md:grid-cols-3 gap-6">
-        {testimonies.map((testimony, index) => (
+      {testimonies.length === 0 ? (
+        <EmptyState
+          title="No featured testimonies yet"
+          description="Inspiring stories from the community will appear here."
+          icon={<Star className="w-12 h-12 text-muted-foreground" />}
+          actionLabel="Browse all testimonies"
+          actionHref="/community/testimonies/latest"
+          showDefaultActions={false}
+        />
+      ) : (
+        <div className="grid md:grid-cols-3 gap-6">
+          {testimonies.map((testimony, index) => (
           <motion.div
             key={testimony._id}
             initial={{ opacity: 0, y: 20 }}
@@ -79,7 +90,8 @@ export const FeaturedTestimonies = ({ testimonies }: FeaturedTestimoniesProps) =
             </Link>
           </motion.div>
         ))}
-      </div>
+        </div>
+      )}
     </SectionComp>
   );
 };
