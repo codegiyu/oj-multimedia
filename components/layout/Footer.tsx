@@ -8,6 +8,7 @@ import { getSocialIcon, formatSocialLabel } from '@/lib/utils/socials';
 import type { SocialPlatform } from '@/lib/types/site-settings';
 import { Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useContentSubmitWhatsApp } from '@/components/section/shared/ContentSubmitWhatsAppTrigger';
 
 const footerLinks = {
   platform: [
@@ -40,6 +41,8 @@ const footerLinks = {
 };
 
 export const Footer = () => {
+  const musicSubmit = useContentSubmitWhatsApp('music');
+  const videoSubmit = useContentSubmitWhatsApp('video');
   const currentYear = new Date().getFullYear();
 
   const { socials, appDetails } = useSiteSettingsStore(state => ({
@@ -134,15 +137,41 @@ export const Footer = () => {
           <div>
             <h4 className="font-semibold mb-4">For Creators</h4>
             <ul className="space-y-2">
-              {footerLinks.creators.map(link => (
-                <li key={link.label}>
-                  <a
-                    href={link.href}
-                    className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                    {link.label}
-                  </a>
-                </li>
-              ))}
+              {footerLinks.creators.map(link => {
+                if (link.label === 'Upload Music') {
+                  return (
+                    <li key={link.label}>
+                      <button
+                        type="button"
+                        onClick={musicSubmit.openSubmitModal}
+                        className="text-sm text-muted-foreground hover:text-primary transition-colors text-left">
+                        {link.label}
+                      </button>
+                    </li>
+                  );
+                }
+                if (link.label === 'Upload Video') {
+                  return (
+                    <li key={link.label}>
+                      <button
+                        type="button"
+                        onClick={videoSubmit.openSubmitModal}
+                        className="text-sm text-muted-foreground hover:text-primary transition-colors text-left">
+                        {link.label}
+                      </button>
+                    </li>
+                  );
+                }
+                return (
+                  <li key={link.label}>
+                    <a
+                      href={link.href}
+                      className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                      {link.label}
+                    </a>
+                  </li>
+                );
+              })}
             </ul>
           </div>
 
@@ -207,6 +236,8 @@ export const Footer = () => {
           </div>
         </div>
       </div>
+      {musicSubmit.modal}
+      {videoSubmit.modal}
     </footer>
   );
 };

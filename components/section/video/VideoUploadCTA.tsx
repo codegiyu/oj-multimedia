@@ -3,6 +3,7 @@
 import { motion } from 'motion/react';
 import { MessageCircle, Video, BarChart3, Users, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useContentSubmitWhatsApp } from '@/components/section/shared/ContentSubmitWhatsAppTrigger';
 import Link from 'next/link';
 
 const benefits = [
@@ -13,6 +14,7 @@ const benefits = [
 ];
 
 export const VideoUploadCTA = () => {
+  const videoSubmit = useContentSubmitWhatsApp('video');
   return (
     <section className="py-16">
       <div className="container mx-auto px-4">
@@ -51,8 +53,8 @@ export const VideoUploadCTA = () => {
                 viewport={{ once: true }}
                 transition={{ delay: 0.3 }}
                 className="text-muted-foreground mb-6 max-w-md">
-                Our admins publish approved content. Use the contact page—or WhatsApp when it is
-                listed there—to submit videos and details. We will guide you through the process.
+                Our admins publish approved content. Message us on WhatsApp to submit videos and
+                details. We will guide you through the process.
               </motion.p>
 
               <motion.div
@@ -61,11 +63,14 @@ export const VideoUploadCTA = () => {
                 viewport={{ once: true }}
                 transition={{ delay: 0.4 }}
                 className="flex flex-wrap gap-3">
-                <Button variant="hero" size="lg" className="gap-2" asChild>
-                  <Link href="/contact">
-                    <MessageCircle className="w-5 h-5" />
-                    Contact to submit video
-                  </Link>
+                <Button
+                  type="button"
+                  variant="hero"
+                  size="lg"
+                  className="gap-2"
+                  onClick={videoSubmit.openSubmitModal}>
+                  <MessageCircle className="w-5 h-5" />
+                  Contact to submit video
                 </Button>
                 <Button variant="hero-outline" size="lg" className="gap-2" asChild>
                   <Link href="/community/promote-your-content">
@@ -106,6 +111,7 @@ export const VideoUploadCTA = () => {
           </motion.p>
         </motion.div>
       </div>
+      {videoSubmit.modal}
     </section>
   );
 };

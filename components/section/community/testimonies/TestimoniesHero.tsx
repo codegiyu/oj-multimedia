@@ -1,10 +1,12 @@
 'use client';
 
+import { useOpenShareTestimony } from '@/lib/hooks/useOpenShareTestimony';
 import { motion } from 'motion/react';
 import { Heart, Quote, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export const TestimoniesHero = () => {
+  const openShareTestimony = useOpenShareTestimony();
   return (
     <section className="relative min-h-[50vh] flex items-center overflow-hidden pt-[12.25rem] pb-12">
       {/* Background */}
@@ -75,13 +77,7 @@ export const TestimoniesHero = () => {
               <Heart className="w-4 h-4" />
               Read Stories
             </Button>
-            <Button
-              variant="hero-outline"
-              size="lg"
-              className="gap-2"
-              onClick={() => {
-                document.getElementById('share-testimony')?.scrollIntoView({ behavior: 'smooth' });
-              }}>
+            <Button variant="hero-outline" size="lg" className="gap-2" onClick={openShareTestimony}>
               <MessageCircle className="w-4 h-4" />
               Share Your Story
             </Button>
