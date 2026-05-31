@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { FillImage } from '@/components/general/FillImage';
 import { motion } from 'motion/react';
-import { BookOpen } from 'lucide-react';
+import { ArrowRight, BookOpen } from 'lucide-react';
 import { SectionComp } from '@/components/general/SectionComp';
 import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import { MultilinePreview } from '@/components/general/MultilinePreview';
@@ -47,26 +47,34 @@ export function DevotionalsRail({ items }: DevotionalsRailProps) {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.05 }}
+              whileHover={{ y: -4 }}
               className="w-[260px] sm:w-[280px] shrink-0 snap-start">
               <Link
                 href={`/community/devotionals/${encodeURIComponent(d.slug || d._id)}`}
-                className="block rounded-2xl border border-border/60 bg-card overflow-hidden hover:border-primary/40 transition-colors shadow-sm">
-                <div className="aspect-[16/10] relative bg-muted">
+                className="group block rounded-2xl border border-border/60 bg-card overflow-hidden hover:border-primary/40 shadow-sm hover:shadow-lg transition-all">
+                <div className="aspect-[16/10] relative bg-muted overflow-hidden">
                   <FillImage
                     src={d.coverImage ?? ''}
                     alt=""
                     imageContext="public"
                     sizes="(max-width: 768px) 50vw, 400px"
+                    className="transition-transform duration-500 group-hover:scale-105"
                   />
                 </div>
                 <div className="p-4">
-                  <h3 className="font-semibold text-foreground line-clamp-2">{d.title}</h3>
+                  <h3 className="font-semibold text-foreground line-clamp-2 group-hover:text-primary transition-colors">
+                    {d.title}
+                  </h3>
                   {d.excerpt && (
                     <MultilinePreview
                       text={d.excerpt}
                       className="text-sm text-muted-foreground line-clamp-2 mt-2"
                     />
                   )}
+                  <span className="mt-3 flex items-center gap-1 text-sm font-medium text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                    Read more
+                    <ArrowRight className="w-4 h-4" />
+                  </span>
                 </div>
               </Link>
             </motion.div>

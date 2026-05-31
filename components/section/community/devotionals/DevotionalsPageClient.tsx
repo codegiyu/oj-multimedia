@@ -20,6 +20,7 @@ export interface DailyDevotional {
   category: string;
   excerpt: string;
   views: number;
+  coverImage?: string;
 }
 
 export interface BibleStudy {

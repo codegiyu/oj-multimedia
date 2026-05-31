@@ -10,6 +10,7 @@ import { useAuthStore } from '@/lib/store/useAuthStore';
 import { LoginModal } from '@/components/auth/LoginModal';
 import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import { MultilinePreview } from '@/components/general/MultilinePreview';
+import { DevotionalListThumbnail } from '@/components/section/community/devotionals/DevotionalListThumbnail';
 import type { CommunityHighlightItem } from '@/lib/utils/mergeCommunityHighlights';
 import { cn } from '@/lib/utils';
 
@@ -101,15 +102,20 @@ export const CommunitySection = ({
                   const Icon = style.icon;
 
                   return (
-                    <Link key={`${item.kind}-${item._id}`} href={item.href}>
+                    <Link key={`${item.kind}-${item._id}`} href={item.href} className="block">
                       <motion.div
                         initial={{ opacity: 0, y: 10 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ delay: index * 0.1 }}
-                        className="bg-card rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
-                        <div className="flex gap-3">
-                          {item.avatar ? (
+                        className="bg-card rounded-2xl p-5 shadow-sm border border-border/50 hover:shadow-md transition-shadow cursor-pointer">
+                        <div className="flex gap-4">
+                          {item.kind === 'devotional' ? (
+                            <DevotionalListThumbnail
+                              coverImage={item.coverImage}
+                              title={item.title}
+                            />
+                          ) : item.avatar ? (
                             <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full">
                               <FixedImage
                                 imageContext="public"

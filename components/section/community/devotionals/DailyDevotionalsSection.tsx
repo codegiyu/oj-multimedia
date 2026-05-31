@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { SectionComp } from '@/components/general/SectionComp';
 import { DataLoadError } from '@/components/general/DataLoadError';
 import { SectionEmptyState } from '@/components/general/SectionEmptyState';
+import { DevotionalListThumbnail } from '@/components/section/community/devotionals/DevotionalListThumbnail';
 import { DevotionalSaveButton } from '@/components/content/DevotionalSaveButton';
 import type { DailyDevotional } from './DevotionalsPageClient';
 
@@ -69,9 +70,7 @@ export const DailyDevotionalsSection = ({
               <Link
                 href={`/community/devotionals/${devotional._id}`}
                 className="flex gap-4 flex-1 min-w-0">
-                <div className="w-16 h-16 rounded-xl bg-secondary/10 flex items-center justify-center shrink-0">
-                  <Calendar className="w-7 h-7 text-secondary" />
-                </div>
+                <DevotionalListThumbnail coverImage={devotional.coverImage} title={devotional.title} />
 
                 <div className="flex-1 min-w-0">
                   <div className="mb-2">

@@ -5,6 +5,7 @@ import { BookOpen, Clock, Eye } from 'lucide-react';
 import Link from 'next/link';
 import { SectionComp } from '@/components/general/SectionComp';
 import { SectionEmptyState } from '@/components/general/SectionEmptyState';
+import { DevotionalListThumbnail } from '@/components/section/community/devotionals/DevotionalListThumbnail';
 import { DevotionalSaveButton } from '@/components/content/DevotionalSaveButton';
 
 export interface Devotional {
@@ -15,6 +16,7 @@ export interface Devotional {
   readTime: string;
   views: number;
   category: string;
+  coverImage?: string;
 }
 
 interface TrendingDevotionalsProps {
@@ -54,9 +56,7 @@ export const TrendingDevotionals = ({ devotionals }: TrendingDevotionalsProps) =
                 <Link
                   href={`/community/devotionals/${devotional._id}`}
                   className="flex gap-4 flex-1 min-w-0">
-                  <div className="w-16 h-16 rounded-xl bg-secondary/10 flex items-center justify-center shrink-0">
-                    <BookOpen className="w-7 h-7 text-secondary" />
-                  </div>
+                  <DevotionalListThumbnail coverImage={devotional.coverImage} title={devotional.title} />
 
                   <div className="flex-1 min-w-0">
                     <div className="mb-2">
