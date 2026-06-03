@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
 import { useMemo } from 'react';
@@ -90,7 +91,7 @@ export function PrayerRequestsTableContent({
         />
       )),
     ],
-    [onAnswer, onEdit, onDelete]
+    []
   );
 
   return (

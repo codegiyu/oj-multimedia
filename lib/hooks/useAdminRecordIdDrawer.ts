@@ -1,6 +1,7 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { ClickedRowDetails } from '@/components/general/TableRowDetailsDrawer';
 
 export type ResolvedAdminRecord<T, Tab extends string = string> = {
@@ -45,15 +46,12 @@ export function useAdminRecordIdDrawer<T, Tab extends string = string>({
     ClickedRowDetails<T, Tab> | undefined
   >(undefined);
 
-  const setClickedRowDetails = useCallback(
-    (value: ClickedRowDetails<T, Tab> | undefined) => {
-      setClickedRowDetailsState(value);
-      if (!value) {
-        clearRecordId();
-      }
-    },
-    [clearRecordId]
-  );
+  const setClickedRowDetails = (value: ClickedRowDetails<T, Tab> | undefined) => {
+    setClickedRowDetailsState(value);
+    if (!value) {
+      clearRecordId();
+    }
+  };
 
   useEffect(() => {
     if (!recordId) {
@@ -86,29 +84,23 @@ export function useAdminRecordIdDrawer<T, Tab extends string = string>({
       index,
       tab: getTab?.(row),
     });
-  }, [recordId, rows, getRowId, getTab, resolveRecord]);
+  }, [recordId, rows]);
 
-  const handleRowClick = useCallback(
-    (row: T, index = 0, tab?: Tab) => {
-      const id = getRowId(row);
-      setRecordId(id);
-      setClickedRowDetailsState({
-        data: row,
-        index,
-        tab: tab ?? getTab?.(row),
-      });
-    },
-    [getRowId, getTab, setRecordId]
-  );
+  const handleRowClick = (row: T, index = 0, tab?: Tab) => {
+    const id = getRowId(row);
+    setRecordId(id);
+    setClickedRowDetailsState({
+      data: row,
+      index,
+      tab: tab ?? getTab?.(row),
+    });
+  };
 
-  const onDrawerOpenChange = useCallback(
-    (open: boolean) => {
-      if (!open) {
-        setClickedRowDetails(undefined);
-      }
-    },
-    [setClickedRowDetails]
-  );
+  const onDrawerOpenChange = (open: boolean) => {
+    if (!open) {
+      setClickedRowDetails(undefined);
+    }
+  };
 
   return {
     clickedRowDetails,

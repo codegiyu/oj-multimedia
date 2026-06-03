@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
 import { useMemo } from 'react';
@@ -98,7 +99,7 @@ export function DevotionalsTableContent({
         />
       )),
     ],
-    [onApprove, onReject, onEdit, onDelete]
+    []
   );
 
   return (

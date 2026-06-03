@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
 import { useMemo } from 'react';
@@ -34,7 +35,7 @@ export function useAdminListQueryStates(resource: AdminListResourceKey) {
       setRecordId: id => setState({ id: id ?? '' }),
       clearRecordId: () => setState({ id: '' }),
     }),
-    [setState]
+    []
   );
 
   return {

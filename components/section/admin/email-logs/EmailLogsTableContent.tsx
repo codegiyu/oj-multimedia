@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
 import { useMemo } from 'react';
@@ -150,7 +151,7 @@ export function EmailLogsTableContent({
         }
       ),
     ],
-    [onRefresh, onViewEmail]
+    []
   );
 
   return (

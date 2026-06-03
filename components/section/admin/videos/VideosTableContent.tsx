@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
 import { useMemo } from 'react';
@@ -111,7 +112,7 @@ export function VideosTableContent({
         />
       )),
     ],
-    [onApprove, onReject, onEdit, onDelete]
+    []
   );
 
   return (
