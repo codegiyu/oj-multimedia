@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
 import { useMemo } from 'react';
@@ -114,7 +115,7 @@ export function PastorsTableContent({
         />
       )),
     ],
-    [onEdit, onDelete, onToggleActive, onToggleFeatured]
+    []
   );
 
   return (

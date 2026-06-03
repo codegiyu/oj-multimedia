@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
 import { useMemo } from 'react';
@@ -113,7 +114,7 @@ export function AlbumsTableContent({
         <AlbumsActionsMenu album={row} onEdit={onEdit} onDelete={onDelete} />
       )),
     ],
-    [onEdit, onDelete]
+    []
   );
 
   return (

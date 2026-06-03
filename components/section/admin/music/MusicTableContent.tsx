@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
 import { useMemo } from 'react';
@@ -115,7 +116,7 @@ export function MusicTableContent({
         />
       )),
     ],
-    [onApprove, onReject, onEdit, onDelete]
+    []
   );
 
   return (

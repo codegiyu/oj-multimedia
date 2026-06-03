@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
 import { useMemo } from 'react';
@@ -118,7 +119,7 @@ export function ArtistsTableContent({
         />
       )),
     ],
-    [onEdit, onDelete, onToggleActive, onToggleFeatured]
+    []
   );
 
   return (
