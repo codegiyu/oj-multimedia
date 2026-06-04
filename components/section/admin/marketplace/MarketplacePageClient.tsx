@@ -3,7 +3,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useQueryState, parseAsInteger, parseAsString } from 'nuqs';
+import { useQueryStates, parseAsInteger, parseAsString } from 'nuqs';
 import { toast } from 'sonner';
 import { AdminDashboardListLayout } from '@/components/section/admin/AdminDashboardListLayout';
 import type {
@@ -24,9 +24,8 @@ import { Plus } from 'lucide-react';
 import type { DataTableTab } from '@/components/general/DataTable';
 import { RegularInput } from '@/components/atoms/RegularInput';
 import type { SelectOption } from '@/lib/types/general';
-import { useAdminListSearch } from '@/lib/hooks/useAdminListSearch';
-import { serializeAdminListUrlKey } from '@/lib/admin/adminListUrl';
-import { useAdminListUrlRefresh } from '@/lib/hooks/useAdminListUrlRefresh';
+import { useAdminListUrlRefreshFromSearchParams } from '@/lib/hooks/useAdminListUrlRefreshFromSearchParams';
+import { useAdminServerTabGate } from '@/lib/hooks/useAdminServerTabGate';
 import { useAdminListRecordId } from '@/lib/hooks/useAdminListRecordId';
 import { findRowIndexById, useAdminRecordIdDrawer } from '@/lib/hooks/useAdminRecordIdDrawer';
 import { useAdminVendorFilterOptions } from '@/lib/hooks/useAdminVendorFilterOptions';
@@ -35,6 +34,17 @@ import { loadMarketplaceCategorySelectOptions } from '@/lib/utils/adminEntitySel
 const TAB_VENDORS = 'vendors';
 const TAB_PRODUCTS = 'products';
 const TAB_ORDERS = 'orders';
+
+const marketplaceListParsers = {
+  tab: parseAsString.withDefault(TAB_VENDORS),
+  page: parseAsInteger.withDefault(1),
+  search: parseAsString.withDefault(''),
+  status: parseAsString.withDefault('all'),
+  vendor: parseAsString.withDefault('all'),
+  category: parseAsString.withDefault('all'),
+  startDate: parseAsString.withDefault(''),
+  endDate: parseAsString.withDefault(''),
+};
 
 const MARKETPLACE_TABLE_TABS: DataTableTab[] = [
   { value: TAB_VENDORS, label: 'Vendors' },
@@ -74,6 +84,7 @@ export type MarketplaceRowData =
 export interface MarketplacePageClientProps {
   pageTitle: string;
   pageDescription: string;
+  serverTab: MarketplaceTabType;
   vendors: IMarketplaceVendor[];
   products: IMarketplaceProduct[];
   orders: PopulatedMarketplaceOrder[];
@@ -84,6 +95,7 @@ export interface MarketplacePageClientProps {
 export function MarketplacePageClient({
   pageTitle,
   pageDescription,
+  serverTab,
   vendors,
   products,
   orders,
@@ -91,20 +103,31 @@ export function MarketplacePageClient({
   listError,
 }: MarketplacePageClientProps) {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useQueryState('tab', parseAsString.withDefault(TAB_VENDORS));
-  const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1));
-  // const [pageSize] = useQueryState('pagesize', parseAsInteger.withDefault(DEFAULT_PAGE_SIZE));
-  const [searchQuery, setSearchQuery] = useQueryState('search', parseAsString.withDefault(''));
-  const [filterStatus, setFilterStatus] = useQueryState('status', parseAsString.withDefault('all'));
-  const [filterVendor, setFilterVendor] = useQueryState('vendor', parseAsString.withDefault('all'));
-  const [filterCategory, setFilterCategory] = useQueryState(
-    'category',
-    parseAsString.withDefault('all')
-  );
-  const [startDate, setStartDate] = useQueryState('startDate', parseAsString.withDefault(''));
-  const [endDate, setEndDate] = useQueryState('endDate', parseAsString.withDefault(''));
+  const [listQuery, setListQuery] = useQueryStates(marketplaceListParsers, {
+    history: 'replace',
+    shallow: false,
+  });
+  const activeTab = listQuery.tab;
+  const page = listQuery.page;
+  const searchQuery = listQuery.search;
+  const filterStatus = listQuery.status;
+  const filterVendor = listQuery.vendor;
+  const filterCategory = listQuery.category;
+  const startDate = listQuery.startDate;
+  const endDate = listQuery.endDate;
+  const setPage = (nextPage: number) => {
+    void setListQuery({ page: nextPage });
+  };
+  const setActiveTab = (tab: MarketplaceTabType) => {
+    void setListQuery({ tab });
+  };
   const vendorOptions = useAdminVendorFilterOptions();
-  const { onSearchChange, onSearchCommit } = useAdminListSearch(setSearchQuery, setPage);
+  const onSearchChange = (value: string) => {
+    void setListQuery({ search: value, page: 1 });
+  };
+  const onSearchCommit = () => {
+    void setListQuery({ page: 1 });
+  };
 
   const [createVendorOpen, setCreateVendorOpen] = useState(false);
   const [createProductOpen, setCreateProductOpen] = useState(false);
@@ -118,18 +141,7 @@ export function MarketplacePageClient({
     { text: 'All categories', value: 'all' },
   ]);
 
-  useAdminListUrlRefresh(
-    serializeAdminListUrlKey({
-      page,
-      search: searchQuery,
-      status: filterStatus,
-      tab: activeTab,
-      vendor: filterVendor,
-      category: filterCategory,
-      startDate,
-      endDate,
-    })
-  );
+  useAdminListUrlRefreshFromSearchParams();
 
   const { recordId, setRecordId, clearRecordId } = useAdminListRecordId();
 
@@ -152,16 +164,24 @@ export function MarketplacePageClient({
     return null;
   };
 
+  const { displayTab, isTabTransitioning } = useAdminServerTabGate({
+    serverTab,
+    clientTab: (activeTab ?? TAB_VENDORS) as MarketplaceTabType,
+    setClientTab: setActiveTab,
+  });
+
   const marketplaceRows = useMemo((): MarketplaceRowData[] => {
-    if (activeTab === TAB_VENDORS) {
+    if (displayTab === TAB_VENDORS) {
       return vendors;
     }
-    if (activeTab === TAB_PRODUCTS) {
+    if (displayTab === TAB_PRODUCTS) {
       return products;
     }
 
     return orders;
-  }, [activeTab, vendors, products, orders]);
+  }, [displayTab, vendors, products, orders]);
+
+  const tableLoading = isTabTransitioning;
 
   const { clickedRowDetails, setClickedRowDetails, handleRowClick } = useAdminRecordIdDrawer({
     rows: marketplaceRows,
@@ -194,8 +214,7 @@ export function MarketplacePageClient({
         value: filterStatus,
         options: statusOptions,
         onChange: (v: string) => {
-          setFilterStatus(v);
-          setPage(1);
+          void setListQuery({ status: v, page: 1 });
         },
       },
     ];
@@ -206,8 +225,7 @@ export function MarketplacePageClient({
         value: filterVendor,
         options: vendorOptions,
         onChange: (v: string) => {
-          setFilterVendor(v);
-          setPage(1);
+          void setListQuery({ vendor: v, page: 1 });
         },
       });
     }
@@ -218,8 +236,7 @@ export function MarketplacePageClient({
         value: filterCategory,
         options: productCategoryOptions,
         onChange: (v: string) => {
-          setFilterCategory(v);
-          setPage(1);
+          void setListQuery({ category: v, page: 1 });
         },
       });
     }
@@ -354,13 +371,17 @@ export function MarketplacePageClient({
   };
 
   const handleListTabChange = (v: string) => {
-    setActiveTab(v);
-    setPage(1);
-    setFilterStatus('all');
-    setFilterVendor('all');
-    setFilterCategory('all');
-    setStartDate('');
-    setEndDate('');
+    clearRecordId();
+    setClickedRowDetails(undefined);
+    void setListQuery({
+      tab: v,
+      page: 1,
+      status: 'all',
+      vendor: 'all',
+      category: 'all',
+      startDate: '',
+      endDate: '',
+    });
   };
 
   useEffect(() => {
@@ -371,7 +392,7 @@ export function MarketplacePageClient({
   }, [activeTab]);
 
   useEffect(() => {
-    if (!recordId) {
+    if (!recordId || isTabTransitioning) {
       return;
     }
 
@@ -379,7 +400,7 @@ export function MarketplacePageClient({
     if (resolved?.tab && resolved.tab !== activeTab) {
       void setActiveTab(resolved.tab);
     }
-  }, [recordId, activeTab]);
+  }, [recordId, activeTab, isTabTransitioning]);
 
   return (
     <AdminDashboardListLayout
@@ -404,8 +425,7 @@ export function MarketplacePageClient({
               type="date"
               value={startDate}
               onChange={e => {
-                setStartDate(e.target.value);
-                setPage(1);
+                void setListQuery({ startDate: e.target.value, page: 1 });
               }}
               className="w-[160px]"
             />
@@ -414,8 +434,7 @@ export function MarketplacePageClient({
               type="date"
               value={endDate}
               onChange={e => {
-                setEndDate(e.target.value);
-                setPage(1);
+                void setListQuery({ endDate: e.target.value, page: 1 });
               }}
               className="w-[160px]"
             />
@@ -524,13 +543,13 @@ export function MarketplacePageClient({
           )}
         </>
       }>
-      {activeTab === TAB_VENDORS && (
+      {displayTab === TAB_VENDORS && (
         <MarketplaceVendorsTableContent
           tabs={MARKETPLACE_TABLE_TABS}
-          activeTab={activeTab}
+          activeTab={activeTab ?? TAB_VENDORS}
           onTabChange={handleListTabChange}
           vendors={vendors}
-          loading={false}
+          loading={tableLoading}
           onRefresh={handleRefresh}
           onRowClick={(row, idx) => handleRowClick(row, idx, TAB_VENDORS)}
           page={page}
@@ -543,13 +562,13 @@ export function MarketplacePageClient({
           onDelete={r => setDeleteTarget(r)}
         />
       )}
-      {activeTab === TAB_PRODUCTS && (
+      {displayTab === TAB_PRODUCTS && (
         <MarketplaceProductsTableContent
           tabs={MARKETPLACE_TABLE_TABS}
-          activeTab={activeTab}
+          activeTab={activeTab ?? TAB_VENDORS}
           onTabChange={handleListTabChange}
           products={products}
-          loading={false}
+          loading={tableLoading}
           onRefresh={handleRefresh}
           onRowClick={(row, idx) => handleRowClick(row, idx, TAB_PRODUCTS)}
           page={page}
@@ -560,13 +579,13 @@ export function MarketplacePageClient({
           onDelete={r => setDeleteTarget(r)}
         />
       )}
-      {activeTab === TAB_ORDERS && (
+      {displayTab === TAB_ORDERS && (
         <MarketplaceOrdersTableContent
           tabs={MARKETPLACE_TABLE_TABS}
-          activeTab={activeTab}
+          activeTab={activeTab ?? TAB_VENDORS}
           onTabChange={handleListTabChange}
           orders={orders}
-          loading={false}
+          loading={tableLoading}
           onRefresh={handleRefresh}
           onRowClick={(row, idx) => handleRowClick(row, idx, TAB_ORDERS)}
           page={page}
