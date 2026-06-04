@@ -6,6 +6,9 @@ export const OTHER_ENDPOINTS: Record<string, EndpointDetails> = {
     path: '/api/v1/artist/me',
     method: 'GET',
   },
+  ARTIST_DEACTIVATE_ME: { path: '/api/v1/artist/me/deactivate', method: 'POST' },
+  ARTIST_REACTIVATE_ME: { path: '/api/v1/artist/me/reactivate', method: 'POST' },
+  ARTIST_SUBMIT_APPEAL: { path: '/api/v1/artist/me/appeals', method: 'POST' },
   ARTIST_CREATE_ME: {
     path: '/api/v1/artist/me',
     method: 'POST',
@@ -65,6 +68,9 @@ export const OTHER_ENDPOINTS: Record<string, EndpointDetails> = {
 
   // Vendor dashboard
   VENDOR_GET_ME: { path: '/api/v1/vendor/me', method: 'GET' },
+  VENDOR_DEACTIVATE_ME: { path: '/api/v1/vendor/me/deactivate', method: 'POST' },
+  VENDOR_REACTIVATE_ME: { path: '/api/v1/vendor/me/reactivate', method: 'POST' },
+  VENDOR_SUBMIT_APPEAL: { path: '/api/v1/vendor/me/appeals', method: 'POST' },
   VENDOR_GET_PRODUCTS: { path: '/api/v1/vendor/products', method: 'GET' },
   VENDOR_CREATE_PRODUCT: { path: '/api/v1/vendor/products', method: 'POST' },
   VENDOR_UPDATE_PRODUCT: {
@@ -81,6 +87,9 @@ export const OTHER_ENDPOINTS: Record<string, EndpointDetails> = {
 
   // Pastor dashboard
   PASTOR_GET_ME: { path: '/api/v1/pastor/me', method: 'GET' },
+  PASTOR_DEACTIVATE_ME: { path: '/api/v1/pastor/me/deactivate', method: 'POST' },
+  PASTOR_REACTIVATE_ME: { path: '/api/v1/pastor/me/reactivate', method: 'POST' },
+  PASTOR_SUBMIT_APPEAL: { path: '/api/v1/pastor/me/appeals', method: 'POST' },
   PASTOR_SUBMIT_APPLICATION: { path: '/api/v1/pastor/application', method: 'POST' },
   PASTOR_GET_PROFILE: { path: '/api/v1/pastor/me/profile', method: 'GET' },
   PASTOR_UPDATE_PROFILE: { path: '/api/v1/pastor/me/profile', method: 'PATCH' },

@@ -18,6 +18,7 @@ import { useForm } from '@/lib/hooks/use-form';
 import { callApi } from '@/lib/services/callApi';
 import { ImageUploadField } from '@/components/general/MediaUploadField';
 import type { IVendorMeRes, IVendorUpdateSettingsPayload } from '@/lib/constants/endpoints';
+import { RoleAccountDeactivateSection } from '@/components/section/account/shared/RoleAccountDeactivateSection';
 
 const optionalStoredImageUrl = z
   .string()
@@ -352,6 +353,17 @@ export function VendorSettingsPageClient({
               {submitting ? 'Saving…' : 'Save settings'}
             </RegularBtn>
           </form>
+
+          {initialVendor ? (
+            <RoleAccountDeactivateSection
+              profileLabel="vendor store"
+              deactivateEndpoint="VENDOR_DEACTIVATE_ME"
+              isDeactivated={
+                initialVendor.portalStatus === 'deactivated' ||
+                initialVendor.status === 'deactivated'
+              }
+            />
+          ) : null}
         </>
       )}
     </div>

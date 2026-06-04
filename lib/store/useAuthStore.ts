@@ -27,7 +27,12 @@ export interface AuthStore {
     initSession: () => Promise<void>;
     clearSession: () => void;
     login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
-    googleLogin: (googleCode: string) => Promise<{ success: boolean; error?: string }>;
+    googleLogin: (googleCode: string) => Promise<{
+      success: boolean;
+      error?: string;
+      suspended?: boolean;
+      suspendedPayload?: import('@/lib/types/rolePortal').AccountSuspendedPayload;
+    }>;
     logout: () => Promise<void>;
   };
 }
@@ -144,6 +149,18 @@ export const useInitAuthStore = create<AuthStore>()((set, get) => ({
         });
 
         if (error || !data) {
+          const payload = error?.data as
+            | import('@/lib/types/rolePortal').AccountSuspendedPayload
+            | undefined;
+          if (payload?.code === 'ACCOUNT_SUSPENDED') {
+            return {
+              success: false,
+              error: error?.message || 'Your account has been suspended',
+              suspended: true,
+              suspendedPayload: payload,
+            };
+          }
+
           return {
             success: false,
             error: error?.message || 'Google login failed',

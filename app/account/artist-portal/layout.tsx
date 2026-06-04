@@ -1,7 +1,10 @@
 import type { ReactNode } from 'react';
 import { callServerApi } from '@/lib/services/serverApi';
 import { ArtistPortalLayoutClient } from './ArtistPortalLayoutClient';
-import { ArtistPortalRouteGate } from '@/components/section/account/artist-portal/ArtistPortalRouteGate';
+import {
+  ArtistPortalRouteGate,
+  artistPortalMetaFromMe,
+} from '@/components/section/account/artist-portal/ArtistPortalRouteGate';
 
 export default async function ArtistPortalLayout({ children }: { children: ReactNode }) {
   const meRes = await callServerApi('ARTIST_GET_ME', {});
@@ -20,9 +23,16 @@ export default async function ArtistPortalLayout({ children }: { children: React
       ? (meRes.message ?? 'Unable to load artist profile.')
       : null;
 
+  const meData = meRes.type === 'success' ? meRes.data : undefined;
+  const { portalStatus, meta } = artistPortalMetaFromMe(meData);
+
   return (
     <ArtistPortalLayoutClient>
-      <ArtistPortalRouteGate initialProfileMissing={profileMissing} initialLoadError={loadError}>
+      <ArtistPortalRouteGate
+        initialProfileMissing={profileMissing}
+        initialLoadError={loadError}
+        initialPortalStatus={portalStatus}
+        initialMeta={meta}>
         {children}
       </ArtistPortalRouteGate>
     </ArtistPortalLayoutClient>

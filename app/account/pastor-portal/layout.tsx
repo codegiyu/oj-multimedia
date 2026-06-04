@@ -3,6 +3,7 @@ import { callServerApi } from '@/lib/services/serverApi';
 import type { IPastorMeRes } from '@/lib/constants/endpoints';
 import { PastorPortalLayoutClient } from './PastorPortalLayoutClient';
 import { PastorPortalRouteGate } from '@/components/section/account/pastor-portal/PastorPortalRouteGate';
+import type { RolePortalStatus } from '@/lib/types/rolePortal';
 
 export default async function PastorPortalLayout({ children }: { children: ReactNode }) {
   const meRes = await callServerApi('PASTOR_GET_ME', {});
@@ -17,7 +18,14 @@ export default async function PastorPortalLayout({ children }: { children: React
       <PastorPortalRouteGate
         initialPortalState={data?.portalState ?? 'none'}
         initialApplication={data?.application ?? null}
-        initialLoadError={loadError}>
+        initialLoadError={loadError}
+        initialMeta={{
+          portalStatus: (data?.portalStatus ?? data?.portalState) as RolePortalStatus | undefined,
+          statusChangedAt: data?.statusChangedAt,
+          suspensionReason: data?.suspensionReason,
+          openAppeal: data?.openAppeal ?? null,
+          lastRejectedAppeal: data?.lastRejectedAppeal ?? null,
+        }}>
         {children}
       </PastorPortalRouteGate>
     </PastorPortalLayoutClient>

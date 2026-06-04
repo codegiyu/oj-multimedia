@@ -8,11 +8,22 @@ import { Card, CardContent } from '@/components/ui/card';
 import type { IPastorApplication, PastorPortalState } from '@/lib/constants/endpoints';
 import { DashboardProfileRequiredPanel } from '@/components/section/account/shared/DashboardProfileRequiredPanel';
 import { PastorApplicationModal } from '@/components/section/account/shared/PastorApplicationModal';
+import { DashboardRoleAccountStatusPanel } from '@/components/section/account/shared/DashboardRoleAccountStatusPanel';
+import type { IRolePortalMeta } from '@/lib/types/rolePortal';
+import { callApi } from '@/lib/services/callApi';
+import { toast } from 'sonner';
 
-export type PastorPortalGateState = 'none' | 'pending' | 'rejected' | 'approved';
+export type PastorPortalGateState =
+  | 'none'
+  | 'pending'
+  | 'rejected'
+  | 'approved'
+  | 'deactivated'
+  | 'suspended';
 
 function normalizePortalState(state: PastorPortalState): PastorPortalGateState {
   if (state === 'active') return 'approved';
+  if (state === 'deactivated' || state === 'suspended') return state;
   if (state === 'pending' || state === 'rejected' || state === 'none') return state;
   return 'none';
 }
@@ -21,6 +32,7 @@ export interface PastorPortalRouteGateProps {
   initialPortalState: PastorPortalState;
   initialApplication: IPastorApplication | null;
   initialLoadError: string | null;
+  initialMeta: IRolePortalMeta;
   children: ReactNode;
 }
 
@@ -28,11 +40,13 @@ export function PastorPortalRouteGate({
   initialPortalState,
   initialApplication,
   initialLoadError,
+  initialMeta,
   children,
 }: PastorPortalRouteGateProps) {
   const router = useRouter();
   const [portalState, setPortalState] = useState(normalizePortalState(initialPortalState));
   const [modalOpen, setModalOpen] = useState(false);
+  const [reactivateLoading, setReactivateLoading] = useState(false);
 
   useEffect(() => {
     setPortalState(normalizePortalState(initialPortalState));
@@ -51,6 +65,30 @@ export function PastorPortalRouteGate({
 
   if (portalState === 'approved') {
     return <>{children}</>;
+  }
+
+  if (portalState === 'deactivated' || portalState === 'suspended') {
+    return (
+      <DashboardRoleAccountStatusPanel
+        profileLabel="pastor profile"
+        portalStatus={portalState}
+        meta={initialMeta}
+        appealEndpoint="PASTOR_SUBMIT_APPEAL"
+        reactivateLoading={reactivateLoading}
+        onRefresh={() => router.refresh()}
+        onReactivate={async () => {
+          setReactivateLoading(true);
+          const { error } = await callApi('PASTOR_REACTIVATE_ME', {});
+          setReactivateLoading(false);
+          if (error) {
+            toast.error(error.message ?? 'Failed to reactivate');
+            return;
+          }
+          toast.success('Pastor profile reactivated');
+          router.refresh();
+        }}
+      />
+    );
   }
 
   if (portalState === 'pending') {

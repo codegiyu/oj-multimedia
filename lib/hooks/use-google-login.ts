@@ -26,15 +26,18 @@ declare global {
 
 const GOOGLE_SCRIPT_URL = 'https://accounts.google.com/gsi/client';
 
+import type { AccountSuspendedPayload } from '@/lib/types/rolePortal';
+
 export interface UseGoogleLoginOptions {
   /** When false, the Google script is not loaded (e.g. modal closed). Default true. */
   enabled?: boolean;
   /** Called after a successful Google sign-in. Use for redirect or closing modal. */
   onSuccess?: () => void;
+  onSuspended?: (payload: AccountSuspendedPayload) => void;
 }
 
 export function useGoogleLogin(options: UseGoogleLoginOptions = {}) {
-  const { enabled = true, onSuccess } = options;
+  const { enabled = true, onSuccess, onSuspended } = options;
   const [isGoogleScriptLoaded, setIsGoogleScriptLoaded] = useState(false);
 
   const { loginLoading, actions } = useAuthStore(state => ({
@@ -82,6 +85,8 @@ export function useGoogleLogin(options: UseGoogleLoginOptions = {}) {
             if (result.success) {
               toast.success('Successfully signed in!');
               onSuccess?.();
+            } else if (result.suspended && result.suspendedPayload) {
+              onSuspended?.(result.suspendedPayload);
             } else {
               toast.error(result.error || 'Login failed');
             }
@@ -100,7 +105,7 @@ export function useGoogleLogin(options: UseGoogleLoginOptions = {}) {
       void error;
       toast.error('Failed to initialize Google Sign-In');
     }
-  }, [isGoogleScriptLoaded, actions, onSuccess]);
+  }, [isGoogleScriptLoaded, actions, onSuccess, onSuspended]);
 
   return { isGoogleScriptLoaded, loginLoading, handleGoogleLogin };
 }

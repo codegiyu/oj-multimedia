@@ -454,6 +454,11 @@ export interface IMarketplaceVendor {
   approvedAt?: string;
   rejectionReason?: string;
   rejectedAt?: string;
+  portalStatus?: string;
+  statusChangedAt?: string;
+  suspensionReason?: string;
+  openAppeal?: import('@/lib/types/rolePortal').IRoleProfileAppealSummary | null;
+  lastRejectedAppeal?: import('@/lib/types/rolePortal').IRoleProfileAppealSummary | null;
 }
 
 export interface IMarketplaceOrderItem {
