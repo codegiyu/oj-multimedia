@@ -1,5 +1,6 @@
 'use client';
 
+import type { ReactNode } from 'react';
 import { Newspaper } from 'lucide-react';
 import { NewsCard } from '@/components/cards/NewsCard';
 import { SectionComp } from '@/components/general/SectionComp';
@@ -22,6 +23,7 @@ interface NewsSectionProps {
   viewAllLink?: string;
   sectionId?: string;
   sectionClassName?: string;
+  afterHeader?: ReactNode;
 }
 
 export const NewsSection = ({
@@ -31,6 +33,7 @@ export const NewsSection = ({
   viewAllLink = '/news',
   sectionId = 'news',
   sectionClassName,
+  afterHeader,
 }: NewsSectionProps) => {
   if (!newsArticles || newsArticles.length === 0) {
     return (
@@ -43,6 +46,7 @@ export const NewsSection = ({
         viewAllLink={viewAllLink}
         background="bg-muted/30"
         sectionClassName={sectionClassName}
+        afterHeader={afterHeader}
         contentProps={{
           className: 'h-full',
           enableAnimation: true,
@@ -68,6 +72,7 @@ export const NewsSection = ({
       viewAllLink={viewAllLink}
       background="bg-muted/30"
       sectionClassName={sectionClassName}
+      afterHeader={afterHeader}
       contentProps={{
         className: 'h-full',
         enableAnimation: true,

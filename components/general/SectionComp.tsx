@@ -12,6 +12,8 @@ export interface SectionCompProps extends SectionHeaderProps {
   containerClassName?: string;
   background?: string;
   id?: string;
+  /** Rendered after the section heading row and before main content (e.g. in-section tab bars). */
+  afterHeader?: ReactNode;
 }
 
 export const SectionComp = ({
@@ -21,6 +23,7 @@ export const SectionComp = ({
   containerClassName,
   background,
   id,
+  afterHeader,
   ...headerProps
 }: SectionCompProps) => {
   return (
@@ -29,6 +32,7 @@ export const SectionComp = ({
       className={cn('py-10 md:py-24 scroll-mt-header', background || '', sectionClassName)}>
       <div className={cn('container mx-auto px-4', containerClassName)}>
         <SectionHeader {...headerProps} />
+        {afterHeader}
         <SectionContent {...contentProps}>{children}</SectionContent>
       </div>
     </section>

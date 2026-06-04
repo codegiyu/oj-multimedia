@@ -4,7 +4,7 @@ import type { IPublicVideosListRes } from '@/lib/constants/endpoints';
 import { ALL_CATEGORY_ID } from '@/lib/constants/contentTaxonomy';
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import { mapPublicVideoToHomeTrending } from '@/lib/utils/homeTrendingMappers';
-import { HOME_ISR } from './shared';
+import { HOME_ISR, getVideoCategoryNavForHome } from './shared';
 
 interface TrendingVideosSectionServerProps {
   videoCategorySlug: string;
@@ -42,5 +42,13 @@ export async function TrendingVideosSectionServer({
     mapPublicVideoToHomeTrending
   );
 
-  return <TrendingVideosSection videos={videos} categoryOptions={[]} />;
+  let categoryOptions: Awaited<ReturnType<typeof getVideoCategoryNavForHome>> = [];
+
+  try {
+    categoryOptions = await getVideoCategoryNavForHome();
+  } catch {
+    categoryOptions = [];
+  }
+
+  return <TrendingVideosSection videos={videos} categoryOptions={categoryOptions} />;
 }

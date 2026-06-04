@@ -16,7 +16,6 @@ import {
   PollSectionSkeleton,
 } from '@/components/section/home/HomePageSkeleton';
 import {
-  CategoryPillRowSkeleton,
   HomeAdvertStripSkeleton,
   SimpleMusicRailSkeleton,
   SimpleVideoRailSkeleton,
@@ -33,8 +32,6 @@ import { HomeAdvertsBeforeCtaSection } from './_sections/HomeAdvertsBeforeCtaSec
 import { LatestMusicSection } from './_sections/LatestMusicSection';
 import { LatestSermonsSection } from './_sections/LatestSermonsSection';
 import { LatestMoviesSection } from './_sections/LatestMoviesSection';
-import { MusicCategoryNavForHome } from './_sections/MusicCategoryNavForHome';
-import { VideoCategoryNavForHome } from './_sections/VideoCategoryNavForHome';
 import { TrendingMusicSectionServer } from './_sections/TrendingMusicSectionServer';
 import { TrendingVideosSectionServer } from './_sections/TrendingVideosSectionServer';
 import { DevotionalsRailSection } from './_sections/DevotionalsRailSection';
@@ -104,16 +101,8 @@ export default async function Home({ searchParams }: HomeProps) {
         <LatestSermonsSection />
       </Suspense>
 
-      <Suspense fallback={<CategoryPillRowSkeleton count={7} sticky={false} />}>
-        <MusicCategoryNavForHome />
-      </Suspense>
-
       <Suspense fallback={<TrendingMusicSectionSkeleton />}>
         <TrendingMusicSectionServer musicCategorySlug={musicCategorySlug} />
-      </Suspense>
-
-      <Suspense fallback={<CategoryPillRowSkeleton count={6} sticky={false} />}>
-        <VideoCategoryNavForHome />
       </Suspense>
 
       <Suspense fallback={<TrendingVideosSectionSkeleton />}>
