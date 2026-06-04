@@ -27,9 +27,9 @@ interface ChartCardProps {
   chartEntry?: ChartEntry;
 }
 
-function ChartRankCell({ rank }: { rank: number }) {
+function ChartRankCell({ rank, className }: { rank: number; className?: string }) {
   return (
-    <div className="flex w-10 shrink-0 flex-col items-center gap-0.5">
+    <div className={cn('flex w-10 shrink-0 flex-col items-center gap-0.5', className)}>
       <span className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
         Rank
       </span>
@@ -122,9 +122,17 @@ function ChartStatsCell({
   );
 }
 
-function ChartPlayButton({ detailHref, title }: { detailHref: string; title: string }) {
+function ChartPlayButton({
+  detailHref,
+  title,
+  className,
+}: {
+  detailHref: string;
+  title: string;
+  className?: string;
+}) {
   return (
-    <Button variant="play" size="icon-sm" className="shrink-0 touch-hit" asChild>
+    <Button variant="play" size="icon-sm" className={cn('shrink-0 touch-hit', className)} asChild>
       <AppLink href={detailHref} aria-label={`Play ${title}`}>
         <Play className="ml-0.5 h-4 w-4 fill-current" />
       </AppLink>
@@ -132,7 +140,8 @@ function ChartPlayButton({ detailHref, title }: { detailHref: string; title: str
   );
 }
 
-function ChartCardBottomRow({
+function ChartCardMainRow({
+  rank,
   title,
   artistName,
   cover,
@@ -142,6 +151,7 @@ function ChartCardBottomRow({
   chartEntry,
   detailHref,
 }: {
+  rank: number;
   title: string;
   artistName: string;
   cover: string;
@@ -185,7 +195,8 @@ function ChartCardBottomRow({
   );
 
   return (
-    <div className="flex min-w-0 items-center gap-3">
+    <div className="flex min-w-0 flex-1 items-center gap-3">
+      <ChartRankCell rank={rank} className="hidden sm:flex" />
       {coverBlock}
       {metaBlock}
       <ChartStatsCell plays={plays} trend={trend} change={change} />
@@ -197,15 +208,14 @@ export function ChartCardsLegend({ className = '' }: { className?: string }) {
   return (
     <div
       className={cn(
-        'mb-3 hidden text-[10px] font-medium uppercase tracking-wide text-muted-foreground sm:block',
+        'mb-3 hidden grid-cols-[2.5rem_3rem_1fr_5.5rem] items-end gap-4 px-4 text-[10px] font-medium uppercase tracking-wide text-muted-foreground sm:grid',
         className
       )}
       aria-hidden>
-      <div className="grid grid-cols-[1fr_5.5rem] items-end gap-4 px-1 sm:grid-cols-[3rem_1fr_5.5rem] sm:px-4">
-        <span className="hidden sm:block">Track</span>
-        <span className="sm:col-start-2">Details</span>
-        <span className="text-right">Plays / Movement</span>
-      </div>
+      <span>Rank</span>
+      <span className="col-span-1">Track</span>
+      <span />
+      <span className="text-right">Plays / Movement</span>
     </div>
   );
 }
@@ -224,48 +234,52 @@ export const ChartCard = ({
   const artistName = typeof artist === 'string' ? artist : artist.name;
   const detailHref = _id ? `/music/${_id}` : undefined;
 
+  const mainRow = (
+    <ChartCardMainRow
+      rank={rank}
+      title={title}
+      artistName={artistName}
+      cover={cover}
+      plays={plays}
+      trend={trend}
+      change={change}
+      chartEntry={chartEntry}
+      detailHref={detailHref}
+    />
+  );
+
   return (
     <motion.article
       whileHover={{ x: 4 }}
       transition={{ duration: 0.2 }}
-      className="group flex flex-col gap-2 rounded-xl border border-border/70 bg-card p-3 shadow-sm transition-colors hover:border-border hover:bg-muted/30">
+      className="group flex flex-col gap-2 rounded-xl border border-border/70 bg-card p-3 shadow-sm transition-colors hover:border-border hover:bg-muted/30 sm:flex-row sm:items-center sm:gap-3">
       {detailHref ? (
-        <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center justify-between gap-3 sm:hidden">
           <ChartRankCell rank={rank} />
           <ChartPlayButton detailHref={detailHref} title={title} />
         </div>
       ) : (
-        <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center justify-between gap-3 sm:hidden">
           <ChartRankCell rank={rank} />
         </div>
       )}
 
       {detailHref ? (
-        <AppLink
-          href={detailHref}
-          className="flex min-w-0"
-          aria-label={`View ${title} by ${artistName}`}>
-          <ChartCardBottomRow
-            title={title}
-            artistName={artistName}
-            cover={cover}
-            plays={plays}
-            trend={trend}
-            change={change}
-            chartEntry={chartEntry}
+        <>
+          <AppLink
+            href={detailHref}
+            className="flex min-w-0 flex-1"
+            aria-label={`View ${title} by ${artistName}`}>
+            {mainRow}
+          </AppLink>
+          <ChartPlayButton
             detailHref={detailHref}
+            title={title}
+            className="hidden shrink-0 opacity-0 transition-opacity group-hover:opacity-100 sm:inline-flex"
           />
-        </AppLink>
+        </>
       ) : (
-        <ChartCardBottomRow
-          title={title}
-          artistName={artistName}
-          cover={cover}
-          plays={plays}
-          trend={trend}
-          change={change}
-          chartEntry={chartEntry}
-        />
+        <div className="flex min-w-0 flex-1">{mainRow}</div>
       )}
     </motion.article>
   );
