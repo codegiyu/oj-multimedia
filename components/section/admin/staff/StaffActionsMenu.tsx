@@ -4,10 +4,11 @@ import { MoreVertical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
+  DropdownMenuActionItem,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { actionMenuIcons } from '@/lib/constants/actionMenuIcons';
 import type { StaffListItem } from '@/lib/types/adminStaff';
 
 interface StaffActionsMenuProps {
@@ -30,10 +31,16 @@ export function StaffActionsMenu({ item }: StaffActionsMenuProps) {
       <DropdownMenuContent align="end" onClick={e => e.stopPropagation()}>
         {/* CLIENT-HIDDEN: Reinvite — uncomment when invite feature is enabled.
         {canReinvite ? (
-          <DropdownMenuItem onClick={() => onReinvite!(item)}>Resend invitation</DropdownMenuItem>
+          <DropdownMenuActionItem
+            icon={actionMenuIcons.resendInvite}
+            onClick={() => onReinvite!(item)}>
+            Resend invitation
+          </DropdownMenuActionItem>
         ) : null}
         */}
-        <DropdownMenuItem disabled>Row click for details</DropdownMenuItem>
+        <DropdownMenuActionItem icon={actionMenuIcons.rowDetailsHint} disabled>
+          Row click for details
+        </DropdownMenuActionItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

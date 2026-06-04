@@ -4,11 +4,12 @@ import { MoreVertical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
+  DropdownMenuActionItem,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { actionMenuIcons } from '@/lib/constants/actionMenuIcons';
 import type { ArtistVideoListItem } from '@/lib/constants/endpoints';
 
 interface VideosActionsMenuProps {
@@ -37,17 +38,26 @@ export function VideosActionsMenu({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" onClick={e => e.stopPropagation()}>
-        {canApprove && (
-          <DropdownMenuItem onClick={() => onApprove(video)}>Approve</DropdownMenuItem>
-        )}
-        {canApprove && <DropdownMenuItem onClick={() => onReject(video)}>Reject</DropdownMenuItem>}
-        <DropdownMenuItem onClick={() => onEdit(video)}>Edit</DropdownMenuItem>
+        {canApprove ? (
+          <DropdownMenuActionItem icon={actionMenuIcons.approve} onClick={() => onApprove(video)}>
+            Approve
+          </DropdownMenuActionItem>
+        ) : null}
+        {canApprove ? (
+          <DropdownMenuActionItem icon={actionMenuIcons.reject} onClick={() => onReject(video)}>
+            Reject
+          </DropdownMenuActionItem>
+        ) : null}
+        <DropdownMenuActionItem icon={actionMenuIcons.edit} onClick={() => onEdit(video)}>
+          Edit
+        </DropdownMenuActionItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem
-          className="text-destructive focus:text-destructive"
+        <DropdownMenuActionItem
+          icon={actionMenuIcons.delete}
+          variant="destructive"
           onClick={() => onDelete(video)}>
           Delete
-        </DropdownMenuItem>
+        </DropdownMenuActionItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

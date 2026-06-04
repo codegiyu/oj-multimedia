@@ -6,6 +6,7 @@ import { ArrowLeft, X, Copy, Check, MoreVertical, FileText } from 'lucide-react'
 import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import {
   DropdownMenu,
+  DropdownMenuActionItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
@@ -192,13 +193,26 @@ export function TableRowDetailsFooter({
               <DropdownMenuContent align="start">
                 {options.map((option, index) => {
                   const Icon = option.icon;
+
+                  if (Icon) {
+                    return (
+                      <DropdownMenuActionItem
+                        key={index}
+                        icon={Icon}
+                        onClick={option.href ? undefined : option.onClick}
+                        disabled={option.disabled}
+                        variant={option.variant === 'destructive' ? 'destructive' : 'default'}>
+                        {option.label}
+                      </DropdownMenuActionItem>
+                    );
+                  }
+
                   return (
                     <DropdownMenuItem
                       key={index}
                       onClick={option.href ? undefined : option.onClick}
                       disabled={option.disabled}
-                      className={option.variant === 'destructive' ? 'text-destructive' : ''}>
-                      {Icon && <Icon className="h-4 w-4 mr-2" />}
+                      variant={option.variant === 'destructive' ? 'destructive' : 'default'}>
                       {option.label}
                     </DropdownMenuItem>
                   );

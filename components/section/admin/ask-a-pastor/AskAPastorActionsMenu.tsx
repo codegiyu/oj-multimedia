@@ -4,11 +4,12 @@ import { MoreVertical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
+  DropdownMenuActionItem,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { actionMenuIcons } from '@/lib/constants/actionMenuIcons';
 import type { QuestionListItem } from '@/lib/types/community';
 
 interface AskAPastorActionsMenuProps {
@@ -40,22 +41,35 @@ export function AskAPastorActionsMenu({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" onClick={e => e.stopPropagation()}>
-        {canAnswer && (
+        {canAnswer ? (
           <>
-            <DropdownMenuItem onClick={() => onAnswer(question)}>Answer</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onAssign(question)}>Assign pastor</DropdownMenuItem>
+            <DropdownMenuActionItem
+              icon={actionMenuIcons.answer}
+              onClick={() => onAnswer(question)}>
+              Answer
+            </DropdownMenuActionItem>
+            <DropdownMenuActionItem
+              icon={actionMenuIcons.assignPastor}
+              onClick={() => onAssign(question)}>
+              Assign pastor
+            </DropdownMenuActionItem>
           </>
-        )}
-        <DropdownMenuItem onClick={() => onEdit(question)}>Edit</DropdownMenuItem>
-        {canAnswer && (
-          <DropdownMenuItem onClick={() => onReject(question)}>Reject</DropdownMenuItem>
-        )}
+        ) : null}
+        <DropdownMenuActionItem icon={actionMenuIcons.edit} onClick={() => onEdit(question)}>
+          Edit
+        </DropdownMenuActionItem>
+        {canAnswer ? (
+          <DropdownMenuActionItem icon={actionMenuIcons.reject} onClick={() => onReject(question)}>
+            Reject
+          </DropdownMenuActionItem>
+        ) : null}
         <DropdownMenuSeparator />
-        <DropdownMenuItem
-          className="text-destructive focus:text-destructive"
+        <DropdownMenuActionItem
+          icon={actionMenuIcons.delete}
+          variant="destructive"
           onClick={() => onDelete(question)}>
           Delete
-        </DropdownMenuItem>
+        </DropdownMenuActionItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

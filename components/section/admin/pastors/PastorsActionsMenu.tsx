@@ -4,11 +4,12 @@ import { MoreVertical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
+  DropdownMenuActionItem,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { actionMenuIcons } from '@/lib/constants/actionMenuIcons';
 import type { PastorListItem } from '@/lib/types/community';
 
 interface PastorsActionsMenuProps {
@@ -44,25 +45,38 @@ export function PastorsActionsMenu({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" onClick={e => e.stopPropagation()}>
-        <DropdownMenuItem onClick={() => onEdit(item)}>Edit</DropdownMenuItem>
-        <DropdownMenuItem onClick={() => onToggleActive(item)}>
+        <DropdownMenuActionItem icon={actionMenuIcons.edit} onClick={() => onEdit(item)}>
+          Edit
+        </DropdownMenuActionItem>
+        <DropdownMenuActionItem
+          icon={actionMenuIcons.toggleActive}
+          onClick={() => onToggleActive(item)}>
           {isActive ? 'Mark inactive' : 'Mark active'}
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => onToggleFeatured(item)}>
+        </DropdownMenuActionItem>
+        <DropdownMenuActionItem
+          icon={isFeatured ? actionMenuIcons.unfeature : actionMenuIcons.toggleFeatured}
+          onClick={() => onToggleFeatured(item)}>
           {isFeatured ? 'Remove featured' : 'Mark featured'}
-        </DropdownMenuItem>
+        </DropdownMenuActionItem>
         {canSuspend && onSuspend ? (
-          <DropdownMenuItem onClick={() => onSuspend(item)}>Suspend</DropdownMenuItem>
+          <DropdownMenuActionItem icon={actionMenuIcons.suspend} onClick={() => onSuspend(item)}>
+            Suspend
+          </DropdownMenuActionItem>
         ) : null}
         {isSuspended && onUnsuspend ? (
-          <DropdownMenuItem onClick={() => onUnsuspend(item)}>Unsuspend</DropdownMenuItem>
+          <DropdownMenuActionItem
+            icon={actionMenuIcons.unsuspend}
+            onClick={() => onUnsuspend(item)}>
+            Unsuspend
+          </DropdownMenuActionItem>
         ) : null}
         <DropdownMenuSeparator />
-        <DropdownMenuItem
-          className="text-destructive focus:text-destructive"
+        <DropdownMenuActionItem
+          icon={actionMenuIcons.delete}
+          variant="destructive"
           onClick={() => onDelete(item)}>
           Delete
-        </DropdownMenuItem>
+        </DropdownMenuActionItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

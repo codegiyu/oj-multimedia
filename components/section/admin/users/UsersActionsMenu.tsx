@@ -4,11 +4,12 @@ import { MoreVertical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
+  DropdownMenuActionItem,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { actionMenuIcons } from '@/lib/constants/actionMenuIcons';
 import type { UserListItem } from '@/lib/types/adminUsers';
 import { formatUserDisplayName } from '@/lib/utils/formatUserDisplayName';
 
@@ -62,18 +63,30 @@ export function UsersActionsMenu({
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" onClick={e => e.stopPropagation()}>
         {showSuspend ? (
-          <DropdownMenuItem onClick={() => onSuspend(item)}>Suspend user</DropdownMenuItem>
+          <DropdownMenuActionItem icon={actionMenuIcons.suspend} onClick={() => onSuspend(item)}>
+            Suspend user
+          </DropdownMenuActionItem>
         ) : null}
         {showUnsuspend ? (
-          <DropdownMenuItem onClick={() => onUnsuspend(item)}>Unsuspend user</DropdownMenuItem>
+          <DropdownMenuActionItem
+            icon={actionMenuIcons.unsuspend}
+            onClick={() => onUnsuspend(item)}>
+            Unsuspend user
+          </DropdownMenuActionItem>
         ) : null}
         {showBlacklist ? (
-          <DropdownMenuItem onClick={() => onBlacklist(item)}>Blacklist user</DropdownMenuItem>
+          <DropdownMenuActionItem
+            icon={actionMenuIcons.blacklist}
+            onClick={() => onBlacklist(item)}>
+            Blacklist user
+          </DropdownMenuActionItem>
         ) : null}
         {showUnblacklist ? (
-          <DropdownMenuItem onClick={() => onRemoveFromBlacklist(item)}>
+          <DropdownMenuActionItem
+            icon={actionMenuIcons.removeFromBlacklist}
+            onClick={() => onRemoveFromBlacklist(item)}>
             Remove from blacklist
-          </DropdownMenuItem>
+          </DropdownMenuActionItem>
         ) : null}
 
         {showSuspend || showUnsuspend || showBlacklist || showUnblacklist ? (
@@ -81,42 +94,60 @@ export function UsersActionsMenu({
         ) : null}
 
         {!item.artistId ? (
-          <DropdownMenuItem onClick={() => onLinkArtist(item)}>
+          <DropdownMenuActionItem
+            icon={actionMenuIcons.linkArtist}
+            onClick={() => onLinkArtist(item)}>
             Link artist profile
-          </DropdownMenuItem>
+          </DropdownMenuActionItem>
         ) : (
-          <DropdownMenuItem onClick={() => onUnlinkArtist(item)}>
+          <DropdownMenuActionItem
+            icon={actionMenuIcons.unlinkArtist}
+            onClick={() => onUnlinkArtist(item)}>
             Unlink artist profile
-          </DropdownMenuItem>
+          </DropdownMenuActionItem>
         )}
 
         {!item.vendorId ? (
-          <DropdownMenuItem onClick={() => onLinkVendor(item)}>Link vendor store</DropdownMenuItem>
+          <DropdownMenuActionItem
+            icon={actionMenuIcons.linkVendor}
+            onClick={() => onLinkVendor(item)}>
+            Link vendor store
+          </DropdownMenuActionItem>
         ) : (
-          <DropdownMenuItem onClick={() => onUnlinkVendor(item)}>
+          <DropdownMenuActionItem
+            icon={actionMenuIcons.unlinkVendor}
+            onClick={() => onUnlinkVendor(item)}>
             Unlink vendor store
-          </DropdownMenuItem>
+          </DropdownMenuActionItem>
         )}
 
         {!item.pastorId ? (
-          <DropdownMenuItem onClick={() => onLinkPastor(item)}>
+          <DropdownMenuActionItem
+            icon={actionMenuIcons.linkPastor}
+            onClick={() => onLinkPastor(item)}>
             Link pastor profile
-          </DropdownMenuItem>
+          </DropdownMenuActionItem>
         ) : (
-          <DropdownMenuItem onClick={() => onUnlinkPastor(item)}>
+          <DropdownMenuActionItem
+            icon={actionMenuIcons.unlinkPastor}
+            onClick={() => onUnlinkPastor(item)}>
             Unlink pastor profile
-          </DropdownMenuItem>
+          </DropdownMenuActionItem>
         )}
 
         {pendingDeletion ? (
           <>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => onApproveDeletion(item)}>
+            <DropdownMenuActionItem
+              icon={actionMenuIcons.approve}
+              onClick={() => onApproveDeletion(item)}>
               Approve deletion
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onRejectDeletion(item)}>
+            </DropdownMenuActionItem>
+            <DropdownMenuActionItem
+              icon={actionMenuIcons.reject}
+              onClick={() => onRejectDeletion(item)}>
               Reject deletion request
-            </DropdownMenuItem>
+            </DropdownMenuActionItem>
           </>
         ) : null}
       </DropdownMenuContent>

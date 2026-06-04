@@ -1,14 +1,15 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { MoreHorizontal, Share2, Download, Eye } from 'lucide-react';
+import { MoreHorizontal } from 'lucide-react';
 import {
   DropdownMenu,
+  DropdownMenuActionItem,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
+import { actionMenuIcons } from '@/lib/constants/actionMenuIcons';
 import { executeMusicDownload, getMusicDownloadStrategy } from '@/lib/services/musicDownload';
 import type { MusicDownloadInput } from '@/lib/services/musicDownload';
 import { shareContent } from '@/lib/utils/shareContent';
@@ -59,20 +60,17 @@ export function MusicCardQuickMenu({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48">
-        <DropdownMenuItem onClick={handleViewDetails}>
-          <Eye className="w-4 h-4 mr-2" />
+        <DropdownMenuActionItem icon={actionMenuIcons.viewDetails} onClick={handleViewDetails}>
           View Details
-        </DropdownMenuItem>
-        {canDownload && (
-          <DropdownMenuItem onClick={handleDownload}>
-            <Download className="w-4 h-4 mr-2" />
+        </DropdownMenuActionItem>
+        {canDownload ? (
+          <DropdownMenuActionItem icon={actionMenuIcons.download} onClick={handleDownload}>
             Download
-          </DropdownMenuItem>
-        )}
-        <DropdownMenuItem onClick={handleShare}>
-          <Share2 className="w-4 h-4 mr-2" />
+          </DropdownMenuActionItem>
+        ) : null}
+        <DropdownMenuActionItem icon={actionMenuIcons.share} onClick={handleShare}>
           Share
-        </DropdownMenuItem>
+        </DropdownMenuActionItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
