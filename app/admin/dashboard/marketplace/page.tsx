@@ -1,5 +1,8 @@
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import { MarketplacePageClient } from '@/components/section/admin/marketplace/MarketplacePageClient';
+import {
+  MarketplacePageClient,
+  type MarketplaceTabType,
+} from '@/components/section/admin/marketplace/MarketplacePageClient';
 import type {
   IMarketplaceProduct,
   IMarketplaceVendor,
@@ -22,6 +25,18 @@ export const metadata: Metadata = {
 
 const TAB_VENDORS = 'vendors';
 const TAB_PRODUCTS = 'products';
+const TAB_ORDERS = 'orders';
+
+function parseMarketplaceTab(
+  raw: Record<string, string | string[] | undefined>
+): MarketplaceTabType {
+  const tab = parseTabParam(raw, 'tab', TAB_VENDORS);
+  if (tab === TAB_PRODUCTS || tab === TAB_ORDERS) {
+    return tab;
+  }
+
+  return TAB_VENDORS;
+}
 
 interface MarketplacePageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -47,7 +62,7 @@ async function AdminMarketplacePageServer({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const raw = await searchParams;
-  const tab = parseTabParam(raw, 'tab', TAB_VENDORS);
+  const tab = parseMarketplaceTab(raw);
   const listParams = parseAdminContentListParams(raw);
 
   let vendors: IMarketplaceVendor[] = [];
@@ -77,6 +92,7 @@ async function AdminMarketplacePageServer({
     <MarketplacePageClient
       pageTitle="Marketplace"
       pageDescription="Manage vendors, products, and orders"
+      serverTab={tab}
       vendors={vendors}
       products={products}
       orders={orders}
