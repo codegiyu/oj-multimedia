@@ -173,8 +173,8 @@ function ChartCardMainRow({
   );
 
   const metaBlock = (
-    <div className="min-w-0 flex-1">
-      <div className="flex min-w-0 items-center gap-2">
+    <div className="min-w-0 flex-1 overflow-hidden">
+      <div className="flex min-w-0 items-center gap-2 overflow-hidden">
         <h4
           className={cn(
             'truncate font-medium min-w-0',
@@ -195,7 +195,7 @@ function ChartCardMainRow({
   );
 
   return (
-    <div className="flex min-w-0 flex-1 items-center gap-3">
+    <div className="flex min-w-0 flex-1 items-center gap-3 overflow-hidden">
       <ChartRankCell rank={rank} className="hidden sm:flex" />
       {coverBlock}
       {metaBlock}
@@ -252,14 +252,14 @@ export const ChartCard = ({
     <motion.article
       whileHover={{ x: 4 }}
       transition={{ duration: 0.2 }}
-      className="group flex flex-col gap-2 rounded-xl border border-border/70 bg-card p-3 shadow-sm transition-colors hover:border-border hover:bg-muted/30 sm:flex-row sm:items-center sm:gap-3">
+      className="group flex flex-col gap-2 rounded-xl border border-border/70 bg-card p-3 shadow-sm transition-colors hover:border-border hover:bg-muted/30 sm:flex-row sm:items-center sm:gap-3 overflow-hidden">
       {detailHref ? (
-        <div className="flex items-center justify-between gap-3 sm:hidden">
+        <div className="flex items-center justify-between gap-3 sm:hidden overflow-hidden">
           <ChartRankCell rank={rank} />
           <ChartPlayButton detailHref={detailHref} title={title} />
         </div>
       ) : (
-        <div className="flex items-center justify-between gap-3 sm:hidden">
+        <div className="flex items-center justify-between gap-3 sm:hidden overflow-hidden">
           <ChartRankCell rank={rank} />
         </div>
       )}
@@ -268,7 +268,7 @@ export const ChartCard = ({
         <>
           <AppLink
             href={detailHref}
-            className="flex min-w-0 flex-1"
+            className="flex min-w-0 flex-1 overflow-hidden"
             aria-label={`View ${title} by ${artistName}`}>
             {mainRow}
           </AppLink>
@@ -279,7 +279,7 @@ export const ChartCard = ({
           />
         </>
       ) : (
-        <div className="flex min-w-0 flex-1">{mainRow}</div>
+        <div className="flex min-w-0 flex-1 overflow-hidden">{mainRow}</div>
       )}
     </motion.article>
   );
