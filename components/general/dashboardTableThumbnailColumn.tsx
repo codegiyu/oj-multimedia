@@ -23,7 +23,7 @@ export function dashboardThumbnailColumn<T>(
     header: <DataTableColumnHeader title={options?.header ?? 'Cover'} />,
     meta: { hug: true, cellClassName: 'px-2' },
     cell: row => (
-      <DataTableCellWrapper className="py-2.5 px-0">
+      <DataTableCellWrapper className="py-2.5 px-0" text={getAlt(row)}>
         <DashboardThumbnail
           src={getSrc(row)}
           alt={getAlt(row)}

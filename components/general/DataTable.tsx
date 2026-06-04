@@ -28,6 +28,16 @@ import {
   getDataTableHugClassName,
 } from '@/lib/utils/dataTableColumnMeta';
 
+function DataTableTooltipBody({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return <div className={cn('text-sm', className)}>{children}</div>;
+}
+
 export interface DataTableColumnMeta {
   width?: number | string;
   hug?: boolean;
@@ -140,7 +150,7 @@ export function DataTable<TData>({
                       </div>
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p>Refresh table</p>
+                      <DataTableTooltipBody>Refresh table</DataTableTooltipBody>
                     </TooltipContent>
                   </Tooltip>
                 )}
@@ -168,7 +178,7 @@ export function DataTable<TData>({
                       </div>
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p>Refresh table</p>
+                      <DataTableTooltipBody>Refresh table</DataTableTooltipBody>
                     </TooltipContent>
                   </Tooltip>
                 )}
@@ -363,7 +373,7 @@ export function DataTableColumnHeader({
           </span>
         </TooltipTrigger>
         <TooltipContent>
-          <p className="text-sm">{tooltipText}</p>
+          <DataTableTooltipBody>{tooltipText}</DataTableTooltipBody>
         </TooltipContent>
       </Tooltip>
     </div>
@@ -410,7 +420,9 @@ export const DataTableCellWrapper = ({
         <TooltipContent>
           {shouldCopy ? (
             <div className="flex items-center gap-3">
-              <p className="text-sm text-background">{tooltipContent}</p>
+              <DataTableTooltipBody className="text-background">
+                {tooltipContent}
+              </DataTableTooltipBody>
               <GhostBtn
                 onClick={handleCopy}
                 className="p-0 rounded-[2px] hover:bg-transparent text-primary hover:text-primary/75"
@@ -419,7 +431,9 @@ export const DataTableCellWrapper = ({
               />
             </div>
           ) : (
-            <p className="text-sm text-background">{tooltipContent || '—'}</p>
+            <DataTableTooltipBody className="text-background">
+              {tooltipContent || '—'}
+            </DataTableTooltipBody>
           )}
         </TooltipContent>
       </Tooltip>
