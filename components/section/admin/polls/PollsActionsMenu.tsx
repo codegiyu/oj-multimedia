@@ -4,11 +4,12 @@ import { MoreVertical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
+  DropdownMenuActionItem,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { actionMenuIcons } from '@/lib/constants/actionMenuIcons';
 import type { PollListItem } from '@/lib/types/community';
 
 interface PollsActionsMenuProps {
@@ -42,24 +43,37 @@ export function PollsActionsMenu({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" onClick={e => e.stopPropagation()}>
-        {isPending && (
+        {isPending ? (
           <>
-            <DropdownMenuItem onClick={() => onApprove(poll)}>Approve</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onReject(poll)}>Reject</DropdownMenuItem>
+            <DropdownMenuActionItem icon={actionMenuIcons.approve} onClick={() => onApprove(poll)}>
+              Approve
+            </DropdownMenuActionItem>
+            <DropdownMenuActionItem icon={actionMenuIcons.reject} onClick={() => onReject(poll)}>
+              Reject
+            </DropdownMenuActionItem>
             <DropdownMenuSeparator />
           </>
-        )}
-        {!isActive && !isPending && (
-          <DropdownMenuItem onClick={() => onOpen(poll)}>Open</DropdownMenuItem>
-        )}
-        {isActive && <DropdownMenuItem onClick={() => onClose(poll)}>Close</DropdownMenuItem>}
-        <DropdownMenuItem onClick={() => onEdit(poll)}>Edit</DropdownMenuItem>
+        ) : null}
+        {!isActive && !isPending ? (
+          <DropdownMenuActionItem icon={actionMenuIcons.open} onClick={() => onOpen(poll)}>
+            Open
+          </DropdownMenuActionItem>
+        ) : null}
+        {isActive ? (
+          <DropdownMenuActionItem icon={actionMenuIcons.close} onClick={() => onClose(poll)}>
+            Close
+          </DropdownMenuActionItem>
+        ) : null}
+        <DropdownMenuActionItem icon={actionMenuIcons.edit} onClick={() => onEdit(poll)}>
+          Edit
+        </DropdownMenuActionItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem
-          className="text-destructive focus:text-destructive"
+        <DropdownMenuActionItem
+          icon={actionMenuIcons.delete}
+          variant="destructive"
           onClick={() => onDelete(poll)}>
           Delete
-        </DropdownMenuItem>
+        </DropdownMenuActionItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

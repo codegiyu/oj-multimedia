@@ -174,7 +174,9 @@ function DropdownMenuActionItem({
   className,
   variant = 'default',
   ...props
-}: DropdownMenuItemProps & { icon: LucideIcon }) {
+}: DropdownMenuItemProps & {
+  icon: LucideIcon | React.ComponentType<{ className?: string }>;
+}) {
   return (
     <DropdownMenuItem variant={variant} className={className} {...props}>
       <Icon aria-hidden />

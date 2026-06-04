@@ -4,10 +4,11 @@ import { MoreVertical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
+  DropdownMenuActionItem,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { actionMenuIcons } from '@/lib/constants/actionMenuIcons';
 import type { IEmailLog } from './types';
 
 interface EmailLogActionsMenuProps {
@@ -26,12 +27,18 @@ export function EmailLogActionsMenu({ emailLog, onResend, onViewEmail }: EmailLo
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        {onViewEmail && (
-          <DropdownMenuItem onClick={() => onViewEmail(emailLog)}>View email</DropdownMenuItem>
-        )}
-        {onResend && emailLog.status === 'failed' && (
-          <DropdownMenuItem onClick={onResend}>Resend</DropdownMenuItem>
-        )}
+        {onViewEmail ? (
+          <DropdownMenuActionItem
+            icon={actionMenuIcons.viewEmail}
+            onClick={() => onViewEmail(emailLog)}>
+            View email
+          </DropdownMenuActionItem>
+        ) : null}
+        {onResend && emailLog.status === 'failed' ? (
+          <DropdownMenuActionItem icon={actionMenuIcons.resendInvite} onClick={onResend}>
+            Resend
+          </DropdownMenuActionItem>
+        ) : null}
       </DropdownMenuContent>
     </DropdownMenu>
   );

@@ -4,11 +4,12 @@ import { MoreVertical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
+  DropdownMenuActionItem,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { actionMenuIcons } from '@/lib/constants/actionMenuIcons';
 import type { IMarketplaceVendor } from '@/lib/constants/endpoints';
 
 interface MarketplaceVendorsActionsMenuProps {
@@ -42,22 +43,35 @@ export function MarketplaceVendorsActionsMenu({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" onClick={e => e.stopPropagation()}>
-        {canApprove && (
-          <DropdownMenuItem onClick={() => onApprove(vendor)}>Approve</DropdownMenuItem>
-        )}
-        {canApprove && <DropdownMenuItem onClick={() => onReject(vendor)}>Reject</DropdownMenuItem>}
+        {canApprove ? (
+          <DropdownMenuActionItem icon={actionMenuIcons.approve} onClick={() => onApprove(vendor)}>
+            Approve
+          </DropdownMenuActionItem>
+        ) : null}
+        {canApprove ? (
+          <DropdownMenuActionItem icon={actionMenuIcons.reject} onClick={() => onReject(vendor)}>
+            Reject
+          </DropdownMenuActionItem>
+        ) : null}
         {canSuspend && onSuspend ? (
-          <DropdownMenuItem onClick={() => onSuspend(vendor)}>Suspend</DropdownMenuItem>
+          <DropdownMenuActionItem icon={actionMenuIcons.suspend} onClick={() => onSuspend(vendor)}>
+            Suspend
+          </DropdownMenuActionItem>
         ) : null}
         {isSuspended && onUnsuspend ? (
-          <DropdownMenuItem onClick={() => onUnsuspend(vendor)}>Unsuspend</DropdownMenuItem>
+          <DropdownMenuActionItem
+            icon={actionMenuIcons.unsuspend}
+            onClick={() => onUnsuspend(vendor)}>
+            Unsuspend
+          </DropdownMenuActionItem>
         ) : null}
         <DropdownMenuSeparator />
-        <DropdownMenuItem
-          className="text-destructive focus:text-destructive"
+        <DropdownMenuActionItem
+          icon={actionMenuIcons.setInactive}
+          variant="destructive"
           onClick={() => onDelete(vendor)}>
           Set Inactive
-        </DropdownMenuItem>
+        </DropdownMenuActionItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

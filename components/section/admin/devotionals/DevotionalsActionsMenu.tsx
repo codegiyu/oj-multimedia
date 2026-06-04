@@ -4,11 +4,12 @@ import { MoreVertical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
+  DropdownMenuActionItem,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { actionMenuIcons } from '@/lib/constants/actionMenuIcons';
 import type { DevotionalListItem } from '@/lib/types/community';
 
 interface DevotionalsActionsMenuProps {
@@ -38,19 +39,30 @@ export function DevotionalsActionsMenu({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" onClick={e => e.stopPropagation()}>
-        {canApprove && (
-          <DropdownMenuItem onClick={() => onApprove(devotional)}>Approve</DropdownMenuItem>
-        )}
-        {canApprove && (
-          <DropdownMenuItem onClick={() => onReject(devotional)}>Reject</DropdownMenuItem>
-        )}
-        <DropdownMenuItem onClick={() => onEdit(devotional)}>Edit</DropdownMenuItem>
+        {canApprove ? (
+          <DropdownMenuActionItem
+            icon={actionMenuIcons.approve}
+            onClick={() => onApprove(devotional)}>
+            Approve
+          </DropdownMenuActionItem>
+        ) : null}
+        {canApprove ? (
+          <DropdownMenuActionItem
+            icon={actionMenuIcons.reject}
+            onClick={() => onReject(devotional)}>
+            Reject
+          </DropdownMenuActionItem>
+        ) : null}
+        <DropdownMenuActionItem icon={actionMenuIcons.edit} onClick={() => onEdit(devotional)}>
+          Edit
+        </DropdownMenuActionItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem
-          className="text-destructive focus:text-destructive"
+        <DropdownMenuActionItem
+          icon={actionMenuIcons.delete}
+          variant="destructive"
           onClick={() => onDelete(devotional)}>
           Delete
-        </DropdownMenuItem>
+        </DropdownMenuActionItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

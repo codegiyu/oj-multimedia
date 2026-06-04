@@ -1,15 +1,16 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { MoreHorizontal, Heart, Share2, Download, Eye, Flag, Plus } from 'lucide-react';
+import { MoreHorizontal } from 'lucide-react';
 import {
   DropdownMenu,
+  DropdownMenuActionItem,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
+import { actionMenuIcons } from '@/lib/constants/actionMenuIcons';
 import type { MusicItemWithArtist } from '@/lib/utils/music';
 import { executeMusicDownload, getMusicDownloadStrategy } from '@/lib/services/musicDownload';
 import { toMusicDownloadInputFromItem } from '@/lib/utils/musicDownloadMappers';
@@ -65,34 +66,33 @@ export const MusicCardOptions = ({ musicItem }: MusicCardOptionsProps) => {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-48">
-          <DropdownMenuItem onClick={handleViewDetails}>
-            <Eye className="w-4 h-4 mr-2" />
+          <DropdownMenuActionItem icon={actionMenuIcons.viewDetails} onClick={handleViewDetails}>
             View Details
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={handleAddToPlaylist}>
-            <Plus className="w-4 h-4 mr-2" />
+          </DropdownMenuActionItem>
+          <DropdownMenuActionItem
+            icon={actionMenuIcons.addToPlaylist}
+            onClick={handleAddToPlaylist}>
             Add to Playlist
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => void toggle()}>
-            <Heart className="w-4 h-4 mr-2" />
+          </DropdownMenuActionItem>
+          <DropdownMenuActionItem icon={actionMenuIcons.favorite} onClick={() => void toggle()}>
             Add to Favorites
-          </DropdownMenuItem>
+          </DropdownMenuActionItem>
           <DropdownMenuSeparator />
-          {canDownload && (
-            <DropdownMenuItem onClick={handleDownload}>
-              <Download className="w-4 h-4 mr-2" />
+          {canDownload ? (
+            <DropdownMenuActionItem icon={actionMenuIcons.download} onClick={handleDownload}>
               Download
-            </DropdownMenuItem>
-          )}
-          <DropdownMenuItem onClick={handleShare}>
-            <Share2 className="w-4 h-4 mr-2" />
+            </DropdownMenuActionItem>
+          ) : null}
+          <DropdownMenuActionItem icon={actionMenuIcons.share} onClick={handleShare}>
             Share
-          </DropdownMenuItem>
+          </DropdownMenuActionItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={handleReport} className="text-destructive">
-            <Flag className="w-4 h-4 mr-2" />
+          <DropdownMenuActionItem
+            icon={actionMenuIcons.report}
+            variant="destructive"
+            onClick={handleReport}>
             Report
-          </DropdownMenuItem>
+          </DropdownMenuActionItem>
         </DropdownMenuContent>
       </DropdownMenu>
       <LoginModal

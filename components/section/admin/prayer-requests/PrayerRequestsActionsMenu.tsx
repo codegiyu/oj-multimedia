@@ -4,11 +4,12 @@ import { MoreVertical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
+  DropdownMenuActionItem,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { actionMenuIcons } from '@/lib/constants/actionMenuIcons';
 import type { PrayerRequestListItem } from '@/lib/types/community';
 
 interface PrayerRequestsActionsMenuProps {
@@ -36,16 +37,23 @@ export function PrayerRequestsActionsMenu({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" onClick={e => e.stopPropagation()}>
-        {canAnswer && (
-          <DropdownMenuItem onClick={() => onAnswer(prayerRequest)}>Answer</DropdownMenuItem>
-        )}
-        <DropdownMenuItem onClick={() => onEdit(prayerRequest)}>Edit</DropdownMenuItem>
+        {canAnswer ? (
+          <DropdownMenuActionItem
+            icon={actionMenuIcons.answer}
+            onClick={() => onAnswer(prayerRequest)}>
+            Answer
+          </DropdownMenuActionItem>
+        ) : null}
+        <DropdownMenuActionItem icon={actionMenuIcons.edit} onClick={() => onEdit(prayerRequest)}>
+          Edit
+        </DropdownMenuActionItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem
-          className="text-destructive focus:text-destructive"
+        <DropdownMenuActionItem
+          icon={actionMenuIcons.delete}
+          variant="destructive"
           onClick={() => onDelete(prayerRequest)}>
           Delete
-        </DropdownMenuItem>
+        </DropdownMenuActionItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

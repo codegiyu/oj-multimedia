@@ -4,11 +4,12 @@ import { MoreVertical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
+  DropdownMenuActionItem,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { actionMenuIcons } from '@/lib/constants/actionMenuIcons';
 import type { ArtistMusicListItem } from '@/lib/constants/endpoints';
 
 interface MusicActionsMenuProps {
@@ -37,17 +38,26 @@ export function MusicActionsMenu({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" onClick={e => e.stopPropagation()}>
-        {canApprove && (
-          <DropdownMenuItem onClick={() => onApprove(music)}>Approve</DropdownMenuItem>
-        )}
-        {canApprove && <DropdownMenuItem onClick={() => onReject(music)}>Reject</DropdownMenuItem>}
-        <DropdownMenuItem onClick={() => onEdit(music)}>Edit</DropdownMenuItem>
+        {canApprove ? (
+          <DropdownMenuActionItem icon={actionMenuIcons.approve} onClick={() => onApprove(music)}>
+            Approve
+          </DropdownMenuActionItem>
+        ) : null}
+        {canApprove ? (
+          <DropdownMenuActionItem icon={actionMenuIcons.reject} onClick={() => onReject(music)}>
+            Reject
+          </DropdownMenuActionItem>
+        ) : null}
+        <DropdownMenuActionItem icon={actionMenuIcons.edit} onClick={() => onEdit(music)}>
+          Edit
+        </DropdownMenuActionItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem
-          className="text-destructive focus:text-destructive"
+        <DropdownMenuActionItem
+          icon={actionMenuIcons.delete}
+          variant="destructive"
           onClick={() => onDelete(music)}>
           Delete
-        </DropdownMenuItem>
+        </DropdownMenuActionItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

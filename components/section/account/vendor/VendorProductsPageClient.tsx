@@ -6,7 +6,7 @@ import { DashboardPageHeader } from '@/components/layout/user-dashboard';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { formatPrice } from '@/lib/utils/marketplace';
-import { Package, Plus, Pencil, Archive, MoreVertical, Loader2 } from 'lucide-react';
+import { Package, Plus, MoreVertical, Loader2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { callApi } from '@/lib/services/callApi';
@@ -18,11 +18,15 @@ import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import { FillImage } from '@/components/general/FillImage';
 import {
   DropdownMenu,
+  DropdownMenuActionItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { actionMenuIcons } from '@/lib/constants/actionMenuIcons';
 import { cn } from '@/lib/utils';
+
+const VendorProductEditIcon = actionMenuIcons.edit;
 import { FilterableDataPage } from '@/components/general/FilterableDataPage';
 import type { SelectOption } from '@/lib/types/general';
 import {
@@ -167,17 +171,19 @@ function VendorProductsList({
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem asChild>
-                          <Link href={`/account/vendor/products/${product._id}/edit`}>
-                            <Pencil className="mr-2 h-4 w-4" />
-                            Edit
+                          <Link
+                            href={`/account/vendor/products/${product._id}/edit`}
+                            className="flex items-center gap-2">
+                            <VendorProductEditIcon aria-hidden className="size-4 shrink-0" />
+                            <span>Edit</span>
                           </Link>
                         </DropdownMenuItem>
-                        <DropdownMenuItem
+                        <DropdownMenuActionItem
+                          icon={actionMenuIcons.archive}
                           disabled={archivingProductId === product._id}
                           onClick={() => onArchive(product._id)}>
-                          <Archive className="mr-2 h-4 w-4" />
                           {archivingProductId === product._id ? 'Archiving…' : 'Archive'}
-                        </DropdownMenuItem>
+                        </DropdownMenuActionItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
