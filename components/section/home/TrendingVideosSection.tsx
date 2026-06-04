@@ -88,8 +88,8 @@ export const TrendingVideosSection = ({
           <Button
             type="button"
             variant="accent"
-            size="sm"
-            className="gap-2"
+            size="default"
+            className="gap-2 min-h-11"
             onClick={videoSubmit.openSubmitModal}>
             <Upload className="w-4 h-4" />
             Upload Your Video
