@@ -14,6 +14,7 @@ export interface ApiSuccessResponse<T extends keyof AllEndpoints> extends ApiRes
 
 export interface ApiErrorResponse extends ApiResponse {
   error?: { [key: string]: string | string[] } | string | null;
+  data?: unknown;
 }
 
 export interface ApiError {

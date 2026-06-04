@@ -17,6 +17,7 @@ import type { ApiErrorResponse } from '@/lib/types/http';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/lib/store/useAuthStore';
+import { RoleAccountDeactivateSection } from '@/components/section/account/shared/RoleAccountDeactivateSection';
 
 const optionalStoredImageUrl = z
   .string()
@@ -41,11 +42,13 @@ type ArtistSettingsValues = z.infer<typeof artistSettingsSchema>;
 export interface ArtistPortalSettingsPageClientProps {
   initialArtist: ClientArtistProfile | null;
   initialLoadError: string | null;
+  portalStatus?: string;
 }
 
 export function ArtistPortalSettingsPageClient({
   initialArtist,
   initialLoadError = null,
+  portalStatus,
 }: ArtistPortalSettingsPageClientProps) {
   const router = useRouter();
   const user = useAuthStore(s => s.user);
@@ -293,6 +296,14 @@ export function ArtistPortalSettingsPageClient({
           </RegularBtn>
         </form>
       </Card>
+
+      {initialArtist ? (
+        <RoleAccountDeactivateSection
+          profileLabel="artist profile"
+          deactivateEndpoint="ARTIST_DEACTIVATE_ME"
+          isDeactivated={portalStatus === 'deactivated'}
+        />
+      ) : null}
     </div>
   );
 }

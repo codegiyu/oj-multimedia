@@ -321,6 +321,11 @@ export interface IUserCartBulkUpdatePayload {
 // Artist dashboard types
 export interface IArtistMeRes {
   artist: ClientArtistProfile;
+  portalStatus?: string;
+  statusChangedAt?: string;
+  suspensionReason?: string;
+  openAppeal?: import('@/lib/types/rolePortal').IRoleProfileAppealSummary | null;
+  lastRejectedAppeal?: import('@/lib/types/rolePortal').IRoleProfileAppealSummary | null;
 }
 
 export interface IContentMetricsBreakdown {
@@ -507,7 +512,13 @@ export interface IArtistUpdateVideoPayload extends Partial<IArtistCreateVideoPay
 }
 
 // Pastor dashboard types
-export type PastorPortalState = 'none' | 'pending' | 'rejected' | 'active';
+export type PastorPortalState =
+  | 'none'
+  | 'pending'
+  | 'rejected'
+  | 'active'
+  | 'deactivated'
+  | 'suspended';
 
 export interface ClientPastorProfile {
   _id: string;
@@ -554,6 +565,11 @@ export interface IPastorMeRes {
   portalState: PastorPortalState;
   pastor: ClientPastorProfile | null;
   application: IPastorApplication | null;
+  portalStatus?: string;
+  statusChangedAt?: string;
+  suspensionReason?: string;
+  openAppeal?: import('@/lib/types/rolePortal').IRoleProfileAppealSummary | null;
+  lastRejectedAppeal?: import('@/lib/types/rolePortal').IRoleProfileAppealSummary | null;
 }
 
 export interface IPastorSubmitApplicationPayload {
@@ -1162,6 +1178,7 @@ export interface AllEndpoints {
   ADMIN_USER_UPDATE: EndpointDefinition<
     {
       accountStatus?: string;
+      suspensionReason?: string;
       artistId?: string | null;
       vendorId?: string | null;
     },
@@ -1411,6 +1428,30 @@ export interface AllEndpoints {
     { vendor: IMarketplaceVendor },
     `/${string}`
   >;
+  ADMIN_VENDOR_SUSPEND: EndpointDefinition<{ reason: string }, { success: boolean }, `/${string}`>;
+  ADMIN_VENDOR_UNSUSPEND: EndpointDefinition<undefined, { success: boolean }, `/${string}`>;
+  ADMIN_ARTIST_SUSPEND: EndpointDefinition<{ reason: string }, { success: boolean }, `/${string}`>;
+  ADMIN_ARTIST_UNSUSPEND: EndpointDefinition<undefined, { success: boolean }, `/${string}`>;
+  ADMIN_PASTOR_SUSPEND: EndpointDefinition<{ reason: string }, { success: boolean }, `/${string}`>;
+  ADMIN_PASTOR_UNSUSPEND: EndpointDefinition<undefined, { success: boolean }, `/${string}`>;
+  ADMIN_ROLE_PROFILE_APPEALS_LIST: EndpointDefinition<
+    undefined,
+    {
+      appeals: import('@/lib/types/rolePortal').IRoleProfileAppealSummary[];
+      pagination: { page: number; limit: number; total: number; totalPages: number };
+    },
+    `?${string}`
+  >;
+  ADMIN_ROLE_PROFILE_APPEAL_ACCEPT: EndpointDefinition<
+    undefined,
+    { success: boolean },
+    `/${string}`
+  >;
+  ADMIN_ROLE_PROFILE_APPEAL_REJECT: EndpointDefinition<
+    { adminResponse: string },
+    { success: boolean },
+    `/${string}`
+  >;
 
   ADMIN_PRODUCTS_LIST: EndpointDefinition<undefined, IMarketplaceProductsListRes, `?${string}`>;
   ADMIN_PRODUCT_ITEM: EndpointDefinition<undefined, { product: IMarketplaceProduct }, `/${string}`>;
@@ -1531,6 +1572,13 @@ export interface AllEndpoints {
 
   // Artist dashboard
   ARTIST_GET_ME: EndpointDefinition<undefined, IArtistMeRes, undefined>;
+  ARTIST_DEACTIVATE_ME: EndpointDefinition<undefined, { success: boolean }, undefined>;
+  ARTIST_REACTIVATE_ME: EndpointDefinition<undefined, { success: boolean }, undefined>;
+  ARTIST_SUBMIT_APPEAL: EndpointDefinition<
+    { message: string },
+    { appeal: import('@/lib/types/rolePortal').IRoleProfileAppealSummary },
+    undefined
+  >;
   ARTIST_CREATE_ME: EndpointDefinition<IArtistCreateMePayload, IArtistMeRes, undefined>;
   ARTIST_UPDATE_ME: EndpointDefinition<IArtistUpdateMePayload, IArtistMeRes, undefined>;
   ARTIST_GET_DASHBOARD_STATS: EndpointDefinition<undefined, IArtistDashboardStatsRes, undefined>;
@@ -1568,6 +1616,13 @@ export interface AllEndpoints {
 
   // Vendor dashboard (authenticated client with vendorId)
   VENDOR_GET_ME: EndpointDefinition<undefined, IVendorMeRes, undefined>;
+  VENDOR_DEACTIVATE_ME: EndpointDefinition<undefined, { success: boolean }, undefined>;
+  VENDOR_REACTIVATE_ME: EndpointDefinition<undefined, { success: boolean }, undefined>;
+  VENDOR_SUBMIT_APPEAL: EndpointDefinition<
+    { message: string },
+    { appeal: import('@/lib/types/rolePortal').IRoleProfileAppealSummary },
+    undefined
+  >;
   VENDOR_GET_PRODUCTS: EndpointDefinition<undefined, IVendorProductsRes, PageAndSizeQuery>;
   VENDOR_CREATE_PRODUCT: EndpointDefinition<
     IVendorCreateProductPayload,
@@ -1594,6 +1649,13 @@ export interface AllEndpoints {
 
   // Pastor dashboard
   PASTOR_GET_ME: EndpointDefinition<undefined, IPastorMeRes, undefined>;
+  PASTOR_DEACTIVATE_ME: EndpointDefinition<undefined, { success: boolean }, undefined>;
+  PASTOR_REACTIVATE_ME: EndpointDefinition<undefined, { success: boolean }, undefined>;
+  PASTOR_SUBMIT_APPEAL: EndpointDefinition<
+    { message: string },
+    { appeal: import('@/lib/types/rolePortal').IRoleProfileAppealSummary },
+    undefined
+  >;
   PASTOR_SUBMIT_APPLICATION: EndpointDefinition<
     IPastorSubmitApplicationPayload,
     IPastorSubmitApplicationRes,

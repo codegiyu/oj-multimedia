@@ -6,25 +6,37 @@ import { Store } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DashboardProfileRequiredPanel } from '@/components/section/account/shared/DashboardProfileRequiredPanel';
 import { VendorApplicationModal } from '@/components/section/account/shared/VendorApplicationModal';
+import { DashboardRoleAccountStatusPanel } from '@/components/section/account/shared/DashboardRoleAccountStatusPanel';
+import type { IMarketplaceVendor } from '@/lib/constants/endpoints';
+import type { IRolePortalMeta, RolePortalStatus } from '@/lib/types/rolePortal';
+import { callApi } from '@/lib/services/callApi';
+import { toast } from 'sonner';
 
 export interface VendorPortalRouteGateProps {
   initialProfileMissing: boolean;
   initialLoadError: string | null;
+  initialPortalStatus: RolePortalStatus;
+  initialMeta: IRolePortalMeta;
   children: ReactNode;
 }
 
 export function VendorPortalRouteGate({
   initialProfileMissing,
   initialLoadError,
+  initialPortalStatus,
+  initialMeta,
   children,
 }: VendorPortalRouteGateProps) {
   const router = useRouter();
   const [missing, setMissing] = useState(initialProfileMissing);
   const [modalOpen, setModalOpen] = useState(false);
+  const [reactivateLoading, setReactivateLoading] = useState(false);
 
   useEffect(() => {
     setMissing(initialProfileMissing);
   }, [initialProfileMissing]);
+
+  const blocked = initialPortalStatus === 'deactivated' || initialPortalStatus === 'suspended';
 
   if (initialLoadError && !initialProfileMissing) {
     return (
@@ -57,5 +69,47 @@ export function VendorPortalRouteGate({
     );
   }
 
+  if (blocked) {
+    return (
+      <DashboardRoleAccountStatusPanel
+        profileLabel="vendor store"
+        portalStatus={initialPortalStatus}
+        meta={initialMeta}
+        appealEndpoint="VENDOR_SUBMIT_APPEAL"
+        reactivateLoading={reactivateLoading}
+        onRefresh={() => router.refresh()}
+        onReactivate={async () => {
+          setReactivateLoading(true);
+          const { error } = await callApi('VENDOR_REACTIVATE_ME', {});
+          setReactivateLoading(false);
+          if (error) {
+            toast.error(error.message ?? 'Failed to reactivate');
+            return;
+          }
+          toast.success('Store reactivated');
+          router.refresh();
+        }}
+      />
+    );
+  }
+
   return <>{children}</>;
+}
+
+export function vendorPortalMetaFromApi(vendor: IMarketplaceVendor | undefined): {
+  portalStatus: RolePortalStatus;
+  meta: IRolePortalMeta;
+} {
+  const portalStatus = (vendor?.portalStatus ?? vendor?.status ?? 'active') as RolePortalStatus;
+
+  return {
+    portalStatus,
+    meta: {
+      portalStatus,
+      statusChangedAt: vendor?.statusChangedAt,
+      suspensionReason: vendor?.suspensionReason,
+      openAppeal: vendor?.openAppeal ?? null,
+      lastRejectedAppeal: vendor?.lastRejectedAppeal ?? null,
+    },
+  };
 }

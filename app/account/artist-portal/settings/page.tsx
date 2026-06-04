@@ -36,5 +36,11 @@ async function ArtistSettingsPageClientServer() {
     );
   }
 
-  return <ArtistPortalSettingsPageClient initialArtist={res.data.artist} initialLoadError={null} />;
+  return (
+    <ArtistPortalSettingsPageClient
+      initialArtist={res.data.artist}
+      initialLoadError={null}
+      portalStatus={res.data.portalStatus}
+    />
+  );
 }

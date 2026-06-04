@@ -14,6 +14,7 @@ import { callApi } from '@/lib/services/callApi';
 import { toast } from 'sonner';
 import type { ClientPastorProfile } from '@/lib/constants/endpoints';
 import { Button } from '@/components/ui/button';
+import { RoleAccountDeactivateSection } from '@/components/section/account/shared/RoleAccountDeactivateSection';
 
 const optionalStoredImageUrl = z
   .string()
@@ -33,11 +34,13 @@ type PastorSettingsValues = z.infer<typeof pastorSettingsSchema>;
 export interface PastorPortalSettingsPageClientProps {
   initialPastor: ClientPastorProfile | null;
   initialLoadError: string | null;
+  portalStatus?: string;
 }
 
 export function PastorPortalSettingsPageClient({
   initialPastor,
   initialLoadError = null,
+  portalStatus,
 }: PastorPortalSettingsPageClientProps) {
   const router = useRouter();
   const [expertiseInput, setExpertiseInput] = useState((initialPastor?.expertise ?? []).join(', '));
@@ -148,6 +151,14 @@ export function PastorPortalSettingsPageClient({
           <RegularBtn type="submit" text="Save changes" loading={loading} />
         </form>
       </Card>
+
+      {initialPastor ? (
+        <RoleAccountDeactivateSection
+          profileLabel="pastor profile"
+          deactivateEndpoint="PASTOR_DEACTIVATE_ME"
+          isDeactivated={portalStatus === 'deactivated'}
+        />
+      ) : null}
     </div>
   );
 }
