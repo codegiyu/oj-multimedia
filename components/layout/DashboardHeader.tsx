@@ -9,7 +9,7 @@ export const DashboardHeader = () => {
   return (
     <header className="sticky top-0 z-50 flex h-14 items-center gap-3 border-b border-border bg-background/95 px-4 backdrop-blur supports-backdrop-filter:bg-background/60 md:px-6">
       <div className="flex min-w-0 items-center gap-2">
-        <DashboardLogoLink href="/admin/dashboard/home" />
+        <DashboardLogoLink href="/admin/dashboard/home" className="md:hidden" />
         <div className="hidden lg:flex items-center">
           <SidebarTrigger className="ml-0" />
         </div>

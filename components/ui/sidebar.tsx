@@ -5,6 +5,11 @@ import { Slot } from '@radix-ui/react-slot';
 import { VariantProps, cva } from 'class-variance-authority';
 import { PanelLeft } from 'lucide-react';
 
+import {
+  getDefaultDashboardSidebarOpenWithoutCookie,
+  readDashboardSidebarOpenCookie,
+  writeDashboardSidebarOpenCookie,
+} from '@/lib/dashboard/sidebarViewport';
 import { useIsMobile } from '@/lib/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -21,12 +26,12 @@ import {
   forwardRef,
   useContext,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useState,
 } from 'react';
 
 const SIDEBAR_COOKIE_NAME = 'sidebar:state';
-const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
 const SIDEBAR_WIDTH = '20rem';
 const SIDEBAR_WIDTH_MOBILE = '280px';
 const SIDEBAR_WIDTH_ICON = '3rem';
@@ -43,33 +48,6 @@ type SidebarContext = {
 };
 
 const SidebarContext = createContext<SidebarContext | null>(null);
-
-/**
- * Reads the sidebar state from the cookie
- * @returns The stored sidebar state (true for open, false for closed) or null if not found
- */
-function getStoredSidebarState(): boolean | null {
-  if (typeof document === 'undefined') {
-    return null;
-  }
-
-  const cookies = document.cookie.split(';');
-  const sidebarCookie = cookies.find(cookie => cookie.trim().startsWith(`${SIDEBAR_COOKIE_NAME}=`));
-
-  if (!sidebarCookie) {
-    return null;
-  }
-
-  const value = sidebarCookie.split('=')[1]?.trim();
-  if (value === 'true') {
-    return true;
-  }
-  if (value === 'false') {
-    return false;
-  }
-
-  return null;
-}
 
 function useSidebar() {
   const context = useContext(SidebarContext);
@@ -107,7 +85,7 @@ const SidebarProvider = forwardRef<
     // We use openProp and setOpenProp for control from outside the component.
     // Read the stored state from cookie on initialization, fallback to defaultOpen
     const [_open, _setOpen] = useState(() => {
-      const storedState = getStoredSidebarState();
+      const storedState = readDashboardSidebarOpenCookie(SIDEBAR_COOKIE_NAME);
       return storedState !== null ? storedState : defaultOpen;
     });
     const open = openProp ?? _open;
@@ -119,9 +97,23 @@ const SidebarProvider = forwardRef<
         _setOpen(openState);
       }
 
-      // This sets the cookie to keep the sidebar state.
-      document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`;
+      writeDashboardSidebarOpenCookie(SIDEBAR_COOKIE_NAME, openState);
     };
+
+    useLayoutEffect(() => {
+      const stored = readDashboardSidebarOpenCookie(SIDEBAR_COOKIE_NAME);
+      if (stored !== null) {
+        if (stored !== _open) {
+          setOpen(stored);
+        }
+        return;
+      }
+
+      const viewportDefaultOpen = getDefaultDashboardSidebarOpenWithoutCookie();
+      if (viewportDefaultOpen !== open) {
+        setOpen(viewportDefaultOpen);
+      }
+    }, []);
 
     // Helper to toggle the sidebar.
     const toggleSidebar = () => {
