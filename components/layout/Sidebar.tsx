@@ -20,8 +20,10 @@ import { usePathname } from 'next/navigation';
 import { bottomBarLinks, sidebarLinksData } from '@/lib/constants/routing';
 import { isPathActive } from '@/lib/utils/isPathActive';
 import { GhostBtn } from '../atoms/GhostBtn';
-import Link from 'next/link';
-import { FixedImage } from '@/components/general/FillImage';
+import { DashboardBrandBlock } from '@/components/layout/shared';
+
+const ADMIN_BRAND_TITLE = 'Admin Dashboard';
+const ADMIN_BRAND_SUBTITLE = 'Management Console';
 
 export function AppSidebar() {
   const { state } = useSidebar();
@@ -31,26 +33,13 @@ export function AppSidebar() {
     <Sidebar className={isCollapsed ? 'w-14' : 'w-56'}>
       <SidebarHeader
         className={`border-b-0 border-sidebar-border py-4 ${isCollapsed ? 'px-2.5' : 'px-4'}`}>
-        <div
-          className={isCollapsed ? 'flex flex-col items-center gap-2' : 'flex items-center gap-3'}>
-          <Link
-            href="/admin/dashboard/home"
-            className="flex items-center shrink-0 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-lg">
-            <FixedImage
-              src="/images/logo-badge.png"
-              alt="OJ Multimedia"
-              width={36}
-              height={36}
-              className="h-9 w-auto"
-            />
-          </Link>
-          {!isCollapsed && (
-            <div className="flex-1">
-              <h1 className="text-lg font-semibold">Admin Dashboard</h1>
-              <p className="text-xs text-muted-foreground">Management Console</p>
-            </div>
-          )}
-        </div>
+        <DashboardBrandBlock
+          title={ADMIN_BRAND_TITLE}
+          subtitle={ADMIN_BRAND_SUBTITLE}
+          href="/admin/dashboard/home"
+          variant="sidebar"
+          collapsed={isCollapsed}
+        />
       </SidebarHeader>
 
       <SidebarContent className="mt-0">

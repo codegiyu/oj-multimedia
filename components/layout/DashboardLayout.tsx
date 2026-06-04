@@ -15,8 +15,10 @@ export function DashboardLayout({ children }: PropsWithChildren) {
           <DashboardHeader />
 
           <main className="min-h-0 md:flex-1 md:h-full md:overflow-hidden">
-            <section className="min-h-0 md:h-full md:overflow-auto overflow-visible sleek-scrollbar py-6 px-4 md:px-6">
-              {children}
+            <section className="min-h-0 md:h-full md:overflow-auto overflow-visible sleek-scrollbar">
+              <div className="mx-auto w-full max-w-6xl px-4 py-6 md:px-8 md:py-8 lg:px-10 lg:py-10">
+                {children}
+              </div>
             </section>
           </main>
         </div>
