@@ -71,7 +71,7 @@ export const Footer = () => {
             <p className="text-muted-foreground mb-6">
               Get the latest updates on new releases, trending content, and community news.
             </p>
-            <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+            <div className="flex flex-col items-center sm:flex-row sm:items-stretch gap-3 max-w-md mx-auto">
               <input
                 type="email"
                 placeholder="Enter your email"

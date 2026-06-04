@@ -31,7 +31,7 @@ export const NewsCard = ({
       <motion.article
         whileHover={{ y: -4 }}
         transition={{ duration: 0.3 }}
-        className="group relative h-full min-h-[400px] rounded-2xl overflow-hidden cursor-pointer">
+        className="group relative h-full min-h-[240px] sm:min-h-[320px] lg:min-h-[400px] rounded-2xl overflow-hidden cursor-pointer">
         <FillImage
           imageContext="public"
           src={image}
