@@ -12,11 +12,13 @@ import type { MusicItemWithArtist } from '@/lib/utils/music';
 import { toMusicDownloadInputFromCard } from '@/lib/utils/musicDownloadMappers';
 import type { MusicAlbumSummary } from '@/lib/constants/endpoints';
 import { publicMusicAlbumHref } from '@/lib/utils/publicMusicAlbum';
+import { ArtistNameLine } from '@/components/general/ArtistNameLine';
+import { resolveArtistDisplay, type ArtistRef } from '@/lib/utils/artistDisplay';
 
 interface MusicCardProps {
   _id: string;
   title: string;
-  artist: string | { _id: string; name: string };
+  artist: ArtistRef;
   cover: string;
   plays: string;
   genre: string;
@@ -35,9 +37,9 @@ interface MusicCardProps {
 
 export const MusicCard = (props: MusicCardProps) => {
   const { _id, title, artist, cover, plays, genre, isNew, optionsItem, album } = props;
-  const artistName = typeof artist === 'string' ? artist : artist.name;
   const detailHref = `/music/${_id}`;
   const downloadInput = toMusicDownloadInputFromCard(props, 'card');
+  const { name: artistName } = resolveArtistDisplay(artist);
 
   return (
     <motion.div
@@ -87,7 +89,7 @@ export const MusicCard = (props: MusicCardProps) => {
             <h3 className="font-semibold truncate group-hover:text-primary transition-colors">
               {title}
             </h3>
-            <p className="text-sm text-muted-foreground truncate">{artistName}</p>
+            <ArtistNameLine artist={artist} />
             {album ? (
               <AppLink
                 href={publicMusicAlbumHref(album)}

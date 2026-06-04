@@ -6,6 +6,7 @@ import { AppLink } from '@/components/atoms/AppLink';
 import { FillImage } from '@/components/general/FillImage';
 import type { PublicAlbumCard } from '@/lib/utils/publicApiMappers';
 import { MultilinePreview } from '@/components/general/MultilinePreview';
+import { ArtistNameLine } from '@/components/general/ArtistNameLine';
 
 type AlbumCardProps = PublicAlbumCard;
 
@@ -48,7 +49,7 @@ export function AlbumCard({
           <h3 className="font-semibold truncate group-hover:text-primary transition-colors">
             {title}
           </h3>
-          <p className="text-sm text-muted-foreground truncate">{artist.name}</p>
+          <ArtistNameLine artist={artist} />
           {excerpt ? (
             <MultilinePreview
               text={excerpt}

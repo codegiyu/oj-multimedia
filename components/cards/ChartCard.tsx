@@ -7,6 +7,8 @@ import { Badge } from '@/components/ui/badge';
 import { AppLink } from '@/components/atoms/AppLink';
 import { FillImage } from '@/components/general/FillImage';
 import { cn } from '@/lib/utils';
+import { ArtistNameLine } from '@/components/general/ArtistNameLine';
+import { resolveArtistDisplay, type ArtistRef } from '@/lib/utils/artistDisplay';
 import {
   chartEntryBadgeLabel,
   chartMovementAriaLabel,
@@ -19,7 +21,7 @@ interface ChartCardProps {
   _id?: string;
   rank: number;
   title: string;
-  artist: string | { _id: string; name: string };
+  artist: ArtistRef;
   cover: string;
   plays: string;
   trend: ChartTrend;
@@ -143,7 +145,7 @@ function ChartPlayButton({
 function ChartCardMainRow({
   rank,
   title,
-  artistName,
+  artist,
   cover,
   plays,
   trend,
@@ -153,7 +155,7 @@ function ChartCardMainRow({
 }: {
   rank: number;
   title: string;
-  artistName: string;
+  artist: ArtistRef;
   cover: string;
   plays: string;
   trend: ChartTrend;
@@ -184,7 +186,7 @@ function ChartCardMainRow({
         </h4>
         <ChartEntryBadge chartEntry={chartEntry} />
       </div>
-      <p className="truncate text-sm text-muted-foreground">{artistName}</p>
+      <ArtistNameLine artist={artist} />
       <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-muted-foreground sm:hidden">
         <span>
           <span className="font-medium text-foreground/80">{plays}</span> plays
@@ -231,14 +233,14 @@ export const ChartCard = ({
   change,
   chartEntry,
 }: ChartCardProps) => {
-  const artistName = typeof artist === 'string' ? artist : artist.name;
+  const { name: artistDisplayName } = resolveArtistDisplay(artist);
   const detailHref = _id ? `/music/${_id}` : undefined;
 
   const mainRow = (
     <ChartCardMainRow
       rank={rank}
       title={title}
-      artistName={artistName}
+      artist={artist}
       cover={cover}
       plays={plays}
       trend={trend}
@@ -269,7 +271,7 @@ export const ChartCard = ({
           <AppLink
             href={detailHref}
             className="flex min-w-0 flex-1 overflow-hidden"
-            aria-label={`View ${title} by ${artistName}`}>
+            aria-label={`View ${title} by ${artistDisplayName}`}>
             {mainRow}
           </AppLink>
           <ChartPlayButton

@@ -43,12 +43,27 @@ import { formatMediaDuration, parseMediaDurationSeconds } from '@/lib/utils/form
 
 function toArtistSummary(item: PublicMusicListItem) {
   const a = item.artist;
-  return a
-    ? {
-        _id: typeof a === 'string' ? a : typeof a._id === 'string' ? a._id : String(a._id),
-        name: typeof a === 'string' ? 'Unknown' : (a.name ?? 'Unknown'),
-      }
-    : { _id: '', name: 'Unknown' };
+  if (!a) {
+    return { _id: '', name: 'Unknown user', linkable: false as const };
+  }
+
+  if (typeof a === 'string') {
+    return { _id: a, name: 'Unknown user', linkable: false as const };
+  }
+
+  const raw = a as {
+    _id?: string;
+    name?: string;
+    slug?: string;
+    linkable?: boolean;
+  };
+
+  return {
+    _id: typeof raw._id === 'string' ? raw._id : String(raw._id ?? ''),
+    name: raw.name ?? 'Unknown user',
+    slug: raw.slug,
+    linkable: raw.linkable,
+  };
 }
 
 function toCreatorSummary(item: PublicVideoListItem) {
@@ -487,7 +502,7 @@ export type PublicAlbumCard = {
   _id: string;
   slug: string;
   title: string;
-  artist: { _id: string; name: string; slug?: string };
+  artist: { _id: string; name: string; slug?: string; linkable?: boolean };
   cover: string;
   trackCount: number;
   releaseDate?: string | null;
@@ -496,13 +511,27 @@ export type PublicAlbumCard = {
 
 function toAlbumArtistSummary(item: PublicAlbumListItem) {
   const a = item.artist;
-  return a
-    ? {
-        _id: typeof a === 'string' ? a : typeof a._id === 'string' ? a._id : String(a._id),
-        name: typeof a === 'string' ? 'Unknown' : (a.name ?? 'Unknown'),
-        slug: typeof a === 'object' && a && 'slug' in a && a.slug ? String(a.slug) : undefined,
-      }
-    : { _id: '', name: 'Unknown' };
+  if (!a) {
+    return { _id: '', name: 'Unknown user', linkable: false as const };
+  }
+
+  if (typeof a === 'string') {
+    return { _id: a, name: 'Unknown user', linkable: false as const };
+  }
+
+  const raw = a as {
+    _id?: string;
+    name?: string;
+    slug?: string;
+    linkable?: boolean;
+  };
+
+  return {
+    _id: typeof raw._id === 'string' ? raw._id : String(raw._id ?? ''),
+    name: raw.name ?? 'Unknown user',
+    slug: raw.slug,
+    linkable: raw.linkable,
+  };
 }
 
 export function filterPublicAlbumList(items: PublicAlbumListItem[]): PublicAlbumListItem[] {
