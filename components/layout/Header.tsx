@@ -35,18 +35,22 @@ const isActivePath = (pathname: string, href: string) => {
 };
 
 export const Header = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [mobileMenu, setMobileMenu] = useState({ open: false, path: '' });
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const pathname = usePathname();
   const { actions } = useCartStore();
   const cartCount = actions.getCount();
 
   const isMarketplace = pathname === '/marketplace' || pathname.startsWith('/marketplace/');
+  const isMenuOpen = mobileMenu.open && mobileMenu.path === pathname;
+  const setIsMenuOpen = (open: boolean) => setMobileMenu({ open, path: pathname });
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-card/80 backdrop-blur-md border-b border-border">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16 md:h-20">
+    <header
+      className="fixed top-0 left-0 right-0 z-50 bg-card/80 backdrop-blur-md border-b border-border"
+      style={{ height: 'var(--header-height)' }}>
+      <div className="container mx-auto px-4 h-full">
+        <div className="flex items-center justify-between h-full">
           {/* Logo */}
           <Logo />
 
@@ -88,8 +92,9 @@ export const Header = () => {
             <Button
               variant="ghost"
               size="icon"
-              className="rounded-full"
-              onClick={() => setIsSearchOpen(true)}>
+              className="rounded-full touch-hit"
+              onClick={() => setIsSearchOpen(true)}
+              aria-label="Search">
               <Search className="w-5 h-5" />
             </Button>
             <div className="hidden lg:block">
@@ -98,8 +103,9 @@ export const Header = () => {
             <Button
               variant="ghost"
               size="icon"
-              className="lg:hidden rounded-full"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}>
+              className="lg:hidden rounded-full touch-hit"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}>
               {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </Button>
           </div>

@@ -8,9 +8,15 @@ import 'swiper/css';
 import { FillImage } from '@/components/general/FillImage';
 import type { IHomeAdvertItem } from '@/lib/constants/endpoints';
 import { sortHomeAdverts } from '@/lib/utils/sortHomeAdverts';
+import { cn } from '@/lib/utils';
 
-const ADVERT_FRAME_CLASS =
-  'relative w-full h-[500px] md:h-[600px] overflow-hidden rounded-2xl border border-border/50 bg-card shadow-sm';
+const ADVERT_FRAME_CLASS = cn(
+  'relative w-full overflow-hidden bg-black',
+  'aspect-square max-sm:rounded-none',
+  'sm:aspect-auto sm:h-[320px] sm:rounded-2xl sm:border sm:border-border/50',
+  'md:h-[500px] md:rounded-2xl',
+  'lg:h-[600px]'
+);
 
 const AUTOPLAY_DELAY_MS = 5000;
 const SLIDE_TRANSITION_MS = 700;
@@ -39,13 +45,13 @@ function advertAlt(slot: IHomeAdvertItem['slot']): string {
 
 function HomeAdvertSlideContent({ ad }: { ad: IHomeAdvertItem }) {
   const image = (
-    <div className="relative h-full w-full">
+    <div className="relative flex h-full w-full items-center justify-center p-2 sm:p-4">
       <FillImage
         src={ad.imageUrl ?? ''}
         alt={advertAlt(ad.slot)}
         imageContext="public"
         sizes="100vw"
-        className="object-center"
+        className="!object-contain object-center"
       />
     </div>
   );
@@ -102,14 +108,16 @@ export function HomeAdvertStrip({ adverts }: HomeAdvertStripProps) {
 
   return (
     <section className="py-8 md:py-10 border-y border-border/40 bg-muted/20">
-      <div className="container mx-auto px-4">
-        {active.length === 1 ? (
-          <div className={ADVERT_FRAME_CLASS}>
-            <HomeAdvertSlideContent ad={active[0]!} />
-          </div>
-        ) : (
-          <HomeAdvertCarousel adverts={active} reduceMotion={reduceMotion} />
-        )}
+      <div className="w-full max-sm:px-0 sm:container sm:mx-auto sm:px-4">
+        <div className="max-sm:w-screen max-sm:relative max-sm:left-1/2 max-sm:-translate-x-1/2">
+          {active.length === 1 ? (
+            <div className={ADVERT_FRAME_CLASS}>
+              <HomeAdvertSlideContent ad={active[0]!} />
+            </div>
+          ) : (
+            <HomeAdvertCarousel adverts={active} reduceMotion={reduceMotion} />
+          )}
+        </div>
       </div>
     </section>
   );

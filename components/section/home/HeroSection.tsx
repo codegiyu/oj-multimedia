@@ -5,10 +5,12 @@ import { Play, Upload, Headphones } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { FillImage } from '@/components/general/FillImage';
+import { PUBLIC_HEADER_OFFSET_CLASS } from '@/lib/constants/layout';
 
 export const HeroSection = () => {
   return (
-    <section className="relative min-h-[90vh] flex items-center overflow-hidden pt-[11.25rem]">
+    <section
+      className={`relative min-h-[70vh] md:min-h-[90vh] flex items-center overflow-hidden ${PUBLIC_HEADER_OFFSET_CLASS}`}>
       {/* Background */}
       <div className="absolute inset-0 z-0">
         {/* Colorful gradient base */}
@@ -24,13 +26,13 @@ export const HeroSection = () => {
         />
 
         {/* Animated gradient orbs */}
-        <div className="absolute top-20 left-10 w-96 h-96 bg-primary/30 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute top-20 left-10 w-96 h-96 bg-primary/30 rounded-full blur-3xl motion-safe:animate-pulse" />
         <div
-          className="absolute bottom-20 right-10 w-80 h-80 bg-secondary/25 rounded-full blur-3xl animate-pulse"
+          className="absolute bottom-20 right-10 w-80 h-80 bg-secondary/25 rounded-full blur-3xl motion-safe:animate-pulse"
           style={{ animationDelay: '1s' }}
         />
         <div
-          className="absolute top-1/2 left-1/3 w-64 h-64 bg-accent/20 rounded-full blur-3xl animate-pulse"
+          className="absolute top-1/2 left-1/3 w-64 h-64 bg-accent/20 rounded-full blur-3xl motion-safe:animate-pulse"
           style={{ animationDelay: '2s' }}
         />
 
@@ -77,14 +79,22 @@ export const HeroSection = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="flex flex-wrap gap-4">
-            <Button variant="hero" size="xl" className="gap-3" asChild>
+            className="flex flex-col sm:flex-row flex-wrap gap-4">
+            <Button
+              variant="hero"
+              size="lg"
+              className="gap-3 w-full sm:w-auto md:py-4.5 md:px-10"
+              asChild>
               <Link href="/music/trending">
                 <Headphones className="w-5 h-5" />
                 Listen to Trending Songs
               </Link>
             </Button>
-            <Button variant="hero-outline" size="xl" className="gap-3" asChild>
+            <Button
+              variant="hero-outline"
+              size="lg"
+              className="gap-3 w-full sm:w-auto md:py-4.5 md:px-10"
+              asChild>
               <Link href="/videos/trending">
                 <Play className="w-5 h-5" />
                 Watch Videos
@@ -97,7 +107,7 @@ export const HeroSection = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
             className="mt-8">
-            <Button variant="accent" size="lg" className="gap-2" asChild>
+            <Button variant="accent" size="lg" className="gap-2 w-full sm:w-auto min-h-11" asChild>
               <Link href="/community/promote-your-content">
                 <Upload className="w-4 h-4" />
                 Upload Your Music or Video
