@@ -92,7 +92,9 @@ export function RisingArtistsColumn({ risingArtists }: { risingArtists: ArtistPr
           actionHref="/community/artists"
         />
       ) : (
-        <SectionContent className="grid grid-cols-2 gap-4" enableAnimation={false}>
+        <SectionContent
+          className="grid grid-cols-1 min-[360px]:grid-cols-2 gap-4"
+          enableAnimation={false}>
           {risingArtists.map(artist => (
             <ArtistCard
               key={artist._id}
@@ -112,7 +114,7 @@ export function RisingArtistsColumn({ risingArtists }: { risingArtists: ArtistPr
 
 export const TopChartsSection = ({ chartData, risingArtists }: TopChartsSectionProps) => {
   return (
-    <section className="py-16 md:py-24 overflow-hidden">
+    <section className="py-10 md:py-24 overflow-hidden scroll-mt-header section-content-visibility">
       <div className="container mx-auto px-4">
         <div className="grid lg:grid-cols-2 gap-8">
           <ChartsColumn chartData={chartData} />

@@ -71,7 +71,7 @@ export const MusicCard = (props: MusicCardProps) => {
           </div>
         </AppLink>
 
-        <div className="absolute top-3 right-3 z-10 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="absolute top-3 right-3 z-10 flex gap-1 opacity-100 transition-opacity lg:opacity-0 lg:group-hover:opacity-100 [&_button]:touch-hit">
           <FavoriteButton
             entityType="music"
             entityId={_id}
