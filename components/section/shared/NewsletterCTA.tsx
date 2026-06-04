@@ -59,7 +59,7 @@ export const NewsletterCTA = () => {
 
             <form
               onSubmit={handleSubmit}
-              className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto text-left">
+              className="flex flex-col sm:flex-row items-stretch gap-3 w-full sm:max-w-md md:max-w-[35rem] mx-auto text-left">
               <RegularInput
                 type="email"
                 name="newsletterEmail"
@@ -67,11 +67,11 @@ export const NewsletterCTA = () => {
                 placeholder="Enter your email"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
-                wrapClassName="flex-1"
+                wrapClassName="w-full min-w-0 flex-1"
               />
               <RegularBtn
                 type="submit"
-                className="h-12 px-6 rounded-full gap-2 w-full sm:w-auto"
+                className="h-12 px-6 rounded-full gap-2 w-full sm:w-auto shrink-0 self-center sm:self-stretch"
                 text={submitting ? 'Subscribing...' : 'Subscribe'}
                 RightIcon={ArrowRight}
                 rightIconProps={{ className: 'w-4 h-4' }}
