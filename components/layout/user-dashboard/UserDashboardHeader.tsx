@@ -3,8 +3,9 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
-import { ArrowLeft, Menu } from 'lucide-react';
+import { ArrowLeft, Menu, PanelLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { GhostBtn } from '@/components/atoms/GhostBtn';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import type { UserDashboardSidebarProps } from './UserDashboardSidebar';
 import { NavLinks } from './UserDashboardNavLinks';
@@ -13,6 +14,7 @@ import {
   DashboardLogoLink,
   DashboardProfileMenu,
 } from '@/components/layout/shared';
+import { useUserDashboardSidebar } from './UserDashboardSidebarContext';
 
 export function UserDashboardHeader({
   brandTitle,
@@ -21,10 +23,20 @@ export function UserDashboardHeader({
 }: UserDashboardSidebarProps) {
   const pathname = usePathname();
   const [navOpen, setNavOpen] = useState(false);
+  const { toggleSidebar } = useUserDashboardSidebar();
 
   return (
     <header className="sticky top-0 z-40 flex h-14 shrink-0 items-center gap-3 border-b border-border bg-background/95 px-4 backdrop-blur supports-backdrop-filter:bg-background/60 md:px-6">
-      <DashboardLogoLink href="/account" />
+      <div className="flex min-w-0 items-center gap-2">
+        <DashboardLogoLink href="/account" className="md:hidden" />
+        <GhostBtn
+          LucideIcon={PanelLeft}
+          className="hidden md:flex group"
+          iconClass="size-5 group-hover:text-primary"
+          onClick={toggleSidebar}
+          srOnlyText="Toggle sidebar"
+        />
+      </div>
 
       <div className="min-w-0 flex-1" />
 
