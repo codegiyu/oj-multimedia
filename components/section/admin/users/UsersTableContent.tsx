@@ -17,14 +17,11 @@ import {
   AdminUserLinkedArtistFieldLink,
   AdminUserLinkedVendorFieldLink,
 } from '@/components/section/admin/shared';
+import { formatUserDisplayName } from '@/lib/utils/formatUserDisplayName';
 
 function truncate(str: string, maxLen: number) {
   if (str.length <= maxLen) return str;
   return str.slice(0, maxLen).trim() + '…';
-}
-
-function formatName(row: UserListItem) {
-  return [row.firstName, row.lastName].filter(Boolean).join(' ').trim() || '—';
 }
 
 function AccountStatusBadge({
@@ -58,7 +55,16 @@ interface UsersTableContentProps {
   page: number;
   totalPages: number;
   onPageChange: (page: number) => void;
-  onManage: (row: UserListItem) => void;
+  onSuspend: (row: UserListItem) => void;
+  onUnsuspend: (row: UserListItem) => void;
+  onBlacklist: (row: UserListItem) => void;
+  onRemoveFromBlacklist: (row: UserListItem) => void;
+  onLinkArtist: (row: UserListItem) => void;
+  onUnlinkArtist: (row: UserListItem) => void;
+  onLinkVendor: (row: UserListItem) => void;
+  onUnlinkVendor: (row: UserListItem) => void;
+  onLinkPastor: (row: UserListItem) => void;
+  onUnlinkPastor: (row: UserListItem) => void;
   onApproveDeletion: (row: UserListItem) => void;
   onRejectDeletion: (row: UserListItem) => void;
 }
@@ -71,7 +77,16 @@ export function UsersTableContent({
   page,
   totalPages,
   onPageChange,
-  onManage,
+  onSuspend,
+  onUnsuspend,
+  onBlacklist,
+  onRemoveFromBlacklist,
+  onLinkArtist,
+  onUnlinkArtist,
+  onLinkVendor,
+  onUnlinkVendor,
+  onLinkPastor,
+  onUnlinkPastor,
   onApproveDeletion,
   onRejectDeletion,
 }: UsersTableContentProps) {
@@ -79,7 +94,7 @@ export function UsersTableContent({
     () => [
       dashboardThumbnailColumn(
         row => row.avatar,
-        row => formatName(row),
+        row => formatUserDisplayName(row),
         { header: 'Avatar', rounded: 'full' }
       ),
       {
@@ -87,8 +102,8 @@ export function UsersTableContent({
         header: <DataTableColumnHeader title="Name" />,
         meta: { width: '18%' },
         cell: row => (
-          <DataTableCellWrapper text={formatName(row)}>
-            {truncate(formatName(row), 28)}
+          <DataTableCellWrapper text={formatUserDisplayName(row)}>
+            {truncate(formatUserDisplayName(row), 28)}
           </DataTableCellWrapper>
         ),
       },
@@ -152,7 +167,16 @@ export function UsersTableContent({
       dashboardTableActionsColumn(row => (
         <UsersActionsMenu
           item={row}
-          onManage={onManage}
+          onSuspend={onSuspend}
+          onUnsuspend={onUnsuspend}
+          onBlacklist={onBlacklist}
+          onRemoveFromBlacklist={onRemoveFromBlacklist}
+          onLinkArtist={onLinkArtist}
+          onUnlinkArtist={onUnlinkArtist}
+          onLinkVendor={onLinkVendor}
+          onUnlinkVendor={onUnlinkVendor}
+          onLinkPastor={onLinkPastor}
+          onUnlinkPastor={onUnlinkPastor}
           onApproveDeletion={onApproveDeletion}
           onRejectDeletion={onRejectDeletion}
         />

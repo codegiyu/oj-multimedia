@@ -1181,6 +1181,7 @@ export interface AllEndpoints {
       suspensionReason?: string;
       artistId?: string | null;
       vendorId?: string | null;
+      pastorId?: string | null;
     },
     UserDetailData,
     `/${string}`

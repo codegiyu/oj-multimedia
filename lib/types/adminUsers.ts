@@ -6,6 +6,7 @@ export interface UserListItem {
   _id: string;
   firstName: string;
   lastName: string;
+  title?: string;
   email: string;
   avatar?: string;
   accountStatus: UserAccountStatus;
@@ -13,6 +14,8 @@ export interface UserListItem {
   linkedArtistName?: string;
   vendorId?: string;
   linkedVendorName?: string;
+  pastorId?: string;
+  linkedPastorName?: string;
   deleteRequestedAt?: string;
   createdAt?: string;
   lastLogin?: string;
@@ -29,6 +32,7 @@ export interface UserDetail extends UserListItem {
   updatedAt?: string;
   linkedArtist?: { _id: string; name: string };
   linkedVendor?: { _id: string; storeName: string };
+  linkedPastor?: { _id: string; name: string };
   deletionApprovedAt?: string;
   deletionApprovedBy?: {
     _id: string;
