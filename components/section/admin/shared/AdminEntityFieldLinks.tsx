@@ -232,3 +232,21 @@ export function AdminUserLinkedVendorFieldLink({
     </AdminEntityLink>
   );
 }
+
+export function AdminUserLinkedPastorFieldLink({
+  pastorId,
+  pastorName,
+  className,
+}: {
+  pastorId?: string | null;
+  pastorName?: string | null;
+  className?: string;
+}) {
+  const label = pastorName?.trim() || 'Not linked';
+
+  return (
+    <AdminEntityLink entityType="pastor" entityId={pastorId} className={className}>
+      {label}
+    </AdminEntityLink>
+  );
+}

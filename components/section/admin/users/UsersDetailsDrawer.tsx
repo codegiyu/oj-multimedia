@@ -5,19 +5,25 @@ import {
   TableRowDetails,
   type ClickedRowDetails,
 } from '@/components/general/TableRowDetailsDrawer';
-import { Mail, Shield, User as UserIcon, Store, Mic2 } from 'lucide-react';
+import { Mail, Phone, User as UserIcon, Mic2, Store, Church } from 'lucide-react';
 import type { UserDetail, UserListItem } from '@/lib/types/adminUsers';
 import { InfoCard } from '@/components/general/InfoCard';
 import { DashboardThumbnail } from '@/components/general/DashboardThumbnail';
-import { callApi } from '@/lib/services/callApi';
 import { Badge } from '@/components/ui/badge';
 import {
   AdminUserLinkedArtistFieldLink,
   AdminUserLinkedVendorFieldLink,
+  AdminUserLinkedPastorFieldLink,
 } from '@/components/section/admin/shared';
+import { callApi } from '@/lib/services/callApi';
+import { formatUserDisplayName } from '@/lib/utils/formatUserDisplayName';
+import { cn } from '@/lib/utils';
 
-function formatName(data: Pick<UserListItem, 'firstName' | 'lastName' | 'email'>) {
-  return [data.firstName, data.lastName].filter(Boolean).join(' ').trim() || data.email;
+function statusBadgeVariant(status: string): 'default' | 'destructive' | 'secondary' {
+  if (status === 'active') return 'default';
+  if (status === 'suspended' || status === 'blacklisted') return 'destructive';
+
+  return 'secondary';
 }
 
 interface UsersDetailsDrawerProps {
@@ -65,7 +71,13 @@ export function UsersDetailsDrawer({
   if (!clickedRowDetails || !listRow) return null;
 
   const data = detail ?? listRow;
-  const displayName = formatName(data);
+  const displayName = formatUserDisplayName(data);
+  const artistId = detail?.linkedArtist?._id ?? data.artistId;
+  const artistName = data.linkedArtistName || detail?.linkedArtist?.name;
+  const vendorId = detail?.linkedVendor?._id ?? data.vendorId;
+  const vendorName = data.linkedVendorName || detail?.linkedVendor?.storeName;
+  const pastorId = detail?.linkedPastor?._id ?? data.pastorId;
+  const pastorName = data.linkedPastorName || detail?.linkedPastor?.name;
 
   return (
     <TableRowDetails
@@ -76,69 +88,92 @@ export function UsersDetailsDrawer({
       dataName="user"
       showMeta={false}
       setShowMeta={() => {}}
+      headerClassName="text-center"
       header={
-        <div className="flex items-start gap-4">
+        <div className="flex flex-col items-center gap-3 w-full pt-2">
           <DashboardThumbnail
             src={data.avatar}
             alt={displayName}
             rounded="full"
-            className="h-16 w-16 shrink-0"
+            size={96}
+            className="ring-2 ring-primary ring-offset-2 ring-offset-background"
           />
-          <div className="min-w-0 space-y-1">
-            <p className="font-semibold text-lg truncate">{displayName}</p>
+          <div className="min-w-0 space-y-1 w-full">
+            <p className="font-semibold text-xl truncate">{displayName}</p>
+            {data.title ? <p className="text-sm text-muted-foreground">{data.title}</p> : null}
             <p className="text-sm text-muted-foreground truncate">{data.email}</p>
-            <div className="flex flex-wrap gap-2 pt-1">
-              <Badge variant={data.accountStatus === 'active' ? 'default' : 'secondary'}>
-                {data.accountStatus}
+          </div>
+
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            <Badge variant={statusBadgeVariant(data.accountStatus)} className="capitalize">
+              {data.accountStatus}
+            </Badge>
+
+            {artistId ? (
+              <Badge variant="outline" className="gap-1 border-primary/40 text-primary">
+                <Mic2 className="h-3 w-3" aria-hidden />
+                {artistName?.trim() || 'Artist'}
               </Badge>
-              {data.deleteRequestedAt ? (
-                <Badge variant="destructive">Deletion requested</Badge>
-              ) : null}
-            </div>
+            ) : null}
+
+            {vendorId ? (
+              <Badge variant="outline" className="gap-1 border-primary/40 text-primary">
+                <Store className="h-3 w-3" aria-hidden />
+                {vendorName?.trim() || 'Vendor'}
+              </Badge>
+            ) : null}
+
+            {pastorId ? (
+              <Badge variant="outline" className="gap-1 border-primary/40 text-primary">
+                <Church className="h-3 w-3" aria-hidden />
+                {pastorName?.trim() || 'Pastor'}
+              </Badge>
+            ) : null}
+
+            {detail?.roleSlugs?.map(slug => (
+              <Badge key={slug} variant="secondary" className="uppercase text-xs">
+                {slug}
+              </Badge>
+            ))}
+
+            {data.deleteRequestedAt ? (
+              <Badge variant="destructive">Deletion requested</Badge>
+            ) : null}
           </div>
         </div>
       }
       footer={
         <div className="flex items-center justify-end gap-2 px-4 py-3 border-t border-foreground/7" />
       }>
-      {loading ? <p className="text-sm text-muted-foreground">Loading details…</p> : null}
-      {error ? <p className="text-sm text-destructive">{error}</p> : null}
+      {loading ? <p className="text-sm text-muted-foreground p-4">Loading details…</p> : null}
+      {error ? <p className="text-sm text-destructive p-4">{error}</p> : null}
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <InfoCard icon={UserIcon} label="Phone" value={detail?.phoneNumber || '—'} />
-        <InfoCard icon={Mail} label="Last login" value={data.lastLogin ?? '—'} />
-        <InfoCard
-          icon={Shield}
-          label="Roles"
-          value={detail?.roleSlugs?.length ? detail.roleSlugs.join(', ') : '—'}
-        />
-        <InfoCard
-          icon={Shield}
-          label="KYC"
-          value={
-            detail
-              ? `Email ${detail.kycEmailVerified ? 'verified' : 'unverified'} · Phone ${
-                  detail.kycPhoneVerified ? 'verified' : 'unverified'
-                }`
-              : '—'
-          }
-        />
-        <InfoCard icon={Mic2} label="Linked artist">
-          <AdminUserLinkedArtistFieldLink
-            artistId={detail?.linkedArtist?._id ?? data.artistId}
-            artistName={data.linkedArtistName || detail?.linkedArtist?.name}
+      {!loading && !error ? (
+        <div className={cn('grid gap-3 p-4')}>
+          <InfoCard icon={Mail} label="Email" value={data.email} hasCopy copyValue={data.email} />
+          <InfoCard
+            icon={Phone}
+            label="Phone Number"
+            value={detail?.phoneNumber || '—'}
+            hasCopy={Boolean(detail?.phoneNumber)}
+            copyValue={detail?.phoneNumber}
           />
-        </InfoCard>
-        <InfoCard icon={Store} label="Linked vendor">
-          <AdminUserLinkedVendorFieldLink
-            vendorId={detail?.linkedVendor?._id ?? data.vendorId}
-            vendorName={data.linkedVendorName || detail?.linkedVendor?.storeName}
-          />
-        </InfoCard>
-      </div>
+          <InfoCard icon={UserIcon} label="Gender" value={detail?.gender || '—'} />
+
+          <InfoCard icon={Mic2} label="Linked artist">
+            <AdminUserLinkedArtistFieldLink artistId={artistId} artistName={artistName} />
+          </InfoCard>
+          <InfoCard icon={Store} label="Linked vendor">
+            <AdminUserLinkedVendorFieldLink vendorId={vendorId} vendorName={vendorName} />
+          </InfoCard>
+          <InfoCard icon={Church} label="Linked pastor">
+            <AdminUserLinkedPastorFieldLink pastorId={pastorId} pastorName={pastorName} />
+          </InfoCard>
+        </div>
+      ) : null}
 
       {data.deleteRequestedAt ? (
-        <div className="mt-4 rounded-md border border-destructive/40 bg-destructive/5 p-3 text-sm">
+        <div className="mx-4 mb-4 rounded-md border border-destructive/40 bg-destructive/5 p-3 text-sm">
           Deletion requested on {new Date(data.deleteRequestedAt).toLocaleString()}. Use row actions
           to approve or reject.
         </div>
