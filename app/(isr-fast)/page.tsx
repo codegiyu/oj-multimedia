@@ -1,6 +1,7 @@
 import { Suspense } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { HeroSection } from '@/components/section/home';
+import { HomeMobileJumpNav } from '@/components/section/home/HomeMobileJumpNav';
 import { CommunitySectionFrame } from '@/components/section/home/CommunitySectionFrame';
 import { UploadCTA } from '@/components/section/shared';
 import {
@@ -40,9 +41,7 @@ import { DevotionalsRailSection } from './_sections/DevotionalsRailSection';
 import { TopChartsSectionShell } from './_sections/TopChartsSectionShell';
 import { ChartsSection } from './_sections/ChartsSection';
 import { RisingArtistsSection } from './_sections/RisingArtistsSection';
-import { FeaturedNewsSection } from './_sections/FeaturedNewsSection';
-import { TrendingNewsSection } from './_sections/TrendingNewsSection';
-import { LatestNewsSection } from './_sections/LatestNewsSection';
+import { HomeNewsSection } from './_sections/HomeNewsSection';
 import { MarketplaceSectionServer } from './_sections/MarketplaceSectionServer';
 import { CommunityHighlightsSection } from './_sections/CommunityHighlightsSection';
 import { PollSection } from './_sections/PollSection';
@@ -90,6 +89,7 @@ export default async function Home({ searchParams }: HomeProps) {
 
   return (
     <MainLayout>
+      <HomeMobileJumpNav />
       <HeroSection />
 
       <Suspense fallback={<HomeAdvertStripSkeleton />}>
@@ -142,15 +142,7 @@ export default async function Home({ searchParams }: HomeProps) {
       />
 
       <Suspense fallback={<NewsSectionSkeleton />}>
-        <FeaturedNewsSection />
-      </Suspense>
-
-      <Suspense fallback={<NewsSectionSkeleton />}>
-        <TrendingNewsSection />
-      </Suspense>
-
-      <Suspense fallback={<NewsSectionSkeleton />}>
-        <LatestNewsSection />
+        <HomeNewsSection />
       </Suspense>
 
       <Suspense fallback={<MarketplaceSectionSkeleton />}>
