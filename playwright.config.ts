@@ -16,7 +16,10 @@ export default defineConfig({
     navigationTimeout: 45_000,
     trace: 'on-first-retry',
   },
-  projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
+  projects: [
+    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
+    { name: 'iPhone 13', use: { ...devices['iPhone 13'] } },
+  ],
   // Enable with PLAYWRIGHT_USE_WEBSERVER=1 when running browser tests against a live app.
   webServer:
     process.env.PLAYWRIGHT_USE_WEBSERVER === '1'

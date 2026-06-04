@@ -51,6 +51,9 @@
     /* Radius */
     --radius: 1rem;
 
+    /* Fixed public header (mobile 4rem / md+ 5rem) */
+    --header-height: 4rem;
+
     /* Shadows */
     --shadow-sm: 0 2px 8px -2px hsl(220 15% 15% / 0.06);
     --shadow-md: 0 8px 24px -8px hsl(220 15% 15% / 0.1);
@@ -421,6 +424,12 @@
     @apply border-border outline-ring/50;
   }
 
+  @media (min-width: 768px) {
+    :root {
+      --header-height: 5rem;
+    }
+  }
+
   html {
     @apply text-[14px] scroll-smooth;
   }
@@ -600,6 +609,14 @@
 
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
+  }
+
+  .touch-hit {
+    @apply min-h-11 min-w-11;
+  }
+
+  .scroll-mt-header {
+    scroll-margin-top: calc(var(--header-height) + 0.5rem);
   }
 
   .center-circle {
