@@ -41,12 +41,12 @@ export const UploadCTA = () => {
               stories for review.
             </p>
 
-            <div className="flex flex-wrap justify-center gap-4 mb-8">
+            <div className="flex flex-col w-full sm:flex-row sm:flex-wrap justify-center gap-4 mb-8">
               <RegularBtn
                 type="button"
                 variant="cta"
                 size="lg"
-                className="gap-2 bg-primary-foreground/10 border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/20 hover:border-primary-foreground/50"
+                className="gap-2 w-full sm:w-auto min-h-11 bg-primary-foreground/10 border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/20 hover:border-primary-foreground/50"
                 onClick={musicSubmit.openSubmitModal}>
                 <Music className="w-5 h-5" />
                 Submit music
@@ -55,7 +55,7 @@ export const UploadCTA = () => {
                 type="button"
                 variant="cta"
                 size="lg"
-                className="gap-2 bg-primary-foreground/10 border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/20 hover:border-primary-foreground/50"
+                className="gap-2 w-full sm:w-auto min-h-11 bg-primary-foreground/10 border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/20 hover:border-primary-foreground/50"
                 onClick={videoSubmit.openSubmitModal}>
                 <Video className="w-5 h-5" />
                 Submit video
@@ -64,7 +64,7 @@ export const UploadCTA = () => {
                 type="button"
                 variant="cta"
                 size="lg"
-                className="gap-2 bg-primary-foreground/10 border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/20 hover:border-primary-foreground/50"
+                className="gap-2 w-full sm:w-auto min-h-11 bg-primary-foreground/10 border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/20 hover:border-primary-foreground/50"
                 onClick={openShareTestimony}>
                 <BookOpen className="w-5 h-5" />
                 Share Testimony

@@ -39,8 +39,7 @@ export const ScrollToTop = ({
   return (
     <RegularBtn
       className={cn(
-        'w-8 md:w-16 aspect-[0.9] rounded-[10px] grid place-items-center \
-        transition-all duration-500 ease-out',
+        'min-h-11 min-w-11 md:min-h-14 md:min-w-16 aspect-[0.9] rounded-[10px] grid place-items-center transition-all duration-500 ease-out',
         className
       )}
       wrapClassName={cn(

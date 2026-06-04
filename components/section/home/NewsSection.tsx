@@ -21,6 +21,7 @@ interface NewsSectionProps {
   subtext?: string;
   viewAllLink?: string;
   sectionId?: string;
+  sectionClassName?: string;
 }
 
 export const NewsSection = ({
@@ -29,6 +30,7 @@ export const NewsSection = ({
   subtext = 'Stay updated with trending news',
   viewAllLink = '/news',
   sectionId = 'news',
+  sectionClassName,
 }: NewsSectionProps) => {
   if (!newsArticles || newsArticles.length === 0) {
     return (
@@ -40,6 +42,7 @@ export const NewsSection = ({
         subtext={subtext}
         viewAllLink={viewAllLink}
         background="bg-muted/30"
+        sectionClassName={sectionClassName}
         contentProps={{
           className: 'h-full',
           enableAnimation: true,
@@ -64,17 +67,18 @@ export const NewsSection = ({
       subtext={subtext}
       viewAllLink={viewAllLink}
       background="bg-muted/30"
+      sectionClassName={sectionClassName}
       contentProps={{
         className: 'h-full',
         enableAnimation: true,
       }}>
-      {/* Mobile up to lg: handle at least one article safely */}
+      {/* Below xl: one hero story + compact follow-ups on lg+ */}
       <div className="grid gap-6 lg:grid-cols-2 xl:hidden">
         {newsArticles[0] && <NewsCard {...newsArticles[0]} featured />}
         {newsArticles.length > 1 && (
-          <div className="grid gap-6">
+          <div className="grid gap-4 sm:gap-6">
             {newsArticles.slice(1, 3).map(article => (
-              <NewsCard key={article._id} {...article} featured />
+              <NewsCard key={article._id} {...article} featured={false} />
             ))}
           </div>
         )}
@@ -83,7 +87,7 @@ export const NewsSection = ({
       {/* xl: 5 articles — 1 large left, 4 smaller in 2×2 right */}
       <div className="hidden xl:grid xl:grid-cols-2 xl:gap-6 xl:items-stretch">
         {newsArticles[0] && (
-          <div className="h-full min-h-[400px]">
+          <div className="h-full min-h-[240px] sm:min-h-[320px] lg:min-h-[400px]">
             <NewsCard {...newsArticles[0]} featured />
           </div>
         )}
