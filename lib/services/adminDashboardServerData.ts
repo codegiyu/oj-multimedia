@@ -24,6 +24,7 @@ import type {
 } from '@/lib/types/community';
 import type { PastorListItem } from '@/lib/types/community';
 import type { UserListItem } from '@/lib/types/adminUsers';
+import type { IRoleProfileAppealSummary } from '@/lib/types/rolePortal';
 import type { StaffListItem } from '@/lib/types/adminStaff';
 import {
   type AdminStandardListParams,
@@ -219,6 +220,31 @@ export async function serverFetchAdminTestimoniesList(
   }
   return {
     items: res.data.testimonies ?? [],
+    totalPages: res.data.pagination?.totalPages ?? 1,
+    listError: null,
+  };
+}
+
+export async function serverFetchAdminRoleProfileAppealsList(
+  p: AdminStandardListParams
+): Promise<AdminListPayload<IRoleProfileAppealSummary>> {
+  const params = new URLSearchParams();
+  params.set('page', String(p.page ?? 1));
+  params.set('limit', String(p.pageSize ?? 20));
+  if (p.status && p.status !== 'all') {
+    params.set('status', p.status);
+  }
+
+  const res = await callServerApi('ADMIN_ROLE_PROFILE_APPEALS_LIST', {
+    query: `?${params.toString()}` as `?${string}`,
+  });
+
+  if (res.type === 'error') {
+    return { items: [], totalPages: 1, listError: res.message ?? 'Failed to load appeals' };
+  }
+
+  return {
+    items: res.data.appeals ?? [],
     totalPages: res.data.pagination?.totalPages ?? 1,
     listError: null,
   };

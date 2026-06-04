@@ -17,6 +17,8 @@ interface ArtistsActionsMenuProps {
   onDelete: (item: ArtistListItem) => void;
   onToggleActive: (item: ArtistListItem) => void;
   onToggleFeatured: (item: ArtistListItem) => void;
+  onSuspend?: (item: ArtistListItem) => void;
+  onUnsuspend?: (item: ArtistListItem) => void;
 }
 
 export function ArtistsActionsMenu({
@@ -25,9 +27,13 @@ export function ArtistsActionsMenu({
   onDelete,
   onToggleActive,
   onToggleFeatured,
+  onSuspend,
+  onUnsuspend,
 }: ArtistsActionsMenuProps) {
   const isActive = item.isActive !== false;
   const isFeatured = item.isFeatured === true;
+  const isSuspended = item.profileStatus === 'suspended';
+  const canSuspend = item.profileStatus === 'active' || (isActive && !isSuspended);
 
   return (
     <DropdownMenu>
@@ -45,6 +51,12 @@ export function ArtistsActionsMenu({
         <DropdownMenuItem onClick={() => onToggleFeatured(item)}>
           {isFeatured ? 'Remove featured' : 'Mark featured'}
         </DropdownMenuItem>
+        {canSuspend && onSuspend ? (
+          <DropdownMenuItem onClick={() => onSuspend(item)}>Suspend</DropdownMenuItem>
+        ) : null}
+        {isSuspended && onUnsuspend ? (
+          <DropdownMenuItem onClick={() => onUnsuspend(item)}>Unsuspend</DropdownMenuItem>
+        ) : null}
         <DropdownMenuSeparator />
         <DropdownMenuItem
           className="text-destructive focus:text-destructive"

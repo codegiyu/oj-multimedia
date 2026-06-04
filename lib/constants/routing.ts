@@ -22,6 +22,7 @@ import {
   Mic2,
   UserRound,
   Users,
+  ShieldAlert,
 } from 'lucide-react';
 import type { ISidebarLinkGroup } from '@/lib/types/general';
 
@@ -129,6 +130,11 @@ export const sidebarLinksData: ISidebarLinkGroup[] = [
         LucideIcon: Users,
         page: 'Users',
         path: { prefix: '/admin', suffix: '/dashboard/users' },
+      },
+      {
+        LucideIcon: ShieldAlert,
+        page: 'Profile appeals',
+        path: { prefix: '/admin', suffix: '/dashboard/role-profile-appeals' },
       },
       /* CLIENT-HIDDEN: Admin staff / invite — uncomment when invite feature is paid for (import Shield).
       {

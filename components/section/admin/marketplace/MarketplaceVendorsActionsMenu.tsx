@@ -16,6 +16,8 @@ interface MarketplaceVendorsActionsMenuProps {
   onApprove: (vendor: IMarketplaceVendor) => void;
   onReject: (vendor: IMarketplaceVendor) => void;
   onDelete: (vendor: IMarketplaceVendor) => void;
+  onSuspend?: (vendor: IMarketplaceVendor) => void;
+  onUnsuspend?: (vendor: IMarketplaceVendor) => void;
 }
 
 export function MarketplaceVendorsActionsMenu({
@@ -23,9 +25,13 @@ export function MarketplaceVendorsActionsMenu({
   onApprove,
   onReject,
   onDelete,
+  onSuspend,
+  onUnsuspend,
 }: MarketplaceVendorsActionsMenuProps) {
   const canApprove =
     vendor.status === 'pending' || vendor.status === 'rejected' || vendor.status === 'inactive';
+  const isSuspended = vendor.status === 'suspended';
+  const canSuspend = vendor.status === 'active';
 
   return (
     <DropdownMenu>
@@ -40,6 +46,12 @@ export function MarketplaceVendorsActionsMenu({
           <DropdownMenuItem onClick={() => onApprove(vendor)}>Approve</DropdownMenuItem>
         )}
         {canApprove && <DropdownMenuItem onClick={() => onReject(vendor)}>Reject</DropdownMenuItem>}
+        {canSuspend && onSuspend ? (
+          <DropdownMenuItem onClick={() => onSuspend(vendor)}>Suspend</DropdownMenuItem>
+        ) : null}
+        {isSuspended && onUnsuspend ? (
+          <DropdownMenuItem onClick={() => onUnsuspend(vendor)}>Unsuspend</DropdownMenuItem>
+        ) : null}
         <DropdownMenuSeparator />
         <DropdownMenuItem
           className="text-destructive focus:text-destructive"

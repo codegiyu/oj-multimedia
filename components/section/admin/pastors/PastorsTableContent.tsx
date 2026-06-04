@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
 import { useMemo } from 'react';
@@ -31,6 +30,8 @@ interface PastorsTableContentProps {
   onDelete: (row: PastorListItem) => void;
   onToggleActive: (row: PastorListItem) => void;
   onToggleFeatured: (row: PastorListItem) => void;
+  onSuspend?: (row: PastorListItem) => void;
+  onUnsuspend?: (row: PastorListItem) => void;
 }
 
 export function PastorsTableContent({
@@ -45,6 +46,8 @@ export function PastorsTableContent({
   onDelete,
   onToggleActive,
   onToggleFeatured,
+  onSuspend,
+  onUnsuspend,
 }: PastorsTableContentProps) {
   const columns = useMemo<DataTableColumn<PastorListItem, unknown>[]>(
     () => [
@@ -112,10 +115,12 @@ export function PastorsTableContent({
           onDelete={onDelete}
           onToggleActive={onToggleActive}
           onToggleFeatured={onToggleFeatured}
+          onSuspend={onSuspend}
+          onUnsuspend={onUnsuspend}
         />
       )),
     ],
-    []
+    [onEdit, onDelete, onToggleActive, onToggleFeatured, onSuspend, onUnsuspend]
   );
 
   return (

@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
 import { useMemo } from 'react';
@@ -39,6 +38,8 @@ interface MarketplaceVendorsTableContentProps {
   onPageChange: (page: number) => void;
   onApprove: (vendor: IMarketplaceVendor) => void;
   onReject: (vendor: IMarketplaceVendor) => void;
+  onSuspend?: (vendor: IMarketplaceVendor) => void;
+  onUnsuspend?: (vendor: IMarketplaceVendor) => void;
   onDelete: (vendor: IMarketplaceVendor) => void;
 }
 
@@ -55,6 +56,8 @@ export function MarketplaceVendorsTableContent({
   onPageChange,
   onApprove,
   onReject,
+  onSuspend,
+  onUnsuspend,
   onDelete,
 }: MarketplaceVendorsTableContentProps) {
   const columns = useMemo<DataTableColumn<IMarketplaceVendor, unknown>[]>(
@@ -104,11 +107,13 @@ export function MarketplaceVendorsTableContent({
           vendor={row}
           onApprove={onApprove}
           onReject={onReject}
+          onSuspend={onSuspend}
+          onUnsuspend={onUnsuspend}
           onDelete={onDelete}
         />
       )),
     ],
-    []
+    [onApprove, onReject, onSuspend, onUnsuspend, onDelete]
   );
 
   return (

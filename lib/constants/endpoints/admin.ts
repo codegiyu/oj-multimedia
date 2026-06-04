@@ -187,6 +187,17 @@ export const ADMIN_ENDPOINTS: Record<string, EndpointDetails> = {
   ADMIN_VENDOR_UPDATE: { path: '/api/v1/admin/vendors', method: 'PATCH' },
   ADMIN_VENDOR_APPROVE: { path: '/api/v1/admin/vendors', method: 'POST' },
   ADMIN_VENDOR_REJECT: { path: '/api/v1/admin/vendors', method: 'POST' },
+  ADMIN_VENDOR_SUSPEND: { path: '/api/v1/admin/vendors', method: 'POST' },
+  ADMIN_VENDOR_UNSUSPEND: { path: '/api/v1/admin/vendors', method: 'POST' },
+
+  ADMIN_ARTIST_SUSPEND: { path: '/api/v1/admin/artists', method: 'POST' },
+  ADMIN_ARTIST_UNSUSPEND: { path: '/api/v1/admin/artists', method: 'POST' },
+  ADMIN_PASTOR_SUSPEND: { path: '/api/v1/admin/pastors', method: 'POST' },
+  ADMIN_PASTOR_UNSUSPEND: { path: '/api/v1/admin/pastors', method: 'POST' },
+
+  ADMIN_ROLE_PROFILE_APPEALS_LIST: { path: '/api/v1/admin/role-profile-appeals', method: 'GET' },
+  ADMIN_ROLE_PROFILE_APPEAL_ACCEPT: { path: '/api/v1/admin/role-profile-appeals', method: 'POST' },
+  ADMIN_ROLE_PROFILE_APPEAL_REJECT: { path: '/api/v1/admin/role-profile-appeals', method: 'POST' },
 
   ADMIN_PRODUCTS_LIST: { path: '/api/v1/admin/products', method: 'GET' },
   ADMIN_PRODUCT_ITEM: { path: '/api/v1/admin/products', method: 'GET' },

@@ -208,6 +208,7 @@ export interface PastorListItem {
   rating?: number;
   isActive?: boolean;
   isFeatured?: boolean;
+  profileStatus?: string;
 }
 
 export interface PastorDetail extends PastorListItem {
@@ -314,6 +315,7 @@ export interface ArtistListItem {
   songs?: number;
   isActive?: boolean;
   isFeatured?: boolean;
+  profileStatus?: string;
 }
 
 export interface ArtistDetail extends ArtistListItem {
