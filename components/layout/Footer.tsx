@@ -71,18 +71,18 @@ export const Footer = () => {
             <p className="text-muted-foreground mb-6">
               Get the latest updates on new releases, trending content, and community news.
             </p>
-            <div className="flex flex-col items-center sm:flex-row sm:items-stretch gap-3 max-w-md mx-auto">
+            <div className="flex flex-col items-stretch sm:flex-row gap-3 w-full sm:max-w-md md:max-w-[35rem] mx-auto">
               <input
                 type="email"
                 placeholder="Enter your email"
-                className="flex-1 px-4 py-3 rounded-full border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full min-w-0 flex-1 px-4 py-3 rounded-full border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
                 disabled
                 title="Newsletter subscription requires backend integration"
               />
               <Button
                 variant="hero"
                 size="lg"
-                className="gap-2"
+                className="gap-2 w-full sm:w-auto shrink-0 self-center sm:self-stretch"
                 disabled
                 title="Newsletter subscription requires backend integration">
                 <Mail className="w-4 h-4" />
