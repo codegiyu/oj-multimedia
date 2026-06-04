@@ -18,7 +18,12 @@ export function VendorStoreProfile({ vendor }: VendorStoreProfileProps) {
     return (
       <SectionContainer className="py-16 md:py-20">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-2xl font-bold text-foreground mb-4">Vendor not found</h1>
+          <h1 className="text-2xl font-bold text-foreground mb-4">
+            This store does not currently exist
+          </h1>
+          <p className="text-muted-foreground mb-6">
+            The vendor store you are looking for is unavailable or has been removed.
+          </p>
           <Link href="/marketplace/vendors" className="text-primary hover:underline">
             Back to vendors
           </Link>
