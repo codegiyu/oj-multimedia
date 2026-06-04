@@ -85,8 +85,6 @@ export const RecentVideosPageClient = ({
                 views={video.views}
                 duration={video.duration}
                 category={video.category}
-                variant="recent"
-                uploadedAt={video.uploadedAt}
               />
             </motion.div>
           ))}
