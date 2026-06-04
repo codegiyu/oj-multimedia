@@ -25,10 +25,8 @@ export function UserDashboardShell({
       </div>
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">
         <UserDashboardHeader {...navProps} />
-        <main className="min-h-0 flex-1 overflow-y-auto">
-          <div className="mx-auto w-full max-w-6xl px-4 py-6 md:px-8 md:py-8 lg:px-10 lg:py-10">
-            <Suspense fallback={<DashboardMainSkeleton />}>{children}</Suspense>
-          </div>
+        <main className="min-h-0 flex-1 overflow-y-auto py-6 px-4 md:px-6">
+          <Suspense fallback={<DashboardMainSkeleton />}>{children}</Suspense>
         </main>
       </div>
     </div>
