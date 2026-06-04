@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { ShareTestimonyModal } from './ShareTestimonyModal';
 import { SubmitPrayerRequestModal } from './SubmitPrayerRequestModal';
 
@@ -15,8 +15,10 @@ export function CommunityActionModalsProvider({ children }: { children: React.Re
   const [shareTestimonyOpen, setShareTestimonyOpen] = useState(false);
   const [submitPrayerOpen, setSubmitPrayerOpen] = useState(false);
 
-  const openShareTestimony = useCallback(() => setShareTestimonyOpen(true), []);
-  const openSubmitPrayerRequest = useCallback(() => setSubmitPrayerOpen(true), []);
+  const openShareTestimony = () => setShareTestimonyOpen(true);
+  const openSubmitPrayerRequest = () => setSubmitPrayerOpen(true);
+
+  const value = useMemo(() => ({ openShareTestimony, openSubmitPrayerRequest }), []);
 
   useEffect(() => {
     const openFromHash = () => {
@@ -35,11 +37,6 @@ export function CommunityActionModalsProvider({ children }: { children: React.Re
 
     return () => window.removeEventListener('hashchange', openFromHash);
   }, []);
-
-  const value = useMemo(
-    () => ({ openShareTestimony, openSubmitPrayerRequest }),
-    [openShareTestimony, openSubmitPrayerRequest]
-  );
 
   return (
     <CommunityActionModalsContext.Provider value={value}>

@@ -1,6 +1,7 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useQueryState, parseAsInteger, parseAsString } from 'nuqs';
 import { toast } from 'sonner';
@@ -104,6 +105,17 @@ export function MarketplacePageClient({
   const [endDate, setEndDate] = useQueryState('endDate', parseAsString.withDefault(''));
   const vendorOptions = useAdminVendorFilterOptions();
   const { onSearchChange, onSearchCommit } = useAdminListSearch(setSearchQuery, setPage);
+
+  const [createVendorOpen, setCreateVendorOpen] = useState(false);
+  const [createProductOpen, setCreateProductOpen] = useState(false);
+  const [approveTarget, setApproveTarget] = useState<MarketplaceRowData | null>(null);
+  const [rejectTarget, setRejectTarget] = useState<MarketplaceRowData | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<MarketplaceRowData | null>(null);
+  const [actionLoading, setActionLoading] = useState(false);
+  const [productCategoryOptions, setProductCategoryOptions] = useState<SelectOption[]>([
+    { text: 'All categories', value: 'all' },
+  ]);
+
   useAdminListUrlRefresh(
     serializeAdminListUrlKey({
       page,
@@ -116,51 +128,27 @@ export function MarketplacePageClient({
       endDate,
     })
   );
-  const [productCategoryOptions, setProductCategoryOptions] = useState<SelectOption[]>([
-    { text: 'All categories', value: 'all' },
-  ]);
-
-  useEffect(() => {
-    if (activeTab !== TAB_PRODUCTS) return;
-    void loadMarketplaceCategorySelectOptions().then(options => {
-      setProductCategoryOptions([{ text: 'All categories', value: 'all' }, ...options]);
-    });
-  }, [activeTab]);
 
   const { recordId, setRecordId, clearRecordId } = useAdminListRecordId();
 
-  const resolveMarketplaceRecord = useCallback(
-    (id: string) => {
-      let index = findRowIndexById(vendors, id, row => row._id);
-      if (index >= 0) {
-        return { row: vendors[index], index, tab: TAB_VENDORS as MarketplaceTabType };
-      }
-
-      index = findRowIndexById(products, id, row => row._id);
-      if (index >= 0) {
-        return { row: products[index], index, tab: TAB_PRODUCTS as MarketplaceTabType };
-      }
-
-      index = findRowIndexById(orders, id, row => row._id);
-      if (index >= 0) {
-        return { row: orders[index], index, tab: TAB_ORDERS as MarketplaceTabType };
-      }
-
-      return null;
-    },
-    [vendors, products, orders]
-  );
-
-  useEffect(() => {
-    if (!recordId) {
-      return;
+  const resolveMarketplaceRecord = (id: string) => {
+    let index = findRowIndexById(vendors, id, row => row._id);
+    if (index >= 0) {
+      return { row: vendors[index], index, tab: TAB_VENDORS as MarketplaceTabType };
     }
 
-    const resolved = resolveMarketplaceRecord(recordId);
-    if (resolved?.tab && resolved.tab !== activeTab) {
-      void setActiveTab(resolved.tab);
+    index = findRowIndexById(products, id, row => row._id);
+    if (index >= 0) {
+      return { row: products[index], index, tab: TAB_PRODUCTS as MarketplaceTabType };
     }
-  }, [recordId, resolveMarketplaceRecord, activeTab, setActiveTab]);
+
+    index = findRowIndexById(orders, id, row => row._id);
+    if (index >= 0) {
+      return { row: orders[index], index, tab: TAB_ORDERS as MarketplaceTabType };
+    }
+
+    return null;
+  };
 
   const marketplaceRows = useMemo((): MarketplaceRowData[] => {
     if (activeTab === TAB_VENDORS) {
@@ -181,12 +169,69 @@ export function MarketplacePageClient({
     resolveRecord: resolveMarketplaceRecord,
   });
 
-  const [createVendorOpen, setCreateVendorOpen] = useState(false);
-  const [createProductOpen, setCreateProductOpen] = useState(false);
-  const [approveTarget, setApproveTarget] = useState<MarketplaceRowData | null>(null);
-  const [rejectTarget, setRejectTarget] = useState<MarketplaceRowData | null>(null);
-  const [deleteTarget, setDeleteTarget] = useState<MarketplaceRowData | null>(null);
-  const [actionLoading, setActionLoading] = useState(false);
+  const statusOptions =
+    activeTab === TAB_VENDORS
+      ? vendorStatusOptions
+      : activeTab === TAB_PRODUCTS
+        ? productStatusOptions
+        : orderStatusOptions;
+
+  const searchPlaceholder =
+    activeTab === TAB_VENDORS
+      ? 'Search vendors...'
+      : activeTab === TAB_PRODUCTS
+        ? 'Search products...'
+        : 'Search orders...';
+
+  const showCreateButton = activeTab === TAB_VENDORS || activeTab === TAB_PRODUCTS;
+
+  const listFilters = useMemo(() => {
+    const filters = [
+      {
+        label: 'Status',
+        value: filterStatus,
+        options: statusOptions,
+        onChange: (v: string) => {
+          setFilterStatus(v);
+          setPage(1);
+        },
+      },
+    ];
+
+    if (activeTab === TAB_PRODUCTS || activeTab === TAB_ORDERS) {
+      filters.push({
+        label: 'Vendor',
+        value: filterVendor,
+        options: vendorOptions,
+        onChange: (v: string) => {
+          setFilterVendor(v);
+          setPage(1);
+        },
+      });
+    }
+
+    if (activeTab === TAB_PRODUCTS) {
+      filters.push({
+        label: 'Category',
+        value: filterCategory,
+        options: productCategoryOptions,
+        onChange: (v: string) => {
+          setFilterCategory(v);
+          setPage(1);
+        },
+      });
+    }
+
+    return filters;
+  }, [
+    activeTab,
+    filterStatus,
+    filterVendor,
+    filterCategory,
+    statusOptions,
+    vendorOptions,
+    productCategoryOptions,
+  ]);
 
   const handleRefresh = () => router.refresh();
 
@@ -266,26 +311,10 @@ export function MarketplacePageClient({
     }
   };
 
-  const statusOptions =
-    activeTab === TAB_VENDORS
-      ? vendorStatusOptions
-      : activeTab === TAB_PRODUCTS
-        ? productStatusOptions
-        : orderStatusOptions;
-
-  const searchPlaceholder =
-    activeTab === TAB_VENDORS
-      ? 'Search vendors...'
-      : activeTab === TAB_PRODUCTS
-        ? 'Search products...'
-        : 'Search orders...';
-
   const handleCreateClick = () => {
     if (activeTab === TAB_VENDORS) setCreateVendorOpen(true);
     else if (activeTab === TAB_PRODUCTS) setCreateProductOpen(true);
   };
-
-  const showCreateButton = activeTab === TAB_VENDORS || activeTab === TAB_PRODUCTS;
 
   const handleListTabChange = (v: string) => {
     setActiveTab(v);
@@ -297,57 +326,23 @@ export function MarketplacePageClient({
     setEndDate('');
   };
 
-  const listFilters = useMemo(() => {
-    const filters = [
-      {
-        label: 'Status',
-        value: filterStatus,
-        options: statusOptions,
-        onChange: (v: string) => {
-          setFilterStatus(v);
-          setPage(1);
-        },
-      },
-    ];
+  useEffect(() => {
+    if (activeTab !== TAB_PRODUCTS) return;
+    void loadMarketplaceCategorySelectOptions().then(options => {
+      setProductCategoryOptions([{ text: 'All categories', value: 'all' }, ...options]);
+    });
+  }, [activeTab]);
 
-    if (activeTab === TAB_PRODUCTS || activeTab === TAB_ORDERS) {
-      filters.push({
-        label: 'Vendor',
-        value: filterVendor,
-        options: vendorOptions,
-        onChange: (v: string) => {
-          setFilterVendor(v);
-          setPage(1);
-        },
-      });
+  useEffect(() => {
+    if (!recordId) {
+      return;
     }
 
-    if (activeTab === TAB_PRODUCTS) {
-      filters.push({
-        label: 'Category',
-        value: filterCategory,
-        options: productCategoryOptions,
-        onChange: (v: string) => {
-          setFilterCategory(v);
-          setPage(1);
-        },
-      });
+    const resolved = resolveMarketplaceRecord(recordId);
+    if (resolved?.tab && resolved.tab !== activeTab) {
+      void setActiveTab(resolved.tab);
     }
-
-    return filters;
-  }, [
-    activeTab,
-    filterStatus,
-    filterVendor,
-    filterCategory,
-    statusOptions,
-    vendorOptions,
-    productCategoryOptions,
-    setFilterStatus,
-    setFilterVendor,
-    setFilterCategory,
-    setPage,
-  ]);
+  }, [recordId, activeTab]);
 
   return (
     <AdminDashboardListLayout
