@@ -36,7 +36,7 @@ export function ChartsColumn({ chartData }: { chartData: ChartItem[] }) {
       whileInView={{ opacity: 1, x: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5 }}
-      className="bg-card rounded-3xl p-6 shadow-sm">
+      className="bg-card rounded-3xl p-6 shadow-sm overflow-hidden">
       <SectionHeader
         icon={Trophy}
         iconColor="accent"
@@ -55,7 +55,7 @@ export function ChartsColumn({ chartData }: { chartData: ChartItem[] }) {
           actionHref="/music/top-charts"
         />
       ) : (
-        <SectionContent className="space-y-2" enableAnimation={false}>
+        <SectionContent className="space-y-2 overflow-hidden" enableAnimation={false}>
           <ChartCardsLegend />
           {chartData.slice(0, 5).map(item => (
             <ChartCard key={item._id ?? item.rank} {...item} />

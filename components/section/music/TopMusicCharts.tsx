@@ -100,14 +100,15 @@ export const TopMusicCharts = ({ songs: chartSongs }: TopMusicChartsProps) => {
       sectionClassName="overflow-hidden"
       contentProps={{ enableAnimation: false }}>
       <ChartCardsLegend />
-      <div className="grid gap-3 md:grid-cols-2 md:gap-4">
+      <div className="grid gap-3 md:grid-cols-2 md:gap-4 overflow-hidden">
         {chartSongs.map((song, index) => (
           <motion.div
             key={song._id}
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: index * 0.05 }}>
+            transition={{ delay: index * 0.05 }}
+            className="overflow-hidden">
             <ChartCard
               _id={song._id}
               rank={song.rank}

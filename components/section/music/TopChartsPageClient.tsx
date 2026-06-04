@@ -130,15 +130,16 @@ export const TopChartsPageClient = ({
               </div>
             </>
           }
-          className="bg-muted/30"
-          gridClassName="grid gap-3 md:grid-cols-2 md:gap-4">
+          className="bg-muted/30 overflow-hidden"
+          gridClassName="grid gap-3 md:grid-cols-2 md:gap-4 overflow-hidden">
           {chartSongs.map((song, index) => (
             <motion.div
               key={song._id}
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: index * 0.02 }}>
+              transition={{ delay: index * 0.02 }}
+              className="overflow-hidden">
               <ChartCard
                 _id={song._id}
                 rank={song.rank}
