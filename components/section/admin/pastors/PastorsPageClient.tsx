@@ -8,7 +8,7 @@ import type { PastorListItem } from '@/lib/types/community';
 import { PastorsTableContent } from './PastorsTableContent';
 import { PastorsDetailsDrawer } from './PastorsDetailsDrawer';
 import { CreatePastorModal } from './CreatePastorModal';
-import { ApprovalModal } from '@/components/section/admin/shared';
+import { ApprovalModal, RejectModal } from '@/components/section/admin/shared';
 import { callApi } from '@/lib/services/callApi';
 import { RegularBtn } from '@/components/atoms/RegularBtn';
 import { Plus } from 'lucide-react';
@@ -51,6 +51,8 @@ export function PastorsPageClient({
   const [createOpen, setCreateOpen] = useState(false);
   const [editPastorId, setEditPastorId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<PastorListItem | null>(null);
+  const [suspendTarget, setSuspendTarget] = useState<PastorListItem | null>(null);
+  const [unsuspendTarget, setUnsuspendTarget] = useState<PastorListItem | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
 
   const handleRefresh = () => router.refresh();
@@ -68,6 +70,41 @@ export function PastorsPageClient({
       return;
     }
     handleRefresh();
+  };
+
+  const handleSuspend = async (reason: string) => {
+    if (!suspendTarget) return;
+    setActionLoading(true);
+    try {
+      const { error } = await callApi('ADMIN_PASTOR_SUSPEND', {
+        query: `/${suspendTarget._id}/suspend` as `/${string}`,
+        payload: { reason },
+      });
+      if (error) throw new Error(error.message);
+      setSuspendTarget(null);
+      handleRefresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Suspend failed');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleUnsuspend = async () => {
+    if (!unsuspendTarget) return;
+    setActionLoading(true);
+    try {
+      const { error } = await callApi('ADMIN_PASTOR_UNSUSPEND', {
+        query: `/${unsuspendTarget._id}/unsuspend` as `/${string}`,
+      });
+      if (error) throw new Error(error.message);
+      setUnsuspendTarget(null);
+      handleRefresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Unsuspend failed');
+    } finally {
+      setActionLoading(false);
+    }
   };
 
   const handleDelete = async () => {
@@ -149,6 +186,27 @@ export function PastorsPageClient({
               loading={actionLoading}
             />
           )}
+
+          <RejectModal
+            open={!!suspendTarget}
+            onOpenChange={val => !val && setSuspendTarget(null)}
+            title="Suspend pastor"
+            description={suspendTarget ? `Suspend "${suspendTarget.name}"?` : ''}
+            confirmText="Suspend"
+            reasonLabel="Suspension reason"
+            onConfirm={handleSuspend}
+            loading={actionLoading}
+          />
+
+          <ApprovalModal
+            open={!!unsuspendTarget}
+            onOpenChange={val => !val && setUnsuspendTarget(null)}
+            title="Unsuspend pastor"
+            description={unsuspendTarget ? `Restore "${unsuspendTarget.name}" to active?` : ''}
+            confirmText="Unsuspend"
+            onConfirm={handleUnsuspend}
+            loading={actionLoading}
+          />
         </>
       }>
       <PastorsTableContent
@@ -166,6 +224,8 @@ export function PastorsPageClient({
         onDelete={setDeleteTarget}
         onToggleActive={row => patchPastor(row, { isActive: row.isActive === false })}
         onToggleFeatured={row => patchPastor(row, { isFeatured: !row.isFeatured })}
+        onSuspend={setSuspendTarget}
+        onUnsuspend={setUnsuspendTarget}
       />
     </AdminDashboardListLayout>
   );

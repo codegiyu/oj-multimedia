@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
 import { useMemo } from 'react';
@@ -39,6 +38,8 @@ interface ArtistsTableContentProps {
   onDelete: (row: ArtistListItem) => void;
   onToggleActive: (row: ArtistListItem) => void;
   onToggleFeatured: (row: ArtistListItem) => void;
+  onSuspend?: (row: ArtistListItem) => void;
+  onUnsuspend?: (row: ArtistListItem) => void;
 }
 
 export function ArtistsTableContent({
@@ -53,6 +54,8 @@ export function ArtistsTableContent({
   onDelete,
   onToggleActive,
   onToggleFeatured,
+  onSuspend,
+  onUnsuspend,
 }: ArtistsTableContentProps) {
   const columns = useMemo<DataTableColumn<ArtistListItem, unknown>[]>(
     () => [
@@ -116,10 +119,12 @@ export function ArtistsTableContent({
           onDelete={onDelete}
           onToggleActive={onToggleActive}
           onToggleFeatured={onToggleFeatured}
+          onSuspend={onSuspend}
+          onUnsuspend={onUnsuspend}
         />
       )),
     ],
-    []
+    [onEdit, onDelete, onToggleActive, onToggleFeatured, onSuspend, onUnsuspend]
   );
 
   return (

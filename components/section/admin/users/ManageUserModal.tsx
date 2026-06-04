@@ -11,6 +11,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { RegularSelect } from '@/components/atoms/RegularSelect';
+import { RegularTextarea } from '@/components/atoms/RegularTextarea';
 import { RegularBtn } from '@/components/atoms/RegularBtn';
 import type { UserListItem } from '@/lib/types/adminUsers';
 import { USER_ACCOUNT_STATUS_SELECT_OPTIONS } from '@/lib/constants/adminSelectOptions';
@@ -38,11 +39,13 @@ export function ManageUserModal({ open, onOpenChange, user, onSuccess }: ManageU
   const [artistOptions, setArtistOptions] = useState<SelectOption[]>([NONE_OPTION]);
   const [vendorOptions, setVendorOptions] = useState<SelectOption[]>([NONE_OPTION]);
   const [loading, setLoading] = useState(false);
+  const [suspensionReason, setSuspensionReason] = useState('');
 
   useEffect(() => {
     if (!open || !user) return;
 
     setAccountStatus(user.accountStatus);
+    setSuspensionReason('');
     setArtistId(user.artistId ?? '');
     setVendorId(user.vendorId ?? '');
 
@@ -60,12 +63,22 @@ export function ManageUserModal({ open, onOpenChange, user, onSuccess }: ManageU
 
     const payload: {
       accountStatus?: string;
+      suspensionReason?: string;
       artistId?: string | null;
       vendorId?: string | null;
     } = {};
 
     if (accountStatus !== user.accountStatus) {
       payload.accountStatus = accountStatus;
+      if (accountStatus === 'suspended') {
+        const reason = suspensionReason.trim();
+        if (!reason) {
+          toast.error('Suspension reason is required');
+          setLoading(false);
+          return;
+        }
+        payload.suspensionReason = reason;
+      }
     }
 
     const nextArtistId = artistId || null;
@@ -124,6 +137,15 @@ export function ManageUserModal({ open, onOpenChange, user, onSuccess }: ManageU
             options={[...USER_ACCOUNT_STATUS_SELECT_OPTIONS]}
             onSelectChange={setAccountStatus}
           />
+          {accountStatus === 'suspended' ? (
+            <RegularTextarea
+              label="Suspension reason"
+              value={suspensionReason}
+              onChange={e => setSuspensionReason(e.target.value)}
+              rows={3}
+              placeholder="Reason shown to the user when they try to sign in"
+            />
+          ) : null}
           <RegularSelect
             label="Linked artist"
             value={artistId}

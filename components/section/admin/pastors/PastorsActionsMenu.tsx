@@ -17,6 +17,8 @@ interface PastorsActionsMenuProps {
   onDelete: (item: PastorListItem) => void;
   onToggleActive: (item: PastorListItem) => void;
   onToggleFeatured: (item: PastorListItem) => void;
+  onSuspend?: (item: PastorListItem) => void;
+  onUnsuspend?: (item: PastorListItem) => void;
 }
 
 export function PastorsActionsMenu({
@@ -25,9 +27,13 @@ export function PastorsActionsMenu({
   onDelete,
   onToggleActive,
   onToggleFeatured,
+  onSuspend,
+  onUnsuspend,
 }: PastorsActionsMenuProps) {
   const isActive = item.isActive !== false;
   const isFeatured = item.isFeatured === true;
+  const isSuspended = item.profileStatus === 'suspended';
+  const canSuspend = item.profileStatus === 'active' || (isActive && !isSuspended);
 
   return (
     <DropdownMenu>
@@ -45,6 +51,12 @@ export function PastorsActionsMenu({
         <DropdownMenuItem onClick={() => onToggleFeatured(item)}>
           {isFeatured ? 'Remove featured' : 'Mark featured'}
         </DropdownMenuItem>
+        {canSuspend && onSuspend ? (
+          <DropdownMenuItem onClick={() => onSuspend(item)}>Suspend</DropdownMenuItem>
+        ) : null}
+        {isSuspended && onUnsuspend ? (
+          <DropdownMenuItem onClick={() => onUnsuspend(item)}>Unsuspend</DropdownMenuItem>
+        ) : null}
         <DropdownMenuSeparator />
         <DropdownMenuItem
           className="text-destructive focus:text-destructive"

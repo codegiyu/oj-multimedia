@@ -110,6 +110,8 @@ export function MarketplacePageClient({
   const [createProductOpen, setCreateProductOpen] = useState(false);
   const [approveTarget, setApproveTarget] = useState<MarketplaceRowData | null>(null);
   const [rejectTarget, setRejectTarget] = useState<MarketplaceRowData | null>(null);
+  const [suspendTarget, setSuspendTarget] = useState<IMarketplaceVendor | null>(null);
+  const [unsuspendTarget, setUnsuspendTarget] = useState<IMarketplaceVendor | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<MarketplaceRowData | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
   const [productCategoryOptions, setProductCategoryOptions] = useState<SelectOption[]>([
@@ -285,6 +287,41 @@ export function MarketplacePageClient({
     }
   };
 
+  const handleSuspend = async (reason: string) => {
+    if (!suspendTarget) return;
+    setActionLoading(true);
+    try {
+      const { error } = await callApi('ADMIN_VENDOR_SUSPEND', {
+        query: `/${suspendTarget._id}/suspend` as `/${string}`,
+        payload: { reason },
+      });
+      if (error) throw new Error(error.message);
+      setSuspendTarget(null);
+      handleRefresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Suspend failed');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleUnsuspend = async () => {
+    if (!unsuspendTarget) return;
+    setActionLoading(true);
+    try {
+      const { error } = await callApi('ADMIN_VENDOR_UNSUSPEND', {
+        query: `/${unsuspendTarget._id}/unsuspend` as `/${string}`,
+      });
+      if (error) throw new Error(error.message);
+      setUnsuspendTarget(null);
+      handleRefresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Unsuspend failed');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   const handleDelete = async () => {
     if (!deleteTarget) return;
     setActionLoading(true);
@@ -438,6 +475,36 @@ export function MarketplacePageClient({
             loading={actionLoading}
           />
 
+          <RejectModal
+            open={!!suspendTarget}
+            onOpenChange={val => !val && setSuspendTarget(null)}
+            title="Suspend vendor"
+            description={
+              suspendTarget
+                ? `Suspend "${suspendTarget.storeName}"? The store will be hidden publicly.`
+                : ''
+            }
+            confirmText="Suspend"
+            reasonLabel="Suspension reason"
+            reasonPlaceholder="Reason shown to the vendor in their portal"
+            onConfirm={handleSuspend}
+            loading={actionLoading}
+          />
+
+          <ApprovalModal
+            open={!!unsuspendTarget}
+            onOpenChange={val => !val && setUnsuspendTarget(null)}
+            title="Unsuspend vendor"
+            description={
+              unsuspendTarget
+                ? `Restore "${unsuspendTarget.storeName}" to active? Pending appeals for this profile will be resolved.`
+                : ''
+            }
+            confirmText="Unsuspend"
+            onConfirm={handleUnsuspend}
+            loading={actionLoading}
+          />
+
           {deleteTarget && (
             <ApprovalModal
               open={!!deleteTarget}
@@ -471,6 +538,8 @@ export function MarketplacePageClient({
           onPageChange={setPage}
           onApprove={r => setApproveTarget(r)}
           onReject={r => setRejectTarget(r)}
+          onSuspend={r => setSuspendTarget(r)}
+          onUnsuspend={r => setUnsuspendTarget(r)}
           onDelete={r => setDeleteTarget(r)}
         />
       )}

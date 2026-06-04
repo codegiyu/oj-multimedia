@@ -8,7 +8,7 @@ import type { ArtistListItem } from '@/lib/types/community';
 import { ArtistsTableContent } from './ArtistsTableContent';
 import { ArtistsDetailsDrawer } from './ArtistsDetailsDrawer';
 import { CreateArtistModal } from './CreateArtistModal';
-import { ApprovalModal } from '@/components/section/admin/shared';
+import { ApprovalModal, RejectModal } from '@/components/section/admin/shared';
 import { callApi } from '@/lib/services/callApi';
 import { RegularBtn } from '@/components/atoms/RegularBtn';
 import { Plus } from 'lucide-react';
@@ -51,6 +51,8 @@ export function ArtistsPageClient({
   const [createOpen, setCreateOpen] = useState(false);
   const [editArtistId, setEditArtistId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<ArtistListItem | null>(null);
+  const [suspendTarget, setSuspendTarget] = useState<ArtistListItem | null>(null);
+  const [unsuspendTarget, setUnsuspendTarget] = useState<ArtistListItem | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
 
   const handleRefresh = () => router.refresh();
@@ -68,6 +70,41 @@ export function ArtistsPageClient({
       return;
     }
     handleRefresh();
+  };
+
+  const handleSuspend = async (reason: string) => {
+    if (!suspendTarget) return;
+    setActionLoading(true);
+    try {
+      const { error } = await callApi('ADMIN_ARTIST_SUSPEND', {
+        query: `/${suspendTarget._id}/suspend` as `/${string}`,
+        payload: { reason },
+      });
+      if (error) throw new Error(error.message);
+      setSuspendTarget(null);
+      handleRefresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Suspend failed');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleUnsuspend = async () => {
+    if (!unsuspendTarget) return;
+    setActionLoading(true);
+    try {
+      const { error } = await callApi('ADMIN_ARTIST_UNSUSPEND', {
+        query: `/${unsuspendTarget._id}/unsuspend` as `/${string}`,
+      });
+      if (error) throw new Error(error.message);
+      setUnsuspendTarget(null);
+      handleRefresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Unsuspend failed');
+    } finally {
+      setActionLoading(false);
+    }
   };
 
   const handleDelete = async () => {
@@ -149,6 +186,27 @@ export function ArtistsPageClient({
               loading={actionLoading}
             />
           )}
+
+          <RejectModal
+            open={!!suspendTarget}
+            onOpenChange={val => !val && setSuspendTarget(null)}
+            title="Suspend artist"
+            description={suspendTarget ? `Suspend "${suspendTarget.name}"?` : ''}
+            confirmText="Suspend"
+            reasonLabel="Suspension reason"
+            onConfirm={handleSuspend}
+            loading={actionLoading}
+          />
+
+          <ApprovalModal
+            open={!!unsuspendTarget}
+            onOpenChange={val => !val && setUnsuspendTarget(null)}
+            title="Unsuspend artist"
+            description={unsuspendTarget ? `Restore "${unsuspendTarget.name}" to active?` : ''}
+            confirmText="Unsuspend"
+            onConfirm={handleUnsuspend}
+            loading={actionLoading}
+          />
         </>
       }>
       <ArtistsTableContent
@@ -166,6 +224,8 @@ export function ArtistsPageClient({
         onDelete={setDeleteTarget}
         onToggleActive={row => patchArtist(row, { isActive: row.isActive === false })}
         onToggleFeatured={row => patchArtist(row, { isFeatured: !row.isFeatured })}
+        onSuspend={setSuspendTarget}
+        onUnsuspend={setUnsuspendTarget}
       />
     </AdminDashboardListLayout>
   );
