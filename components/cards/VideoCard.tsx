@@ -108,7 +108,7 @@ export const VideoCard = ({
           <FavoriteButton
             entityType="video"
             entityId={_id!}
-            className="shrink-0 self-center opacity-0 group-hover:opacity-100 transition-opacity"
+            className="shrink-0 self-center opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity touch-hit"
           />
         )}
       </motion.div>
@@ -185,7 +185,7 @@ export const VideoCard = ({
         )}
 
         {isShortFormVariant && detailHref && (
-          <div className="absolute bottom-2 left-2 z-10 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="absolute bottom-2 left-2 z-10 flex flex-col gap-1 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity [&_button]:min-h-9 [&_button]:min-w-9">
             <FavoriteButton
               entityType="video"
               entityId={_id!}
@@ -294,7 +294,7 @@ export const VideoCard = ({
                 type="button"
                 variant="ghost"
                 size="icon-sm"
-                className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                className="shrink-0 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity touch-hit"
                 aria-label="More options"
                 onClick={e => e.preventDefault()}>
                 <MoreVertical className="w-4 h-4" />

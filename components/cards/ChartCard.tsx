@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { AppLink } from '@/components/atoms/AppLink';
 import { FillImage } from '@/components/general/FillImage';
+import { cn } from '@/lib/utils';
 import {
   chartEntryBadgeLabel,
   chartMovementAriaLabel,
@@ -121,8 +122,17 @@ function ChartStatsCell({
   );
 }
 
-function ChartCardBody({
-  rank,
+function ChartPlayButton({ detailHref, title }: { detailHref: string; title: string }) {
+  return (
+    <Button variant="play" size="icon-sm" className="shrink-0 touch-hit" asChild>
+      <AppLink href={detailHref} aria-label={`Play ${title}`}>
+        <Play className="ml-0.5 h-4 w-4 fill-current" />
+      </AppLink>
+    </Button>
+  );
+}
+
+function ChartCardBottomRow({
   title,
   artistName,
   cover,
@@ -132,7 +142,6 @@ function ChartCardBody({
   chartEntry,
   detailHref,
 }: {
-  rank: number;
   title: string;
   artistName: string;
   cover: string;
@@ -146,7 +155,7 @@ function ChartCardBody({
     <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg">
       <FillImage imageContext="public" src={cover} alt="" sizes="48px" />
       {detailHref ? (
-        <div className="absolute inset-0 flex items-center justify-center bg-foreground/30 opacity-0 transition-opacity group-hover:opacity-100">
+        <div className="absolute inset-0 flex items-center justify-center bg-foreground/30 opacity-0 transition-opacity group-hover:opacity-100 pointer-events-none">
           <Play className="h-4 w-4 fill-current text-primary-foreground" aria-hidden />
         </div>
       ) : null}
@@ -157,7 +166,10 @@ function ChartCardBody({
     <div className="min-w-0 flex-1">
       <div className="flex min-w-0 items-center gap-2">
         <h4
-          className={`truncate font-medium ${detailHref ? 'transition-colors group-hover:text-primary' : ''}`}>
+          className={cn(
+            'truncate font-medium min-w-0',
+            detailHref && 'transition-colors group-hover:text-primary'
+          )}>
           {title}
         </h4>
         <ChartEntryBadge chartEntry={chartEntry} />
@@ -173,24 +185,27 @@ function ChartCardBody({
   );
 
   return (
-    <>
-      <ChartRankCell rank={rank} />
+    <div className="flex min-w-0 items-center gap-3">
       {coverBlock}
       {metaBlock}
       <ChartStatsCell plays={plays} trend={trend} change={change} />
-    </>
+    </div>
   );
 }
 
 export function ChartCardsLegend({ className = '' }: { className?: string }) {
   return (
     <div
-      className={`mb-3 hidden grid-cols-[2.5rem_3rem_1fr_5.5rem] items-end gap-4 px-4 text-[10px] font-medium uppercase tracking-wide text-muted-foreground sm:grid ${className}`}
+      className={cn(
+        'mb-3 hidden text-[10px] font-medium uppercase tracking-wide text-muted-foreground sm:block',
+        className
+      )}
       aria-hidden>
-      <span>Rank</span>
-      <span className="col-span-1">Track</span>
-      <span />
-      <span className="text-right">Plays / Movement</span>
+      <div className="grid grid-cols-[1fr_5.5rem] items-end gap-4 px-1 sm:grid-cols-[3rem_1fr_5.5rem] sm:px-4">
+        <span className="hidden sm:block">Track</span>
+        <span className="sm:col-start-2">Details</span>
+        <span className="text-right">Plays / Movement</span>
+      </div>
     </div>
   );
 }
@@ -213,39 +228,24 @@ export const ChartCard = ({
     <motion.article
       whileHover={{ x: 4 }}
       transition={{ duration: 0.2 }}
-      className="group flex items-center gap-3 rounded-xl border border-border/70 bg-card p-3 shadow-sm transition-colors hover:border-border hover:bg-muted/30">
+      className="group flex flex-col gap-2 rounded-xl border border-border/70 bg-card p-3 shadow-sm transition-colors hover:border-border hover:bg-muted/30">
       {detailHref ? (
-        <>
-          <AppLink
-            href={detailHref}
-            className="flex min-w-0 flex-1 items-center gap-3"
-            aria-label={`View ${title} by ${artistName}`}>
-            <ChartCardBody
-              rank={rank}
-              title={title}
-              artistName={artistName}
-              cover={cover}
-              plays={plays}
-              trend={trend}
-              change={change}
-              chartEntry={chartEntry}
-              detailHref={detailHref}
-            />
-          </AppLink>
-          <Button
-            variant="play"
-            size="icon-sm"
-            className="shrink-0 opacity-0 transition-opacity group-hover:opacity-100"
-            asChild>
-            <AppLink href={detailHref} aria-label={`Play ${title}`}>
-              <Play className="ml-0.5 h-4 w-4 fill-current" />
-            </AppLink>
-          </Button>
-        </>
+        <div className="flex items-center justify-between gap-3">
+          <ChartRankCell rank={rank} />
+          <ChartPlayButton detailHref={detailHref} title={title} />
+        </div>
       ) : (
-        <div className="flex min-w-0 flex-1 items-center gap-3">
-          <ChartCardBody
-            rank={rank}
+        <div className="flex items-center justify-between gap-3">
+          <ChartRankCell rank={rank} />
+        </div>
+      )}
+
+      {detailHref ? (
+        <AppLink
+          href={detailHref}
+          className="flex min-w-0"
+          aria-label={`View ${title} by ${artistName}`}>
+          <ChartCardBottomRow
             title={title}
             artistName={artistName}
             cover={cover}
@@ -253,8 +253,19 @@ export const ChartCard = ({
             trend={trend}
             change={change}
             chartEntry={chartEntry}
+            detailHref={detailHref}
           />
-        </div>
+        </AppLink>
+      ) : (
+        <ChartCardBottomRow
+          title={title}
+          artistName={artistName}
+          cover={cover}
+          plays={plays}
+          trend={trend}
+          change={change}
+          chartEntry={chartEntry}
+        />
       )}
     </motion.article>
   );
