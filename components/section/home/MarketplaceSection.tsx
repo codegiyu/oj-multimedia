@@ -49,7 +49,7 @@ export const MarketplaceSection = ({ products }: MarketplaceSectionProps) => {
       onPrev={() => scroll('left')}
       onNext={() => scroll('right')}
       extraButtons={
-        <Button variant="accent" size="sm" className="gap-2" asChild>
+        <Button variant="accent" size="default" className="gap-2 min-h-11" asChild>
           <Link href="/marketplace/become-vendor">
             <Store className="w-4 h-4" />
             Become a Vendor

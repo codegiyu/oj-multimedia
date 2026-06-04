@@ -45,6 +45,8 @@ const iconColorStyles = {
   },
 };
 
+const railNavButtonClass = 'touch-hit shrink-0';
+
 export const SectionHeader = ({
   icon: Icon,
   iconSlot,
@@ -66,63 +68,103 @@ export const SectionHeader = ({
 }: SectionHeaderProps) => {
   const colorStyles = iconColorStyles[iconColor];
 
+  const prevNextControls = showPrevNext ? (
+    <>
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={onPrev}
+        className={cn(railNavButtonClass, 'md:hidden')}
+        aria-label="Scroll section left">
+        <ChevronLeft className="w-5 h-5" />
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={onNext}
+        className={cn(railNavButtonClass, 'md:hidden')}
+        aria-label="Scroll section right">
+        <ChevronRight className="w-5 h-5" />
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={onPrev}
+        className={cn(railNavButtonClass, 'hidden md:flex')}
+        aria-label="Scroll section left">
+        <ChevronLeft className="w-5 h-5" />
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={onNext}
+        className={cn(railNavButtonClass, 'hidden md:flex')}
+        aria-label="Scroll section right">
+        <ChevronRight className="w-5 h-5" />
+      </Button>
+    </>
+  ) : null;
+
   return (
     <div className={cn('mb-8', className)}>
-      {/* Main Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-        <div className="flex items-center gap-3">
-          {iconSlot ??
-            (Icon ? (
-              <div
-                className={cn(
-                  'w-10 h-10 rounded-xl flex items-center justify-center',
-                  iconBackground || colorStyles.bg
-                )}>
-                <Icon className={cn('w-5 h-5', iconBackground ? '' : colorStyles.icon)} />
-              </div>
-            ) : null)}
-          <div>
-            <h2 className="section-header">{heading}</h2>
-            {subtext && <p className="text-muted-foreground text-sm">{subtext}</p>}
+      <div className="flex flex-col gap-4 mb-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div className="flex items-center gap-3 min-w-0">
+            {iconSlot ??
+              (Icon ? (
+                <div
+                  className={cn(
+                    'w-10 h-10 rounded-xl flex items-center justify-center shrink-0',
+                    iconBackground || colorStyles.bg
+                  )}>
+                  <Icon className={cn('w-5 h-5', iconBackground ? '' : colorStyles.icon)} />
+                </div>
+              ) : null)}
+            <div className="min-w-0">
+              <h2 className="section-header">{heading}</h2>
+              {subtext && <p className="text-muted-foreground text-sm">{subtext}</p>}
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+            {prevNextControls}
+            {extraButtons ? (
+              <div className="hidden md:flex items-center gap-2">{extraButtons}</div>
+            ) : null}
+            {viewAllLink && (
+              <Button
+                variant="ghost"
+                className="gap-2 text-muted-foreground hover:text-primary min-h-11"
+                asChild>
+                <Link href={viewAllLink}>
+                  {viewAllLabel}
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </Button>
+            )}
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          {showPrevNext && (
-            <>
-              <Button variant="ghost" size="icon" onClick={onPrev} className="hidden md:flex">
-                <ChevronLeft className="w-5 h-5" />
-              </Button>
-              <Button variant="ghost" size="icon" onClick={onNext} className="hidden md:flex">
-                <ChevronRight className="w-5 h-5" />
-              </Button>
-            </>
-          )}
-          {extraButtons}
-          {viewAllLink && (
-            <Button
-              variant="ghost"
-              className="gap-2 text-muted-foreground hover:text-primary"
-              asChild>
-              <Link href={viewAllLink}>
-                {viewAllLabel}
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-            </Button>
-          )}
-        </div>
-      </div>
+        {tabs && tabs.length > 0 && (
+          <div className="relative">
+            <SectionTabs
+              tabs={tabs}
+              queryKey={tabsQueryKey}
+              defaultTab={defaultTab}
+              onTabChange={onTabChange}
+              iconColor={iconColor}
+            />
+            <div
+              className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-background to-transparent sm:w-12"
+              aria-hidden
+            />
+          </div>
+        )}
 
-      {/* Tabs - Only rendered when tabs are provided */}
-      {tabs && tabs.length > 0 && (
-        <SectionTabs
-          tabs={tabs}
-          queryKey={tabsQueryKey}
-          defaultTab={defaultTab}
-          onTabChange={onTabChange}
-          iconColor={iconColor}
-        />
-      )}
+        {extraButtons ? (
+          <div className="flex flex-wrap gap-2 md:hidden [&_button]:min-h-11">{extraButtons}</div>
+        ) : null}
+      </div>
     </div>
   );
 };

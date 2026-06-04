@@ -24,7 +24,9 @@ export const SectionComp = ({
   ...headerProps
 }: SectionCompProps) => {
   return (
-    <section id={id} className={cn('py-16 md:py-24', background || '', sectionClassName)}>
+    <section
+      id={id}
+      className={cn('py-10 md:py-24 scroll-mt-header', background || '', sectionClassName)}>
       <div className={cn('container mx-auto px-4', containerClassName)}>
         <SectionHeader {...headerProps} />
         <SectionContent {...contentProps}>{children}</SectionContent>
