@@ -30,8 +30,25 @@ describeWithWebServer('home page mobile', () => {
   test('header icon controls meet minimum touch height', async ({ page }) => {
     await page.goto('/');
     const header = page.locator('header').first();
-    const searchBtn = header.getByRole('button').first();
+    const searchBtn = header.getByRole('button', { name: 'Search' });
     const box = await searchBtn.boundingBox();
     expect(box?.height ?? 0).toBeGreaterThanOrEqual(44);
+  });
+
+  test('shows mobile jump nav and unified news tabs on small viewport', async ({ page }) => {
+    test.skip(
+      test.info().project.name !== 'iPhone 13',
+      'Jump nav and tab layout checks run on the mobile project only'
+    );
+    await page.goto('/');
+
+    const jumpNav = page.getByRole('navigation', { name: 'Jump to homepage section' });
+    await expect(jumpNav).toBeVisible();
+    await expect(jumpNav.getByRole('link', { name: 'Music' })).toBeVisible();
+
+    const newsTabs = page.getByRole('tablist', { name: 'News categories' });
+    await expect(newsTabs).toBeVisible();
+    await newsTabs.getByRole('tab', { name: 'Trending' }).click();
+    await expect(page.locator('#news h2')).toContainText(/Trending news/i);
   });
 });
