@@ -6,6 +6,7 @@ import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { UserDashboardNavItem } from '@/lib/constants/user-dashboard-nav';
 import { NavLinks } from './UserDashboardNavLinks';
+import { DashboardBrandBlock } from '@/components/layout/shared';
 
 export interface UserDashboardSidebarProps {
   brandTitle: string;
@@ -22,9 +23,13 @@ export function UserDashboardSidebar({
 
   return (
     <aside className="flex h-full w-64 flex-col border-r border-border bg-card">
-      <div className="flex flex-col gap-1 border-b border-border/80 px-4 py-6">
-        <p className="text-base font-bold text-foreground">{brandTitle}</p>
-        <p className="text-sm text-muted-foreground line-clamp-2">{brandSubtitle}</p>
+      <div className="border-b border-border/80 px-4 py-6">
+        <DashboardBrandBlock
+          title={brandTitle}
+          subtitle={brandSubtitle}
+          href="/account"
+          variant="sidebar"
+        />
       </div>
       <div className="flex-1 overflow-y-auto px-3 py-4">
         <NavLinks items={items} pathname={pathname} />
