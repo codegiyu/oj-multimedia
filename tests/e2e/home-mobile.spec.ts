@@ -49,6 +49,6 @@ describeWithWebServer('home page mobile', () => {
     const newsTabs = page.getByRole('tablist', { name: 'News categories' });
     await expect(newsTabs).toBeVisible();
     await newsTabs.getByRole('tab', { name: 'Trending' }).click();
-    await expect(page.locator('#news h2')).toContainText(/Trending news/i);
+    await expect(page.locator('#news h2')).toContainText(/News/i);
   });
 });

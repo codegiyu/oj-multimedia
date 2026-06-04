@@ -4,7 +4,7 @@ import type { IPublicMusicListRes } from '@/lib/constants/endpoints';
 import { ALL_CATEGORY_ID } from '@/lib/constants/contentTaxonomy';
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import { mapPublicMusicToHomeTrending } from '@/lib/utils/homeTrendingMappers';
-import { HOME_ISR } from './shared';
+import { HOME_ISR, getMusicCategoryNavForHome } from './shared';
 
 interface TrendingMusicSectionServerProps {
   musicCategorySlug: string;
@@ -42,5 +42,13 @@ export async function TrendingMusicSectionServer({
     mapPublicMusicToHomeTrending
   );
 
-  return <TrendingMusicSection music={music} categoryOptions={[]} />;
+  let categoryOptions: Awaited<ReturnType<typeof getMusicCategoryNavForHome>> = [];
+
+  try {
+    categoryOptions = await getMusicCategoryNavForHome();
+  } catch {
+    categoryOptions = [];
+  }
+
+  return <TrendingMusicSection music={music} categoryOptions={categoryOptions} />;
 }
