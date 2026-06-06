@@ -48,7 +48,14 @@ import {
   resolveContentArtistId,
 } from '@/lib/utils/adminMusicAlbumSelect';
 import { parseCommaSeparatedTags, formatTagsForInput } from '@/lib/utils/adminCommaTags';
-import { readAudioMetadata, type ClientMediaMetadata } from '@/lib/utils/mediaMetadataClient';
+import { MediaMetadataFields } from '@/components/section/admin/shared/MediaMetadataFields';
+import {
+  buildDurationMetadataPayload,
+  durationSecondsToParts,
+  EMPTY_MEDIA_DURATION_PARTS,
+  validateMediaDurationParts,
+  type MediaDurationParts,
+} from '@/lib/utils/mediaMetadataForm';
 
 interface CreateMusicModalProps {
   open: boolean;
@@ -109,7 +116,9 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
   ]);
   const [albumsLoading, setAlbumsLoading] = useState(false);
   const [createOwnerArtistId, setCreateOwnerArtistId] = useState('');
-  const [capturedMetadata, setCapturedMetadata] = useState<ClientMediaMetadata | null>(null);
+  const [durationParts, setDurationParts] = useState<MediaDurationParts>(
+    EMPTY_MEDIA_DURATION_PARTS
+  );
 
   const isEdit = Boolean(editId);
   const canPublish = Boolean((form.category ?? '').trim());
@@ -197,6 +206,7 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
       setOwnerMeta({ ownerLocked: false, ownerUserId: '', hasArtist: false });
       setEditListRow(null);
       setCreateOwnerArtistId('');
+      setDurationParts(EMPTY_MEDIA_DURATION_PARTS);
       return;
     }
     if (!editId) {
@@ -206,6 +216,7 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
       setOwnerMeta({ ownerLocked: false, ownerUserId: '', hasArtist: false });
       setEditListRow(null);
       setCreateOwnerArtistId('');
+      setDurationParts(EMPTY_MEDIA_DURATION_PARTS);
       return;
     }
     let cancelled = false;
@@ -244,6 +255,11 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
           hasArtist,
         });
         setAssignOwnerUserId('');
+        setDurationParts(
+          durationSecondsToParts(
+            (m as { metadata?: { durationSeconds?: number } }).metadata?.durationSeconds
+          )
+        );
       } finally {
         if (!cancelled) setDetailLoading(false);
       }
@@ -272,6 +288,9 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
       const downloadUrl = normalizeOptionalHttpUrl(form.downloadUrl ?? '', 'Download URL');
 
       assertMonetizationPriceClient(form.isMonetizable, form.price);
+      const durationError = validateMediaDurationParts(durationParts);
+      if (durationError) throw new Error(durationError);
+      const metadataPayload = buildDurationMetadataPayload(durationParts);
       const isMonetizable = Boolean(form.isMonetizable);
       const price = resolveMonetizationFormPrice(isMonetizable, form.price);
 
@@ -301,7 +320,7 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
           excerpt,
           category,
           tags,
-          ...(capturedMetadata ? { metadata: capturedMetadata } : {}),
+          ...metadataPayload,
           coverImage: finalCoverImage,
           audioUrl: finalAudioUrl,
           videoUrl: finalVideoUrl,
@@ -333,6 +352,7 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
           excerpt,
           category,
           tags,
+          ...metadataPayload,
           coverImage: finalCoverImage || undefined,
           audioUrl: finalAudioUrl || undefined,
           videoUrl: finalVideoUrl || undefined,
@@ -375,13 +395,13 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
             if (upload?.url) finalAudioUrl = upload.url;
           }
 
-          if (pendingCover || pendingAudio || capturedMetadata) {
+          if (pendingCover || pendingAudio || metadataPayload.metadata) {
             const patchRes = await callApi('ADMIN_MUSIC_UPDATE', {
               query: `/${createdId}` as `/${string}`,
               payload: {
                 coverImage: finalCoverImage,
                 audioUrl: finalAudioUrl,
-                ...(capturedMetadata ? { metadata: capturedMetadata } : {}),
+                ...metadataPayload,
               },
             });
 
@@ -392,6 +412,7 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
       }
 
       setForm(defaultForm);
+      setDurationParts(EMPTY_MEDIA_DURATION_PARTS);
       onOpenChange(false);
       onSuccess();
 
@@ -405,21 +426,14 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
   };
 
   const handleOpenChange = (val: boolean) => {
-    if (!val) setForm(defaultForm);
+    if (!val) {
+      setForm(defaultForm);
+      setDurationParts(EMPTY_MEDIA_DURATION_PARTS);
+    }
     onOpenChange(val);
   };
 
   const categorySelectOptions = ensureSelectContainsSlug(categoryOptions, form.category);
-  const handlePendingAudio = (file: File | null) => {
-    setPendingAudio(file);
-    if (!file) {
-      setCapturedMetadata(null);
-      return;
-    }
-    void readAudioMetadata(file)
-      .then(meta => setCapturedMetadata(meta))
-      .catch(() => setCapturedMetadata(null));
-  };
 
   const albumSelectOptions = ensureAlbumSelectContainsCurrent(
     albumOptions,
@@ -554,7 +568,13 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
               fallbackEntityIdPrefix="music-audio"
               intent="other"
               accept="audio/*"
-              onPendingFileChange={handlePendingAudio}
+              onPendingFileChange={setPendingAudio}
+            />
+            <MediaMetadataFields
+              idPrefix="admin-music"
+              value={durationParts}
+              onChange={setDurationParts}
+              disabled={loading}
             />
             <MonetizationFormFields
               idPrefix="admin-music"

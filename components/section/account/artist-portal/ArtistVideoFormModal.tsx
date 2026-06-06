@@ -37,6 +37,14 @@ import {
   PUBLISHABLE_STATUS_SELECT_OPTIONS,
   PUBLISHABLE_STATUS_VALUES,
 } from '@/lib/constants/adminSelectOptions';
+import { MediaMetadataFields } from '@/components/section/admin/shared/MediaMetadataFields';
+import {
+  buildDurationMetadataPayload,
+  durationSecondsToParts,
+  EMPTY_MEDIA_DURATION_PARTS,
+  validateMediaDurationParts,
+  type MediaDurationParts,
+} from '@/lib/utils/mediaMetadataForm';
 
 interface ArtistVideoFormModalProps {
   open: boolean;
@@ -69,6 +77,9 @@ export function ArtistVideoFormModal({
   const [editStatus, setEditStatus] = useState<'draft' | 'published' | 'archived'>('draft');
   const [pendingThumbnail, setPendingThumbnail] = useState<File | null>(null);
   const [pendingVideoFile, setPendingVideoFile] = useState<File | null>(null);
+  const [durationParts, setDurationParts] = useState<MediaDurationParts>(
+    EMPTY_MEDIA_DURATION_PARTS
+  );
 
   const isEdit = Boolean(editId);
   const { options: rawCategoryOptions, loading: categoriesLoading } = useContentCategoryOptions({
@@ -96,11 +107,13 @@ export function ArtistVideoFormModal({
     if (!open) {
       setForm(defaultForm);
       setEditStatus('draft');
+      setDurationParts(EMPTY_MEDIA_DURATION_PARTS);
       return;
     }
     if (!editId) {
       setForm(defaultForm);
       setEditStatus('draft');
+      setDurationParts(EMPTY_MEDIA_DURATION_PARTS);
       return;
     }
 
@@ -125,6 +138,11 @@ export function ArtistVideoFormModal({
           price: typeof v.price === 'number' ? v.price : Number(v.price) || 0,
         });
         setEditStatus(normalizeEnumValue(v.status, PUBLISHABLE_STATUS_VALUES, 'draft'));
+        setDurationParts(
+          durationSecondsToParts(
+            (v as { metadata?: { durationSeconds?: number } }).metadata?.durationSeconds
+          )
+        );
       } finally {
         if (!cancelled) setDetailLoading(false);
       }
@@ -148,6 +166,9 @@ export function ArtistVideoFormModal({
       const videoUrl = normalizeOptionalHttpUrl(form.videoUrl ?? '', 'Video URL');
 
       assertMonetizationPriceClient(form.isMonetizable, form.price);
+      const durationError = validateMediaDurationParts(durationParts);
+      if (durationError) throw new Error(durationError);
+      const metadataPayload = buildDurationMetadataPayload(durationParts);
       const isMonetizable = Boolean(form.isMonetizable);
       const price = resolveMonetizationFormPrice(isMonetizable, form.price);
 
@@ -184,6 +205,7 @@ export function ArtistVideoFormModal({
           isMonetizable,
           price,
           status: editStatus,
+          ...metadataPayload,
         };
 
         const res = await callApi('ARTIST_UPDATE_VIDEO', {
@@ -201,6 +223,7 @@ export function ArtistVideoFormModal({
           category,
           isMonetizable,
           price,
+          ...metadataPayload,
         };
 
         const res = await callApi('ARTIST_CREATE_VIDEO', { payload });
@@ -210,7 +233,7 @@ export function ArtistVideoFormModal({
           (res.data as { video?: { _id?: string } } | undefined)?.video?._id ??
           (res.data as { _id?: string } | undefined)?._id;
 
-        if (createdId && (pendingThumbnail || pendingVideoFile)) {
+        if (createdId && (pendingThumbnail || pendingVideoFile || metadataPayload.metadata)) {
           if (pendingThumbnail) {
             const upload = await thumbnailUpload.uploadFile({
               file: pendingThumbnail,
@@ -231,6 +254,7 @@ export function ArtistVideoFormModal({
             payload: {
               thumbnail: finalThumbnail,
               videoFileUrl: finalVideoFileUrl,
+              ...metadataPayload,
             },
           });
           if (patchRes.type !== 'success') {
@@ -240,6 +264,7 @@ export function ArtistVideoFormModal({
       }
 
       setForm(defaultForm);
+      setDurationParts(EMPTY_MEDIA_DURATION_PARTS);
       onOpenChange(false);
       onSuccess();
       toast.success(isEdit ? 'Video updated.' : 'Video saved as draft.');
@@ -332,6 +357,12 @@ export function ArtistVideoFormModal({
               value={form.embedUrl ?? ''}
               onChange={e => setForm(f => ({ ...f, embedUrl: e.target.value }))}
               placeholder="https://www.youtube.com/watch?v=..."
+            />
+            <MediaMetadataFields
+              idPrefix="artist-video"
+              value={durationParts}
+              onChange={setDurationParts}
+              disabled={loading}
             />
             <MonetizationFormFields
               idPrefix="artist-video"

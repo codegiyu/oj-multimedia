@@ -43,7 +43,14 @@ import {
   PUBLISHABLE_STATUS_VALUES,
 } from '@/lib/constants/adminSelectOptions';
 import { parseCommaSeparatedTags, formatTagsForInput } from '@/lib/utils/adminCommaTags';
-import { readVideoMetadata, type ClientMediaMetadata } from '@/lib/utils/mediaMetadataClient';
+import { MediaMetadataFields } from '@/components/section/admin/shared/MediaMetadataFields';
+import {
+  buildDurationMetadataPayload,
+  durationSecondsToParts,
+  EMPTY_MEDIA_DURATION_PARTS,
+  validateMediaDurationParts,
+  type MediaDurationParts,
+} from '@/lib/utils/mediaMetadataForm';
 
 interface CreateVideoModalProps {
   open: boolean;
@@ -96,7 +103,9 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
   const [editListRow, setEditListRow] = useState<ArtistVideoListItem | null>(null);
   const [pendingThumbnail, setPendingThumbnail] = useState<File | null>(null);
   const [pendingVideoFile, setPendingVideoFile] = useState<File | null>(null);
-  const [capturedMetadata, setCapturedMetadata] = useState<ClientMediaMetadata | null>(null);
+  const [durationParts, setDurationParts] = useState<MediaDurationParts>(
+    EMPTY_MEDIA_DURATION_PARTS
+  );
 
   const isEdit = Boolean(editId);
   const canPublish = Boolean((form.category ?? '').trim());
@@ -141,6 +150,7 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
       setAssignOwnerUserId('');
       setOwnerMeta({ ownerLocked: false, ownerUserId: '', hasArtist: false });
       setEditListRow(null);
+      setDurationParts(EMPTY_MEDIA_DURATION_PARTS);
       return;
     }
     if (!editId) {
@@ -149,6 +159,7 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
       setAssignOwnerUserId('');
       setOwnerMeta({ ownerLocked: false, ownerUserId: '', hasArtist: false });
       setEditListRow(null);
+      setDurationParts(EMPTY_MEDIA_DURATION_PARTS);
       return;
     }
     let cancelled = false;
@@ -184,6 +195,11 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
           hasArtist,
         });
         setAssignOwnerUserId('');
+        setDurationParts(
+          durationSecondsToParts(
+            (v as { metadata?: { durationSeconds?: number } }).metadata?.durationSeconds
+          )
+        );
       } finally {
         if (!cancelled) setDetailLoading(false);
       }
@@ -210,6 +226,9 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
       const tags = parseCommaSeparatedTags(form.tags);
 
       assertMonetizationPriceClient(form.isMonetizable, form.price);
+      const durationError = validateMediaDurationParts(durationParts);
+      if (durationError) throw new Error(durationError);
+      const metadataPayload = buildDurationMetadataPayload(durationParts);
       const isMonetizable = Boolean(form.isMonetizable);
       const price = resolveMonetizationFormPrice(isMonetizable, form.price);
 
@@ -243,7 +262,7 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
           embedUrl,
           category,
           tags,
-          ...(capturedMetadata ? { metadata: capturedMetadata } : {}),
+          ...metadataPayload,
           isMonetizable,
           price,
           status: editStatus,
@@ -267,6 +286,7 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
           embedUrl,
           category,
           tags,
+          ...metadataPayload,
           isMonetizable,
           price,
           status: createStatus,
@@ -293,13 +313,13 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
             });
             if (upload?.url) finalVideoFileUrl = upload.url;
           }
-          if (pendingThumbnail || pendingVideoFile || capturedMetadata) {
+          if (pendingThumbnail || pendingVideoFile || metadataPayload.metadata) {
             const patchRes = await callApi('ADMIN_VIDEO_UPDATE', {
               query: `/${createdId}` as `/${string}`,
               payload: {
                 thumbnail: finalThumbnail,
                 videoFileUrl: finalVideoFileUrl,
-                ...(capturedMetadata ? { metadata: capturedMetadata } : {}),
+                ...metadataPayload,
               },
             });
             if (patchRes.type !== 'success')
@@ -308,6 +328,7 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
         }
       }
       setForm(defaultForm);
+      setDurationParts(EMPTY_MEDIA_DURATION_PARTS);
       onOpenChange(false);
       onSuccess();
       toast.success(isEdit ? 'Video updated.' : 'Video created.');
@@ -320,22 +341,14 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
   };
 
   const handleOpenChange = (val: boolean) => {
-    if (!val) setForm(defaultForm);
+    if (!val) {
+      setForm(defaultForm);
+      setDurationParts(EMPTY_MEDIA_DURATION_PARTS);
+    }
     onOpenChange(val);
   };
 
   const categorySelectOptions = ensureSelectContainsSlug(categoryOptions, form.category);
-
-  const handlePendingVideoFile = (file: File | null) => {
-    setPendingVideoFile(file);
-    if (!file) {
-      setCapturedMetadata(null);
-      return;
-    }
-    void readVideoMetadata(file)
-      .then(meta => setCapturedMetadata(meta))
-      .catch(() => setCapturedMetadata(null));
-  };
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -429,12 +442,18 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
               fallbackEntityIdPrefix="video-file"
               intent="other"
               accept="video/*"
-              onPendingFileChange={handlePendingVideoFile}
+              onPendingFileChange={setPendingVideoFile}
             />
             <RegularInput
               label="Embed URL (YouTube)"
               value={form.embedUrl ?? ''}
               onChange={e => setForm(f => ({ ...f, embedUrl: e.target.value }))}
+            />
+            <MediaMetadataFields
+              idPrefix="admin-video"
+              value={durationParts}
+              onChange={setDurationParts}
+              disabled={loading}
             />
             <MonetizationFormFields
               idPrefix="admin-video"

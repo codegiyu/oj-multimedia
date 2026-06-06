@@ -1,6 +1,12 @@
 /** Mirrors oj-backend videoSections.ts duration thresholds for admin guidance. */
-export const SHORT_FORM_MAX_DURATION_SECONDS = 90;
-export const LONG_FORM_MIN_DURATION_SECONDS = 600;
+export const VIDEO_DURATION_BUCKET_UNDER_5_MAX_SECONDS = 300;
+export const VIDEO_DURATION_BUCKET_LONG_FORM_MIN_SECONDS = 1200;
+
+/** @deprecated Use VIDEO_DURATION_BUCKET_UNDER_5_MAX_SECONDS - 1 for display copy. */
+export const SHORT_FORM_MAX_DURATION_SECONDS = VIDEO_DURATION_BUCKET_UNDER_5_MAX_SECONDS - 1;
+
+/** @deprecated Use VIDEO_DURATION_BUCKET_LONG_FORM_MIN_SECONDS. */
+export const LONG_FORM_MIN_DURATION_SECONDS = VIDEO_DURATION_BUCKET_LONG_FORM_MIN_SECONDS;
 
 /** Mirrors oj-backend newsSections.ts breaking-news rules. */
 export const BREAKING_NEWS_MIN_PRIORITY = 4;
@@ -108,27 +114,27 @@ export const ADMIN_CONTENT_SECTION_GUIDES: Record<AdminContentScope, AdminConten
       {
         name: 'Short-form',
         surfaces: 'Short-form hub and short clips sections',
-        qualification: `Category is Short Clips (or legacy short slug), or detected duration is ${SHORT_FORM_MAX_DURATION_SECONDS} seconds or less.`,
+        qualification: `Category is Short Clips (or legacy short slug), or detected duration is under ${VIDEO_DURATION_BUCKET_UNDER_5_MAX_SECONDS} seconds (5 minutes).`,
         sorting: 'Newest first.',
         adminControls: [
           'Set category to Short Clips for clip-style content',
-          'Duration is captured automatically when a video file URL is uploaded or probed',
+          'Enter duration manually (hours, minutes, seconds) or rely on backend probing after save',
         ],
       },
       {
         name: 'Long-form',
         surfaces: 'Long-form / movies hub (/videos/long-form)',
-        qualification: `Category is Movie / long-form, or detected duration is ${LONG_FORM_MIN_DURATION_SECONDS} seconds (${LONG_FORM_MIN_DURATION_SECONDS / 60} minutes) or more.`,
+        qualification: `Category is Movie / long-form, or detected duration is ${VIDEO_DURATION_BUCKET_LONG_FORM_MIN_SECONDS} seconds (${VIDEO_DURATION_BUCKET_LONG_FORM_MIN_SECONDS / 60} minutes) or more.`,
         sorting: 'Newest first.',
         adminControls: [
           'Use a movie or long-form category for films and extended content',
-          'Long uploads get duration metadata automatically when probed',
+          'Enter duration manually or rely on backend probing (including YouTube embed URLs when configured)',
         ],
       },
     ],
     notes: [
-      'Short-form and long-form use category OR duration — either can qualify a video.',
-      'YouTube or embed-only URLs may not receive duration metadata; category is the reliable lever in those cases.',
+      'Short-form and long-form use category when duration is missing; otherwise duration buckets apply.',
+      'Manual duration is stored as seconds and may be overwritten when a probe succeeds.',
     ],
   },
   news: {
