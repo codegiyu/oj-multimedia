@@ -3,26 +3,11 @@ import { VIDEOS_ITEMS, type VideoItem } from '@/lib/constants/videos';
 import {
   ALL_CATEGORY_ID,
   VIDEO_CATEGORIES,
+  getVideoCategoryLabel,
   normalizeCategoryId,
 } from '@/lib/constants/contentTaxonomy';
 
 export type VideoItemCreator = { _id: string; name: string };
-
-/** Video category to display label for home section */
-function videoCategoryToLabel(category: VideoItem['category']): string {
-  const map: Record<VideoItem['category'], string> = {
-    music: 'Music Videos',
-    short: 'Short Clips',
-    talks: 'Talks',
-    creative: 'Creative',
-    inspirational: 'Inspirational',
-    live: 'Live Performances',
-    podcasts: 'Podcasts',
-    sermon: 'Sermon',
-    movie: 'Movies',
-  };
-  return map[category] ?? category;
-}
 
 /**
  * Get trending videos for the home page (from VIDEOS_ITEMS with isTrending)
@@ -45,7 +30,7 @@ export function getTrendingVideosForHome(limit: number = 12): Array<{
       thumbnail: item.thumbnail,
       views: item.views ?? '0',
       duration: item.duration ?? '0:00',
-      category: videoCategoryToLabel(item.category),
+      category: getVideoCategoryLabel(item.category),
     }));
 }
 

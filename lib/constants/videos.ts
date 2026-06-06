@@ -1,3 +1,7 @@
+import type { VideoCategorySlug } from '@/lib/constants/contentTaxonomy';
+
+export type { VideoCategorySlug };
+
 /**
  * Unified Video Item Type
  * This type represents all video items across different sections.
@@ -12,16 +16,7 @@ export interface VideoItem {
   /** Artist profile _id (e.g. 'ap-1'). Getters populate to { _id, name }. */
   creator: string;
   thumbnail: string;
-  category:
-    | 'music'
-    | 'short'
-    | 'talks'
-    | 'creative'
-    | 'inspirational'
-    | 'live'
-    | 'podcasts'
-    | 'sermon'
-    | 'movie';
+  category: VideoCategorySlug;
   // Trending Video fields
   views?: string;
   duration?: string;
