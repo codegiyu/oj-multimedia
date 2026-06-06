@@ -1,7 +1,6 @@
 import { HomeNewsTabsClient } from '@/components/section/home/HomeNewsTabsClient';
 import { SectionLoadError } from '@/components/general/SectionLoadError';
-import type { IPublicNewsListRes } from '@/lib/constants/endpoints';
-import { callPublicServerApi } from '@/lib/services/serverApi';
+import { fetchPublicNewsArticles } from '@/app/news/_sections/shared';
 import type { NewsArticle } from '@/components/section/home/NewsSection';
 import { HOME_ISR, mapArticleToNewsCard } from './shared';
 
@@ -9,31 +8,18 @@ async function fetchNewsByType(type: 'featured' | 'trending' | 'latest'): Promis
   articles: NewsArticle[];
   error: string | null;
 }> {
-  const query = new URLSearchParams({
-    limit: '6',
-    page: '1',
-    status: 'published',
+  const { articles, error } = await fetchPublicNewsArticles({
+    category: 'all',
+    limit: 6,
+    page: 1,
     type,
+    fetchOptions: HOME_ISR,
   });
 
-  const res = await callPublicServerApi(
-    'PUBLIC_GET_NEWS',
-    { query: `?${query.toString()}` },
-    HOME_ISR
-  );
-
-  if (res.type === 'error') {
-    return {
-      articles: [],
-      error: res.error?.message ?? `Failed to load ${type} news`,
-    };
-  }
-
-  const articles = ((res.data as IPublicNewsListRes | undefined)?.articles ?? []).map(
-    mapArticleToNewsCard
-  );
-
-  return { articles, error: null };
+  return {
+    articles: articles.map(mapArticleToNewsCard),
+    error,
+  };
 }
 
 export async function HomeNewsSection() {

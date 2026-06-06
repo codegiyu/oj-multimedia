@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { Newspaper } from 'lucide-react';
+import { newsSectionHeaderIcon } from './_sections/sectionIcons';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { NewsHero } from '@/components/section/news/NewsHero';
 import { SectionComp } from '@/components/general/SectionComp';
@@ -48,8 +49,7 @@ export default async function NewsPage({ searchParams }: NewsPageProps) {
         <FeaturedStoriesSection category={category} />
       </Suspense>
       <SectionComp
-        icon={Newspaper}
-        iconColor="primary"
+        iconSlot={newsSectionHeaderIcon(Newspaper)}
         heading="Latest Stories"
         subtext="Stay updated with the latest news and stories"
         contentProps={{ enableAnimation: false }}>

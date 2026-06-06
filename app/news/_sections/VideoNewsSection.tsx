@@ -1,11 +1,9 @@
 import { VideoNews } from '@/components/section/news/VideoNews';
 import { VideoNewsPageClient } from '@/components/section/news/VideoNewsPageClient';
 import { SectionLoadError } from '@/components/general/SectionLoadError';
-import { callPublicServerApi } from '@/lib/services/serverApi';
 import { NEWS_TYPES } from '@/lib/constants/contentTaxonomy';
 import { mapPublicNewsToVideoNewsItem } from '@/lib/utils/publicApiMappers';
-import { buildNewsBrowseQuery } from '@/lib/utils/newsBrowse';
-import type { NewsSectionProps } from './shared';
+import { fetchPublicNewsArticles, type NewsSectionProps } from './shared';
 
 type VideoNewsSectionProps = NewsSectionProps & {
   variant?: 'hub' | 'subpage';
@@ -22,22 +20,19 @@ export async function VideoNewsSection({
   maxItems = 4,
   showCategoryNav = false,
 }: VideoNewsSectionProps) {
-  const query =
-    variant === 'hub'
-      ? buildNewsBrowseQuery(category, 1, { limit, type: NEWS_TYPES.video })
-      : buildNewsBrowseQuery(category, page, { type: NEWS_TYPES.video });
-  const res = await callPublicServerApi('PUBLIC_GET_NEWS', { query }, fetchOptions);
+  const { articles, pagination, error } = await fetchPublicNewsArticles({
+    category,
+    page: variant === 'hub' ? 1 : page,
+    limit: variant === 'hub' ? limit : undefined,
+    type: NEWS_TYPES.video,
+    fetchOptions,
+  });
 
-  if (res.type === 'error') {
-    return (
-      <SectionLoadError
-        title="Video stories unavailable"
-        message={res.error?.message ?? 'Failed to load video stories'}
-      />
-    );
+  if (error && articles.length === 0) {
+    return <SectionLoadError title="Video stories unavailable" message={error} />;
   }
 
-  const videoNews = (res.data?.articles ?? [])
+  const videoNews = articles
     .map(mapPublicNewsToVideoNewsItem)
     .slice(0, variant === 'hub' ? maxItems : undefined);
 
@@ -46,7 +41,7 @@ export async function VideoNewsSection({
       <VideoNewsPageClient
         videoNews={videoNews}
         showCategoryNav={showCategoryNav}
-        pagination={res.data?.pagination ?? null}
+        pagination={pagination}
       />
     );
   }

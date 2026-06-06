@@ -1,30 +1,50 @@
 import { NewsFeed } from '@/components/section/news/NewsFeed';
+import { LatestStoriesPageClient } from '@/components/section/news/LatestStoriesPageClient';
 import { SectionLoadError } from '@/components/general/SectionLoadError';
-import { callPublicServerApi } from '@/lib/services/serverApi';
 import { NEWS_TYPES } from '@/lib/constants/contentTaxonomy';
 import { mapPublicNewsToFeedItem } from '@/lib/utils/publicApiMappers';
-import { buildNewsBrowseQuery } from '@/lib/utils/newsBrowse';
-import type { NewsSectionProps } from './shared';
+import { fetchPublicNewsArticles, type NewsSectionProps } from './shared';
+
+type LatestFeedSectionProps = NewsSectionProps & {
+  variant?: 'hub' | 'subpage';
+  maxItems?: number;
+  showCategoryNav?: boolean;
+};
 
 export async function LatestFeedSection({
   category,
   limit = 15,
+  page = 1,
   fetchOptions,
+  variant = 'hub',
   maxItems = 10,
-}: NewsSectionProps & { maxItems?: number }) {
-  const query = buildNewsBrowseQuery(category, 1, { limit, type: NEWS_TYPES.latest });
-  const res = await callPublicServerApi('PUBLIC_GET_NEWS', { query }, fetchOptions);
+  showCategoryNav = false,
+}: LatestFeedSectionProps) {
+  const { articles, pagination, error } = await fetchPublicNewsArticles({
+    category,
+    page: variant === 'hub' ? 1 : page,
+    limit: variant === 'hub' ? limit : undefined,
+    type: NEWS_TYPES.latest,
+    fetchOptions,
+  });
 
-  if (res.type === 'error') {
+  if (error && articles.length === 0) {
+    return <SectionLoadError title="Latest stories unavailable" message={error} />;
+  }
+
+  const newsItems = articles
+    .map(mapPublicNewsToFeedItem)
+    .slice(0, variant === 'hub' ? maxItems : undefined);
+
+  if (variant === 'subpage') {
     return (
-      <SectionLoadError
-        title="Latest stories unavailable"
-        message={res.error?.message ?? 'Failed to load latest stories'}
+      <LatestStoriesPageClient
+        newsItems={newsItems}
+        showCategoryNav={showCategoryNav}
+        pagination={pagination}
       />
     );
   }
-
-  const newsItems = (res.data?.articles ?? []).map(mapPublicNewsToFeedItem).slice(0, maxItems);
 
   return <NewsFeed items={newsItems} />;
 }

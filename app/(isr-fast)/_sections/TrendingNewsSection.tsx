@@ -1,41 +1,28 @@
 import { NewsSection } from '@/components/section/home';
 import { SectionLoadError } from '@/components/general/SectionLoadError';
-import type { IPublicNewsListRes } from '@/lib/constants/endpoints';
-import { callPublicServerApi } from '@/lib/services/serverApi';
+import { fetchPublicNewsArticles } from '@/app/news/_sections/shared';
 import { HOME_ISR, mapArticleToNewsCard } from './shared';
 
 export async function TrendingNewsSection() {
-  const query = new URLSearchParams({
-    limit: '6',
-    page: '1',
-    status: 'published',
+  const { articles, error } = await fetchPublicNewsArticles({
+    category: 'all',
+    limit: 6,
+    page: 1,
     type: 'trending',
+    fetchOptions: HOME_ISR,
   });
 
-  const res = await callPublicServerApi(
-    'PUBLIC_GET_NEWS',
-    { query: `?${query.toString()}` },
-    HOME_ISR
-  );
-
-  if (res.type === 'error') {
-    return (
-      <SectionLoadError
-        title="Trending news unavailable"
-        message={res.error?.message ?? 'Failed to load trending news'}
-      />
-    );
+  if (error && articles.length === 0) {
+    return <SectionLoadError title="Trending news unavailable" message={error} />;
   }
 
-  const articles = ((res.data as IPublicNewsListRes | undefined)?.articles ?? []).map(
-    mapArticleToNewsCard
-  );
+  const mapped = articles.map(mapArticleToNewsCard);
 
-  if (articles.length === 0) return null;
+  if (mapped.length === 0) return null;
 
   return (
     <NewsSection
-      articles={articles}
+      articles={mapped}
       heading="Trending news"
       subtext="What readers engage with most"
       viewAllLink="/news/trending"
