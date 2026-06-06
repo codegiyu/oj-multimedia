@@ -1,6 +1,7 @@
 import { CreatorSpotlight } from '@/components/section/video/CreatorSpotlight';
 import { SectionLoadError } from '@/components/general/SectionLoadError';
 import { callPublicServerApi } from '@/lib/services/serverApi';
+import { buildArtistsBrowseQuery } from '@/lib/utils/artistsBrowse';
 import { mapPublicArtistToFeaturedCreator } from '@/lib/utils/publicApiMappers';
 import type { VideoSectionProps } from './shared';
 
@@ -10,7 +11,7 @@ export async function CreatorSpotlightSection({
 }: VideoSectionProps & { maxItems?: number }) {
   const res = await callPublicServerApi(
     'PUBLIC_GET_ARTISTS',
-    { query: '?page=1&limit=6' as `?${string}` },
+    { query: buildArtistsBrowseQuery(1, { limit: 6, scope: 'spotlight' }) },
     fetchOptions
   );
 

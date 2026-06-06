@@ -315,6 +315,13 @@ export interface ArtistListItem {
   songs?: number;
   isActive?: boolean;
   isFeatured?: boolean;
+  isRising?: boolean;
+  isMusicFeatured?: boolean;
+  isCreatorSpotlight?: boolean;
+  displayOrder?: number;
+  risingArtistDisplayOrder?: number;
+  musicFeaturedDisplayOrder?: number;
+  creatorSpotlightDisplayOrder?: number;
   profileStatus?: string;
 }
 

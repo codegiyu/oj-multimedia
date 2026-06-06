@@ -38,6 +38,8 @@ interface ArtistsTableContentProps {
   onDelete: (row: ArtistListItem) => void;
   onToggleActive: (row: ArtistListItem) => void;
   onToggleFeatured: (row: ArtistListItem) => void;
+  onToggleRising?: (row: ArtistListItem) => void;
+  onToggleSpotlight?: (row: ArtistListItem) => void;
   onSuspend?: (row: ArtistListItem) => void;
   onUnsuspend?: (row: ArtistListItem) => void;
 }
@@ -54,6 +56,8 @@ export function ArtistsTableContent({
   onDelete,
   onToggleActive,
   onToggleFeatured,
+  onToggleRising,
+  onToggleSpotlight,
   onSuspend,
   onUnsuspend,
 }: ArtistsTableContentProps) {
@@ -104,7 +108,7 @@ export function ArtistsTableContent({
         meta: { width: '6.25rem' },
         cell: row => (
           <DataTableCellWrapper>
-            {row.isFeatured ? (
+            {row.isMusicFeatured || row.isFeatured ? (
               <Badge variant="outline">Yes</Badge>
             ) : (
               <span className="text-muted-foreground">—</span>
@@ -119,12 +123,23 @@ export function ArtistsTableContent({
           onDelete={onDelete}
           onToggleActive={onToggleActive}
           onToggleFeatured={onToggleFeatured}
+          onToggleRising={onToggleRising}
+          onToggleSpotlight={onToggleSpotlight}
           onSuspend={onSuspend}
           onUnsuspend={onUnsuspend}
         />
       )),
     ],
-    [onEdit, onDelete, onToggleActive, onToggleFeatured, onSuspend, onUnsuspend]
+    [
+      onEdit,
+      onDelete,
+      onToggleActive,
+      onToggleFeatured,
+      onToggleRising,
+      onToggleSpotlight,
+      onSuspend,
+      onUnsuspend,
+    ]
   );
 
   return (
