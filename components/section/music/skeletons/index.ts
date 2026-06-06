@@ -7,6 +7,7 @@ export {
   FeaturedArtistsSectionSkeleton,
   MusicUploadCTASkeleton,
   MusicTrendingGridSectionSkeleton,
+  ArtistsSpotlightGridSkeleton,
   MusicAlbumsGridSkeleton,
 } from './MusicSectionSkeletons';
 

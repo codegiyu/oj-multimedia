@@ -79,7 +79,7 @@ export function RisingArtistsColumn({ risingArtists }: { risingArtists: ArtistPr
         iconColor="primary"
         heading="Rising Artists"
         subtext="New Talents"
-        viewAllLink="/community/artists"
+        viewAllLink="/music/rising-artists"
         viewAllLabel="See All"
         className="mb-6"
       />
@@ -89,7 +89,7 @@ export function RisingArtistsColumn({ risingArtists }: { risingArtists: ArtistPr
           description="Discover new talent soon. Check back for featured artists."
           icon={TrendingUp}
           actionLabel="View all artists"
-          actionHref="/community/artists"
+          actionHref="/music/rising-artists"
         />
       ) : (
         <SectionContent
