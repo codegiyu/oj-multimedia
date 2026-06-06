@@ -37,6 +37,14 @@ import {
   PUBLISHABLE_STATUS_SELECT_OPTIONS,
   PUBLISHABLE_STATUS_VALUES,
 } from '@/lib/constants/adminSelectOptions';
+import { MediaMetadataFields } from '@/components/section/admin/shared/MediaMetadataFields';
+import {
+  buildDurationMetadataPayload,
+  durationSecondsToParts,
+  EMPTY_MEDIA_DURATION_PARTS,
+  validateMediaDurationParts,
+  type MediaDurationParts,
+} from '@/lib/utils/mediaMetadataForm';
 
 interface ArtistMusicFormModalProps {
   open: boolean;
@@ -69,6 +77,9 @@ export function ArtistMusicFormModal({
   const [editStatus, setEditStatus] = useState<'draft' | 'published' | 'archived'>('draft');
   const [pendingCover, setPendingCover] = useState<File | null>(null);
   const [pendingAudio, setPendingAudio] = useState<File | null>(null);
+  const [durationParts, setDurationParts] = useState<MediaDurationParts>(
+    EMPTY_MEDIA_DURATION_PARTS
+  );
 
   const isEdit = Boolean(editId);
   const { options: rawCategoryOptions, loading: categoriesLoading } = useContentCategoryOptions({
@@ -96,11 +107,13 @@ export function ArtistMusicFormModal({
     if (!open) {
       setForm(defaultForm);
       setEditStatus('draft');
+      setDurationParts(EMPTY_MEDIA_DURATION_PARTS);
       return;
     }
     if (!editId) {
       setForm(defaultForm);
       setEditStatus('draft');
+      setDurationParts(EMPTY_MEDIA_DURATION_PARTS);
       return;
     }
 
@@ -125,6 +138,11 @@ export function ArtistMusicFormModal({
           price: typeof m.price === 'number' ? m.price : Number(m.price) || 0,
         });
         setEditStatus(normalizeEnumValue(m.status, PUBLISHABLE_STATUS_VALUES, 'draft'));
+        setDurationParts(
+          durationSecondsToParts(
+            (m as { metadata?: { durationSeconds?: number } }).metadata?.durationSeconds
+          )
+        );
       } finally {
         if (!cancelled) setDetailLoading(false);
       }
@@ -148,6 +166,9 @@ export function ArtistMusicFormModal({
       const videoUrl = normalizeOptionalHttpUrl(form.videoUrl ?? '', 'Video URL');
 
       assertMonetizationPriceClient(form.isMonetizable, form.price);
+      const durationError = validateMediaDurationParts(durationParts);
+      if (durationError) throw new Error(durationError);
+      const metadataPayload = buildDurationMetadataPayload(durationParts);
       const isMonetizable = Boolean(form.isMonetizable);
       const price = resolveMonetizationFormPrice(isMonetizable, form.price);
 
@@ -178,6 +199,7 @@ export function ArtistMusicFormModal({
           isMonetizable,
           price,
           status: editStatus,
+          ...metadataPayload,
         };
 
         const res = await callApi('ARTIST_UPDATE_MUSIC', {
@@ -196,6 +218,7 @@ export function ArtistMusicFormModal({
           videoUrl: finalVideoUrl || undefined,
           isMonetizable,
           price,
+          ...metadataPayload,
         };
 
         const res = await callApi('ARTIST_CREATE_MUSIC', { payload });
@@ -205,7 +228,7 @@ export function ArtistMusicFormModal({
           (res.data as { music?: { _id?: string } } | undefined)?.music?._id ??
           (res.data as { _id?: string } | undefined)?._id;
 
-        if (createdId && (pendingCover || pendingAudio)) {
+        if (createdId && (pendingCover || pendingAudio || metadataPayload.metadata)) {
           if (pendingCover) {
             const upload = await coverUpload.uploadFile({
               file: pendingCover,
@@ -226,6 +249,7 @@ export function ArtistMusicFormModal({
             payload: {
               coverImage: finalCoverImage,
               audioUrl: finalAudioUrl,
+              ...metadataPayload,
             },
           });
           if (patchRes.type !== 'success') {
@@ -235,6 +259,7 @@ export function ArtistMusicFormModal({
       }
 
       setForm(defaultForm);
+      setDurationParts(EMPTY_MEDIA_DURATION_PARTS);
       onOpenChange(false);
       onSuccess();
       toast.success(isEdit ? 'Track updated.' : 'Track saved as draft.');
@@ -328,6 +353,12 @@ export function ArtistMusicFormModal({
               intent="other"
               accept="audio/*"
               onPendingFileChange={setPendingAudio}
+            />
+            <MediaMetadataFields
+              idPrefix="artist-music"
+              value={durationParts}
+              onChange={setDurationParts}
+              disabled={loading}
             />
             <MonetizationFormFields
               idPrefix="artist-music"

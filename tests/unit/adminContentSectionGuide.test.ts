@@ -4,7 +4,8 @@ import {
   BREAKING_NEWS_MAX_AGE_DAYS,
   BREAKING_NEWS_MIN_PRIORITY,
   LONG_FORM_MIN_DURATION_SECONDS,
-  SHORT_FORM_MAX_DURATION_SECONDS,
+  VIDEO_DURATION_BUCKET_LONG_FORM_MIN_SECONDS,
+  VIDEO_DURATION_BUCKET_UNDER_5_MAX_SECONDS,
 } from '@/lib/constants/adminContentSectionGuide';
 
 describe('adminContentSectionGuide', () => {
@@ -35,7 +36,8 @@ describe('adminContentSectionGuide', () => {
     );
     const longForm = ADMIN_CONTENT_SECTION_GUIDES.video.sections.find(s => s.name === 'Long-form');
 
-    expect(shortForm?.qualification).toContain(String(SHORT_FORM_MAX_DURATION_SECONDS));
-    expect(longForm?.qualification).toContain(String(LONG_FORM_MIN_DURATION_SECONDS));
+    expect(shortForm?.qualification).toContain(String(VIDEO_DURATION_BUCKET_UNDER_5_MAX_SECONDS));
+    expect(longForm?.qualification).toContain(String(VIDEO_DURATION_BUCKET_LONG_FORM_MIN_SECONDS));
+    expect(LONG_FORM_MIN_DURATION_SECONDS).toBe(VIDEO_DURATION_BUCKET_LONG_FORM_MIN_SECONDS);
   });
 });
