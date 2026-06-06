@@ -13,15 +13,23 @@ import {
   MusicAlbumsGridSkeleton,
 } from './MusicSectionSkeletons';
 
-export function MusicHubPageSkeleton() {
+export function MusicHubDynamicSectionsSkeleton() {
   return (
-    <PageSkeletonShell label="Loading music page">
+    <>
       <MusicCategoriesSkeleton />
       <TrendingSongsSectionSkeleton />
       <FeaturedAlbumsSectionSkeleton />
       <TopChartsSectionSkeleton />
       <RecentUploadsSectionSkeleton />
       <FeaturedArtistsSectionSkeleton />
+    </>
+  );
+}
+
+export function MusicHubPageSkeleton() {
+  return (
+    <PageSkeletonShell label="Loading music page">
+      <MusicHubDynamicSectionsSkeleton />
       <MusicUploadCTASkeleton />
     </PageSkeletonShell>
   );

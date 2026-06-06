@@ -97,18 +97,24 @@ export function TrendingSidebarSectionSkeleton() {
   );
 }
 
+export function NewsLatestStoriesContentSkeleton() {
+  return (
+    <div className="grid lg:grid-cols-[1fr_320px] gap-8">
+      <LatestFeedSectionSkeleton />
+      <div className="hidden lg:block">
+        <div className="sticky top-32">
+          <TrendingSidebarSectionSkeleton />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function LatestStoriesSectionSkeleton() {
   return (
     <SectionSkeleton>
       <SectionHeaderSkeleton />
-      <div className="grid lg:grid-cols-[1fr_320px] gap-8">
-        <LatestFeedSectionSkeleton />
-        <div className="hidden lg:block">
-          <div className="sticky top-32">
-            <TrendingSidebarSectionSkeleton />
-          </div>
-        </div>
-      </div>
+      <NewsLatestStoriesContentSkeleton />
     </SectionSkeleton>
   );
 }
@@ -135,12 +141,20 @@ export function NewsSubpageGridSkeleton() {
   );
 }
 
-export function NewsHubPageSkeleton() {
+export function NewsHubDynamicSectionsSkeleton() {
   return (
     <>
       <NewsCategoriesSkeleton />
       <BreakingNewsSectionSkeleton />
       <FeaturedStoriesSectionSkeleton />
+    </>
+  );
+}
+
+export function NewsHubPageSkeleton() {
+  return (
+    <>
+      <NewsHubDynamicSectionsSkeleton />
       <LatestStoriesSectionSkeleton />
       <VideoNewsSectionSkeleton />
       <CTASectionSkeleton />

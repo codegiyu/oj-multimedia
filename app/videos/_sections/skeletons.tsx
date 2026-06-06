@@ -129,7 +129,7 @@ export function VideoSubpageGridSkeleton() {
   );
 }
 
-export function VideosHubPageSkeleton() {
+export function VideosHubDynamicSectionsSkeleton() {
   return (
     <>
       <VideoCategoriesSkeleton />
@@ -139,6 +139,14 @@ export function VideosHubPageSkeleton() {
       <ShortFormVideosSectionSkeleton />
       <LongFormVideosSectionSkeleton />
       <CreatorSpotlightSectionSkeleton />
+    </>
+  );
+}
+
+export function VideosHubPageSkeleton() {
+  return (
+    <>
+      <VideosHubDynamicSectionsSkeleton />
       <CTASectionSkeleton />
     </>
   );
