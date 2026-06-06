@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { SubPageHero } from '@/components/general/SubPageHero';
-import { AskAPastorPageSkeleton } from '@/components/section/community/ask-a-pastor/AskAPastorPageSkeleton';
+import { AskAPastorBrowseSkeleton } from '@/components/section/community/ask-a-pastor/AskAPastorPageSkeleton';
 import { ActiveQuestionsBrowseSection } from './_sections/ActiveQuestionsBrowseSection';
 import { parseBrowsePageParam } from '@/lib/utils/browsePage';
 
@@ -36,7 +36,7 @@ export default async function ActiveQuestionsPage({ searchParams }: ActiveQuesti
         backLabel="Back to Ask a Pastor"
         stats={[{ icon: 'HelpCircle', text: 'Seeking guidance' }, { text: 'Pastor answered' }]}
       />
-      <Suspense fallback={<AskAPastorPageSkeleton />} key={`${category}|${page}`}>
+      <Suspense fallback={<AskAPastorBrowseSkeleton />} key={`${category}|${page}`}>
         <ActiveQuestionsBrowseSection category={category} page={page} />
       </Suspense>
     </MainLayout>

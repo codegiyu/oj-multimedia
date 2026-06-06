@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { SubPageHero } from '@/components/general/SubPageHero';
-import { PrayerRequestsPageSkeleton } from '@/components/section/community/prayer-requests/PrayerRequestsPageSkeleton';
+import { PrayerRequestsBrowseSkeleton } from '@/components/section/community/prayer-requests/PrayerRequestsPageSkeleton';
 import { ActivePrayerRequestsBrowseSection } from './_sections/ActivePrayerRequestsBrowseSection';
 import { parseBrowsePageParam } from '@/lib/utils/browsePage';
 
@@ -38,7 +38,7 @@ export default async function ActivePrayerRequestsPage({
         backLabel="Back to Prayer Requests"
         stats={[{ icon: 'HandHeart', text: 'Active requests' }, { text: 'Community prayers' }]}
       />
-      <Suspense fallback={<PrayerRequestsPageSkeleton />} key={`${category}|${page}`}>
+      <Suspense fallback={<PrayerRequestsBrowseSkeleton />} key={`${category}|${page}`}>
         <ActivePrayerRequestsBrowseSection category={category} page={page} />
       </Suspense>
     </MainLayout>

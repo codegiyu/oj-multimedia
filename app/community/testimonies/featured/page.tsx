@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { SubPageHero } from '@/components/general/SubPageHero';
-import { TestimoniesPageSkeleton } from '@/components/section/community/testimonies/TestimoniesPageSkeleton';
+import { TestimoniesBrowseSkeleton } from '@/components/section/community/testimonies/TestimoniesPageSkeleton';
 import { FeaturedTestimonies } from '@/components/section/community/testimonies/FeaturedTestimonies';
 import { DataLoadErrorWithRetry } from '@/components/general/DataLoadErrorWithRetry';
 import { Sparkles } from 'lucide-react';
@@ -65,7 +65,7 @@ export default async function FeaturedTestimoniesPage() {
         backLabel="Back to Testimonies"
         stats={[{ icon: 'Sparkles', text: 'Handpicked stories' }, { text: 'Inspiring content' }]}
       />
-      <Suspense fallback={<TestimoniesPageSkeleton />}>
+      <Suspense fallback={<TestimoniesBrowseSkeleton />}>
         <div className="container mx-auto px-4 pb-16">
           {initialErrorMessage && featuredTestimonies.length === 0 ? (
             <DataLoadErrorWithRetry
