@@ -1,5 +1,11 @@
-import { VendorStorePageSkeleton } from '@/components/section/marketplace/VendorStorePageSkeleton';
+import { MainLayout } from '@/components/layout/MainLayout';
+import { VendorProfileSectionSkeleton, VendorProductsSectionSkeleton } from './_sections/skeletons';
 
 export default function VendorStoreLoading() {
-  return <VendorStorePageSkeleton />;
+  return (
+    <MainLayout>
+      <VendorProfileSectionSkeleton />
+      <VendorProductsSectionSkeleton />
+    </MainLayout>
+  );
 }
