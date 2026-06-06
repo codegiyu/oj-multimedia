@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { SubPageHero } from '@/components/general/SubPageHero';
-import { DevotionalsPageSkeleton } from '@/components/section/community/devotionals/DevotionalsPageSkeleton';
+import { DevotionalsBrowseSkeleton } from '@/components/section/community/devotionals/DevotionalsPageSkeleton';
 import { DevotionalsCategoryFilter } from '@/components/section/community/devotionals/DevotionalsCategoryFilter';
 import { PopularDevotionalsSection } from './_sections/PopularDevotionalsSection';
 import { parseBrowsePageParam } from '@/lib/utils/browsePage';
@@ -37,7 +37,7 @@ export default async function PopularDevotionalsPage({
       />
       <div className="container mx-auto px-4 pb-16">
         <DevotionalsCategoryFilter />
-        <Suspense fallback={<DevotionalsPageSkeleton />} key={`${category}|${page}`}>
+        <Suspense fallback={<DevotionalsBrowseSkeleton />} key={`${category}|${page}`}>
           <PopularDevotionalsSection category={category} page={page} />
         </Suspense>
       </div>

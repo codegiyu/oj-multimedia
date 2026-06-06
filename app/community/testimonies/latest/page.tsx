@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { SubPageHero } from '@/components/general/SubPageHero';
-import { TestimoniesPageSkeleton } from '@/components/section/community/testimonies/TestimoniesPageSkeleton';
+import { TestimoniesBrowseSkeleton } from '@/components/section/community/testimonies/TestimoniesPageSkeleton';
 import { LatestTestimoniesSection } from './_sections/LatestTestimoniesSection';
 import { parseBrowsePageParam } from '@/lib/utils/browsePage';
 
@@ -34,7 +34,7 @@ export default async function LatestTestimoniesPage({ searchParams }: LatestTest
         backLabel="Back to Testimonies"
         stats={[{ icon: 'Clock', text: 'Updated regularly' }, { text: 'Fresh content' }]}
       />
-      <Suspense fallback={<TestimoniesPageSkeleton />} key={page}>
+      <Suspense fallback={<TestimoniesBrowseSkeleton />} key={page}>
         <LatestTestimoniesSection page={page} />
       </Suspense>
     </MainLayout>

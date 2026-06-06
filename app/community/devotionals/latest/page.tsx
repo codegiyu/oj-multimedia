@@ -2,10 +2,12 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { SubPageHero } from '@/components/general/SubPageHero';
-import { DevotionalsPageSkeleton } from '@/components/section/community/devotionals/DevotionalsPageSkeleton';
+import {
+  DevotionalsBrowseSkeleton,
+  DevotionalsCategoryFilterSkeleton,
+} from '@/components/section/community/devotionals/DevotionalsPageSkeleton';
 import { DevotionalsCategoryFilter } from '@/components/section/community/devotionals/DevotionalsCategoryFilter';
 import { LatestDevotionalsSection } from './_sections/LatestDevotionalsSection';
-import { Skeleton } from '@/components/ui/skeleton';
 import { parseBrowsePageParam } from '@/lib/utils/browsePage';
 
 export const metadata: Metadata = {
@@ -35,10 +37,10 @@ export default async function LatestDevotionalsPage({ searchParams }: LatestDevo
         stats={[{ icon: 'BookOpen', text: 'Updated daily' }, { text: 'Fresh content' }]}
       />
       <div className="container mx-auto px-4 pb-16">
-        <Suspense fallback={<Skeleton className="mb-6 h-10 w-full max-w-xs rounded-md" />}>
+        <Suspense fallback={<DevotionalsCategoryFilterSkeleton />}>
           <DevotionalsCategoryFilter />
         </Suspense>
-        <Suspense fallback={<DevotionalsPageSkeleton />} key={`${category}|${page}`}>
+        <Suspense fallback={<DevotionalsBrowseSkeleton />} key={`${category}|${page}`}>
           <LatestDevotionalsSection category={category} page={page} />
         </Suspense>
       </div>

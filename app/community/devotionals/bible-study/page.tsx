@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { SubPageHero } from '@/components/general/SubPageHero';
-import { DevotionalsPageSkeleton } from '@/components/section/community/devotionals/DevotionalsPageSkeleton';
+import { DevotionalsBrowseSkeleton } from '@/components/section/community/devotionals/DevotionalsPageSkeleton';
 import { BibleStudyListSection } from './_sections/BibleStudyListSection';
 import { parseBrowsePageParam } from '@/lib/utils/browsePage';
 
@@ -36,7 +36,7 @@ export default async function BibleStudyPage({ searchParams }: BibleStudyPagePro
         stats={[{ icon: 'BookOpen', text: 'Deep learning' }, { text: 'Community studies' }]}
       />
       <div className="container mx-auto px-4 pb-16">
-        <Suspense fallback={<DevotionalsPageSkeleton />} key={page}>
+        <Suspense fallback={<DevotionalsBrowseSkeleton />} key={page}>
           <BibleStudyListSection page={page} />
         </Suspense>
       </div>
