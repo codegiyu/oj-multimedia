@@ -2,12 +2,13 @@ import { RisingArtistsColumn } from '@/components/section/home/TopChartsSection'
 import { SectionLoadError } from '@/components/general/SectionLoadError';
 import type { IPublicArtistsListRes } from '@/lib/constants/endpoints';
 import { callPublicServerApi } from '@/lib/services/serverApi';
+import { buildArtistsBrowseQuery } from '@/lib/utils/artistsBrowse';
 import { HOME_ISR } from './shared';
 
 export async function RisingArtistsSection() {
   const res = await callPublicServerApi(
     'PUBLIC_GET_ARTISTS',
-    { query: '?page=1&limit=4' },
+    { query: buildArtistsBrowseQuery(1, { limit: 4, scope: 'rising' }) },
     HOME_ISR
   );
 

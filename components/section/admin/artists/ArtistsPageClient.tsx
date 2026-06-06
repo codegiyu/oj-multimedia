@@ -59,7 +59,13 @@ export function ArtistsPageClient({
 
   const patchArtist = async (
     row: ArtistListItem,
-    payload: { isActive?: boolean; isFeatured?: boolean }
+    payload: {
+      isActive?: boolean;
+      isFeatured?: boolean;
+      isRising?: boolean;
+      isMusicFeatured?: boolean;
+      isCreatorSpotlight?: boolean;
+    }
   ) => {
     const { error, message } = await callApi('ADMIN_ARTIST_UPDATE', {
       query: `/${row._id}` as `/${string}`,
@@ -223,7 +229,13 @@ export function ArtistsPageClient({
         }}
         onDelete={setDeleteTarget}
         onToggleActive={row => patchArtist(row, { isActive: row.isActive === false })}
-        onToggleFeatured={row => patchArtist(row, { isFeatured: !row.isFeatured })}
+        onToggleFeatured={row =>
+          patchArtist(row, {
+            isMusicFeatured: !(row.isMusicFeatured ?? row.isFeatured),
+          })
+        }
+        onToggleRising={row => patchArtist(row, { isRising: !row.isRising })}
+        onToggleSpotlight={row => patchArtist(row, { isCreatorSpotlight: !row.isCreatorSpotlight })}
         onSuspend={setSuspendTarget}
         onUnsuspend={setUnsuspendTarget}
       />

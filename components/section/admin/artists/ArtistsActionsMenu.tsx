@@ -18,6 +18,8 @@ interface ArtistsActionsMenuProps {
   onDelete: (item: ArtistListItem) => void;
   onToggleActive: (item: ArtistListItem) => void;
   onToggleFeatured: (item: ArtistListItem) => void;
+  onToggleRising?: (item: ArtistListItem) => void;
+  onToggleSpotlight?: (item: ArtistListItem) => void;
   onSuspend?: (item: ArtistListItem) => void;
   onUnsuspend?: (item: ArtistListItem) => void;
 }
@@ -28,11 +30,15 @@ export function ArtistsActionsMenu({
   onDelete,
   onToggleActive,
   onToggleFeatured,
+  onToggleRising,
+  onToggleSpotlight,
   onSuspend,
   onUnsuspend,
 }: ArtistsActionsMenuProps) {
   const isActive = item.isActive !== false;
-  const isFeatured = item.isFeatured === true;
+  const isFeatured = item.isMusicFeatured === true || item.isFeatured === true;
+  const isRising = item.isRising === true;
+  const isSpotlight = item.isCreatorSpotlight === true;
   const isSuspended = item.profileStatus === 'suspended';
   const canSuspend = item.profileStatus === 'active' || (isActive && !isSuspended);
 
@@ -56,8 +62,22 @@ export function ArtistsActionsMenu({
         <DropdownMenuActionItem
           icon={isFeatured ? actionMenuIcons.unfeature : actionMenuIcons.toggleFeatured}
           onClick={() => onToggleFeatured(item)}>
-          {isFeatured ? 'Remove featured' : 'Mark featured'}
+          {isFeatured ? 'Remove music featured' : 'Mark music featured'}
         </DropdownMenuActionItem>
+        {onToggleRising ? (
+          <DropdownMenuActionItem
+            icon={isRising ? actionMenuIcons.unfeature : actionMenuIcons.toggleFeatured}
+            onClick={() => onToggleRising(item)}>
+            {isRising ? 'Remove rising' : 'Mark rising'}
+          </DropdownMenuActionItem>
+        ) : null}
+        {onToggleSpotlight ? (
+          <DropdownMenuActionItem
+            icon={isSpotlight ? actionMenuIcons.unfeature : actionMenuIcons.toggleFeatured}
+            onClick={() => onToggleSpotlight(item)}>
+            {isSpotlight ? 'Remove creator spotlight' : 'Mark creator spotlight'}
+          </DropdownMenuActionItem>
+        ) : null}
         {canSuspend && onSuspend ? (
           <DropdownMenuActionItem icon={actionMenuIcons.suspend} onClick={() => onSuspend(item)}>
             Suspend

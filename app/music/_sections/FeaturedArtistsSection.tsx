@@ -1,11 +1,12 @@
 import { FeaturedArtists } from '@/components/section/music/FeaturedArtists';
 import { SectionLoadError } from '@/components/general/SectionLoadError';
 import { callPublicServerApi } from '@/lib/services/serverApi';
+import { buildArtistsBrowseQuery } from '@/lib/utils/artistsBrowse';
 import { mapPublicArtistToFeaturedArtist } from '@/lib/utils/publicApiMappers';
 
 export async function FeaturedArtistsSection() {
   const res = await callPublicServerApi('PUBLIC_GET_ARTISTS', {
-    query: '?page=1&limit=6' as `?${string}`,
+    query: buildArtistsBrowseQuery(1, { limit: 6, scope: 'featured' }),
   });
 
   if (res.type === 'error') {
