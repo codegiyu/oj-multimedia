@@ -98,6 +98,21 @@ export function MusicUploadCTASkeleton() {
   return <CTASectionSkeleton />;
 }
 
+export function ArtistsSpotlightGridSkeleton() {
+  return (
+    <SectionSkeleton>
+      <CardGridSkeleton
+        count={12}
+        gridClassName="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+        <Skeleton className="aspect-square w-full rounded-xl" />
+      </CardGridSkeleton>
+      <div className="flex justify-center mt-10">
+        <Skeleton className="h-12 w-44 rounded-full" />
+      </div>
+    </SectionSkeleton>
+  );
+}
+
 export function MusicTrendingGridSectionSkeleton() {
   return (
     <SectionSkeleton>

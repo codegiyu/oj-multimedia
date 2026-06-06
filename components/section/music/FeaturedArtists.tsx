@@ -28,7 +28,7 @@ export const FeaturedArtists = ({ artists: featuredArtists }: FeaturedArtistsPro
       iconColor="primary"
       heading="Featured Artists"
       subtext="Creators you should know"
-      viewAllLink="/community/artists"
+      viewAllLink="/music/featured-artists"
       background="bg-muted/30"
       contentProps={{ enableAnimation: false }}>
       {featuredArtists.length === 0 ? (
@@ -37,7 +37,7 @@ export const FeaturedArtists = ({ artists: featuredArtists }: FeaturedArtistsPro
           description="Artists and creators will appear here when they join the platform."
           icon={Users}
           actionLabel="Discover artists"
-          actionHref="/community/artists"
+          actionHref="/music/featured-artists"
         />
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">

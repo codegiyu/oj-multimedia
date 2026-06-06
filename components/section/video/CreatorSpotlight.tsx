@@ -33,7 +33,7 @@ export const CreatorSpotlight = ({ creators: featuredCreators }: CreatorSpotligh
       iconColor="primary"
       heading="Creator Spotlight"
       subtext="Active and trending creators"
-      viewAllLink="/community/artists"
+      viewAllLink="/videos/creator-spotlight"
       viewAllLabel="Discover Creators"
       contentProps={{ enableAnimation: false }}>
       {featuredCreators.length === 0 ? (
@@ -42,7 +42,7 @@ export const CreatorSpotlight = ({ creators: featuredCreators }: CreatorSpotligh
           description="Active video creators will be featured here."
           icon={Users}
           actionLabel="Discover creators"
-          actionHref="/community/artists"
+          actionHref="/videos/creator-spotlight"
         />
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
