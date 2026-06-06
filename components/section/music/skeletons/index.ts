@@ -12,6 +12,7 @@ export {
 } from './MusicSectionSkeletons';
 
 export {
+  MusicHubDynamicSectionsSkeleton,
   MusicHubPageSkeleton,
   MusicTrendingPageSkeleton,
   MusicTopChartsPageSkeleton,
