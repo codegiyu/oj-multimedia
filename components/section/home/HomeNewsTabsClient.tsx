@@ -32,7 +32,7 @@ const TAB_CONFIG: Record<
     label: 'Latest',
     heading: 'News',
     subtext: 'Stay updated with trending news',
-    viewAllLink: '/news',
+    viewAllLink: '/news/latest',
   },
 };
 

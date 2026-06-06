@@ -1,6 +1,6 @@
 import { SectionLoadError } from '@/components/general/SectionLoadError';
 import { NewsRelatedStoriesGrid } from '@/components/section/news/NewsRelatedStoriesGrid';
-import { callPublicServerApi } from '@/lib/services/serverApi';
+import { fetchPublicNewsArticles } from '@/app/news/_sections/shared';
 import { mapPublicNewsToDetailItem } from '@/lib/utils/publicApiMappers';
 import type { NewsItem } from '@/lib/constants/news';
 
@@ -11,23 +11,20 @@ type NewsRelatedStoriesSectionProps = {
 
 export async function NewsRelatedStoriesSection({
   id,
-  categorySlug = '',
+  categorySlug = 'all',
 }: NewsRelatedStoriesSectionProps) {
-  const relatedRes = await callPublicServerApi('PUBLIC_GET_NEWS', {
-    query: `?limit=4&page=1&status=published&type=latest${categorySlug}`,
+  const { articles, error } = await fetchPublicNewsArticles({
+    category: categorySlug || 'all',
+    limit: 4,
+    page: 1,
+    type: 'latest',
   });
 
-  if (relatedRes.type === 'error') {
-    return (
-      <SectionLoadError
-        title="Related stories unavailable"
-        message={relatedRes.error?.message ?? 'Failed to load related stories'}
-      />
-    );
+  if (error && articles.length === 0) {
+    return <SectionLoadError title="Related stories unavailable" message={error} />;
   }
 
-  const relatedList = relatedRes.data?.articles ?? [];
-  const relatedStories: NewsItem[] = relatedList
+  const relatedStories: NewsItem[] = articles
     .filter(a => String(a._id) !== id)
     .slice(0, 3)
     .map(a => mapPublicNewsToDetailItem(a) as NewsItem);

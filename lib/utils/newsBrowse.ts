@@ -1,6 +1,7 @@
 import { BROWSE_LIST_PAGE_SIZE } from '@/lib/constants/browseList';
 import { buildBrowseListQuery } from '@/lib/utils/browsePage';
 
+export const NEWS_LATEST_BROWSE_GRID_CLASS = 'grid md:grid-cols-2 lg:grid-cols-3 gap-6';
 export const NEWS_TRENDING_BROWSE_GRID_CLASS = 'grid gap-6 md:grid-cols-2 lg:grid-cols-3';
 export const NEWS_FEATURED_BROWSE_GRID_CLASS = 'grid md:grid-cols-2 lg:grid-cols-3 gap-6';
 export const NEWS_BREAKING_BROWSE_GRID_CLASS = 'grid gap-4';
