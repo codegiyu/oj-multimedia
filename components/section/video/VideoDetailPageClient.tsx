@@ -17,6 +17,7 @@ import { FillImage } from '@/components/general/FillImage';
 import { resolveContentImage } from '@/lib/constants/contentImageDefaults';
 import { Button } from '@/components/ui/button';
 import type { VideoItemWithCreator } from '@/lib/utils/videos';
+import { getVideoCategoryLabel } from '@/lib/constants/contentTaxonomy';
 import { VideoPlayerDynamic } from './VideoPlayerDynamic';
 import { VideoDownloadButton } from './VideoDownloadButton';
 import { sendContentAnalyticsEvent } from '@/lib/services/contentAnalytics';
@@ -54,22 +55,7 @@ export const VideoDetailPageClient = ({ videoItem, relatedSlot }: VideoDetailPag
     }
   };
 
-  const categoryLabel =
-    videoItem.category === 'music'
-      ? 'Music Videos'
-      : videoItem.category === 'short'
-        ? 'Short Clips'
-        : videoItem.category === 'talks'
-          ? 'Talks & Speeches'
-          : videoItem.category === 'creative'
-            ? 'Creative Content'
-            : videoItem.category === 'inspirational'
-              ? 'Inspirational'
-              : videoItem.category === 'live'
-                ? 'Live Performances'
-                : videoItem.category === 'movie'
-                  ? 'Movies'
-                  : 'Podcasts / Video Talks';
+  const categoryLabel = getVideoCategoryLabel(videoItem.category);
 
   return (
     <article className="min-h-screen">

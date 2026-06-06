@@ -7,6 +7,7 @@ import { VideoCard } from '@/components/cards/VideoCard';
 import type { PublicAlbumCard } from '@/lib/utils/publicApiMappers';
 import type { MusicItemWithArtist } from '@/lib/utils/music';
 import type { VideoItemWithCreator } from '@/lib/utils/videos';
+import { getVideoCategoryLabel } from '@/lib/constants/contentTaxonomy';
 import { MEDIA_BROWSE_GRID_CLASS } from '@/lib/constants/mediaCardLayout';
 
 export function ArtistAlbumsGrid({ items }: { items: PublicAlbumCard[] }) {
@@ -59,17 +60,6 @@ export function ArtistMusicGrid({ items }: { items: MusicItemWithArtist[] }) {
   );
 }
 
-function videoCategoryLabel(category?: string) {
-  if (category === 'music') return 'Music Videos';
-  if (category === 'short') return 'Short Clips';
-  if (category === 'talks') return 'Talks & Speeches';
-  if (category === 'creative') return 'Creative Content';
-  if (category === 'inspirational') return 'Inspirational';
-  if (category === 'live') return 'Live Performances';
-  if (category === 'sermon') return 'Sermons';
-  return 'Podcasts / Video Talks';
-}
-
 export function ArtistVideosGrid({ items }: { items: VideoItemWithCreator[] }) {
   if (items.length === 0) {
     return null;
@@ -91,7 +81,7 @@ export function ArtistVideosGrid({ items }: { items: VideoItemWithCreator[] }) {
             thumbnail={item.thumbnail}
             views={item.views ?? '0'}
             duration={item.duration ?? ''}
-            category={videoCategoryLabel(item.category)}
+            category={getVideoCategoryLabel(item.category)}
           />
         ))}
       </div>

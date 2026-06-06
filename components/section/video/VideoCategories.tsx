@@ -16,6 +16,8 @@ const categoryEmojiById: Record<string, string> = {
   live: '🎭',
   podcasts: '🎙️',
   sermon: '📿',
+  movies: '🎬',
+  drama: '🎞️',
 };
 
 export type VideoCategoriesProps = {

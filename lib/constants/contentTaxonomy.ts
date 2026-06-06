@@ -5,6 +5,22 @@ export interface ContentCategoryOption {
 
 export const ALL_CATEGORY_ID = 'all';
 
+/** Canonical video content category slugs (matches VIDEO_CATEGORIES ids). */
+export const VIDEO_CATEGORY_SLUGS = [
+  'music',
+  'short',
+  'talks',
+  'creative',
+  'inspirational',
+  'live',
+  'podcasts',
+  'sermon',
+  'movies',
+  'drama',
+] as const;
+
+export type VideoCategorySlug = (typeof VIDEO_CATEGORY_SLUGS)[number];
+
 export const NEWS_CATEGORIES: ReadonlyArray<ContentCategoryOption> = [
   { id: 'christian-celebrity-news', label: 'Christian Celebrity News' },
   { id: 'church-announcements', label: 'Church & Ministry Announcements' },
@@ -14,7 +30,7 @@ export const NEWS_CATEGORIES: ReadonlyArray<ContentCategoryOption> = [
   { id: 'christian-movie-reviews', label: 'Christian Movie Reviews' },
 ];
 
-export const VIDEO_CATEGORIES: ReadonlyArray<ContentCategoryOption> = [
+export const VIDEO_CATEGORIES: ReadonlyArray<ContentCategoryOption & { id: VideoCategorySlug }> = [
   { id: 'music', label: 'Music Videos' },
   { id: 'short', label: 'Short Clips' },
   { id: 'talks', label: 'Talks & Speeches' },
@@ -23,7 +39,38 @@ export const VIDEO_CATEGORIES: ReadonlyArray<ContentCategoryOption> = [
   { id: 'live', label: 'Live Performances' },
   { id: 'podcasts', label: 'Podcasts / Video Talks' },
   { id: 'sermon', label: 'Sermons' },
+  { id: 'movies', label: 'Movies' },
+  { id: 'drama', label: 'Drama' },
 ];
+
+/** Legacy API slugs → display label when not in VIDEO_CATEGORIES. */
+const VIDEO_CATEGORY_LEGACY_LABELS: Record<string, string> = {
+  movie: 'Movies',
+  'movies-long-form': 'Movies',
+};
+
+export function isVideoCategorySlug(value: string): value is VideoCategorySlug {
+  return (VIDEO_CATEGORY_SLUGS as readonly string[]).includes(value);
+}
+
+/** Map API/legacy slugs to a canonical VideoCategorySlug (e.g. movie → movies). */
+export function normalizeVideoCategorySlug(value: string | null | undefined): VideoCategorySlug {
+  if (value === 'movie') return 'movies';
+  if (value && isVideoCategorySlug(value)) return value;
+
+  return 'creative';
+}
+
+export function getVideoCategoryLabel(categorySlug: string | null | undefined): string {
+  if (!categorySlug) {
+    return VIDEO_CATEGORIES.find(option => option.id === 'creative')?.label ?? 'Creative Content';
+  }
+
+  const match = VIDEO_CATEGORIES.find(option => option.id === categorySlug);
+  if (match) return match.label;
+
+  return VIDEO_CATEGORY_LEGACY_LABELS[categorySlug] ?? categorySlug;
+}
 
 export const MUSIC_CATEGORIES: ReadonlyArray<ContentCategoryOption> = [
   { id: 'afrobeats', label: 'Afrobeats' },

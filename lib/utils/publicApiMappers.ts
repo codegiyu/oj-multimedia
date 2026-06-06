@@ -28,6 +28,7 @@ import type { BreakingNewsStory } from '@/components/section/news/BreakingNews';
 import type { NewsItem as NewsDetailItem } from '@/lib/constants/news';
 import type { FeaturedArtist } from '@/components/section/music/FeaturedArtists';
 import type { FeaturedCreator } from '@/components/section/video/CreatorSpotlight';
+import { getVideoCategoryLabel, normalizeVideoCategorySlug } from '@/lib/constants/contentTaxonomy';
 import { mapToCommunityArtist } from '@/lib/utils/communityApiMappers';
 import {
   filterCompleteMusic,
@@ -208,20 +209,6 @@ export function assertCompletePublicNews(item: PublicNewsListItem): boolean {
   return isCompleteNewsArticle(item as unknown as Record<string, unknown>);
 }
 
-function videoCategoryToLabel(cat: string | undefined): string {
-  const map: Record<string, string> = {
-    music: 'Music Videos',
-    short: 'Short Clips',
-    talks: 'Talks & Speeches',
-    creative: 'Creative Content',
-    inspirational: 'Inspirational',
-    live: 'Live Performances',
-    podcasts: 'Podcasts / Video Talks',
-    sermon: 'Sermons',
-  };
-  return (cat && map[cat]) || cat || 'Creative Content';
-}
-
 export function mapPublicVideoToTrendingVideo(item: PublicVideoListItem): TrendingVideo {
   const createdAt = item.createdAt;
   const uploadedAt =
@@ -246,7 +233,7 @@ export function mapPublicVideoToFeaturedVideo(item: PublicVideoListItem): Featur
     thumbnail: item.thumbnail ?? '',
     views: String(item.views ?? 0),
     duration: formatMediaDuration(item.duration),
-    category: videoCategoryToLabel(item.category),
+    category: getVideoCategoryLabel(item.category),
     featured: item.isFeatured ?? false,
   };
 }
@@ -261,7 +248,7 @@ export function mapPublicVideoToRecentUpload(item: PublicVideoListItem): RecentV
     creator: toCreatorSummary(item),
     thumbnail: item.thumbnail ?? '',
     uploadedAt,
-    category: videoCategoryToLabel(item.category),
+    category: getVideoCategoryLabel(item.category),
     views: String(item.views ?? 0),
     duration: formatMediaDuration(item.duration),
   };
@@ -304,7 +291,7 @@ export function mapPublicVideoToDetailItem(item: PublicVideoListItem): VideoItem
     creator: toCreatorSummary(item),
     thumbnail: item.thumbnail ?? '',
     views: String(item.views ?? 0),
-    category: (item.category as VideoItemWithCreator['category']) ?? 'creative',
+    category: normalizeVideoCategorySlug(item.category),
     videoUrl: item.videoUrl,
     videoFileUrl: raw.videoFileUrl,
     embedUrl: raw.embedUrl,
