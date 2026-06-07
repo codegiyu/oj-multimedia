@@ -73,8 +73,8 @@ export const ShortFormVideosPageClient = ({
           {shortFormVideos.map((video, index) => (
             <motion.div
               key={video._id}
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: index * 0.05 }}>
               <VideoCard
@@ -85,8 +85,6 @@ export const ShortFormVideosPageClient = ({
                 views={video.views}
                 duration={video.duration}
                 category={video.category}
-                variant="shortForm"
-                likes={video.likes}
               />
             </motion.div>
           ))}

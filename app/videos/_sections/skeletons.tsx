@@ -9,7 +9,6 @@ import {
   CardGridSkeleton,
   CTASectionSkeleton,
   VideoCardSkeleton,
-  ShortFormVideoSkeleton,
 } from '@/components/skeletons';
 import {
   MEDIA_BROWSE_GRID_CLASS,
@@ -69,12 +68,10 @@ export function RecentUploadsSectionSkeleton() {
 export function ShortFormVideosSectionSkeleton() {
   return (
     <SectionSkeleton background="bg-muted/30">
-      <SectionHeaderSkeleton />
-      <div className="flex gap-3 overflow-x-auto pb-4">
-        {Array.from({ length: 8 }, (_, i) => (
-          <ShortFormVideoSkeleton key={i} />
-        ))}
-      </div>
+      <SectionHeaderSkeleton showPrevNext />
+      <HorizontalRailSkeleton itemWidthClass={VIDEO_DEFAULT_RAIL_ITEM_CLASS} count={8}>
+        <VideoCardSkeleton />
+      </HorizontalRailSkeleton>
     </SectionSkeleton>
   );
 }

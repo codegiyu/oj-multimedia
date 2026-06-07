@@ -15,9 +15,6 @@ export const MUSIC_RAIL_ITEM_CLASS =
 export const VIDEO_DEFAULT_RAIL_ITEM_CLASS =
   'w-[240px] sm:w-[260px] md:w-[280px] lg:w-[300px] xl:w-[320px] snap-start shrink-0';
 
-/** 9:16 short-form video rails. */
-export const VIDEO_SHORT_FORM_RAIL_ITEM_CLASS = 'w-[140px] md:w-[160px] snap-start shrink-0';
-
 /** scrollBy amount for music rails (max item width at 2xl). */
 export const MUSIC_RAIL_SCROLL_PX = 260;
 

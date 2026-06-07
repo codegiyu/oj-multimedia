@@ -255,7 +255,6 @@ export function mapPublicVideoToRecentUpload(item: PublicVideoListItem): RecentV
 }
 
 export function mapPublicVideoToShortForm(item: PublicVideoListItem): ShortFormVideo {
-  const likes = (item as { likes?: number }).likes ?? 0;
   return {
     _id: String(item._id),
     title: item.title,
@@ -263,8 +262,7 @@ export function mapPublicVideoToShortForm(item: PublicVideoListItem): ShortFormV
     thumbnail: item.thumbnail ?? '',
     views: String(item.views ?? 0),
     duration: formatMediaDuration(item.duration),
-    category: item.category ?? 'creative',
-    likes: String(likes),
+    category: getVideoCategoryLabel(item.category),
   };
 }
 
