@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { Suspense } from 'react';
 import { callServerApi } from '@/lib/services/serverApi';
 import type { IVendorMeRes } from '@/lib/constants/endpoints';
 import { VendorDashboardLayoutClient } from './VendorDashboardLayoutClient';
@@ -7,7 +8,7 @@ import {
   vendorPortalMetaFromApi,
 } from '@/components/section/account/vendor/VendorPortalRouteGate';
 
-export default async function VendorLayout({ children }: { children: ReactNode }) {
+async function VendorLayoutGate({ children }: { children: ReactNode }) {
   const meRes = await callServerApi('VENDOR_GET_ME', {});
   const code = meRes.type === 'error' ? meRes.error?.responseCode : undefined;
   const vendorId =
@@ -26,14 +27,22 @@ export default async function VendorLayout({ children }: { children: ReactNode }
       : null;
 
   return (
-    <VendorDashboardLayoutClient vendorStatus={vendor?.status}>
-      <VendorPortalRouteGate
-        initialProfileMissing={profileMissing}
-        initialLoadError={loadError}
-        initialPortalStatus={portalStatus}
-        initialMeta={meta}>
-        {children}
-      </VendorPortalRouteGate>
+    <VendorPortalRouteGate
+      initialProfileMissing={profileMissing}
+      initialLoadError={loadError}
+      initialPortalStatus={portalStatus}
+      initialMeta={meta}>
+      {children}
+    </VendorPortalRouteGate>
+  );
+}
+
+export default function VendorLayout({ children }: { children: ReactNode }) {
+  return (
+    <VendorDashboardLayoutClient>
+      <Suspense fallback={null}>
+        <VendorLayoutGate>{children}</VendorLayoutGate>
+      </Suspense>
     </VendorDashboardLayoutClient>
   );
 }
