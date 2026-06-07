@@ -1,4 +1,3 @@
-import { PageHeader } from '@/components/general/PageHeader';
 import { ArtistsPageClient } from '@/components/section/admin/artists/ArtistsPageClient';
 import { serverFetchAdminArtistsList } from '@/lib/services/adminDashboardServerData';
 import { parseAdminStandardListParams } from '@/lib/utils/adminDashboardSearchParams';
@@ -19,9 +18,8 @@ export default function ArtistsPage({ searchParams }: ArtistsPageProps) {
   return (
     <section className="h-full overflow-hidden">
       <section className="h-full space-y-6 overflow-auto sleek-scrollbar">
-        <PageHeader title="Artists" description="Manage artist profiles and catalogue visibility" />
         <Suspense
-          fallback={<AdminListPageSkeleton showPageHeader={false} label="Loading artists..." />}>
+          fallback={<AdminListPageSkeleton showPageHeader={true} label="Loading artists..." />}>
           <AdminArtistsPageServer searchParams={searchParams} />
         </Suspense>
       </section>

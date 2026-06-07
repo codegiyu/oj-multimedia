@@ -1,4 +1,3 @@
-import { PageHeader } from '@/components/general/PageHeader';
 import { ContactSubmissionsPageClient } from '@/components/section/admin/contact-submissions/ContactSubmissionsPageClient';
 import { serverFetchAdminContactSubmissionsList } from '@/lib/services/adminDashboardServerData';
 import { parseAdminStandardListParams } from '@/lib/utils/adminDashboardSearchParams';
@@ -19,13 +18,9 @@ export default function ContactSubmissionsPage({ searchParams }: ContactSubmissi
   return (
     <section className="h-full overflow-hidden">
       <section className="h-full space-y-6 overflow-auto sleek-scrollbar">
-        <PageHeader
-          title="Contact Submissions"
-          description="View and manage messages submitted through the contact form"
-        />
         <Suspense
           fallback={
-            <AdminListPageSkeleton showPageHeader={false} label="Loading contact submissions..." />
+            <AdminListPageSkeleton showPageHeader={true} label="Loading contact submissions..." />
           }>
           <AdminContactSubmissionsPageServer searchParams={searchParams} />
         </Suspense>

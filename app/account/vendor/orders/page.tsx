@@ -5,48 +5,34 @@ import type { Metadata } from 'next';
 import { buildAccountOrdersQuery } from '@/lib/account/accountListFilters';
 import { callServerApi } from '@/lib/services/serverApi';
 import type { ApiErrorResponse } from '@/lib/types/http';
+import { parseAccountListPageParams } from '@/lib/utils/accountSearchParams';
 
 export const metadata: Metadata = {
   title: 'Vendor Orders',
   description: 'View and manage your vendor orders.',
 };
 
-export default function VendorOrdersPage({
-  searchParams,
-}: {
-  searchParams?: { page?: string; pagesize?: string; status?: string; search?: string };
-}) {
-  const page = Number(searchParams?.page ?? 1) || 1;
-  const pageSize = Number(searchParams?.pagesize ?? 10) || 10;
-  const status = searchParams?.status ?? '';
-  const search = searchParams?.search ?? '';
+interface VendorOrdersPageProps {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}
 
+export default function VendorOrdersPage({ searchParams }: VendorOrdersPageProps) {
   return (
     <Suspense fallback={<VendorOrdersPageSkeleton />}>
-      <VendorOrdersPageClientServer
-        page={page}
-        pageSize={pageSize}
-        status={status}
-        search={search}
-      />
+      <VendorOrdersPageClientServer searchParams={searchParams} />
     </Suspense>
   );
 }
 
 async function VendorOrdersPageClientServer({
-  page,
-  pageSize,
-  status,
-  search,
+  searchParams,
 }: {
-  page: number;
-  pageSize: number;
-  status: string;
-  search: string;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  const raw = await searchParams;
+  const { page, pageSize, status, search } = parseAccountListPageParams(raw);
   const query =
-    `?${buildAccountOrdersQuery({ page, pageSize, search, status }).toString()}` as const;
-
+    `?${buildAccountOrdersQuery({ page, pageSize, status, search }).toString()}` as const;
   const res = await callServerApi('VENDOR_GET_ORDERS', { query });
 
   if (res.error || !res.data) {

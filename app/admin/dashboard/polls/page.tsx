@@ -1,5 +1,4 @@
 import { PollsPageClient } from '@/components/section/admin/polls/PollsPageClient';
-import { PageHeader } from '@/components/general/PageHeader';
 import { serverFetchAdminPollsList } from '@/lib/services/adminDashboardServerData';
 import { parseAdminContentListParams } from '@/lib/utils/adminDashboardSearchParams';
 import { Metadata } from 'next';
@@ -19,9 +18,8 @@ export default function PollsPage({ searchParams }: PollsPageProps) {
   return (
     <section className="h-full overflow-hidden">
       <section className="h-full space-y-6 overflow-auto sleek-scrollbar">
-        <PageHeader title="Polls" description="Manage polls, open or close voting" />
         <Suspense
-          fallback={<AdminListPageSkeleton showPageHeader={false} label="Loading polls..." />}>
+          fallback={<AdminListPageSkeleton showPageHeader={true} label="Loading polls..." />}>
           <AdminPollsPageServer searchParams={searchParams} />
         </Suspense>
       </section>

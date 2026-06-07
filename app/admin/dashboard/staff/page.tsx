@@ -1,4 +1,3 @@
-import { PageHeader } from '@/components/general/PageHeader';
 import { AdminsPageClient } from '@/components/section/admin/staff/AdminsPageClient';
 import { serverFetchAdminStaffList } from '@/lib/services/adminDashboardServerData';
 import { parseAdminStandardListParams } from '@/lib/utils/adminDashboardSearchParams';
@@ -19,14 +18,8 @@ export default function AdminStaffPage({ searchParams }: StaffPageProps) {
   return (
     <section className="h-full overflow-hidden">
       <section className="h-full space-y-6 overflow-auto sleek-scrollbar">
-        <PageHeader
-          title="Admin staff"
-          description="View and manage administrators for the console"
-        />
         <Suspense
-          fallback={
-            <AdminListPageSkeleton showPageHeader={false} label="Loading admin staff..." />
-          }>
+          fallback={<AdminListPageSkeleton showPageHeader={true} label="Loading admin staff..." />}>
           <AdminStaffPageServer searchParams={searchParams} />
         </Suspense>
       </section>

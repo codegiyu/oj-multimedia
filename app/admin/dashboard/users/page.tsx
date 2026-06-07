@@ -1,4 +1,3 @@
-import { PageHeader } from '@/components/general/PageHeader';
 import { UsersPageClient } from '@/components/section/admin/users/UsersPageClient';
 import { serverFetchAdminUsersList } from '@/lib/services/adminDashboardServerData';
 import { parseAdminStandardListParams } from '@/lib/utils/adminDashboardSearchParams';
@@ -19,9 +18,8 @@ export default function UsersPage({ searchParams }: UsersPageProps) {
   return (
     <section className="h-full overflow-hidden">
       <section className="h-full space-y-6 overflow-auto sleek-scrollbar">
-        <PageHeader title="Users" description="Search, review, and manage platform user accounts" />
         <Suspense
-          fallback={<AdminListPageSkeleton showPageHeader={false} label="Loading users..." />}>
+          fallback={<AdminListPageSkeleton showPageHeader={true} label="Loading users..." />}>
           <AdminUsersPageServer searchParams={searchParams} />
         </Suspense>
       </section>

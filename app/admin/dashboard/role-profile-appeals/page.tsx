@@ -1,4 +1,3 @@
-import { PageHeader } from '@/components/general/PageHeader';
 import { Suspense } from 'react';
 import { Metadata } from 'next';
 import { AdminListPageSkeleton } from '@/components/section/admin/skeletons';
@@ -19,13 +18,9 @@ export default function RoleProfileAppealsPage({ searchParams }: RoleProfileAppe
   return (
     <section className="h-full overflow-hidden">
       <section className="h-full space-y-6 overflow-auto sleek-scrollbar">
-        <PageHeader
-          title="Profile appeals"
-          description="Review suspension appeals from vendors, artists, and pastors"
-        />
         <Suspense
           fallback={
-            <AdminListPageSkeleton showPageHeader={false} label="Loading profile appeals..." />
+            <AdminListPageSkeleton showPageHeader={true} label="Loading profile appeals..." />
           }>
           <RoleProfileAppealsPageServer searchParams={searchParams} />
         </Suspense>

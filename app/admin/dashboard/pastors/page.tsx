@@ -1,4 +1,3 @@
-import { PageHeader } from '@/components/general/PageHeader';
 import { PastorsPageClient } from '@/components/section/admin/pastors/PastorsPageClient';
 import { serverFetchAdminPastorsList } from '@/lib/services/adminDashboardServerData';
 import { parseAdminStandardListParams } from '@/lib/utils/adminDashboardSearchParams';
@@ -19,12 +18,8 @@ export default function PastorsPage({ searchParams }: PastorsPageProps) {
   return (
     <section className="h-full overflow-hidden">
       <section className="h-full space-y-6 overflow-auto sleek-scrollbar">
-        <PageHeader
-          title="Pastors"
-          description="Manage pastor profiles for Ask a Pastor and community"
-        />
         <Suspense
-          fallback={<AdminListPageSkeleton showPageHeader={false} label="Loading pastors..." />}>
+          fallback={<AdminListPageSkeleton showPageHeader={true} label="Loading pastors..." />}>
           <AdminPastorsPageServer searchParams={searchParams} />
         </Suspense>
       </section>

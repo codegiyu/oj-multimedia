@@ -5,55 +5,32 @@ import type { Metadata } from 'next';
 import { buildAccountVendorProductsQuery } from '@/lib/account/accountListFilters';
 import { callServerApi } from '@/lib/services/serverApi';
 import type { ApiErrorResponse } from '@/lib/types/http';
+import { parseAccountVendorProductsPageParams } from '@/lib/utils/accountSearchParams';
 
 export const metadata: Metadata = {
   title: 'Vendor Products',
   description: 'Manage your vendor products.',
 };
 
-export default function VendorProductsPage({
-  searchParams,
-}: {
-  searchParams?: {
-    page?: string;
-    pagesize?: string;
-    status?: string;
-    category?: string;
-    search?: string;
-  };
-}) {
-  const page = Number(searchParams?.page ?? 1) || 1;
-  const pageSize = Number(searchParams?.pagesize ?? 10) || 10;
-  const status = searchParams?.status ?? 'all';
-  const category = searchParams?.category ?? 'all';
-  const search = searchParams?.search ?? '';
+interface VendorProductsPageProps {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}
 
+export default function VendorProductsPage({ searchParams }: VendorProductsPageProps) {
   return (
     <Suspense fallback={<VendorProductsPageSkeleton />}>
-      <VendorProductsPageClientServer
-        page={page}
-        pageSize={pageSize}
-        status={status}
-        category={category}
-        search={search}
-      />
+      <VendorProductsPageClientServer searchParams={searchParams} />
     </Suspense>
   );
 }
 
 async function VendorProductsPageClientServer({
-  page,
-  pageSize,
-  status,
-  category,
-  search,
+  searchParams,
 }: {
-  page: number;
-  pageSize: number;
-  status: string;
-  category: string;
-  search: string;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  const raw = await searchParams;
+  const { page, pageSize, status, category, search } = parseAccountVendorProductsPageParams(raw);
   const query =
     `?${buildAccountVendorProductsQuery({ page, pageSize, status, category, search }).toString()}` as const;
   const res = await callServerApi('VENDOR_GET_PRODUCTS', { query });

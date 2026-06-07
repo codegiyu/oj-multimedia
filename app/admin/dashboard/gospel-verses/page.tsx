@@ -1,4 +1,3 @@
-import { PageHeader } from '@/components/general/PageHeader';
 import { GospelVersesPageClient } from '@/components/section/admin/gospel-verses/GospelVersesPageClient';
 import { serverFetchAdminGospelVersesList } from '@/lib/services/adminDashboardServerData';
 import { parseAdminStandardListParams } from '@/lib/utils/adminDashboardSearchParams';
@@ -19,13 +18,9 @@ export default function GospelVersesPage({ searchParams }: GospelVersesPageProps
   return (
     <section className="h-full overflow-hidden">
       <section className="h-full space-y-6 overflow-auto sleek-scrollbar">
-        <PageHeader
-          title="Gospel Verses"
-          description="Review and manage scheduled gospel verses for the site"
-        />
         <Suspense
           fallback={
-            <AdminListPageSkeleton showPageHeader={false} label="Loading gospel verses..." />
+            <AdminListPageSkeleton showPageHeader={true} label="Loading gospel verses..." />
           }>
           <AdminGospelVersesPageServer searchParams={searchParams} />
         </Suspense>

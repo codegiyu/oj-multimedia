@@ -1,5 +1,4 @@
 import { AlbumsPageClient } from '@/components/section/admin/albums/AlbumsPageClient';
-import { PageHeader } from '@/components/general/PageHeader';
 import { serverFetchAdminAlbumsList } from '@/lib/services/adminDashboardServerData';
 import { parseAdminContentListParams } from '@/lib/utils/adminDashboardSearchParams';
 import { Metadata } from 'next';
@@ -19,9 +18,8 @@ export default function AlbumsPage({ searchParams }: AlbumsPageProps) {
   return (
     <section className="h-full overflow-hidden">
       <section className="h-full space-y-6 overflow-auto sleek-scrollbar">
-        <PageHeader title="Albums" description="Manage albums and group tracks under artists" />
         <Suspense
-          fallback={<AdminListPageSkeleton showPageHeader={false} label="Loading albums..." />}>
+          fallback={<AdminListPageSkeleton showPageHeader={true} label="Loading albums..." />}>
           <AdminAlbumsPageServer searchParams={searchParams} />
         </Suspense>
       </section>

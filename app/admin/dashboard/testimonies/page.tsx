@@ -1,5 +1,4 @@
 import { TestimoniesPageClient } from '@/components/section/admin/testimonies/TestimoniesPageClient';
-import { PageHeader } from '@/components/general/PageHeader';
 import { serverFetchAdminTestimoniesList } from '@/lib/services/adminDashboardServerData';
 import { parseAdminContentListParams } from '@/lib/utils/adminDashboardSearchParams';
 import { Metadata } from 'next';
@@ -19,14 +18,8 @@ export default function TestimoniesPage({ searchParams }: TestimoniesPageProps) 
   return (
     <section className="h-full overflow-hidden">
       <section className="h-full space-y-6 overflow-auto sleek-scrollbar">
-        <PageHeader
-          title="Testimonies"
-          description="Manage testimonies, approve or reject submissions"
-        />
         <Suspense
-          fallback={
-            <AdminListPageSkeleton showPageHeader={false} label="Loading testimonies..." />
-          }>
+          fallback={<AdminListPageSkeleton showPageHeader={true} label="Loading testimonies..." />}>
           <AdminTestimoniesPageServer searchParams={searchParams} />
         </Suspense>
       </section>
