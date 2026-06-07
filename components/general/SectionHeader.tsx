@@ -19,6 +19,9 @@ export interface SectionHeaderProps {
   subtext?: string;
   viewAllLink?: string;
   viewAllLabel?: string;
+  /** Secondary link for full browse (e.g. `/music/all`) shown beside curated view-all. */
+  browseAllLink?: string;
+  browseAllLabel?: string;
   onPrev?: () => void;
   onNext?: () => void;
   showPrevNext?: boolean;
@@ -56,6 +59,8 @@ export const SectionHeader = ({
   subtext,
   viewAllLink,
   viewAllLabel = 'View All',
+  browseAllLink,
+  browseAllLabel = 'Browse all',
   onPrev,
   onNext,
   showPrevNext = false,
@@ -130,6 +135,11 @@ export const SectionHeader = ({
             {prevNextControls}
             {extraButtons ? (
               <div className="hidden md:flex items-center gap-2">{extraButtons}</div>
+            ) : null}
+            {browseAllLink ? (
+              <Button variant="outline" size="sm" className="gap-2 min-h-11" asChild>
+                <Link href={browseAllLink}>{browseAllLabel}</Link>
+              </Button>
             ) : null}
             {viewAllLink && (
               <Button

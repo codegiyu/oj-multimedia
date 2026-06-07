@@ -46,6 +46,7 @@ export const TrendingSongs = ({ songs: trendingSongs }: TrendingSongsProps) => {
         heading="Trending Now"
         subtext="What everyone's listening to"
         viewAllLink="/music/trending"
+        browseAllLink="/music/all"
         contentProps={{ enableAnimation: false }}>
         <SectionEmptyState
           title="No trending songs"
@@ -64,6 +65,7 @@ export const TrendingSongs = ({ songs: trendingSongs }: TrendingSongsProps) => {
       heading="Trending Now"
       subtext="What everyone's listening to"
       viewAllLink="/music/trending"
+      browseAllLink="/music/all"
       showPrevNext={true}
       onPrev={() => scroll('left')}
       onNext={() => scroll('right')}

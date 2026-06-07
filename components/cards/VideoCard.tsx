@@ -146,7 +146,8 @@ export const VideoCard = ({
               {duration}
             </span>
 
-            <div className={`absolute top-2 left-2 pointer-events-none ${isFeaturedVariant ? 'top-3 left-3' : ''}`}>
+            <div
+              className={`absolute top-2 left-2 pointer-events-none ${isFeaturedVariant ? 'top-3 left-3' : ''}`}>
               {isFeaturedVariant && featured ? (
                 <span className="px-2 py-1 bg-primary text-primary-foreground text-xs font-bold rounded-full">
                   FEATURED
