@@ -13,9 +13,7 @@ import {
   AccountPageShell,
   DashboardPageHeaderSkeleton,
   DashboardStatGridSkeleton,
-  DashboardBannerSkeleton,
   DashboardQuickLinkGridSkeleton,
-  DashboardUploadListSkeleton,
   DashboardFormCardSkeleton,
   FilterableDataPageSkeleton,
   AccountStatusPillsSkeleton,
@@ -35,41 +33,6 @@ const vendorOrderColumns: DataTableColumn<Record<string, unknown>, unknown>[] = 
   { id: 'date', header: 'Date', cell: () => null, meta: { width: 120 } },
   { id: 'actions', header: 'Actions', cell: () => null, meta: { width: 100, hug: true } },
 ];
-
-export function AccountHubPageSkeleton() {
-  return (
-    <AccountPageShell label="Loading account">
-      <DashboardBannerSkeleton />
-      <DashboardStatGridSkeleton count={4} />
-      <div className="grid gap-8 lg:grid-cols-2">
-        <div className="rounded-xl border border-border/50 bg-card p-4">
-          <Skeleton className="h-6 w-32 mb-4" />
-          <div className="space-y-3">
-            {[1, 2, 3].map(i => (
-              <div
-                key={i}
-                className="flex items-center gap-3 border-b border-border/30 pb-3 last:border-0">
-                <Skeleton className="h-12 w-12 rounded-lg shrink-0" />
-                <div className="flex-1 space-y-2">
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-3 w-2/3" />
-                </div>
-                <Skeleton className="h-5 w-14" />
-              </div>
-            ))}
-          </div>
-        </div>
-        <CardGridSkeleton count={4} gridClassName="grid gap-4 sm:grid-cols-2">
-          <ProductCardSkeleton />
-        </CardGridSkeleton>
-      </div>
-      <div className="space-y-4">
-        <DashboardPageHeaderSkeleton />
-        <DashboardQuickLinkGridSkeleton count={6} />
-      </div>
-    </AccountPageShell>
-  );
-}
 
 export function AccountOrdersPageSkeleton() {
   return (
@@ -120,23 +83,6 @@ export function AccountSettingsPageSkeleton() {
       <DashboardPageHeaderSkeleton />
       <DashboardFormCardSkeleton fieldRows={4} />
       <DashboardFormCardSkeleton fieldRows={3} />
-    </AccountPageShell>
-  );
-}
-
-export function ArtistPortalDashboardSkeleton() {
-  return (
-    <AccountPageShell label="Loading artist dashboard">
-      <DashboardPageHeaderSkeleton actionCount={1} />
-      <DashboardStatGridSkeleton
-        count={5}
-        gridClassName="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
-      />
-      <DashboardUploadListSkeleton count={4} />
-      <DashboardQuickLinkGridSkeleton
-        count={4}
-        gridClassName="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4"
-      />
     </AccountPageShell>
   );
 }
@@ -286,6 +232,3 @@ export function DashboardQuestionDetailSkeleton() {
 
 export const PastorQuestionDetailSkeleton = DashboardQuestionDetailSkeleton;
 export const AccountCommunityQuestionDetailSkeleton = DashboardQuestionDetailSkeleton;
-
-/** @deprecated Use AccountHubPageSkeleton */
-export const AccountPageSkeleton = AccountHubPageSkeleton;

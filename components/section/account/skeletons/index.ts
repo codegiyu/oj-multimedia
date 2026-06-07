@@ -16,12 +16,10 @@ export {
 } from './DashboardSkeletons';
 
 export {
-  AccountHubPageSkeleton,
   AccountOrdersPageSkeleton,
   AccountFavoritesPageSkeleton,
   AccountWishlistPageSkeleton,
   AccountSettingsPageSkeleton,
-  ArtistPortalDashboardSkeleton,
   ArtistPortalContentListPageSkeleton,
   ArtistPortalAlbumsPageSkeleton,
   ArtistPortalUploadPageSkeleton,
@@ -34,5 +32,4 @@ export {
   PastorPortalSettingsPageSkeleton,
   PastorQuestionDetailSkeleton,
   AccountCommunityQuestionDetailSkeleton,
-  AccountPageSkeleton,
 } from './AccountPageSkeletons';

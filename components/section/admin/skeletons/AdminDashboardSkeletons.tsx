@@ -1,6 +1,5 @@
 'use client';
 
-import { type ReactNode } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { PageSkeletonShell } from '@/components/skeletons';
 import { TableContentSkeleton } from '@/components/general/TableContentSkeleton';
@@ -228,13 +227,5 @@ export function AdminContentCategoriesPageSkeleton() {
       <AdminFilterToolbarSkeleton filterCount={0} />
       <AdminInlineTableSkeleton rowCount={8} />
     </PageSkeletonShell>
-  );
-}
-
-export function AdminAuthLayoutSkeleton({ children }: { children: ReactNode }) {
-  return (
-    <div className="flex min-h-screen items-center justify-center p-4">
-      <div className="w-full max-w-md space-y-4">{children}</div>
-    </div>
   );
 }

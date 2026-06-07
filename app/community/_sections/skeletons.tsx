@@ -1,12 +1,7 @@
 'use client';
 
 import { Skeleton } from '@/components/ui/skeleton';
-import {
-  PageSkeletonShell,
-  SectionSkeleton,
-  SectionHeaderSkeleton,
-  CTASectionSkeleton,
-} from '@/components/skeletons';
+import { SectionSkeleton, SectionHeaderSkeleton } from '@/components/skeletons';
 
 export function CommunityCategoriesSkeleton() {
   return (
@@ -101,18 +96,5 @@ export function RecentPrayerRequestsHubSkeleton() {
         <Skeleton className="h-10 w-40 mx-auto rounded-lg" />
       </div>
     </SectionSkeleton>
-  );
-}
-
-/** Full-page fallback while the community route shell loads. */
-export function CommunityPageSkeleton() {
-  return (
-    <PageSkeletonShell label="Loading community page">
-      <CommunityCategoriesSkeleton />
-      <FeaturedTestimoniesHubSkeleton />
-      <TrendingDevotionalsHubSkeleton />
-      <RecentPrayerRequestsHubSkeleton />
-      <CTASectionSkeleton sectionClassName="py-12" />
-    </PageSkeletonShell>
   );
 }
