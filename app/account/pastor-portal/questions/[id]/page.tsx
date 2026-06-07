@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import { callServerApi } from '@/lib/services/serverApi';
+import { PastorQuestionDetailSkeleton } from '@/components/section/account/skeletons';
 import { PastorPortalQuestionDetailPageClient } from '@/components/section/account/pastor-portal/PastorPortalQuestionDetailPageClient';
 import type { QuestionDetail } from '@/lib/types/community';
 
@@ -67,7 +68,7 @@ export default async function PastorPortalQuestionDetailPage({ params }: PagePro
   const { id } = await params;
 
   return (
-    <Suspense fallback={<p className="text-sm text-muted-foreground p-6">Loading question…</p>}>
+    <Suspense fallback={<PastorQuestionDetailSkeleton />}>
       <PastorQuestionDetailServer id={id} />
     </Suspense>
   );
