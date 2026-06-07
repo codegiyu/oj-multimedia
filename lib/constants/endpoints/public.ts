@@ -122,6 +122,11 @@ export const PUBLIC_ENDPOINTS: Record<string, EndpointDetails> = {
     method: 'GET',
     isNotAuthenticated: true,
   },
+  PUBLIC_GET_RESOURCE_ITEM: {
+    path: '/api/v1/public/resources',
+    method: 'GET',
+    isNotAuthenticated: true,
+  }, // /:idOrSlug
   PUBLIC_GET_RESOURCE_COUNTS: {
     path: '/api/v1/public/resources/counts',
     method: 'GET',

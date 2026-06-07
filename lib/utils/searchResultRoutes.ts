@@ -37,7 +37,7 @@ export function getSearchResultDetailHref(type: SearchResultType, _id: string): 
     case 'poll':
       return `/community/polls-and-voting/${enc}`;
     case 'resource':
-      return '/community/resources';
+      return `/community/resources/${enc}`;
     case 'artist':
       return `/community/artists/${enc}`;
     default:
