@@ -2,21 +2,16 @@
 
 import { Skeleton } from '@/components/ui/skeleton';
 import {
-  PageSkeletonShell,
   SectionSkeleton,
   SectionHeaderSkeleton,
   HorizontalRailSkeleton,
   CardGridSkeleton,
-  CTASectionSkeleton,
   MusicCardSkeleton,
   VideoCardSkeleton,
   ChartCardSkeleton,
   ArtistCardSkeleton,
   ProductCardSkeleton,
   DevotionalCardSkeleton,
-  HomeAdvertStripSkeleton,
-  SimpleMusicRailSkeleton,
-  SimpleVideoRailSkeleton,
 } from '@/components/skeletons';
 import {
   MUSIC_RAIL_ITEM_CLASS,
@@ -169,37 +164,3 @@ export function PollSectionSkeleton() {
     </div>
   );
 }
-
-export function CommunitySectionSkeleton() {
-  return (
-    <SectionSkeleton background="bg-muted/30">
-      <SectionHeaderSkeleton />
-      <div className="grid lg:grid-cols-3 gap-6">
-        <CommunityHighlightsSkeleton />
-        <PollSectionSkeleton />
-      </div>
-    </SectionSkeleton>
-  );
-}
-
-export const HomePageSkeleton = () => {
-  return (
-    <PageSkeletonShell label="Loading home page">
-      <HomeAdvertStripSkeleton />
-      <SimpleMusicRailSkeleton />
-      <SimpleMusicRailSkeleton />
-      <TrendingMusicSectionSkeleton />
-      <TrendingVideosSectionSkeleton />
-      <SimpleVideoRailSkeleton />
-      <DevotionalsRailSkeleton />
-      <TopChartsSectionSkeleton />
-      <NewsSectionSkeleton />
-      <NewsSectionSkeleton />
-      <NewsSectionSkeleton />
-      <MarketplaceSectionSkeleton />
-      <CommunitySectionSkeleton />
-      <HomeAdvertStripSkeleton />
-      <CTASectionSkeleton />
-    </PageSkeletonShell>
-  );
-};

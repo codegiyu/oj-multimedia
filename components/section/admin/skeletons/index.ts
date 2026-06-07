@@ -12,5 +12,4 @@ export {
   AdminMarketplacePageSkeleton,
   AdminHomeAdvertsPageSkeleton,
   AdminContentCategoriesPageSkeleton,
-  AdminAuthLayoutSkeleton,
 } from './AdminDashboardSkeletons';

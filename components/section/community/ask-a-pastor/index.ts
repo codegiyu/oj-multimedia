@@ -1,6 +1,6 @@
 export { AskAPastorHero } from './AskAPastorHero';
 export { AskAPastorPageClient } from './AskAPastorPageClient';
-export { AskAPastorPageSkeleton } from './AskAPastorPageSkeleton';
+export { AskAPastorBrowseSkeleton } from './AskAPastorPageSkeleton';
 export { ActiveQuestionsSection } from './ActiveQuestionsSection';
 export { SubmitQuestionSection } from './SubmitQuestionSection';
 export { AnsweredQuestionsSection } from './AnsweredQuestionsSection';

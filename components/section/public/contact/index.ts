@@ -1,6 +1,3 @@
-export { ContactPageClient } from './ContactPageClient';
-export { ContactPageSkeleton } from './ContactPageSkeleton';
-export { ContactHeroSection } from './ContactHeroSection';
 export { ContactFormSection } from './ContactFormSection';
 export { ContactInfoSection } from './ContactInfoSection';
 export { ContactInfoDetails } from './ContactInfoDetails';

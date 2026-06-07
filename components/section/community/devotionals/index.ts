@@ -1,6 +1,9 @@
 export { DevotionalsHero } from './DevotionalsHero';
 export { DevotionalsPageClient } from './DevotionalsPageClient';
-export { DevotionalsPageSkeleton } from './DevotionalsPageSkeleton';
+export {
+  DevotionalsBrowseSkeleton,
+  DevotionalsCategoryFilterSkeleton,
+} from './DevotionalsPageSkeleton';
 export { DailyDevotionalsSection } from './DailyDevotionalsSection';
 export { BibleStudySeriesSection } from './BibleStudySeriesSection';
 export { PrayerPointsSection } from './PrayerPointsSection';
