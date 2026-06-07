@@ -1,5 +1,5 @@
-import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { DevotionalsPageClient } from '@/components/section/admin/devotionals/DevotionalsPageClient';
+import { PageHeader } from '@/components/general/PageHeader';
 import { serverFetchAdminDevotionalsList } from '@/lib/services/adminDashboardServerData';
 import { parseAdminContentListParams } from '@/lib/utils/adminDashboardSearchParams';
 import { Metadata } from 'next';
@@ -17,15 +17,20 @@ interface DevotionalsPageProps {
 
 export default function DevotionalsPage({ searchParams }: DevotionalsPageProps) {
   return (
-    <DashboardLayout>
-      <section className="h-full overflow-hidden">
-        <section className="h-full space-y-6 overflow-auto sleek-scrollbar">
-          <Suspense fallback={<AdminListPageSkeleton label="Loading devotionals..." />}>
-            <AdminDevotionalsPageServer searchParams={searchParams} />
-          </Suspense>
-        </section>
+    <section className="h-full overflow-hidden">
+      <section className="h-full space-y-6 overflow-auto sleek-scrollbar">
+        <PageHeader
+          title="Devotionals"
+          description="Manage devotionals, approve or reject submissions"
+        />
+        <Suspense
+          fallback={
+            <AdminListPageSkeleton showPageHeader={false} label="Loading devotionals..." />
+          }>
+          <AdminDevotionalsPageServer searchParams={searchParams} />
+        </Suspense>
       </section>
-    </DashboardLayout>
+    </section>
   );
 }
 

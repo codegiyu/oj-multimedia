@@ -1,4 +1,3 @@
-import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import {
   MarketplacePageClient,
   type MarketplaceTabType,
@@ -44,15 +43,13 @@ interface MarketplacePageProps {
 
 export default function MarketplacePage({ searchParams }: MarketplacePageProps) {
   return (
-    <DashboardLayout>
-      <section className="h-full overflow-hidden">
-        <section className="h-full space-y-6 overflow-auto sleek-scrollbar">
-          <Suspense fallback={<AdminMarketplacePageSkeleton />}>
-            <AdminMarketplacePageServer searchParams={searchParams} />
-          </Suspense>
-        </section>
+    <section className="h-full overflow-hidden">
+      <section className="h-full space-y-6 overflow-auto sleek-scrollbar">
+        <Suspense fallback={<AdminMarketplacePageSkeleton />}>
+          <AdminMarketplacePageServer searchParams={searchParams} />
+        </Suspense>
       </section>
-    </DashboardLayout>
+    </section>
   );
 }
 

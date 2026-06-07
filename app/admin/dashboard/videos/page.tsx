@@ -1,4 +1,4 @@
-import { DashboardLayout } from '@/components/layout/DashboardLayout';
+import { PageHeader } from '@/components/general/PageHeader';
 import { VideosPageClient } from '@/components/section/admin/videos/VideosPageClient';
 import { serverFetchAdminVideosList } from '@/lib/services/adminDashboardServerData';
 import { parseAdminContentListParams } from '@/lib/utils/adminDashboardSearchParams';
@@ -17,15 +17,18 @@ interface VideosPageProps {
 
 export default function VideosPage({ searchParams }: VideosPageProps) {
   return (
-    <DashboardLayout>
-      <section className="h-full overflow-hidden">
-        <section className="h-full space-y-6 overflow-auto sleek-scrollbar">
-          <Suspense fallback={<AdminListPageSkeleton label="Loading videos..." />}>
-            <AdminVideosPageServer searchParams={searchParams} />
-          </Suspense>
-        </section>
+    <section className="h-full overflow-hidden">
+      <section className="h-full space-y-6 overflow-auto sleek-scrollbar">
+        <PageHeader
+          title="Videos"
+          description="Manage video content, approve or reject submissions"
+        />
+        <Suspense
+          fallback={<AdminListPageSkeleton showPageHeader={false} label="Loading videos..." />}>
+          <AdminVideosPageServer searchParams={searchParams} />
+        </Suspense>
       </section>
-    </DashboardLayout>
+    </section>
   );
 }
 

@@ -1,4 +1,4 @@
-import { DashboardLayout } from '@/components/layout/DashboardLayout';
+import { PageHeader } from '@/components/general/PageHeader';
 import { NewsPageClient } from '@/components/section/admin/news/NewsPageClient';
 import { serverFetchAdminNewsList } from '@/lib/services/adminDashboardServerData';
 import { parseAdminContentListParams } from '@/lib/utils/adminDashboardSearchParams';
@@ -17,15 +17,15 @@ interface NewsPageProps {
 
 export default function NewsPage({ searchParams }: NewsPageProps) {
   return (
-    <DashboardLayout>
-      <section className="h-full overflow-hidden">
-        <section className="h-full space-y-6 overflow-auto sleek-scrollbar">
-          <Suspense fallback={<AdminListPageSkeleton label="Loading news..." />}>
-            <AdminNewsPageServer searchParams={searchParams} />
-          </Suspense>
-        </section>
+    <section className="h-full overflow-hidden">
+      <section className="h-full space-y-6 overflow-auto sleek-scrollbar">
+        <PageHeader title="News" description="Manage news articles" />
+        <Suspense
+          fallback={<AdminListPageSkeleton showPageHeader={false} label="Loading news..." />}>
+          <AdminNewsPageServer searchParams={searchParams} />
+        </Suspense>
       </section>
-    </DashboardLayout>
+    </section>
   );
 }
 

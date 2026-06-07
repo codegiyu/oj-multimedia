@@ -1,4 +1,4 @@
-import { DashboardLayout } from '@/components/layout/DashboardLayout';
+import { PageHeader } from '@/components/general/PageHeader';
 import { MusicPageClient } from '@/components/section/admin/music/MusicPageClient';
 import { serverFetchAdminMusicList } from '@/lib/services/adminDashboardServerData';
 import { parseAdminMusicListParams } from '@/lib/utils/adminDashboardSearchParams';
@@ -17,15 +17,18 @@ interface MusicPageProps {
 
 export default function MusicPage({ searchParams }: MusicPageProps) {
   return (
-    <DashboardLayout>
-      <section className="h-full overflow-hidden">
-        <section className="h-full space-y-6 overflow-auto sleek-scrollbar">
-          <Suspense fallback={<AdminListPageSkeleton label="Loading music..." />}>
-            <AdminMusicPageServer searchParams={searchParams} />
-          </Suspense>
-        </section>
+    <section className="h-full overflow-hidden">
+      <section className="h-full space-y-6 overflow-auto sleek-scrollbar">
+        <PageHeader
+          title="Music"
+          description="Manage music tracks, approve or reject submissions"
+        />
+        <Suspense
+          fallback={<AdminListPageSkeleton showPageHeader={false} label="Loading music..." />}>
+          <AdminMusicPageServer searchParams={searchParams} />
+        </Suspense>
       </section>
-    </DashboardLayout>
+    </section>
   );
 }
 

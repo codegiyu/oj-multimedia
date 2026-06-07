@@ -1,4 +1,3 @@
-import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { PageHeader } from '@/components/general/PageHeader';
 import { DashboardHomeClient } from '@/components/section/admin/dashboard/DashboardHomeClient';
 import { callServerApi } from '@/lib/services/serverApi';
@@ -13,16 +12,14 @@ export const metadata: Metadata = {
 
 export default function DashboardHomePage() {
   return (
-    <DashboardLayout>
-      <section className="h-full overflow-hidden">
-        <section className="h-full space-y-6 overflow-auto sleek-scrollbar">
-          <PageHeader title="Dashboard" description="Overview of your site management" />
-          <Suspense fallback={<AdminDashboardHomeSkeleton />}>
-            <DashboardHomeServer />
-          </Suspense>
-        </section>
+    <section className="h-full overflow-hidden">
+      <section className="h-full space-y-6 overflow-auto sleek-scrollbar">
+        <PageHeader title="Dashboard" description="Overview of your site management" />
+        <Suspense fallback={<AdminDashboardHomeSkeleton />}>
+          <DashboardHomeServer />
+        </Suspense>
       </section>
-    </DashboardLayout>
+    </section>
   );
 }
 

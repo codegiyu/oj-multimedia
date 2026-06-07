@@ -1,4 +1,3 @@
-import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { ContentCategoriesPageClient } from '@/components/section/admin/content-categories/ContentCategoriesPageClient';
 import { serverFetchAdminContentCategoriesList } from '@/lib/services/adminDashboardServerData';
 import { parseAdminCategoriesListParams } from '@/lib/utils/adminDashboardSearchParams';
@@ -17,15 +16,13 @@ interface ContentCategoriesPageProps {
 
 export default function ContentCategoriesPage({ searchParams }: ContentCategoriesPageProps) {
   return (
-    <DashboardLayout>
-      <section className="h-full overflow-hidden">
-        <section className="h-full space-y-6 overflow-auto sleek-scrollbar">
-          <Suspense fallback={<AdminContentCategoriesPageSkeleton />}>
-            <AdminContentCategoriesPageServer searchParams={searchParams} />
-          </Suspense>
-        </section>
+    <section className="h-full overflow-hidden">
+      <section className="h-full space-y-6 overflow-auto sleek-scrollbar">
+        <Suspense fallback={<AdminContentCategoriesPageSkeleton />}>
+          <AdminContentCategoriesPageServer searchParams={searchParams} />
+        </Suspense>
       </section>
-    </DashboardLayout>
+    </section>
   );
 }
 

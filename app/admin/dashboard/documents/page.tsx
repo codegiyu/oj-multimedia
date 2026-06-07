@@ -1,4 +1,4 @@
-import { DashboardLayout } from '@/components/layout/DashboardLayout';
+import { PageHeader } from '@/components/general/PageHeader';
 import {
   DocumentsPageClient,
   type AdminDocument,
@@ -20,15 +20,15 @@ interface DocumentsPageProps {
 
 export default function DocumentsPage({ searchParams }: DocumentsPageProps) {
   return (
-    <DashboardLayout>
-      <section className="h-full overflow-hidden">
-        <section className="h-full space-y-6 overflow-auto sleek-scrollbar">
-          <Suspense fallback={<AdminListPageSkeleton label="Loading documents..." />}>
-            <AdminDocumentsPageServer searchParams={searchParams} />
-          </Suspense>
-        </section>
+    <section className="h-full overflow-hidden">
+      <section className="h-full space-y-6 overflow-auto sleek-scrollbar">
+        <PageHeader title="Documents" description="View and verify uploaded documents" />
+        <Suspense
+          fallback={<AdminListPageSkeleton showPageHeader={false} label="Loading documents..." />}>
+          <AdminDocumentsPageServer searchParams={searchParams} />
+        </Suspense>
       </section>
-    </DashboardLayout>
+    </section>
   );
 }
 
