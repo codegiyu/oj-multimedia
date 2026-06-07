@@ -2,6 +2,7 @@
 
 import { useOpenShareTestimony } from '@/lib/hooks/useOpenShareTestimony';
 import { motion } from 'motion/react';
+import Link from 'next/link';
 import { Heart, Quote, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -77,7 +78,13 @@ export const TestimoniesHero = () => {
               <Heart className="w-4 h-4" />
               Read Stories
             </Button>
-            <Button variant="hero-outline" size="lg" className="gap-2" onClick={openShareTestimony}>
+            <Button variant="hero-outline" size="lg" className="gap-2" asChild>
+              <Link href="/community/testimonies/all">
+                <Quote className="w-4 h-4" />
+                Browse All Testimonies
+              </Link>
+            </Button>
+            <Button variant="secondary" size="lg" className="gap-2" onClick={openShareTestimony}>
               <MessageCircle className="w-4 h-4" />
               Share Your Story
             </Button>

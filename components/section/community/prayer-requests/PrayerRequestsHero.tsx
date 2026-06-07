@@ -1,7 +1,8 @@
 'use client';
 
 import { motion } from 'motion/react';
-import { HandHeart, Heart, Sparkles, Users } from 'lucide-react';
+import Link from 'next/link';
+import { HandHeart, Heart, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export const PrayerRequestsHero = () => {
@@ -86,15 +87,11 @@ export const PrayerRequestsHero = () => {
               <Heart className="w-4 h-4" />
               Pray for Others
             </Button>
-            <Button
-              variant="secondary"
-              size="lg"
-              className="gap-2"
-              onClick={() => {
-                document.getElementById('answered-prayers')?.scrollIntoView({ behavior: 'smooth' });
-              }}>
-              <Sparkles className="w-4 h-4" />
-              Answered Prayers
+            <Button variant="secondary" size="lg" className="gap-2" asChild>
+              <Link href="/community/prayer-requests/all">
+                <HandHeart className="w-4 h-4" />
+                Browse All Requests
+              </Link>
             </Button>
           </motion.div>
         </div>

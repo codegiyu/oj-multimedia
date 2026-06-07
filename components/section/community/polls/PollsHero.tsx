@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'motion/react';
+import Link from 'next/link';
 import { BarChart3, Vote, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -72,8 +73,14 @@ export const PollsHero = () => {
               <Vote className="w-4 h-4" />
               View Polls
             </Button>
+            <Button variant="hero-outline" size="lg" className="gap-2" asChild>
+              <Link href="/community/polls-and-voting/all">
+                <BarChart3 className="w-4 h-4" />
+                Browse All Polls
+              </Link>
+            </Button>
             <Button
-              variant="hero-outline"
+              variant="secondary"
               size="lg"
               className="gap-2"
               onClick={() => {

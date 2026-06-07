@@ -1,7 +1,8 @@
 'use client';
 
 import { motion } from 'motion/react';
-import { BookOpen, Heart, Sparkles, Calendar } from 'lucide-react';
+import Link from 'next/link';
+import { BookOpen, Sparkles, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export const DevotionalsHero = () => {
@@ -87,15 +88,11 @@ export const DevotionalsHero = () => {
               <BookOpen className="w-4 h-4" />
               Bible Study Series
             </Button>
-            <Button
-              variant="secondary"
-              size="lg"
-              className="gap-2"
-              onClick={() => {
-                document.getElementById('prayer-points')?.scrollIntoView({ behavior: 'smooth' });
-              }}>
-              <Heart className="w-4 h-4" />
-              Prayer Points
+            <Button variant="secondary" size="lg" className="gap-2" asChild>
+              <Link href="/community/devotionals/all">
+                <BookOpen className="w-4 h-4" />
+                Browse All Devotionals
+              </Link>
             </Button>
           </motion.div>
         </div>

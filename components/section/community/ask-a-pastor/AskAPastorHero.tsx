@@ -1,7 +1,8 @@
 'use client';
 
 import { motion } from 'motion/react';
-import { HelpCircle, BookOpen, Sparkles, Users } from 'lucide-react';
+import Link from 'next/link';
+import { HelpCircle, BookOpen, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export const AskAPastorHero = () => {
@@ -84,17 +85,11 @@ export const AskAPastorHero = () => {
               <BookOpen className="w-4 h-4" />
               Browse Answers
             </Button>
-            <Button
-              variant="secondary"
-              size="lg"
-              className="gap-2"
-              onClick={() => {
-                document
-                  .getElementById('available-pastors')
-                  ?.scrollIntoView({ behavior: 'smooth' });
-              }}>
-              <Users className="w-4 h-4" />
-              View Pastors
+            <Button variant="secondary" size="lg" className="gap-2" asChild>
+              <Link href="/community/ask-a-pastor/all">
+                <HelpCircle className="w-4 h-4" />
+                Browse All Questions
+              </Link>
             </Button>
           </motion.div>
         </div>
