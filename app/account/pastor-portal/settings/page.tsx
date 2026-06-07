@@ -1,5 +1,6 @@
 import { Suspense } from 'react';
 import { callServerApi } from '@/lib/services/serverApi';
+import { PastorPortalSettingsPageSkeleton } from '@/components/section/account/skeletons';
 import { PastorPortalSettingsPageClient } from '@/components/section/account/pastor-portal/PastorPortalSettingsPageClient';
 import type { ClientPastorProfile } from '@/lib/constants/endpoints';
 
@@ -20,7 +21,7 @@ async function PastorSettingsServer() {
 
 export default function PastorPortalSettingsPage() {
   return (
-    <Suspense fallback={<p className="text-sm text-muted-foreground p-6">Loading settings…</p>}>
+    <Suspense fallback={<PastorPortalSettingsPageSkeleton />}>
       <PastorSettingsServer />
     </Suspense>
   );

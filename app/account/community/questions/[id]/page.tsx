@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import { callServerApi } from '@/lib/services/serverApi';
+import { AccountCommunityQuestionDetailSkeleton } from '@/components/section/account/skeletons';
 import { AccountCommunityQuestionDetailPageClient } from '@/components/section/account/community/AccountCommunityQuestionDetailPageClient';
 import type { QuestionDetail } from '@/lib/types/community';
 
@@ -61,7 +62,7 @@ export default async function AccountCommunityQuestionDetailPage({ params }: Pag
   const { id } = await params;
 
   return (
-    <Suspense fallback={<p className="text-sm text-muted-foreground p-6">Loading question…</p>}>
+    <Suspense fallback={<AccountCommunityQuestionDetailSkeleton />}>
       <QuestionDetailServer id={id} />
     </Suspense>
   );
