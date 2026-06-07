@@ -1,7 +1,6 @@
 import type { PublicServerApiConfig } from '@/lib/services/serverApi';
 import { callPublicServerApi } from '@/lib/services/serverApi';
 import type { IPublicNewsListRes, PublicNewsListItem } from '@/lib/constants/endpoints/types';
-import { filterPublicNewsList } from '@/lib/utils/publicApiMappers';
 import { buildNewsBrowseQuery } from '@/lib/utils/newsBrowse';
 import type { Pagination } from '@/lib/types/pagination';
 
@@ -45,7 +44,7 @@ export async function fetchPublicNewsArticles(options: {
   }
 
   const data = res.data as IPublicNewsListRes | undefined;
-  const articles = filterPublicNewsList(data?.articles ?? []);
+  const articles = data?.articles ?? [];
 
   return {
     articles,
