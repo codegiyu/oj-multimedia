@@ -1,5 +1,6 @@
 import type { IPublicMusicListRes, IPublicVideosListRes } from '@/lib/constants/endpoints';
 import { formatCompactNumber } from '@/lib/utils/general';
+import { formatMediaDuration } from '@/lib/utils/formatMediaDuration';
 import type { TrendingMusicItem } from '@/components/section/home/TrendingMusicSection';
 import type { TrendingVideoItem } from '@/components/section/home/TrendingVideosSection';
 
@@ -36,7 +37,11 @@ export function mapPublicVideoToHomeTrending(
         : ((item as { artist?: { name?: string } }).artist?.name ?? 'Unknown'),
     thumbnail: (item as { thumbnail?: string }).thumbnail ?? '',
     views: formatCompactNumber((item as { views?: number }).views),
-    duration: (item as { duration?: string }).duration ?? '--:--',
+    duration:
+      (item as { duration?: unknown }).duration != null &&
+      (item as { duration?: unknown }).duration !== ''
+        ? formatMediaDuration((item as { duration?: unknown }).duration)
+        : '--:--',
     category: (item as { category?: string }).category ?? 'Video',
   };
 }

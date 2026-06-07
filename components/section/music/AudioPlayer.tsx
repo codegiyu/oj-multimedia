@@ -26,6 +26,7 @@ import {
   MediaSeekForwardButton,
   MediaMuteButton,
 } from 'media-chrome/react';
+import { formatDurationSeconds } from '@/lib/utils/formatMediaDuration';
 
 interface AudioPlayerProps {
   audioUrl: string;
@@ -35,14 +36,6 @@ interface AudioPlayerProps {
   durationSeconds?: number;
   /** Fires once when playback actually starts. */
   onFirstPlay?: () => void;
-}
-
-function formatClock(seconds: number): string {
-  const total = Math.max(0, Math.floor(seconds));
-  const minutes = Math.floor(total / 60);
-  const remainder = total % 60;
-
-  return `${minutes}:${remainder.toString().padStart(2, '0')}`;
 }
 
 export const AudioPlayer = ({
@@ -98,8 +91,8 @@ export const AudioPlayer = ({
             {durationSeconds != null && durationSeconds > 0 ? (
               <span
                 className="min-w-[100px] text-xs text-muted-foreground tabular-nums text-right"
-                aria-label={`Duration ${formatClock(durationSeconds)}`}>
-                0:00 / {formatClock(durationSeconds)}
+                aria-label={`Duration ${formatDurationSeconds(durationSeconds)}`}>
+                0:00 / {formatDurationSeconds(durationSeconds)}
               </span>
             ) : (
               <MediaTimeDisplay
