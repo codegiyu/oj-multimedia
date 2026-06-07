@@ -313,6 +313,8 @@ export interface ArtistListItem {
   followers?: number;
   verified?: boolean;
   songs?: number;
+  videos?: number;
+  isFollowing?: boolean;
   isActive?: boolean;
   isFeatured?: boolean;
   isRising?: boolean;

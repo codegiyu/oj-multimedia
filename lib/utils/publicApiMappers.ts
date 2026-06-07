@@ -441,6 +441,8 @@ export function mapPublicArtistToFeaturedCreator(item: Record<string, unknown>):
     category: a.genre || 'Creator',
     avatar: a.image,
     followers: a.followers,
+    followerCount: a.followerCount,
+    isFollowing: a.isFollowing,
     videos,
     views: viewsStr,
     verified: a.verified,

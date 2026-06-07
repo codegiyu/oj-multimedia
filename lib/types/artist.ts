@@ -43,6 +43,8 @@ export interface ArtistProfile {
   coverImage?: string;
   bio?: string;
   followers?: string;
+  followerCount?: number;
+  isFollowing?: boolean;
   verified?: boolean;
   socials?: ArtistSocials;
   isFeatured?: boolean;

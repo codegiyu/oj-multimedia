@@ -15,6 +15,8 @@ export interface CommunityArtist {
   image: string;
   genre: string;
   followers: string;
+  followerCount?: number;
+  isFollowing?: boolean;
   verified: boolean;
   songs?: number;
 }
@@ -76,6 +78,9 @@ export const ArtistsPageClient = ({
               genre={artist.genre}
               followers={artist.followers}
               verified={artist.verified}
+              showFollowButton
+              isFollowing={artist.isFollowing}
+              followerCount={artist.followerCount}
             />
           ))}
         </div>

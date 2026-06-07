@@ -4,6 +4,10 @@ import { motion } from 'motion/react';
 import { Verified } from 'lucide-react';
 import { AppLink } from '@/components/atoms/AppLink';
 import { FixedImage } from '@/components/general/FillImage';
+import {
+  ArtistFollowButton,
+  type ArtistFollowState,
+} from '@/components/section/community/artists/ArtistFollowButton';
 
 export interface ArtistCardProps {
   _id: string;
@@ -12,9 +16,27 @@ export interface ArtistCardProps {
   genre?: string;
   followers?: string;
   verified?: boolean;
+  showFollowButton?: boolean;
+  isFollowing?: boolean;
+  followerCount?: number;
+  onFollowChange?: (state: ArtistFollowState) => void;
 }
 
-export function ArtistCard({ _id, name, image, genre, followers, verified }: ArtistCardProps) {
+export function ArtistCard({
+  _id,
+  name,
+  image,
+  genre,
+  followers,
+  verified,
+  showFollowButton = false,
+  isFollowing,
+  followerCount,
+  onFollowChange,
+}: ArtistCardProps) {
+  const resolvedFollowerCount =
+    followerCount ?? (followers != null && followers !== '' ? Number(followers) || 0 : 0);
+
   const cardContent = (
     <motion.div
       whileHover={{ y: -4 }}
@@ -39,6 +61,17 @@ export function ArtistCard({ _id, name, image, genre, followers, verified }: Art
       </h4>
       {genre && <p className="text-xs text-muted-foreground truncate px-1">{genre}</p>}
       {followers && <p className="text-xs mt-1 text-primary font-medium">{followers} followers</p>}
+      {showFollowButton && (
+        <div className="mt-3 flex justify-center" onClick={event => event.stopPropagation()}>
+          <ArtistFollowButton
+            artistId={_id}
+            initialIsFollowing={isFollowing}
+            initialFollowerCount={resolvedFollowerCount}
+            onFollowChange={onFollowChange}
+            variant="compact"
+          />
+        </div>
+      )}
     </motion.div>
   );
 

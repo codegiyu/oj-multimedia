@@ -272,6 +272,26 @@ export interface IUserFavoritesAddRes {
   item: IUserContentFavoriteItem;
 }
 
+export interface IUserArtistFollowItem {
+  _id: string;
+  artistId: string;
+  createdAt: string;
+  name: string;
+  slug: string;
+  image?: string;
+  genre?: string;
+  followers: number;
+}
+
+export interface IUserArtistFollowsListRes {
+  follows: IUserArtistFollowItem[];
+  pagination: Pagination;
+}
+
+export interface IUserArtistFollowRes {
+  follow: IUserArtistFollowItem;
+}
+
 // User cart (marketplace)
 export interface ICartProductSummary {
   _id: string;
@@ -1043,6 +1063,9 @@ export interface AllEndpoints {
     { success: boolean },
     `/${string}/${string}`
   >;
+  USER_LIST_ARTIST_FOLLOWS: EndpointDefinition<undefined, IUserArtistFollowsListRes, `?${string}`>;
+  USER_FOLLOW_ARTIST: EndpointDefinition<undefined, IUserArtistFollowRes, `/${string}`>;
+  USER_UNFOLLOW_ARTIST: EndpointDefinition<undefined, { success: boolean }, `/${string}`>;
 
   // User cart (marketplace)
   USER_CART_GET: EndpointDefinition<undefined, ICartRes, undefined>;
@@ -1756,6 +1779,11 @@ export interface AllEndpoints {
   PUBLIC_GET_ARTISTS: EndpointDefinition<undefined, IPublicArtistsListRes, `?${string}`>;
   PUBLIC_GET_ARTIST_ITEM: EndpointDefinition<undefined, IPublicArtistItemRes, `/${string}`>;
   PUBLIC_GET_RESOURCES: EndpointDefinition<undefined, IPublicResourcesRes, `?${string}`>;
+  PUBLIC_GET_RESOURCE_ITEM: EndpointDefinition<
+    undefined,
+    { resource: ResourceDetail },
+    `/${string}`
+  >;
   PUBLIC_GET_RESOURCE_COUNTS: EndpointDefinition<undefined, IPublicResourceCountsRes, undefined>;
 
   // Promotion content (public)

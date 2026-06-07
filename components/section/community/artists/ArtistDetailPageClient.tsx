@@ -1,10 +1,12 @@
 'use client';
 
+import { useState } from 'react';
 import { Music, Video, Users, ExternalLink } from 'lucide-react';
 import { FillImage } from '@/components/general/FillImage';
 import type { ArtistProfile } from '@/lib/types/artist';
 import { MultilineText } from '@/components/general/MultilineText';
 import { CommunityContentDetailHero } from '../shared/CommunityContentDetailHero';
+import { ArtistFollowButton, type ArtistFollowState } from './ArtistFollowButton';
 import type { ReactNode } from 'react';
 
 interface ArtistDetailPageClientProps {
@@ -14,15 +16,21 @@ interface ArtistDetailPageClientProps {
   albumsSlot?: ReactNode;
 }
 
-// const socialIcons: Record<string, React.ComponentType<{ className?: string }>> = {};
-// Optional: add Lucide icons for facebook, instagram, etc. if needed
-
 export function ArtistDetailPageClient({
   artist,
   musicSlot,
   videosSlot,
   albumsSlot,
 }: ArtistDetailPageClientProps) {
+  const initialFollowerCount =
+    artist.followerCount ??
+    (artist.followers != null && artist.followers !== '' ? Number(artist.followers) || 0 : 0);
+
+  const [followState, setFollowState] = useState<ArtistFollowState>({
+    isFollowing: artist.isFollowing ?? false,
+    followerCount: initialFollowerCount,
+  });
+
   const hasSocials =
     artist.socials &&
     Object.values(artist.socials).some(v => typeof v === 'string' && v.length > 0);
@@ -46,15 +54,22 @@ export function ArtistDetailPageClient({
             </div>
           </div>
           <div className="flex-1 min-w-0">
-            <h1 className="text-3xl md:text-4xl font-display font-bold mb-2">{artist.name}</h1>
+            <div className="flex flex-wrap items-start justify-between gap-4 mb-2">
+              <h1 className="text-3xl md:text-4xl font-display font-bold">{artist.name}</h1>
+              <ArtistFollowButton
+                artistId={artist._id}
+                initialIsFollowing={artist.isFollowing ?? false}
+                initialFollowerCount={initialFollowerCount}
+                onFollowChange={setFollowState}
+                variant="prominent"
+              />
+            </div>
             {artist.genre && <p className="text-primary font-medium mb-4">{artist.genre}</p>}
             <div className="flex flex-wrap gap-4 text-sm text-muted-foreground mb-4">
-              {artist.followers && (
-                <span className="flex items-center gap-1">
-                  <Users className="w-4 h-4" />
-                  {artist.followers} followers
-                </span>
-              )}
+              <span className="flex items-center gap-1">
+                <Users className="w-4 h-4" />
+                {followState.followerCount.toLocaleString()} followers
+              </span>
               {artist.songs != null && (
                 <span className="flex items-center gap-1">
                   <Music className="w-4 h-4" />
