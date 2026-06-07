@@ -33,6 +33,26 @@ const nextConfig: NextConfig = {
       bodySizeLimit: '2mb',
     },
   },
+
+  async redirects() {
+    return [
+      {
+        source: '/music/albums',
+        destination: '/music/albums/all',
+        permanent: true,
+      },
+      {
+        source: '/community/resources',
+        destination: '/community/resources/all',
+        permanent: true,
+      },
+      {
+        source: '/community/artists',
+        destination: '/community/artists/all',
+        permanent: true,
+      },
+    ];
+  },
 };
 
 function withOptionalBundleAnalyzer(config: NextConfig): NextConfig {

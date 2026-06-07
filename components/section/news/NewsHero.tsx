@@ -1,7 +1,9 @@
 'use client';
 
 import { motion } from 'motion/react';
-import { Sparkles } from 'lucide-react';
+import { Newspaper, Sparkles } from 'lucide-react';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
 export const NewsHero = () => {
   return (
@@ -30,6 +32,19 @@ export const NewsHero = () => {
           <p className="text-lg text-muted-foreground max-w-xl mx-auto mb-8">
             News, culture, and inspiration. Stories worth your time, curated for the curious mind.
           </p>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.25 }}
+            className="flex flex-wrap justify-center gap-4 mb-8">
+            <Button variant="hero" size="lg" className="gap-2" asChild>
+              <Link href="/news/all">
+                <Newspaper className="w-5 h-5" />
+                Browse All Stories
+              </Link>
+            </Button>
+          </motion.div>
 
           <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground">
             <div className="flex items-center gap-2">

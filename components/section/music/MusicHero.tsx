@@ -59,9 +59,9 @@ export const MusicHero = () => {
               </Link>
             </Button>
             <Button variant="hero-outline" size="lg" className="gap-2" asChild>
-              <Link href="/community/promote-your-content">
+              <Link href="/music/all">
                 <Music className="w-5 h-5" />
-                Submit Beats
+                Browse All Music
               </Link>
             </Button>
           </motion.div>
