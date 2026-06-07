@@ -31,25 +31,32 @@ export async function HomeNewsSection() {
 
   const errors = [featuredRes.error, trendingRes.error, latestRes.error].filter(Boolean);
 
-  if (
+  const allEmpty =
     featuredRes.articles.length === 0 &&
     trendingRes.articles.length === 0 &&
-    latestRes.articles.length === 0
-  ) {
-    if (errors.length > 0) {
-      return (
-        <SectionLoadError title="News unavailable" message={errors[0] ?? 'Failed to load news'} />
-      );
-    }
+    latestRes.articles.length === 0;
 
-    return null;
+  if (allEmpty && errors.length > 0) {
+    return (
+      <SectionLoadError title="News unavailable" message={errors[0] ?? 'Failed to load news'} />
+    );
   }
+
+  const defaultTab =
+    featuredRes.articles.length > 0
+      ? 'featured'
+      : latestRes.articles.length > 0
+        ? 'latest'
+        : trendingRes.articles.length > 0
+          ? 'trending'
+          : 'latest';
 
   return (
     <HomeNewsTabsClient
       featured={featuredRes.articles}
       trending={trendingRes.articles}
       latest={latestRes.articles}
+      defaultTab={defaultTab}
     />
   );
 }

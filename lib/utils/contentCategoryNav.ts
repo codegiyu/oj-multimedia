@@ -39,5 +39,10 @@ export async function fetchPublicCategoryNav(
     return fallback;
   }
 
-  return [{ id: ALL_CATEGORY_ID, label: allLabel }, ...rows];
+  const apiSlugs = new Set(rows.map(row => row.id));
+  const missingFromApi = fallback.filter(
+    item => item.id !== ALL_CATEGORY_ID && !apiSlugs.has(item.id)
+  );
+
+  return [{ id: ALL_CATEGORY_ID, label: allLabel }, ...rows, ...missingFromApi];
 }

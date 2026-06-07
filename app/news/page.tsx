@@ -13,6 +13,7 @@ import { FeaturedStoriesSection } from './_sections/FeaturedStoriesSection';
 import { LatestFeedSection } from './_sections/LatestFeedSection';
 import { TrendingSidebarSection } from './_sections/TrendingSidebarSection';
 import { VideoNewsSection } from './_sections/VideoNewsSection';
+import { ISR_PUBLIC_FETCH } from '@/lib/constants/isr';
 import {
   NewsCategoriesSkeleton,
   BreakingNewsSectionSkeleton,
@@ -21,6 +22,8 @@ import {
   TrendingSidebarSectionSkeleton,
   VideoNewsSectionSkeleton,
 } from './_sections/skeletons';
+
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: 'News & Lifestyle Updates',
@@ -34,19 +37,24 @@ interface NewsPageProps {
 
 export default async function NewsPage({ searchParams }: NewsPageProps) {
   const params = await searchParams;
-  const category = await normalizePublicCategoryByScope('news', params.category);
+  const category = await normalizePublicCategoryByScope(
+    'news',
+    params.category,
+    ISR_PUBLIC_FETCH.fast
+  );
+  const fetchOptions = ISR_PUBLIC_FETCH.fast;
 
   return (
     <MainLayout>
       <NewsHero />
       <Suspense fallback={<NewsCategoriesSkeleton />}>
-        <NewsCategoriesSection category={category} />
+        <NewsCategoriesSection category={category} fetchOptions={fetchOptions} />
       </Suspense>
       <Suspense fallback={<BreakingNewsSectionSkeleton />}>
-        <BreakingNewsSection category={category} />
+        <BreakingNewsSection category={category} fetchOptions={fetchOptions} />
       </Suspense>
       <Suspense fallback={<FeaturedStoriesSectionSkeleton />}>
-        <FeaturedStoriesSection category={category} />
+        <FeaturedStoriesSection category={category} fetchOptions={fetchOptions} />
       </Suspense>
       <SectionComp
         iconSlot={newsSectionHeaderIcon(Newspaper)}
@@ -55,19 +63,19 @@ export default async function NewsPage({ searchParams }: NewsPageProps) {
         contentProps={{ enableAnimation: false }}>
         <div className="grid lg:grid-cols-[1fr_320px] gap-8">
           <Suspense fallback={<LatestFeedSectionSkeleton />}>
-            <LatestFeedSection category={category} />
+            <LatestFeedSection category={category} fetchOptions={fetchOptions} />
           </Suspense>
           <div className="hidden lg:block">
             <div className="sticky top-32">
               <Suspense fallback={<TrendingSidebarSectionSkeleton />}>
-                <TrendingSidebarSection category={category} />
+                <TrendingSidebarSection category={category} fetchOptions={fetchOptions} />
               </Suspense>
             </div>
           </div>
         </div>
       </SectionComp>
       <Suspense fallback={<VideoNewsSectionSkeleton />}>
-        <VideoNewsSection category={category} />
+        <VideoNewsSection category={category} fetchOptions={fetchOptions} />
       </Suspense>
       <NewsletterCTA />
     </MainLayout>
