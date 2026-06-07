@@ -2,11 +2,15 @@ import type { ReactNode } from 'react';
 import { Suspense } from 'react';
 import { callServerApi } from '@/lib/services/serverApi';
 import type { IVendorMeRes } from '@/lib/constants/endpoints';
+import { portalLayoutLoadError } from '@/lib/account/portalLayoutGate';
+import { DashboardMainSkeleton } from '@/components/section/account/skeletons';
 import { VendorDashboardLayoutClient } from './VendorDashboardLayoutClient';
 import {
   VendorPortalRouteGate,
   vendorPortalMetaFromApi,
 } from '@/components/section/account/vendor/VendorPortalRouteGate';
+
+export const dynamic = 'force-dynamic';
 
 async function VendorLayoutGate({ children }: { children: ReactNode }) {
   const meRes = await callServerApi('VENDOR_GET_ME', {});
@@ -21,10 +25,12 @@ async function VendorLayoutGate({ children }: { children: ReactNode }) {
 
   const { portalStatus, meta } = vendorPortalMetaFromApi(vendor);
 
-  const loadError =
-    meRes.type === 'error' && code !== 403 && code !== 404
-      ? (meRes.message ?? 'Unable to load vendor profile.')
-      : null;
+  const loadError = portalLayoutLoadError(
+    meRes.type === 'error',
+    code,
+    meRes.type === 'error' ? meRes.message : undefined,
+    'Unable to load vendor profile.'
+  );
 
   return (
     <VendorPortalRouteGate
@@ -40,7 +46,7 @@ async function VendorLayoutGate({ children }: { children: ReactNode }) {
 export default function VendorLayout({ children }: { children: ReactNode }) {
   return (
     <VendorDashboardLayoutClient>
-      <Suspense fallback={null}>
+      <Suspense fallback={<DashboardMainSkeleton />}>
         <VendorLayoutGate>{children}</VendorLayoutGate>
       </Suspense>
     </VendorDashboardLayoutClient>

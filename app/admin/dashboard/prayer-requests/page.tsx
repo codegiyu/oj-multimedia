@@ -1,5 +1,4 @@
 import { PrayerRequestsPageClient } from '@/components/section/admin/prayer-requests/PrayerRequestsPageClient';
-import { PageHeader } from '@/components/general/PageHeader';
 import { serverFetchAdminPrayerRequestsList } from '@/lib/services/adminDashboardServerData';
 import { parseAdminContentListParams } from '@/lib/utils/adminDashboardSearchParams';
 import { Metadata } from 'next';
@@ -19,13 +18,9 @@ export default function PrayerRequestsPage({ searchParams }: PrayerRequestsPageP
   return (
     <section className="h-full overflow-hidden">
       <section className="h-full space-y-6 overflow-auto sleek-scrollbar">
-        <PageHeader
-          title="Prayer Requests"
-          description="Manage prayer requests, answer submissions"
-        />
         <Suspense
           fallback={
-            <AdminListPageSkeleton showPageHeader={false} label="Loading prayer requests..." />
+            <AdminListPageSkeleton showPageHeader={true} label="Loading prayer requests..." />
           }>
           <AdminPrayerRequestsPageServer searchParams={searchParams} />
         </Suspense>

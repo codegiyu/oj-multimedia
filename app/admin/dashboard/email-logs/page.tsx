@@ -1,4 +1,3 @@
-import { PageHeader } from '@/components/general/PageHeader';
 import { EmailLogsPageClient } from '@/components/section/admin/email-logs/EmailLogsPageClient';
 import { serverFetchAdminEmailLogsList } from '@/lib/services/adminDashboardServerData';
 import { parseAdminEmailLogsListParams } from '@/lib/utils/adminDashboardSearchParams';
@@ -19,12 +18,8 @@ export default function EmailLogsPage({ searchParams }: EmailLogsPageProps) {
   return (
     <section className="h-full overflow-hidden">
       <section className="h-full space-y-6 overflow-auto sleek-scrollbar">
-        <PageHeader
-          title="Email Logs"
-          description="View and manage email delivery logs and resend failed emails"
-        />
         <Suspense
-          fallback={<AdminListPageSkeleton showPageHeader={false} label="Loading email logs..." />}>
+          fallback={<AdminListPageSkeleton showPageHeader={true} label="Loading email logs..." />}>
           <AdminEmailLogsPageServer searchParams={searchParams} />
         </Suspense>
       </section>

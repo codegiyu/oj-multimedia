@@ -5,45 +5,32 @@ import type { Metadata } from 'next';
 import { buildAccountArtistContentQuery } from '@/lib/account/accountListFilters';
 import { callServerApi } from '@/lib/services/serverApi';
 import type { ApiErrorResponse } from '@/lib/types/http';
+import { parseAccountListPageParams } from '@/lib/utils/accountSearchParams';
 
 export const metadata: Metadata = {
   title: 'Artist Portal - Videos',
   description: 'Manage your video content.',
 };
 
-export default function ArtistPortalVideosPage({
-  searchParams,
-}: {
-  searchParams?: { page?: string; pagesize?: string; status?: string; search?: string };
-}) {
-  const page = Number(searchParams?.page ?? 1) || 1;
-  const pageSize = Number(searchParams?.pagesize ?? 10) || 10;
-  const status = searchParams?.status ?? '';
-  const search = searchParams?.search ?? '';
+interface ArtistPortalVideosPageProps {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}
 
+export default function ArtistPortalVideosPage({ searchParams }: ArtistPortalVideosPageProps) {
   return (
     <Suspense fallback={<ArtistPortalContentListPageSkeleton />}>
-      <ArtistVideosPageClientServer
-        page={page}
-        pageSize={pageSize}
-        status={status}
-        search={search}
-      />
+      <ArtistVideosPageClientServer searchParams={searchParams} />
     </Suspense>
   );
 }
 
 async function ArtistVideosPageClientServer({
-  page,
-  pageSize,
-  status,
-  search,
+  searchParams,
 }: {
-  page: number;
-  pageSize: number;
-  status: string;
-  search: string;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  const raw = await searchParams;
+  const { page, pageSize, status, search } = parseAccountListPageParams(raw);
   const query =
     `?${buildAccountArtistContentQuery({ page, pageSize, status, search }).toString()}` as const;
 
