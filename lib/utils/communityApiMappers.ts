@@ -408,17 +408,61 @@ export function mapToCommunityArtist(item: Record<string, unknown>): {
   image: string;
   genre: string;
   followers: string;
+  followerCount: number;
   verified: boolean;
   songs?: number;
+  isFollowing?: boolean;
 } {
+  const followerCount = num(item.followers ?? item.followerCount ?? item.followersCount ?? 0);
+
   return {
     _id: str(item._id),
     name: str(item.name),
     image: str(item.image),
     genre: str(item.genre),
-    followers: str(item.followers ?? item.followersCount ?? 0),
+    followers: str(followerCount),
+    followerCount,
     verified: bool(item.verified),
     songs: item.songs != null ? num(item.songs) : undefined,
+    isFollowing: item.isFollowing != null ? bool(item.isFollowing) : undefined,
+  };
+}
+
+/** Map API artist detail to ArtistProfile props */
+export function mapToArtistProfile(item: Record<string, unknown>): {
+  _id: string;
+  name: string;
+  genre?: string;
+  image: string;
+  coverImage?: string;
+  bio?: string;
+  followers?: string;
+  followerCount?: number;
+  isFollowing?: boolean;
+  verified?: boolean;
+  socials?: Record<string, string>;
+  songs?: number;
+  videos?: number;
+} {
+  const mapped = mapToCommunityArtist(item);
+
+  return {
+    _id: mapped._id,
+    name: mapped.name,
+    genre: mapped.genre || undefined,
+    image: mapped.image,
+    coverImage: item.coverImage != null ? str(item.coverImage) : undefined,
+    bio: item.bio != null ? str(item.bio) : undefined,
+    followers: mapped.followers,
+    followerCount: mapped.followerCount,
+    isFollowing: mapped.isFollowing,
+    verified: mapped.verified,
+    socials:
+      item.socials && typeof item.socials === 'object'
+        ? (item.socials as Record<string, string>)
+        : undefined,
+    songs: item.songs != null ? num(item.songs) : undefined,
+    videos: item.videos != null ? num(item.videos) : undefined,
   };
 }
 
@@ -615,6 +659,46 @@ export function mapToWallpaper(item: Record<string, unknown>): {
     category: str(item.category),
     ...(cover ? { cover } : {}),
     ...(fileUrl ? { fileUrl } : {}),
+  };
+}
+
+/** Map API resource detail to ResourceDetail */
+export function mapToResourceDetail(item: Record<string, unknown>): {
+  _id: string;
+  title: string;
+  slug?: string;
+  description?: string;
+  type: string;
+  category?: string;
+  coverImage?: string;
+  downloads?: number;
+  price?: number;
+  isFree?: boolean;
+  fileUrl?: string;
+  createdAt?: string;
+  updatedAt?: string;
+} {
+  const priceRaw = item.price;
+
+  return {
+    _id: str(item._id),
+    title: str(item.title),
+    slug: item.slug != null ? str(item.slug) : undefined,
+    description: item.description != null ? str(item.description) : undefined,
+    type: str(item.type),
+    category: item.category != null ? str(item.category) : undefined,
+    coverImage: item.coverImage != null ? str(item.coverImage) : undefined,
+    downloads: num(item.downloads),
+    price:
+      typeof priceRaw === 'number' && !Number.isNaN(priceRaw)
+        ? priceRaw
+        : priceRaw != null && String(priceRaw).trim() !== ''
+          ? Number(priceRaw)
+          : undefined,
+    isFree: item.isFree != null ? bool(item.isFree) : undefined,
+    fileUrl: item.fileUrl != null ? str(item.fileUrl) : undefined,
+    createdAt: item.createdAt != null ? str(item.createdAt) : undefined,
+    updatedAt: item.updatedAt != null ? str(item.updatedAt) : undefined,
   };
 }
 

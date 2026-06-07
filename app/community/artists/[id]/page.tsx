@@ -7,6 +7,7 @@ import { callPublicServerApi } from '@/lib/services/serverApi';
 import type { ArtistProfile } from '@/lib/types/artist';
 import type { IPublicArtistItemRes } from '@/lib/constants/endpoints';
 import { buildDetailShareMetadata } from '@/lib/utils/metadata';
+import { mapToArtistProfile } from '@/lib/utils/communityApiMappers';
 import { ArtistAlbumsSection } from './_sections/ArtistAlbumsSection';
 import { ArtistMusicSection } from './_sections/ArtistMusicSection';
 import { ArtistVideosSection } from './_sections/ArtistVideosSection';
@@ -72,17 +73,7 @@ export default async function ArtistDetailPage({ params }: ArtistDetailPageProps
 
   const apiArtist = artistRes.data.artist;
   const artistId = apiArtist._id;
-
-  const artist: ArtistProfile = {
-    _id: apiArtist._id,
-    name: apiArtist.name,
-    genre: apiArtist.genre,
-    image: apiArtist.image ?? '',
-    coverImage: apiArtist.coverImage,
-    bio: apiArtist.bio,
-    verified: apiArtist.verified,
-    socials: apiArtist.socials,
-  };
+  const artist: ArtistProfile = mapToArtistProfile(apiArtist as unknown as Record<string, unknown>);
 
   return (
     <MainLayout>

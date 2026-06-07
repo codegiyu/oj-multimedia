@@ -12,6 +12,8 @@ export interface FeaturedArtist {
   genre: string;
   image: string;
   followers: string;
+  followerCount?: number;
+  isFollowing?: boolean;
   verified: boolean;
   songs: number;
   category?: string;
@@ -55,6 +57,9 @@ export const FeaturedArtists = ({ artists: featuredArtists }: FeaturedArtistsPro
                 genre={artist.genre}
                 followers={artist.followers}
                 verified={artist.verified}
+                showFollowButton
+                isFollowing={artist.isFollowing}
+                followerCount={artist.followerCount}
               />
             </motion.div>
           ))}

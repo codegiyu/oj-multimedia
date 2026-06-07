@@ -12,6 +12,8 @@ export interface FeaturedCreator {
   category: string;
   avatar: string;
   followers: string;
+  followerCount?: number;
+  isFollowing?: boolean;
   videos: number;
   views: string;
   verified: boolean;
@@ -60,6 +62,9 @@ export const CreatorSpotlight = ({ creators: featuredCreators }: CreatorSpotligh
                 genre={creator.category}
                 followers={creator.followers}
                 verified={creator.verified}
+                showFollowButton
+                isFollowing={creator.isFollowing}
+                followerCount={creator.followerCount}
               />
             </motion.div>
           ))}
