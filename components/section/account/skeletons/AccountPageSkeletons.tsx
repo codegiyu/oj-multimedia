@@ -257,5 +257,35 @@ export function VendorSettingsPageSkeleton() {
   );
 }
 
+export function PastorPortalSettingsPageSkeleton() {
+  return (
+    <AccountPageShell label="Loading pastor settings" className="mx-auto max-w-3xl space-y-6">
+      <DashboardPageHeaderSkeleton />
+      <DashboardFormCardSkeleton fieldRows={8} />
+    </AccountPageShell>
+  );
+}
+
+export function DashboardQuestionDetailSkeleton() {
+  return (
+    <AccountPageShell label="Loading question" className="max-w-3xl space-y-6">
+      <Skeleton className="h-9 w-32" />
+      <DashboardPageHeaderSkeleton />
+      <div className="rounded-xl border border-border/50 bg-card p-6 space-y-4">
+        <Skeleton className="h-6 w-20 rounded-full" />
+        <Skeleton className="h-5 w-full" />
+        <Skeleton className="h-4 w-1/3" />
+      </div>
+      <div className="rounded-xl border border-border/50 bg-card p-6 space-y-4">
+        <Skeleton className="h-32 w-full rounded-md" />
+        <Skeleton className="h-10 w-28 rounded-md" />
+      </div>
+    </AccountPageShell>
+  );
+}
+
+export const PastorQuestionDetailSkeleton = DashboardQuestionDetailSkeleton;
+export const AccountCommunityQuestionDetailSkeleton = DashboardQuestionDetailSkeleton;
+
 /** @deprecated Use AccountHubPageSkeleton */
 export const AccountPageSkeleton = AccountHubPageSkeleton;

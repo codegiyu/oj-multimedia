@@ -31,5 +31,8 @@ export {
   VendorProductsPageSkeleton,
   VendorProductFormPageSkeleton,
   VendorSettingsPageSkeleton,
+  PastorPortalSettingsPageSkeleton,
+  PastorQuestionDetailSkeleton,
+  AccountCommunityQuestionDetailSkeleton,
   AccountPageSkeleton,
 } from './AccountPageSkeletons';
