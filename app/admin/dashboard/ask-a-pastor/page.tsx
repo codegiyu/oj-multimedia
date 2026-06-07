@@ -1,5 +1,5 @@
-import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { AskAPastorPageClient } from '@/components/section/admin/ask-a-pastor/AskAPastorPageClient';
+import { PageHeader } from '@/components/general/PageHeader';
 import { serverFetchAdminAskAPastorList } from '@/lib/services/adminDashboardServerData';
 import { parseAdminContentListParams } from '@/lib/utils/adminDashboardSearchParams';
 import { Metadata } from 'next';
@@ -17,15 +17,18 @@ interface AskAPastorPageProps {
 
 export default function AskAPastorAdminPage({ searchParams }: AskAPastorPageProps) {
   return (
-    <DashboardLayout>
-      <section className="h-full overflow-hidden">
-        <section className="h-full space-y-6 overflow-auto sleek-scrollbar">
-          <Suspense fallback={<AdminListPageSkeleton label="Loading questions..." />}>
-            <AdminAskAPastorPageServer searchParams={searchParams} />
-          </Suspense>
-        </section>
+    <section className="h-full overflow-hidden">
+      <section className="h-full space-y-6 overflow-auto sleek-scrollbar">
+        <PageHeader
+          title="Ask a Pastor"
+          description="Review questions, assign pastors, publish answers, or reject submissions"
+        />
+        <Suspense
+          fallback={<AdminListPageSkeleton showPageHeader={false} label="Loading questions..." />}>
+          <AdminAskAPastorPageServer searchParams={searchParams} />
+        </Suspense>
       </section>
-    </DashboardLayout>
+    </section>
   );
 }
 

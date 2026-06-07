@@ -1,6 +1,6 @@
+import { PageHeader } from '@/components/general/PageHeader';
 import { Suspense } from 'react';
 import { Metadata } from 'next';
-import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { AdminListPageSkeleton } from '@/components/section/admin/skeletons';
 import { RoleProfileAppealsPageClient } from '@/components/section/admin/role-profile-appeals/RoleProfileAppealsPageClient';
 import { serverFetchAdminRoleProfileAppealsList } from '@/lib/services/adminDashboardServerData';
@@ -17,15 +17,20 @@ interface RoleProfileAppealsPageProps {
 
 export default function RoleProfileAppealsPage({ searchParams }: RoleProfileAppealsPageProps) {
   return (
-    <DashboardLayout>
-      <section className="h-full overflow-hidden">
-        <section className="h-full space-y-6 overflow-auto sleek-scrollbar">
-          <Suspense fallback={<AdminListPageSkeleton label="Loading profile appeals..." />}>
-            <RoleProfileAppealsPageServer searchParams={searchParams} />
-          </Suspense>
-        </section>
+    <section className="h-full overflow-hidden">
+      <section className="h-full space-y-6 overflow-auto sleek-scrollbar">
+        <PageHeader
+          title="Profile appeals"
+          description="Review suspension appeals from vendors, artists, and pastors"
+        />
+        <Suspense
+          fallback={
+            <AdminListPageSkeleton showPageHeader={false} label="Loading profile appeals..." />
+          }>
+          <RoleProfileAppealsPageServer searchParams={searchParams} />
+        </Suspense>
       </section>
-    </DashboardLayout>
+    </section>
   );
 }
 

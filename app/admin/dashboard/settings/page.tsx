@@ -1,4 +1,3 @@
-import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { SettingsPageClient } from '@/components/section/admin/settings/SettingsPageClient';
 import { serverFetchSiteSettingsAll } from '@/lib/services/adminDashboardServerData';
 import { Metadata } from 'next';
@@ -12,11 +11,9 @@ export const metadata: Metadata = {
 
 export default function SettingsPage() {
   return (
-    <DashboardLayout>
-      <Suspense fallback={<AdminSettingsPageSkeleton />}>
-        <AdminSettingsPageServer />
-      </Suspense>
-    </DashboardLayout>
+    <Suspense fallback={<AdminSettingsPageSkeleton />}>
+      <AdminSettingsPageServer />
+    </Suspense>
   );
 }
 

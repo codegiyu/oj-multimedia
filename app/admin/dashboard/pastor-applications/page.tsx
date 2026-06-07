@@ -1,4 +1,4 @@
-import { DashboardLayout } from '@/components/layout/DashboardLayout';
+import { PageHeader } from '@/components/general/PageHeader';
 import { PastorApplicationsPageClient } from '@/components/section/admin/pastor-applications/PastorApplicationsPageClient';
 import { serverFetchAdminPastorApplicationsList } from '@/lib/services/adminDashboardServerData';
 import { parseAdminStandardListParams } from '@/lib/utils/adminDashboardSearchParams';
@@ -17,15 +17,20 @@ interface PageProps {
 
 export default function PastorApplicationsPage({ searchParams }: PageProps) {
   return (
-    <DashboardLayout>
-      <section className="h-full overflow-hidden">
-        <section className="h-full space-y-6 overflow-auto sleek-scrollbar">
-          <Suspense fallback={<AdminListPageSkeleton label="Loading applications..." />}>
-            <AdminPastorApplicationsPageServer searchParams={searchParams} />
-          </Suspense>
-        </section>
+    <section className="h-full overflow-hidden">
+      <section className="h-full space-y-6 overflow-auto sleek-scrollbar">
+        <PageHeader
+          title="Pastor Applications"
+          description="Review and approve pastor portal applications"
+        />
+        <Suspense
+          fallback={
+            <AdminListPageSkeleton showPageHeader={false} label="Loading applications..." />
+          }>
+          <AdminPastorApplicationsPageServer searchParams={searchParams} />
+        </Suspense>
       </section>
-    </DashboardLayout>
+    </section>
   );
 }
 

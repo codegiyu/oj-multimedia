@@ -1,4 +1,3 @@
-import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { HomeAdvertsPageClient } from '@/components/section/admin/home-adverts/HomeAdvertsPageClient';
 import { serverFetchAdminHomeAdvertsList } from '@/lib/services/adminDashboardServerData';
 import { parseAdminHomeAdvertsListParams } from '@/lib/utils/adminDashboardSearchParams';
@@ -17,15 +16,13 @@ interface HomeAdvertsPageProps {
 
 export default function HomeAdvertsPage({ searchParams }: HomeAdvertsPageProps) {
   return (
-    <DashboardLayout>
-      <section className="h-full overflow-hidden">
-        <section className="h-full space-y-6 overflow-auto sleek-scrollbar">
-          <Suspense fallback={<AdminHomeAdvertsPageSkeleton />}>
-            <AdminHomeAdvertsPageServer searchParams={searchParams} />
-          </Suspense>
-        </section>
+    <section className="h-full overflow-hidden">
+      <section className="h-full space-y-6 overflow-auto sleek-scrollbar">
+        <Suspense fallback={<AdminHomeAdvertsPageSkeleton />}>
+          <AdminHomeAdvertsPageServer searchParams={searchParams} />
+        </Suspense>
       </section>
-    </DashboardLayout>
+    </section>
   );
 }
 

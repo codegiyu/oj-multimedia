@@ -1,4 +1,3 @@
-import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { AdminProfilePageClient } from '@/components/section/admin/profile/AdminProfilePageClient';
 import { Metadata } from 'next';
 import { AdminProfilePageSkeleton } from '@/components/section/admin/skeletons';
@@ -12,11 +11,9 @@ export const metadata: Metadata = {
 
 export default function AdminProfilePage() {
   return (
-    <DashboardLayout>
-      <Suspense fallback={<AdminProfilePageSkeleton />}>
-        <AdminProfilePageServer />
-      </Suspense>
-    </DashboardLayout>
+    <Suspense fallback={<AdminProfilePageSkeleton />}>
+      <AdminProfilePageServer />
+    </Suspense>
   );
 }
 
