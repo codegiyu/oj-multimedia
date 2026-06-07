@@ -10,6 +10,7 @@ interface HomeNewsTabsClientProps {
   featured: NewsArticle[];
   trending: NewsArticle[];
   latest: NewsArticle[];
+  defaultTab?: NewsTabId;
 }
 
 const TAB_CONFIG: Record<
@@ -36,8 +37,13 @@ const TAB_CONFIG: Record<
   },
 };
 
-export function HomeNewsTabsClient({ featured, trending, latest }: HomeNewsTabsClientProps) {
-  const [activeTab, setActiveTab] = useState<NewsTabId>('featured');
+export function HomeNewsTabsClient({
+  featured,
+  trending,
+  latest,
+  defaultTab = 'featured',
+}: HomeNewsTabsClientProps) {
+  const [activeTab, setActiveTab] = useState<NewsTabId>(defaultTab);
 
   const articlesByTab: Record<NewsTabId, NewsArticle[]> = {
     featured,

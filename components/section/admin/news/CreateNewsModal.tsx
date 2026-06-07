@@ -77,7 +77,7 @@ export function CreateNewsModal({ open, onOpenChange, editId, onSuccess }: Creat
   const [priorityHelpOpen, setPriorityHelpOpen] = useState(false);
 
   const isEdit = Boolean(editId);
-  const canPublish = Boolean(form.category.trim());
+  const canPublish = Boolean(form.category.trim()) && Boolean(form.content.trim());
   const coverUpload = useFileUpload({
     entityType: 'news-article',
     entityId: editId ?? 'news-pending',
