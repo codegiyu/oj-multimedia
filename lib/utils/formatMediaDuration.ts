@@ -1,14 +1,25 @@
-/** Format API duration (seconds number or legacy string) for display. */
-export function formatMediaDuration(value: unknown): string {
-  if (typeof value === 'number' && Number.isFinite(value) && value > 0) {
-    const total = Math.floor(value);
-    const minutes = Math.floor(total / 60);
-    const seconds = total % 60;
+/** Format a second count as M:SS, or H:MM:SS when at least one hour. */
+export function formatDurationSeconds(totalSeconds: number): string {
+  const total = Math.max(0, Math.floor(totalSeconds));
+  const hours = Math.floor(total / 3600);
+  const minutes = Math.floor((total % 3600) / 60);
+  const seconds = total % 60;
+  const paddedSeconds = seconds.toString().padStart(2, '0');
 
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  if (hours > 0) {
+    return `${hours}:${minutes.toString().padStart(2, '0')}:${paddedSeconds}`;
   }
 
-  if (typeof value === 'string' && value.trim()) return value.trim();
+  return `${minutes}:${paddedSeconds}`;
+}
+
+/** Format API duration (seconds number or legacy string) for display. */
+export function formatMediaDuration(value: unknown): string {
+  const seconds = parseMediaDurationSeconds(value);
+
+  if (seconds !== undefined && seconds > 0) {
+    return formatDurationSeconds(seconds);
+  }
 
   return '0:00';
 }
@@ -21,9 +32,22 @@ export function parseMediaDurationSeconds(value: unknown): number | undefined {
 
   if (typeof value === 'string') {
     const trimmed = value.trim();
-    const parts = trimmed.split(':').map(p => Number(p));
-    if (parts.length === 2 && parts.every(n => Number.isFinite(n))) {
+    if (!trimmed) return undefined;
+
+    if (/^\d+$/.test(trimmed)) {
+      const numeric = Number(trimmed);
+      return Number.isFinite(numeric) && numeric > 0 ? Math.floor(numeric) : undefined;
+    }
+
+    const parts = trimmed.split(':').map(part => Number(part));
+    if (parts.some(part => !Number.isFinite(part))) return undefined;
+
+    if (parts.length === 2) {
       return parts[0] * 60 + parts[1];
+    }
+
+    if (parts.length === 3) {
+      return parts[0] * 3600 + parts[1] * 60 + parts[2];
     }
   }
 
