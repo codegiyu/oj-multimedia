@@ -5,7 +5,6 @@ import {
   MUSIC_RAIL_SCROLL_PX,
   VIDEO_DEFAULT_RAIL_ITEM_CLASS,
   VIDEO_RAIL_SCROLL_PX,
-  VIDEO_SHORT_FORM_RAIL_ITEM_CLASS,
 } from '@/lib/constants/mediaCardLayout';
 
 describe('mediaCardLayout', () => {
@@ -19,7 +18,6 @@ describe('mediaCardLayout', () => {
     expect(MUSIC_RAIL_ITEM_CLASS).toContain('min-w-[240px]');
     expect(MUSIC_RAIL_ITEM_CLASS).toContain('2xl:w-[260px]');
     expect(VIDEO_DEFAULT_RAIL_ITEM_CLASS).toContain('xl:w-[320px]');
-    expect(VIDEO_SHORT_FORM_RAIL_ITEM_CLASS).toBe('w-[140px] md:w-[160px] snap-start shrink-0');
   });
 
   it('exports scroll amounts aligned to max rail widths', () => {

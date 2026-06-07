@@ -6,7 +6,10 @@ import { useRef } from 'react';
 import { SectionComp } from '@/components/general/SectionComp';
 import { VideoCard } from '@/components/cards/VideoCard';
 import { SectionEmptyState } from '@/components/general/SectionEmptyState';
-import { VIDEO_SHORT_FORM_RAIL_ITEM_CLASS } from '@/lib/constants/mediaCardLayout';
+import {
+  VIDEO_DEFAULT_RAIL_ITEM_CLASS,
+  VIDEO_RAIL_SCROLL_PX,
+} from '@/lib/constants/mediaCardLayout';
 
 export interface ShortFormVideo {
   _id: string;
@@ -16,7 +19,6 @@ export interface ShortFormVideo {
   views: string;
   duration: string;
   category: string;
-  likes: string;
 }
 
 interface ShortFormVideosProps {
@@ -28,7 +30,7 @@ export const ShortFormVideos = ({ videos: shortFormVideos }: ShortFormVideosProp
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
-      const scrollAmount = 180;
+      const scrollAmount = VIDEO_RAIL_SCROLL_PX;
       scrollRef.current.scrollBy({
         left: direction === 'left' ? -scrollAmount : scrollAmount,
         behavior: 'smooth',
@@ -70,15 +72,15 @@ export const ShortFormVideos = ({ videos: shortFormVideos }: ShortFormVideosProp
       contentProps={{ enableAnimation: false }}>
       <div
         ref={scrollRef}
-        className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
+        className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
         {shortFormVideos.map((video, index) => (
           <motion.div
             key={video._id}
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: index * 0.05 }}
-            className={VIDEO_SHORT_FORM_RAIL_ITEM_CLASS}>
+            className={VIDEO_DEFAULT_RAIL_ITEM_CLASS}>
             <VideoCard
               _id={video._id}
               title={video.title}
@@ -87,8 +89,6 @@ export const ShortFormVideos = ({ videos: shortFormVideos }: ShortFormVideosProp
               views={video.views}
               duration={video.duration}
               category={video.category}
-              variant="shortForm"
-              likes={video.likes}
             />
           </motion.div>
         ))}
