@@ -140,6 +140,7 @@ export const DailyDevotionalsSection = ({
       heading="Daily Devotionals"
       subtext="Start your day with God's word"
       viewAllLink="/community/devotionals/latest"
+      browseAllLink="/community/devotionals/all"
       sectionClassName="overflow-hidden"
       contentProps={{ enableAnimation: false }}>
       <div className={DEVOTIONALS_GRID_CLASS}>

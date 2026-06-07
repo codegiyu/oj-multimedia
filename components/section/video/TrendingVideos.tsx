@@ -47,6 +47,7 @@ export const TrendingVideos = ({ videos: trendingVideos }: TrendingVideosProps) 
         heading="Trending Now"
         subtext="What everyone's watching"
         viewAllLink="/videos/trending"
+        browseAllLink="/videos/all"
         contentProps={{ enableAnimation: false }}>
         <SectionEmptyState
           title="No trending videos"
@@ -65,6 +66,7 @@ export const TrendingVideos = ({ videos: trendingVideos }: TrendingVideosProps) 
       heading="Trending Now"
       subtext="What everyone's watching"
       viewAllLink="/videos/trending"
+      browseAllLink="/videos/all"
       showPrevNext={true}
       onPrev={() => scroll('left')}
       onNext={() => scroll('right')}

@@ -60,6 +60,7 @@ export default async function NewsPage({ searchParams }: NewsPageProps) {
         iconSlot={newsSectionHeaderIcon(Newspaper)}
         heading="Latest Stories"
         subtext="Stay updated with the latest news and stories"
+        browseAllLink="/news/all"
         contentProps={{ enableAnimation: false }}>
         <div className="grid lg:grid-cols-[1fr_320px] gap-8">
           <Suspense fallback={<LatestFeedSectionSkeleton />}>
