@@ -1,5 +1,4 @@
 import { DashboardRouteLoading } from '@/components/loading/DashboardRouteLoading';
-import { USER_PASTOR_NAV } from '@/lib/constants/user-dashboard-nav';
 import {
   PastorMeSectionSkeleton,
   PastorQuestionsListSectionSkeleton,
@@ -8,7 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 export default function Loading() {
   return (
-    <DashboardRouteLoading brandTitle="Pastor Portal" items={USER_PASTOR_NAV}>
+    <DashboardRouteLoading brandTitle="Pastor Portal" portal="pastor">
       <div className="space-y-6">
         <Skeleton className="h-8 w-48" />
         <PastorMeSectionSkeleton />
