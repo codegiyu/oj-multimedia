@@ -51,4 +51,18 @@ describe('InputWrapper', () => {
     expect(label?.contains(error)).toBe(false);
     expect(error?.textContent).toBe('Required field');
   });
+
+  it('associates the label with the input via htmlFor and id', () => {
+    render(
+      <InputWrapper label="Email" fieldId="email-field">
+        <input data-testid="field" id="email-field" />
+      </InputWrapper>
+    );
+
+    const label = container.querySelector('label');
+    const input = container.querySelector('input');
+
+    expect(label?.getAttribute('for')).toBe('email-field');
+    expect(input?.id).toBe('email-field');
+  });
 });

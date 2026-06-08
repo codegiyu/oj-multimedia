@@ -1,5 +1,20 @@
+'use client';
+
 import { cn } from '@/lib/utils';
-import { ComponentPropsWithRef, PropsWithChildren, ReactNode } from 'react';
+import {
+  ComponentPropsWithRef,
+  PropsWithChildren,
+  ReactNode,
+  createContext,
+  useContext,
+  useId,
+} from 'react';
+
+const InputFieldIdContext = createContext<string | undefined>(undefined);
+
+export function useInputFieldId(): string | undefined {
+  return useContext(InputFieldIdContext);
+}
 
 export type InputWrapperProps = PropsWithChildren<{
   wrapClassName?: string;
@@ -8,7 +23,8 @@ export type InputWrapperProps = PropsWithChildren<{
   labelTextClassName?: string;
   required?: boolean;
   errors?: string[];
-  otherLabelProps?: Omit<ComponentPropsWithRef<'label'>, 'className'>;
+  fieldId?: string;
+  otherLabelProps?: Omit<ComponentPropsWithRef<'label'>, 'className' | 'htmlFor'>;
 }>;
 
 export const InputWrapper = ({
@@ -20,27 +36,33 @@ export const InputWrapper = ({
   otherLabelProps,
   required,
   errors = [],
+  fieldId: fieldIdProp,
 }: InputWrapperProps) => {
+  const generatedId = useId();
+  const fieldId = fieldIdProp ?? generatedId;
+
   return (
     <div className={cn(`w-full`, wrapClassName)}>
-      <label className={cn(`flex flex-col justify-center gap-2`)} {...otherLabelProps}>
-        {(label || subtext) && (
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            {label && (
-              <span
-                className={cn(
-                  'text-[0.75rem] leading-[1.2] font-medium text-foreground font-poppins',
-                  labelTextClassName
-                )}>
-                {label}
-                {required ? ' *' : ''}
-              </span>
-            )}
-            {subtext ? <div className="text-xs font-medium text-primary">{subtext}</div> : null}
-          </div>
-        )}
+      {(label || subtext) && (
+        <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+          {label ? (
+            <label
+              htmlFor={fieldId}
+              className={cn(
+                'text-[0.75rem] leading-[1.2] font-medium text-foreground font-poppins',
+                labelTextClassName
+              )}
+              {...otherLabelProps}>
+              {label}
+              {required ? ' *' : ''}
+            </label>
+          ) : null}
+          {subtext ? <div className="text-xs font-medium text-primary">{subtext}</div> : null}
+        </div>
+      )}
+      <InputFieldIdContext.Provider value={fieldId}>
         <div className="relative w-full">{children}</div>
-      </label>
+      </InputFieldIdContext.Provider>
       {errors.length > 0 && (
         <p className={cn('text-xs md:text-sm text-red-500 mt-1')}>{errors[0]}</p>
       )}
