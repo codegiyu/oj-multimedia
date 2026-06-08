@@ -1,3 +1,4 @@
+import type { AdminPermissionSlug } from '@/lib/constants/adminPermissions';
 import { LucideProps } from 'lucide-react';
 import { ForwardRefExoticComponent, RefAttributes, RefObject, SVGProps, type JSX } from 'react';
 
@@ -86,6 +87,7 @@ interface BaseSidebarLink {
   page: string;
   path?: SidebarLinkPath;
   action?: () => void;
+  permission?: AdminPermissionSlug;
 }
 
 interface SidebarLinkWithIcon extends BaseSidebarLink {

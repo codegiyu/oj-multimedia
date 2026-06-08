@@ -37,6 +37,7 @@ export interface UserAuth {
     passwordChangedAt?: string;
   };
   roles: AuthUserRole[];
+  permissions?: Permission[];
   lastLogin?: string;
   refreshTokenJTI?: string;
   /** FCM push token for admin notifications */

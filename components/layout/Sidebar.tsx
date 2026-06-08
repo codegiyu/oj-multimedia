@@ -21,6 +21,9 @@ import { bottomBarLinks, sidebarLinksData } from '@/lib/constants/routing';
 import { isPathActive } from '@/lib/utils/isPathActive';
 import { GhostBtn } from '../atoms/GhostBtn';
 import { DashboardBrandBlock } from '@/components/layout/shared';
+import { useAuthStore } from '@/lib/store/useAuthStore';
+import { hasAdminPermission } from '@/lib/utils/adminPermissions';
+import type { ClientAdmin } from '@/lib/constants/endpoints';
 
 const ADMIN_BRAND_TITLE = 'Admin Dashboard';
 const ADMIN_BRAND_SUBTITLE = 'Management Console';
@@ -65,6 +68,20 @@ export const SidebarLinkGroup = ({
   isCollapsed: boolean;
 }) => {
   const currentPath = usePathname();
+  const permissions = useAuthStore(state => state.permissions);
+  const adminUser = useAuthStore(state =>
+    state.user && !('phoneNumber' in state.user) ? (state.user as ClientAdmin) : null
+  );
+
+  const visibleLinks = links.filter(link => {
+    if (!link.permission) return true;
+
+    return hasAdminPermission(permissions, link.permission, adminUser);
+  });
+
+  if (visibleLinks.length === 0) {
+    return null;
+  }
 
   const isActive = (path: string) => isPathActive(currentPath, path);
 
@@ -79,7 +96,7 @@ export const SidebarLinkGroup = ({
       {groupName && <SidebarGroupLabel>{groupName}</SidebarGroupLabel>}
       <SidebarGroupContent>
         <SidebarMenu>
-          {links.map(({ Icon, LucideIcon, page, path, action }) => {
+          {visibleLinks.map(({ Icon, LucideIcon, page, path, action }) => {
             const href = path ? `${path.prefix}${path.suffix}` : `/${page.toLowerCase()}`;
             const buttonContent = action ? (
               <GhostBtn className={`${getNavClassName()} justify-start p-2`} onClick={action}>
