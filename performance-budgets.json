@@ -1,4 +1,14 @@
 {
+  "smoke": {
+    "description": "CI build gate for static JS chunk sizes. Prevents 2× regressions from the current production baseline.",
+    "maxTotalStaticJsBytes": 7200000,
+    "maxSingleChunkBytes": 950000
+  },
+  "lighthouse": {
+    "description": "Runtime script transfer budget (KB). Enforced via lighthouse-budget.json when LIGHTHOUSE_URL is set.",
+    "maxScriptTransferKb": 500,
+    "budgetFile": "lighthouse-budget.json"
+  },
   "maxTotalStaticJsBytes": 7200000,
   "maxSingleChunkBytes": 950000
 }
