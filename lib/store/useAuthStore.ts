@@ -4,6 +4,7 @@ import type { SelectorFn } from '../types/general';
 import { useShallow } from 'zustand/react/shallow';
 import type { Permission } from '@/lib/types/server-models';
 import type { ClientAdmin, PopulatedUser } from '../constants/endpoints';
+import { permissionsFromAdminUser } from '../utils/adminPermissions';
 import { callApi } from '../services/callApi';
 import { getRouter } from '../utils/navigation';
 import { useInitFavoritesStore } from './favoritesStore';
@@ -50,12 +51,14 @@ export const useInitAuthStore = create<AuthStore>()((set, get) => ({
   actions: {
     setUser: (user, options) => {
       const pauseNavigatingAwayFromAuth = options?.pauseNavigatingAwayFromAuth ?? false;
-      const permissions = options?.permissions ?? [];
+      const permissions =
+        options?.permissions ??
+        (user && !('phoneNumber' in user) ? permissionsFromAdminUser(user as ClientAdmin) : []);
       const initLoading = options?.initLoading ?? false;
 
       set({
         user,
-        ...(permissions.length > 0 ? { permissions } : {}),
+        permissions,
         initLoading,
         pauseNavigatingAwayFromAuth,
       });
