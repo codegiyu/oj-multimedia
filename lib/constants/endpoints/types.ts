@@ -999,7 +999,14 @@ export interface ISearchResultItem {
 }
 export interface IPublicSearchRes {
   results: ISearchResultItem[];
-  pagination: { page: number; limit: number; total: number; totalPages: number };
+  pagination: {
+    page: number;
+    limit: number;
+    /** In-memory matches loaded (capped per content type), not a full DB count. */
+    loaded: number;
+    totalPages: number;
+    isCapped: boolean;
+  };
 }
 
 export type EndpointDefinition<
