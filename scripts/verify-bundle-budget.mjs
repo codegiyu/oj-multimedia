@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const budgets = JSON.parse(fs.readFileSync('performance-budgets.json', 'utf8'));
+const smoke = budgets.smoke ?? budgets;
 const chunksDir = path.join('.next', 'static', 'chunks');
 
 if (!fs.existsSync(chunksDir)) {
@@ -27,26 +28,33 @@ for (const file of fs.readdirSync(chunksDir)) {
 
 const failures = [];
 
-if (total > budgets.maxTotalStaticJsBytes) {
+if (total > smoke.maxTotalStaticJsBytes) {
   failures.push(
-    `total static JS ${total} bytes exceeds budget ${budgets.maxTotalStaticJsBytes} bytes`
+    `total static JS ${total} bytes exceeds smoke budget ${smoke.maxTotalStaticJsBytes} bytes`
   );
 }
 
-if (largest > budgets.maxSingleChunkBytes) {
+if (largest > smoke.maxSingleChunkBytes) {
   failures.push(
-    `largest chunk ${largestName} (${largest} bytes) exceeds budget ${budgets.maxSingleChunkBytes} bytes`
+    `largest chunk ${largestName} (${largest} bytes) exceeds smoke budget ${smoke.maxSingleChunkBytes} bytes`
   );
 }
 
 if (failures.length > 0) {
-  console.error('Bundle budget check failed:');
+  console.error('Bundle budget check failed (smoke tier):');
   for (const failure of failures) {
     console.error(`- ${failure}`);
   }
   process.exit(1);
 }
 
+const lighthouseKb = budgets.lighthouse?.maxScriptTransferKb;
 console.log(
-  `Bundle budgets OK (total=${total} bytes, largest=${largestName}:${largest} bytes)`
+  `Bundle smoke budgets OK (total=${total} bytes, largest=${largestName}:${largest} bytes)`
 );
+
+if (lighthouseKb) {
+  console.log(
+    `Lighthouse runtime script budget: ${lighthouseKb} KB (see ${budgets.lighthouse.budgetFile ?? 'lighthouse-budget.json'}; run with LIGHTHOUSE_URL)`
+  );
+}

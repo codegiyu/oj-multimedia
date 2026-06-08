@@ -9,11 +9,18 @@ import {
 import { ADMIN_LIST_API_P95_TARGET_MS } from '../../../lib/constants/adminListPerformance';
 
 describe('NFR performance contract', () => {
-  it('defines bundle and Lighthouse budget files', () => {
+  it('defines tiered bundle and Lighthouse budget files without contradiction', () => {
     const bundleBudgets = JSON.parse(readFileSync('performance-budgets.json', 'utf8'));
     const lighthouseBudgets = JSON.parse(readFileSync('lighthouse-budget.json', 'utf8'));
 
-    expect(bundleBudgets.maxTotalStaticJsBytes).toBeGreaterThan(0);
+    expect(bundleBudgets.smoke.maxTotalStaticJsBytes).toBe(bundleBudgets.maxTotalStaticJsBytes);
+    expect(bundleBudgets.smoke.maxSingleChunkBytes).toBe(bundleBudgets.maxSingleChunkBytes);
+    expect(bundleBudgets.lighthouse.maxScriptTransferKb).toBe(500);
+    expect(
+      lighthouseBudgets[0].resourceSizes.find(
+        (row: { resourceType: string }) => row.resourceType === 'script'
+      )?.budget
+    ).toBe(500);
     expect(
       lighthouseBudgets[0].timings.some(
         (row: { metric: string }) => row.metric === 'largest-contentful-paint'
@@ -25,7 +32,7 @@ describe('NFR performance contract', () => {
     expect(ADMIN_LIST_API_P95_TARGET_MS).toBe(300);
   });
 
-  it('lazy-loads the root splash screen from the app layout', () => {
+  it('lazy-loads the root splash screen and gates it in production', () => {
     const layout = readFileSync(join(process.cwd(), 'app/layout.tsx'), 'utf8');
     const splashDynamic = readFileSync(
       join(process.cwd(), 'components/general/LoadAnimationScreenDynamic.tsx'),
@@ -36,6 +43,8 @@ describe('NFR performance contract', () => {
     expect(layout).not.toMatch(/from ['"]@\/components\/general\/LoadAnimationScreen['"]/);
     expect(splashDynamic).toContain("from 'next/dynamic'");
     expect(splashDynamic).toContain('ssr: false');
+    expect(splashDynamic).toContain('NEXT_PUBLIC_ENABLE_SPLASH');
+    expect(splashDynamic).toContain("process.env.NODE_ENV !== 'production'");
   });
 
   it('uses low fetch priority on non-LCP FillImage instances', () => {
@@ -83,8 +92,12 @@ describe('NFR performance contract', () => {
     expect(musicCategoryNavFallback[0].id).toBe('all');
     expect(videoCategoryNavFallback[0].id).toBe('all');
     expect(newsCategoryNavFallback[0].id).toBe('all');
-    expect(readFileSync(join(process.cwd(), 'scripts/verify-bundle-budget.mjs'), 'utf8')).toContain(
-      'maxTotalStaticJsBytes'
+    const verifyScript = readFileSync(
+      join(process.cwd(), 'scripts/verify-bundle-budget.mjs'),
+      'utf8'
     );
+
+    expect(verifyScript).toContain('smoke');
+    expect(verifyScript).toContain('maxTotalStaticJsBytes');
   });
 });
