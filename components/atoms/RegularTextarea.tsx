@@ -2,30 +2,53 @@
 
 import { cn } from '@/lib/utils';
 import { Textarea, type TextareaProps } from '../ui/textarea';
-import { FocusEvent, ReactNode } from 'react';
-import { InputWrapper } from '../general/InputWrapper';
+import { FocusEvent } from 'react';
+import { InputWrapper, useInputFieldId } from '../general/InputWrapper';
 
 export interface RegularTextareaProps extends TextareaProps {
   label?: string;
-  subtext?: ReactNode;
+  subtext?: React.ReactNode;
   labelClassName?: string;
   wrapClassName?: string;
   errors?: string[];
 }
 
-export const RegularTextarea = ({
+function RegularTextareaField({
   className,
+  placeholder,
+  ref,
+  onFocus,
+  onBlur,
+  id,
+  ...props
+}: TextareaProps) {
+  const fieldId = useInputFieldId();
+
+  return (
+    <Textarea
+      id={id ?? fieldId}
+      placeholder={placeholder}
+      className={cn('', className)}
+      ref={ref}
+      {...props}
+      onFocus={(e: FocusEvent<HTMLTextAreaElement>) => {
+        if (onFocus) onFocus(e);
+      }}
+      onBlur={(e: FocusEvent<HTMLTextAreaElement>) => {
+        if (onBlur) onBlur(e);
+      }}
+    />
+  );
+}
+
+export const RegularTextarea = ({
   label,
   subtext,
   labelClassName,
   wrapClassName,
-  placeholder,
-  ref,
   required,
-  onFocus,
-  onBlur,
   errors = [],
-  ...props
+  ...fieldProps
 }: RegularTextareaProps) => {
   return (
     <InputWrapper
@@ -34,19 +57,9 @@ export const RegularTextarea = ({
       subtext={subtext}
       labelTextClassName={labelClassName}
       required={required}
-      errors={errors}>
-      <Textarea
-        placeholder={placeholder}
-        className={cn('', className)}
-        ref={ref}
-        {...props}
-        onFocus={(e: FocusEvent<HTMLTextAreaElement>) => {
-          if (onFocus) onFocus(e);
-        }}
-        onBlur={(e: FocusEvent<HTMLTextAreaElement>) => {
-          if (onBlur) onBlur(e);
-        }}
-      />
+      errors={errors}
+      fieldId={fieldProps.id}>
+      <RegularTextareaField {...fieldProps} />
     </InputWrapper>
   );
 };

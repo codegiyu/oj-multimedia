@@ -3,6 +3,7 @@
 import type { ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import { useQueryState, parseAsString, parseAsInteger } from 'nuqs';
+import { RegularInput } from '@/components/atoms/RegularInput';
 import type { AllBrowseConfig } from '@/lib/constants/allBrowseConfig';
 
 type ContentAllBrowseToolbarProps = {
@@ -31,16 +32,21 @@ export function ContentAllBrowseToolbar({ config, children }: ContentAllBrowseTo
     void refreshFromPageOne(() => setSort(value || null));
   };
 
+  const searchFieldId = `${config.contentKey}-search`;
+
   return (
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row gap-4">
-        <input
+        <RegularInput
           type="search"
+          id={searchFieldId}
+          aria-label={config.searchPlaceholder}
           placeholder={config.searchPlaceholder}
           value={q}
           onChange={e => setQ(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && handleSearch((e.target as HTMLInputElement).value)}
-          className="flex-1 rounded-md border border-input bg-background px-4 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          wrapClassName="flex-1"
+          className="w-full"
         />
         <button
           type="button"
