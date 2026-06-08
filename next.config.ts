@@ -1,13 +1,9 @@
 import type { NextConfig } from 'next';
+import { IMAGE_REMOTE_PATTERNS } from './lib/config/imageRemotePatterns';
 
 const nextConfig: NextConfig = {
   images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: '**',
-      },
-    ],
+    remotePatterns: IMAGE_REMOTE_PATTERNS,
   },
 
   // Mark @react-email/render as external to prevent build-time analysis
