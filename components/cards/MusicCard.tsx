@@ -85,21 +85,22 @@ export const MusicCard = (props: MusicCardProps) => {
 
       <div className="p-4">
         <div className="flex items-start justify-between gap-2">
-          <AppLink href={detailHref} className="min-w-0 flex-1">
-            <h3 className="font-semibold truncate group-hover:text-primary transition-colors">
-              {title}
-            </h3>
+          <div className="min-w-0 flex-1">
+            <AppLink href={detailHref} className="block">
+              <h3 className="font-semibold truncate group-hover:text-primary transition-colors">
+                {title}
+              </h3>
+            </AppLink>
             <ArtistNameLine artist={artist} />
             {album ? (
               <AppLink
                 href={publicMusicAlbumHref(album)}
-                onClick={e => e.stopPropagation()}
                 className="text-xs text-primary truncate block mt-1 hover:underline underline-offset-2">
                 {album.title}
               </AppLink>
             ) : null}
             <p className="text-xs text-muted-foreground mt-2">{plays} plays</p>
-          </AppLink>
+          </div>
           {optionsItem ? (
             <MusicCardOptions musicItem={optionsItem} />
           ) : (

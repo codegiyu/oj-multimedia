@@ -1,8 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, type Page } from '@playwright/test';
 
-/** CI gate: critical only. Serious issues (e.g. brand color-contrast) are tracked separately. */
-const FAILING_IMPACTS = new Set(['critical']);
+const FAILING_IMPACTS = new Set(['critical', 'serious']);
 
 export type A11yScanOptions = {
   /** Human-readable route label for assertion messages. */

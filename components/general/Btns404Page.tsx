@@ -19,7 +19,7 @@ export const Btns404Page = () => {
         wrapClassName="w-full sm:w-fit"
       />
       <RegularBtn
-        variant="outline"
+        variant="muted"
         size="lg"
         text="Go Back"
         onClick={back}
