@@ -101,7 +101,7 @@ export const useInitAuthStore = create<AuthStore>()((set, get) => ({
 
         setUser(data.user);
       } catch (error) {
-        void error;
+        console.warn('Auth store: unexpected error during session init', error);
         clearSession();
       } finally {
         set({ initLoading: false });
@@ -133,7 +133,7 @@ export const useInitAuthStore = create<AuthStore>()((set, get) => ({
 
         return { success: true };
       } catch (error) {
-        void error;
+        console.warn('Auth store: unexpected error during login', error);
         return {
           success: false,
           error: 'An unexpected error occurred',
@@ -176,7 +176,7 @@ export const useInitAuthStore = create<AuthStore>()((set, get) => ({
 
         return { success: true };
       } catch (error) {
-        void error;
+        console.warn('Auth store: unexpected error during Google login', error);
         return {
           success: false,
           error: 'An unexpected error occurred',
