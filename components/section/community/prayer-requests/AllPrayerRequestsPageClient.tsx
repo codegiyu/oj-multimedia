@@ -1,13 +1,9 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { HandHeart } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { SectionContainer } from '@/components/general/SectionContainer';
-import { DataLoadError } from '@/components/general/DataLoadError';
-import { ContentAllBrowseToolbar } from '@/components/general/ContentAllBrowseToolbar';
+import { BrowseListPageClient } from '@/components/general/BrowseListPageClient';
+import { BrowseCategoryFilter } from '@/components/general/BrowseCategoryFilter';
 import { ContentAllBrowseStatusFilter } from '@/components/general/ContentAllBrowseStatusFilter';
-import { ContentAllBrowseCategoryFilter } from '@/components/general/ContentAllBrowseCategoryFilter';
 import { ActivePrayerRequestsSection } from './ActivePrayerRequestsSection';
 import { AnsweredPrayersSection } from './AnsweredPrayersSection';
 import type { AnsweredPrayer, PrayerRequest } from './PrayerRequestsPageClient';
@@ -31,62 +27,39 @@ export function AllPrayerRequestsPageClient({
   pagination = null,
   initialErrorMessage = null,
 }: AllPrayerRequestsPageClientProps) {
-  const router = useRouter();
-  const isEmpty =
-    listKind === 'answered' ? answeredPrayers.length === 0 : activeRequests.length === 0;
-
-  if (initialErrorMessage && isEmpty) {
-    return (
-      <SectionContainer>
-        <DataLoadError
-          title="Unable to load prayer requests"
-          message={initialErrorMessage}
-          onRetry={() => router.refresh()}
-          icon={<HandHeart className="w-8 h-8 text-destructive" />}
-        />
-      </SectionContainer>
-    );
-  }
+  const items = listKind === 'answered' ? answeredPrayers : activeRequests;
 
   return (
-    <>
-      <SectionContainer className="pb-0">
-        <ContentAllBrowseToolbar config={config}>
-          <ContentAllBrowseStatusFilter config={config} />
-        </ContentAllBrowseToolbar>
-      </SectionContainer>
-      {config.categoryScope ? (
-        <ContentAllBrowseCategoryFilter
-          config={
-            config as AllBrowseConfig & {
-              categoryScope: NonNullable<AllBrowseConfig['categoryScope']>;
-            }
-          }
-        />
-      ) : null}
-      {initialErrorMessage && (
-        <div className="container mx-auto px-4 mb-4">
-          <div className="rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive flex items-center justify-between gap-4">
-            <span>{initialErrorMessage}</span>
-            <Button variant="outline" size="sm" onClick={() => router.refresh()}>
-              Retry
-            </Button>
-          </div>
-        </div>
-      )}
-      {listKind === 'answered' ? (
-        <AnsweredPrayersSection
-          prayers={answeredPrayers}
-          pagination={pagination}
-          presentation="browse-list"
-        />
-      ) : (
-        <ActivePrayerRequestsSection
-          requests={activeRequests}
-          pagination={pagination}
-          presentation="browse-list"
-        />
-      )}
-    </>
+    <BrowseListPageClient<PrayerRequest | AnsweredPrayer>
+      config={config}
+      items={items}
+      pagination={pagination}
+      initialErrorMessage={initialErrorMessage}
+      errorTitle="Unable to load prayer requests"
+      errorIcon={<HandHeart className="w-8 h-8 text-destructive" />}
+      empty={{
+        title: 'No prayer requests found',
+        description: 'Try adjusting your search or filters, or check back later.',
+        icon: HandHeart,
+        showDefaultActions: true,
+      }}
+      toolbarChildren={<ContentAllBrowseStatusFilter config={config} />}
+      afterToolbar={<BrowseCategoryFilter config={config} />}
+      renderListBody={() =>
+        listKind === 'answered' ? (
+          <AnsweredPrayersSection
+            prayers={answeredPrayers}
+            pagination={pagination}
+            presentation="browse-list"
+          />
+        ) : (
+          <ActivePrayerRequestsSection
+            requests={activeRequests}
+            pagination={pagination}
+            presentation="browse-list"
+          />
+        )
+      }
+    />
   );
 }

@@ -1,13 +1,9 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { HelpCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { SectionContainer } from '@/components/general/SectionContainer';
-import { DataLoadError } from '@/components/general/DataLoadError';
-import { ContentAllBrowseToolbar } from '@/components/general/ContentAllBrowseToolbar';
+import { BrowseListPageClient } from '@/components/general/BrowseListPageClient';
+import { BrowseCategoryFilter } from '@/components/general/BrowseCategoryFilter';
 import { ContentAllBrowseStatusFilter } from '@/components/general/ContentAllBrowseStatusFilter';
-import { ContentAllBrowseCategoryFilter } from '@/components/general/ContentAllBrowseCategoryFilter';
 import { ActiveQuestionsSection } from './ActiveQuestionsSection';
 import { AnsweredQuestionsSection } from './AnsweredQuestionsSection';
 import type { AnsweredQuestion, Question } from './AskAPastorPageClient';
@@ -31,62 +27,39 @@ export function AllQuestionsPageClient({
   pagination = null,
   initialErrorMessage = null,
 }: AllQuestionsPageClientProps) {
-  const router = useRouter();
-  const isEmpty =
-    listKind === 'answered' ? answeredQuestions.length === 0 : activeQuestions.length === 0;
-
-  if (initialErrorMessage && isEmpty) {
-    return (
-      <SectionContainer>
-        <DataLoadError
-          title="Unable to load questions"
-          message={initialErrorMessage}
-          onRetry={() => router.refresh()}
-          icon={<HelpCircle className="w-8 h-8 text-destructive" />}
-        />
-      </SectionContainer>
-    );
-  }
+  const items = listKind === 'answered' ? answeredQuestions : activeQuestions;
 
   return (
-    <>
-      <SectionContainer className="pb-0">
-        <ContentAllBrowseToolbar config={config}>
-          <ContentAllBrowseStatusFilter config={config} />
-        </ContentAllBrowseToolbar>
-      </SectionContainer>
-      {config.categoryScope ? (
-        <ContentAllBrowseCategoryFilter
-          config={
-            config as AllBrowseConfig & {
-              categoryScope: NonNullable<AllBrowseConfig['categoryScope']>;
-            }
-          }
-        />
-      ) : null}
-      {initialErrorMessage && (
-        <div className="container mx-auto px-4 mb-4">
-          <div className="rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive flex items-center justify-between gap-4">
-            <span>{initialErrorMessage}</span>
-            <Button variant="outline" size="sm" onClick={() => router.refresh()}>
-              Retry
-            </Button>
-          </div>
-        </div>
-      )}
-      {listKind === 'answered' ? (
-        <AnsweredQuestionsSection
-          questions={answeredQuestions}
-          pagination={pagination}
-          presentation="browse-list"
-        />
-      ) : (
-        <ActiveQuestionsSection
-          questions={activeQuestions}
-          pagination={pagination}
-          presentation="browse-list"
-        />
-      )}
-    </>
+    <BrowseListPageClient<Question | AnsweredQuestion>
+      config={config}
+      items={items}
+      pagination={pagination}
+      initialErrorMessage={initialErrorMessage}
+      errorTitle="Unable to load questions"
+      errorIcon={<HelpCircle className="w-8 h-8 text-destructive" />}
+      empty={{
+        title: 'No questions found',
+        description: 'Try adjusting your search or filters, or check back later.',
+        icon: HelpCircle,
+        showDefaultActions: true,
+      }}
+      toolbarChildren={<ContentAllBrowseStatusFilter config={config} />}
+      afterToolbar={<BrowseCategoryFilter config={config} />}
+      renderListBody={() =>
+        listKind === 'answered' ? (
+          <AnsweredQuestionsSection
+            questions={answeredQuestions}
+            pagination={pagination}
+            presentation="browse-list"
+          />
+        ) : (
+          <ActiveQuestionsSection
+            questions={activeQuestions}
+            pagination={pagination}
+            presentation="browse-list"
+          />
+        )
+      }
+    />
   );
 }
