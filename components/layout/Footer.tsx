@@ -71,25 +71,34 @@ export const Footer = () => {
             <p className="text-muted-foreground mb-6">
               Get the latest updates on new releases, trending content, and community news.
             </p>
-            <div className="flex flex-col items-stretch sm:flex-row gap-3 w-full sm:max-w-md md:max-w-[35rem] mx-auto">
+            <form
+              className="flex flex-col items-stretch sm:flex-row gap-3 w-full sm:max-w-md md:max-w-[35rem] mx-auto"
+              onSubmit={e => e.preventDefault()}
+              aria-describedby="footer-newsletter-status">
+              <label htmlFor="footer-newsletter-email" className="sr-only">
+                Email address for newsletter
+              </label>
               <input
+                id="footer-newsletter-email"
                 type="email"
+                name="newsletterEmail"
+                autoComplete="email"
                 placeholder="Enter your email"
                 className="w-full min-w-0 flex-1 px-4 py-3 rounded-full border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
                 disabled
-                title="Newsletter subscription requires backend integration"
               />
               <Button
+                type="submit"
                 variant="hero"
                 size="lg"
                 className="gap-2 w-full sm:w-auto shrink-0 self-center sm:self-stretch"
                 disabled
-                title="Newsletter subscription requires backend integration">
-                <Mail className="w-4 h-4" />
+                aria-describedby="footer-newsletter-status">
+                <Mail className="w-4 h-4" aria-hidden />
                 Subscribe
               </Button>
-            </div>
-            <p className="text-xs text-muted-foreground mt-2">
+            </form>
+            <p id="footer-newsletter-status" className="text-xs text-muted-foreground mt-2">
               Newsletter subscription coming soon
             </p>
           </div>

@@ -16,7 +16,7 @@ describe('A11y E2E contract', () => {
     );
 
     expect(helper).toContain('@axe-core/playwright');
-    expect(helper).toContain("FAILING_IMPACTS = new Set(['critical'])");
+    expect(helper).toContain('serious');
     expect(spec).toContain("page.goto('/',");
     expect(spec).toContain("page.goto('/music/all'");
     expect(spec).toContain("page.goto('/auth/login'");

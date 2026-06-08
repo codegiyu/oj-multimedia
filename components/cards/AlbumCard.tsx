@@ -45,23 +45,25 @@ export function AlbumCard({
             Album
           </span>
         </div>
-        <div className="p-4">
+      </AppLink>
+      <div className="p-4">
+        <AppLink href={detailHref} className="block">
           <h3 className="font-semibold truncate group-hover:text-primary transition-colors">
             {title}
           </h3>
-          <ArtistNameLine artist={artist} />
-          {excerpt ? (
-            <MultilinePreview
-              text={excerpt}
-              className="text-xs text-muted-foreground mt-2 line-clamp-2"
-            />
-          ) : null}
-          <p className="text-xs text-muted-foreground mt-2">
-            {trackCount} track{trackCount === 1 ? '' : 's'}
-            {releaseLabel ? ` · ${releaseLabel}` : ''}
-          </p>
-        </div>
-      </AppLink>
+        </AppLink>
+        <ArtistNameLine artist={artist} />
+        {excerpt ? (
+          <MultilinePreview
+            text={excerpt}
+            className="text-xs text-muted-foreground mt-2 line-clamp-2"
+          />
+        ) : null}
+        <p className="text-xs text-muted-foreground mt-2">
+          {trackCount} track{trackCount === 1 ? '' : 's'}
+          {releaseLabel ? ` · ${releaseLabel}` : ''}
+        </p>
+      </div>
     </motion.div>
   );
 }

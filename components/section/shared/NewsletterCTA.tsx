@@ -63,7 +63,8 @@ export const NewsletterCTA = () => {
               <RegularInput
                 type="email"
                 name="newsletterEmail"
-                label=""
+                label="Email address"
+                labelClassName="sr-only"
                 placeholder="Enter your email"
                 value={email}
                 onChange={e => setEmail(e.target.value)}

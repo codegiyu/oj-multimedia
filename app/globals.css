@@ -9,13 +9,13 @@
 
 @layer base {
   :root {
-    /* Primary - Vibrant Coral/Orange */
-    --primary: 16 90% 58%;
+    /* Primary - coral/orange darkened for WCAG AA on solid fills and outline text */
+    --primary: 16 86% 40%;
     --primary-foreground: 0 0% 100%;
     --primary-glow: 24 100% 65%;
 
-    /* Secondary - Cool Teal */
-    --secondary: 174 62% 47%;
+    /* Secondary - teal darkened for WCAG AA with white foreground on solid fills */
+    --secondary: 174 55% 26%;
     --secondary-foreground: 0 0% 100%;
 
     /* Accent - Warm Yellow */
@@ -37,7 +37,7 @@
 
     /* Muted */
     --muted: 40 15% 94%;
-    --muted-foreground: 220 10% 45%;
+    --muted-foreground: 220 12% 38%;
 
     /* Borders & Inputs */
     --border: 40 15% 88%;
@@ -239,6 +239,10 @@
 }
 
 @theme inline {
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
   --font-sans: var(--font-poppins);
   --font-serif: var(--font-poppins);
   --color-sidebar-ring: var(--sidebar-ring);
@@ -286,13 +290,13 @@
   --popover: 0 0% 100%;
   --popover-foreground: 240 10% 10%;
 
-  /* Primary - Vibrant Coral/Orange */
-  --primary: 16 90% 58%;
+  /* Primary - coral/orange darkened for WCAG AA on solid fills and outline text */
+  --primary: 16 86% 40%;
   --primary-foreground: 0 0% 100%;
   --primary-light: 24 100% 65%;
 
-  /* Secondary - Cool Teal */
-  --secondary: 174 62% 47%;
+  /* Secondary - teal darkened for WCAG AA with white foreground on solid fills */
+  --secondary: 174 55% 26%;
   --secondary-foreground: 0 0% 100%;
 
   /* Accent - Warm Yellow */
@@ -300,12 +304,12 @@
   --accent-foreground: 30 20% 15%;
 
   /* Orange Accent */
-  --orange: 16 90% 58%;
+  --orange: 16 86% 40%;
   --orange-foreground: 0 0% 100%;
 
   /* Muted - Complementary Neutrals */
   --muted: 40 15% 94%;
-  --muted-foreground: 220 10% 45%;
+  --muted-foreground: 220 12% 38%;
 
   --destructive: 0 72% 51%;
   --destructive-foreground: 0 0% 100%;
@@ -362,16 +366,16 @@
   --popover: 240 8% 12%;
   --popover-foreground: 0 0% 98%;
 
-  --primary: 16 90% 66%;
+  --primary: 16 86% 52%;
   --primary-foreground: 0 0% 100%;
 
-  --secondary: 174 62% 55%;
+  --secondary: 174 55% 32%;
   --secondary-foreground: 0 0% 100%;
 
   --accent: 45 93% 66%;
   --accent-foreground: 30 20% 15%;
 
-  --orange: 16 90% 66%;
+  --orange: 16 86% 52%;
   --orange-foreground: 0 0% 100%;
 
   --muted: 40 8% 20%;

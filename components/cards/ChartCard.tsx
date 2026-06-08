@@ -8,7 +8,7 @@ import { AppLink } from '@/components/atoms/AppLink';
 import { FillImage } from '@/components/general/FillImage';
 import { cn } from '@/lib/utils';
 import { ArtistNameLine } from '@/components/general/ArtistNameLine';
-import { resolveArtistDisplay, type ArtistRef } from '@/lib/utils/artistDisplay';
+import type { ArtistRef } from '@/lib/utils/artistDisplay';
 import {
   chartEntryBadgeLabel,
   chartMovementAriaLabel,
@@ -174,18 +174,25 @@ function ChartCardMainRow({
     </div>
   );
 
-  const metaBlock = (
-    <div className="min-w-0 flex-1 overflow-hidden">
+  const titleBlock = detailHref ? (
+    <AppLink href={detailHref} className="min-w-0 flex-1 overflow-hidden block">
       <div className="flex min-w-0 items-center gap-2 overflow-hidden">
-        <h4
-          className={cn(
-            'truncate font-medium min-w-0',
-            detailHref && 'transition-colors group-hover:text-primary'
-          )}>
+        <h4 className="truncate font-medium min-w-0 transition-colors group-hover:text-primary">
           {title}
         </h4>
         <ChartEntryBadge chartEntry={chartEntry} />
       </div>
+    </AppLink>
+  ) : (
+    <div className="flex min-w-0 items-center gap-2 overflow-hidden">
+      <h4 className="truncate font-medium min-w-0">{title}</h4>
+      <ChartEntryBadge chartEntry={chartEntry} />
+    </div>
+  );
+
+  const metaBlock = (
+    <div className="min-w-0 flex-1 overflow-hidden">
+      {titleBlock}
       <ArtistNameLine artist={artist} />
       <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-muted-foreground sm:hidden">
         <span>
@@ -196,10 +203,24 @@ function ChartCardMainRow({
     </div>
   );
 
+  const linkedCover = detailHref ? (
+    <AppLink
+      href={detailHref}
+      className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg block"
+      aria-label={`View ${title}`}>
+      <FillImage imageContext="public" src={cover} alt="" sizes="48px" />
+      <div className="absolute inset-0 flex items-center justify-center bg-foreground/30 opacity-0 transition-opacity group-hover:opacity-100 pointer-events-none">
+        <Play className="h-4 w-4 fill-current text-primary-foreground" aria-hidden />
+      </div>
+    </AppLink>
+  ) : (
+    coverBlock
+  );
+
   return (
     <div className="flex min-w-0 flex-1 items-center gap-3 overflow-hidden">
       <ChartRankCell rank={rank} className="hidden sm:flex" />
-      {coverBlock}
+      {linkedCover}
       {metaBlock}
       <ChartStatsCell plays={plays} trend={trend} change={change} />
     </div>
@@ -233,7 +254,6 @@ export const ChartCard = ({
   change,
   chartEntry,
 }: ChartCardProps) => {
-  const { name: artistDisplayName } = resolveArtistDisplay(artist);
   const detailHref = _id ? `/music/${_id}` : undefined;
 
   const mainRow = (
@@ -266,23 +286,14 @@ export const ChartCard = ({
         </div>
       )}
 
+      <div className="flex min-w-0 flex-1 overflow-hidden">{mainRow}</div>
       {detailHref ? (
-        <>
-          <AppLink
-            href={detailHref}
-            className="flex min-w-0 flex-1 overflow-hidden"
-            aria-label={`View ${title} by ${artistDisplayName}`}>
-            {mainRow}
-          </AppLink>
-          <ChartPlayButton
-            detailHref={detailHref}
-            title={title}
-            className="hidden shrink-0 opacity-0 transition-opacity group-hover:opacity-100 sm:inline-flex"
-          />
-        </>
-      ) : (
-        <div className="flex min-w-0 flex-1 overflow-hidden">{mainRow}</div>
-      )}
+        <ChartPlayButton
+          detailHref={detailHref}
+          title={title}
+          className="hidden shrink-0 opacity-0 transition-opacity group-hover:opacity-100 sm:inline-flex"
+        />
+      ) : null}
     </motion.article>
   );
 };
