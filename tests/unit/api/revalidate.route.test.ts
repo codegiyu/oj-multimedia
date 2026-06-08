@@ -17,6 +17,24 @@ describe('POST /api/revalidate', () => {
     vi.unstubAllEnvs();
   });
 
+  it('accepts FRONTEND_REVALIDATION_SECRET as an alias', async () => {
+    vi.stubEnv('REVALIDATION_SECRET', '');
+    vi.stubEnv('FRONTEND_REVALIDATION_SECRET', 'alias-secret');
+
+    const request = new NextRequest('http://localhost/api/revalidate', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-revalidate-secret': 'alias-secret',
+      },
+      body: JSON.stringify({ paths: ['/music'] }),
+    });
+
+    const response = await POST(request);
+
+    expect(response.status).toBe(200);
+  });
+
   it('rejects requests without a valid secret', async () => {
     const request = new NextRequest('http://localhost/api/revalidate', {
       method: 'POST',

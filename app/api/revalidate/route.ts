@@ -13,7 +13,8 @@ function readRevalidationSecret(request: NextRequest): string | null {
 }
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
-  const configuredSecret = process.env.REVALIDATION_SECRET?.trim();
+  const configuredSecret =
+    process.env.REVALIDATION_SECRET?.trim() || process.env.FRONTEND_REVALIDATION_SECRET?.trim();
 
   if (!configuredSecret) {
     return NextResponse.json(
