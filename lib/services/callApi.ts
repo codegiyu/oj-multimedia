@@ -1,9 +1,7 @@
 import axios, { type AxiosRequestConfig, type AxiosResponse } from 'axios';
 import type { ApiErrorResponse, ApiSuccessResponse, ResponseMessage } from '../types/http';
-import { getDataFromRequest, getQueryParam } from '../utils/general';
-import { base64UrlEncode } from './storage';
+import { getDataFromRequest } from '../utils/general';
 import { type AllEndpoints, ENDPOINTS } from '../constants/endpoints';
-import { getRouter } from '../utils/navigation';
 import { useInitAuthStore } from '../store/useAuthStore';
 import {
   buildAuthRequestHeaders,
@@ -51,15 +49,10 @@ export const callApi = async <T extends keyof AllEndpoints>(
 ): Promise<ResponseMessage<T>> => {
   const { path, method } = ENDPOINTS[endpoint];
 
-  const source = axios.CancelToken.source();
-
-  let redirectPath = '';
-
   try {
     const requestConfig: AxiosRequestConfig = {
       url: path + (options.query || ''),
       method,
-      cancelToken: source.token,
       headers: {},
     };
 
@@ -114,24 +107,12 @@ export const callApi = async <T extends keyof AllEndpoints>(
       apiError = error.response.data as ApiErrorResponse;
 
       if (error.response.status === 401) {
-        // Clear session on 401
         try {
           useInitAuthStore.getState().actions.clearSession();
           clearClientAuthTokens();
         } catch {
           // Auth store not available, continue
         }
-
-        const redirectQueryValue = getQueryParam('redirectTo');
-        const isAdminSurface =
-          typeof window !== 'undefined' && window.location?.pathname?.startsWith('/admin');
-        const loginRoute = isAdminSurface ? '/admin/auth/login' : '/auth/login';
-        const currentPath = typeof window !== 'undefined' ? (window.location?.pathname ?? '') : '';
-        const redirectToValue =
-          redirectQueryValue || (currentPath ? base64UrlEncode(currentPath) : '');
-        redirectPath = redirectToValue
-          ? `${loginRoute}?redirectTo=${encodeURIComponent(redirectToValue)}`
-          : loginRoute;
       }
       if (error.response.status === 429) {
         // Rate limit exceeded - could be handled by a modal/store
@@ -147,14 +128,6 @@ export const callApi = async <T extends keyof AllEndpoints>(
     }
 
     return getDataFromRequest({ error: apiError }, endpoint);
-  } finally {
-    if (redirectPath && !isServerCall) {
-      const router = getRouter();
-
-      if (router) {
-        router.replace(redirectPath);
-      }
-    }
   }
 };
 
