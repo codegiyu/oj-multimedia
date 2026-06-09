@@ -95,7 +95,7 @@
     "@types/node": "^22.19.20",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19",
-    "@types/swiper": "^5.4.3",
+    "@types/swiper": "^6.0.0",
     "baseline-browser-mapping": "^2.9.2",
     "cross-env": "^7.0.3",
     "eslint": "^9",
