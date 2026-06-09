@@ -10,12 +10,12 @@ This document defines the API endpoints required by the frontend for the public 
 
 | # | Method | Path (base) | Purpose | List key in response | Detail key |
 |---|--------|-------------|---------|------------------------|------------|
-| 1.1 | GET | `/public/music` | List music (trending, recent, charts, etc.) | `music` | — |
-| 1.2 | GET | `/public/music/:idOrSlug` | Single music item by id or slug | — | `music` |
-| 2.1 | GET | `/public/videos` | List videos (trending, featured, recent, short-form) | `videos` | — |
-| 2.2 | GET | `/public/videos/:idOrSlug` | Single video by id or slug | — | `video` |
-| 3.1 | GET | `/public/news` | List news (featured, trending, latest, video) | `articles` | — |
-| 3.2 | GET | `/public/news/:idOrSlug` | Single news article by id or slug | — | `article` |
+| 1.1 | GET | `/api/v1/public/music` | List music (trending, recent, charts, etc.) | `music` | — |
+| 1.2 | GET | `/api/v1/public/music/:idOrSlug` | Single music item by id or slug | — | `music` |
+| 2.1 | GET | `/api/v1/public/videos` | List videos (trending, featured, recent, short-form) | `videos` | — |
+| 2.2 | GET | `/api/v1/public/videos/:idOrSlug` | Single video by id or slug | — | `video` |
+| 3.1 | GET | `/api/v1/public/news` | List news (featured, trending, latest, video) | `articles` | — |
+| 3.2 | GET | `/api/v1/public/news/:idOrSlug` | Single news article by id or slug | — | `article` |
 
 **Response rules (all list endpoints):**
 
@@ -35,9 +35,9 @@ This document defines the API endpoints required by the frontend for the public 
 
 | Endpoint | Query params | Notes |
 |---------|----------------|-------|
-| GET `/public/music` | `category`, `page`, `limit`, `status`, `type`, `period` | `type`: `trending` \| `featured` \| `recent` \| `charts`. `period` only when `type=charts`: `weekly` \| `monthly` \| `alltime`. |
-| GET `/public/videos` | `category`, `page`, `limit`, `status`, `type` | `type`: `trending` \| `featured` \| `recent` \| `short-form`. |
-| GET `/public/news` | `category`, `page`, `limit`, `status`, `type` | `type`: `featured` \| `trending` \| `latest` \| `video`. |
+| GET `/api/v1/public/music` | `category`, `page`, `limit`, `status`, `type`, `period` | `type`: `trending` \| `featured` \| `recent` \| `charts`. `period` only when `type=charts`: `weekly` \| `monthly` \| `alltime`. |
+| GET `/api/v1/public/videos` | `category`, `page`, `limit`, `status`, `type` | `type`: `trending` \| `featured` \| `recent` \| `short-form`. |
+| GET `/api/v1/public/news` | `category`, `page`, `limit`, `status`, `type` | `type`: `featured` \| `trending` \| `latest` \| `video`. |
 
 Detail endpoints (1.2, 2.2, 3.2) use only the path param `:idOrSlug`; no query params required.
 
@@ -52,7 +52,7 @@ Detail endpoints (1.2, 2.2, 3.2) use only the path param `:idOrSlug`; no query p
 | Field | Value |
 |-------|--------|
 | **Method** | GET |
-| **Path** | `/public/music` or `/music` |
+| **Path** | `/api/v1/public/music` |
 | **Auth** | Not required (public) |
 
 **Query parameters (detailed):**
@@ -108,7 +108,7 @@ For `type=charts`, items should be ordered by chart position/rank; include `char
 | Field | Value |
 |-------|--------|
 | **Method** | GET |
-| **Path** | `/public/music/:idOrSlug` or `/music/:idOrSlug` |
+| **Path** | `/api/v1/public/music/:idOrSlug` |
 | **Auth** | Not required |
 
 **Path parameters:**
@@ -136,7 +136,7 @@ For `type=charts`, items should be ordered by chart position/rank; include `char
 | Field | Value |
 |-------|--------|
 | **Method** | GET |
-| **Path** | `/public/videos` or `/videos` |
+| **Path** | `/api/v1/public/videos` |
 | **Auth** | Not required |
 
 **Query parameters (detailed):**
@@ -186,7 +186,7 @@ For `type=charts`, items should be ordered by chart position/rank; include `char
 | Field | Value |
 |-------|--------|
 | **Method** | GET |
-| **Path** | `/public/videos/:idOrSlug` or `/videos/:idOrSlug` |
+| **Path** | `/api/v1/public/videos/:idOrSlug` |
 | **Auth** | Not required |
 
 **Path parameters:**
@@ -210,7 +210,7 @@ For `type=charts`, items should be ordered by chart position/rank; include `char
 | Field | Value |
 |-------|--------|
 | **Method** | GET |
-| **Path** | `/public/news` or `/news` or `/news-articles` |
+| **Path** | `/api/v1/public/news` |
 | **Auth** | Not required |
 
 **Query parameters (detailed):**
@@ -260,7 +260,7 @@ For `type=charts`, items should be ordered by chart position/rank; include `char
 | Field | Value |
 |-------|--------|
 | **Method** | GET |
-| **Path** | `/public/news/:idOrSlug` or `/news/:idOrSlug` or `/news-articles/:idOrSlug` |
+| **Path** | `/api/v1/public/news/:idOrSlug` |
 | **Auth** | Not required |
 
 **Path parameters:**
