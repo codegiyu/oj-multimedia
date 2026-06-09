@@ -5,3 +5,8 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 10
+    ignore:
+      - dependency-name: lucide-react
+      - dependency-name: eslint
+      - dependency-name: typescript
+      - dependency-name: cross-env
