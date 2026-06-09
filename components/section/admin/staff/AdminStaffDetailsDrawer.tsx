@@ -47,7 +47,6 @@ export function AdminStaffDetailsDrawer({
       return;
     }
 
-    /* eslint-disable-next-line react-hooks/set-state-in-effect -- drawer fetch lifecycle */
     setLoading(true);
     setError(null);
     void callApi('ADMIN_STAFF_ITEM', { query: `/${staffId}` as `/${string}` })

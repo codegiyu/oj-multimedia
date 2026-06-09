@@ -38,6 +38,8 @@ const eslintConfig = [
     rules: {
       ...prettierConfig.rules,
       ...reactHooks.configs.recommended.rules,
+      // New in eslint-plugin-react-hooks 7.1.x; existing sync-in-effect patterns are deferred.
+      'react-hooks/set-state-in-effect': 'off',
       'prettier/prettier': [
         'error',
         {

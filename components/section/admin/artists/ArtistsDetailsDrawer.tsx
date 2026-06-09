@@ -44,7 +44,7 @@ export function ArtistsDetailsDrawer({
       });
       return;
     }
-    /* eslint-disable-next-line react-hooks/set-state-in-effect -- intentional loading UX for drawer */
+
     setAnalyticsLoading(true);
     setAnalyticsError(null);
     void callApi('ADMIN_ARTIST_DASHBOARD_STATS', {

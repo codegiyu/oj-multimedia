@@ -500,8 +500,10 @@ export interface PopulatedMarketplaceOrderItem extends Omit<IMarketplaceOrderIte
   product: PopulatedOrderProduct;
 }
 
-export interface PopulatedMarketplaceOrder
-  extends Omit<IMarketplaceOrder, 'vendor' | 'items' | 'vendorName' | 'vendorSlug'> {
+export interface PopulatedMarketplaceOrder extends Omit<
+  IMarketplaceOrder,
+  'vendor' | 'items' | 'vendorName' | 'vendorSlug'
+> {
   vendor: PopulatedVendorSummary;
   items: PopulatedMarketplaceOrderItem[];
   /** Optional WhatsApp deep link built from current order state, when vendor has a WhatsApp number. */

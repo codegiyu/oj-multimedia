@@ -53,7 +53,6 @@ export function UsersDetailsDrawer({
       return;
     }
 
-    /* eslint-disable-next-line react-hooks/set-state-in-effect -- drawer fetch lifecycle */
     setLoading(true);
     setError(null);
     void callApi('ADMIN_USER_ITEM', { query: `/${userId}` as `/${string}` })

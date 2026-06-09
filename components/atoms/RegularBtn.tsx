@@ -15,8 +15,7 @@ import { Loader } from 'lucide-react';
 import { LucideIconComp } from '@/lib/types/general';
 
 export interface RegularBtnProps
-  extends ComponentPropsWithRef<'button'>,
-    VariantProps<typeof buttonVariants> {
+  extends ComponentPropsWithRef<'button'>, VariantProps<typeof buttonVariants> {
   LeftIcon?: LucideIconComp;
   RightIcon?: LucideIconComp;
   leftIconProps?: SVGProps<SVGSVGElement>;

@@ -11,9 +11,8 @@ describe('clientAuthTokens', () => {
   });
 
   it('buildAuthRequestHeaders omits empty tokens so cookies can authenticate', async () => {
-    const { buildAuthRequestHeaders, syncClientAuthTokensFromHeaders } = await import(
-      './clientAuthTokens'
-    );
+    const { buildAuthRequestHeaders, syncClientAuthTokensFromHeaders } =
+      await import('./clientAuthTokens');
 
     expect(buildAuthRequestHeaders()).toEqual({});
 
@@ -29,9 +28,8 @@ describe('clientAuthTokens', () => {
   });
 
   it('syncClientAuthTokensFromHeaders ignores responses without auth headers', async () => {
-    const { buildAuthRequestHeaders, syncClientAuthTokensFromHeaders } = await import(
-      './clientAuthTokens'
-    );
+    const { buildAuthRequestHeaders, syncClientAuthTokensFromHeaders } =
+      await import('./clientAuthTokens');
 
     await syncClientAuthTokensFromHeaders({
       [ACCESS_HEADER]: 'access-token',
@@ -48,9 +46,8 @@ describe('clientAuthTokens', () => {
   });
 
   it('syncClientAuthTokensFromHeaders clears tokens when auth headers are explicitly empty', async () => {
-    const { buildAuthRequestHeaders, syncClientAuthTokensFromHeaders } = await import(
-      './clientAuthTokens'
-    );
+    const { buildAuthRequestHeaders, syncClientAuthTokensFromHeaders } =
+      await import('./clientAuthTokens');
 
     await syncClientAuthTokensFromHeaders({
       [ACCESS_HEADER]: 'access-token',

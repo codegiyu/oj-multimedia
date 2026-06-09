@@ -44,7 +44,6 @@ export function AdminUserAccountPicker({
 
   useEffect(() => {
     if (!picking || query.trim().length < MIN_QUERY_LEN) {
-      /* eslint-disable-next-line react-hooks/set-state-in-effect -- clear stale results when query short */
       setResults([]);
       return;
     }
