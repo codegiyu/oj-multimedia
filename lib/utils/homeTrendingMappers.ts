@@ -20,7 +20,7 @@ export function mapPublicMusicToHomeTrending(
       (item as { genre?: string }).genre ?? (item as { category?: string }).category ?? 'Other',
     isNew: Boolean(
       item.createdAt &&
-        Date.now() - new Date(item.createdAt as string).getTime() < 7 * 24 * 60 * 60 * 1000
+      Date.now() - new Date(item.createdAt as string).getTime() < 7 * 24 * 60 * 60 * 1000
     ),
   };
 }
