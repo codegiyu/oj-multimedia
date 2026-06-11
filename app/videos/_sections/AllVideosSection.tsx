@@ -11,7 +11,7 @@ import {
 } from '@/lib/utils/allBrowseQuery';
 import { normalizePublicCategoryByScope } from '@/lib/utils/contentCategoriesServer';
 import { fetchPublicCategoryNav } from '@/lib/utils/contentCategoryNav';
-import { filterPublicVideoList, mapPublicVideoToRecentUpload } from '@/lib/utils/publicApiMappers';
+import { mapPublicVideoToRecentUpload } from '@/lib/utils/publicApiMappers';
 
 type AllVideosSectionProps = {
   searchParams: AllBrowseSearchParams;
@@ -51,7 +51,7 @@ export async function AllVideosSection({
     );
   }
 
-  const videos = filterPublicVideoList((res.data as IPublicVideosListRes)?.videos ?? []).map(
+  const videos = ((res.data as IPublicVideosListRes)?.videos ?? []).map(
     mapPublicVideoToRecentUpload
   );
 

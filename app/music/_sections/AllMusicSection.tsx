@@ -11,7 +11,7 @@ import {
 } from '@/lib/utils/allBrowseQuery';
 import { normalizePublicCategoryByScope } from '@/lib/utils/contentCategoriesServer';
 import { fetchPublicCategoryNav } from '@/lib/utils/contentCategoryNav';
-import { filterPublicMusicList, mapPublicMusicToTrendingSong } from '@/lib/utils/publicApiMappers';
+import { mapPublicMusicToTrendingSong } from '@/lib/utils/publicApiMappers';
 
 type AllMusicSectionProps = {
   searchParams: AllBrowseSearchParams;
@@ -51,9 +51,7 @@ export async function AllMusicSection({
     );
   }
 
-  const songs = filterPublicMusicList((res.data as IPublicMusicListRes)?.music ?? []).map(
-    mapPublicMusicToTrendingSong
-  );
+  const songs = ((res.data as IPublicMusicListRes)?.music ?? []).map(mapPublicMusicToTrendingSong);
 
   return (
     <AllMusicPageClient
