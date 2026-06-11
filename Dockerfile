@@ -51,6 +51,8 @@ COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/next.config.ts ./
+# next.config.ts imports ./lib/config/imageRemotePatterns at runtime (next start)
+COPY --from=builder /app/lib/config ./lib/config
 COPY --from=prod-deps /app/node_modules ./node_modules
 
 EXPOSE 3009
