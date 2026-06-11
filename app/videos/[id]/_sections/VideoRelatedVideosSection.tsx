@@ -1,7 +1,7 @@
 import { SectionLoadError } from '@/components/general/SectionLoadError';
 import { VideoRelatedVideosGrid } from '@/components/section/video/VideoRelatedVideosGrid';
 import { callPublicServerApi } from '@/lib/services/serverApi';
-import { filterPublicVideoList, mapPublicVideoToDetailItem } from '@/lib/utils/publicApiMappers';
+import { mapPublicVideoToDetailItem } from '@/lib/utils/publicApiMappers';
 import type { VideoItemWithCreator } from '@/lib/utils/videos';
 
 type VideoRelatedVideosSectionProps = {
@@ -23,8 +23,7 @@ export async function VideoRelatedVideosSection({ id, category }: VideoRelatedVi
     );
   }
 
-  const relatedList = filterPublicVideoList(relatedRes.data?.videos ?? []);
-  const relatedVideos: VideoItemWithCreator[] = relatedList
+  const relatedVideos: VideoItemWithCreator[] = (relatedRes.data?.videos ?? [])
     .filter(v => String(v._id) !== id)
     .slice(0, 6)
     .map(v => mapPublicVideoToDetailItem(v) as VideoItemWithCreator);
