@@ -1,7 +1,9 @@
 'use client';
 
 import { useEffect } from 'react';
+import { RefreshCw } from 'lucide-react';
 import { Btns404Page } from '@/components/general/Btns404Page';
+import { RegularBtn } from '@/components/atoms/RegularBtn';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { SectionContainer } from '@/components/general/SectionContainer';
 import { reportClientError } from '@/lib/observability/clientErrorReporting';
@@ -18,14 +20,14 @@ export default function Error({
   }, [error]);
 
   return (
-    <MainLayout>
+    <MainLayout hideHeader hideFooter hideScrollToTop>
       <div className="min-h-screen bg-background flex items-center justify-center px-4">
         <SectionContainer>
-          <div className="text-center grid gap-8 mx-auto max-w-2xl">
+          <div className="text-center grid gap-8 mx-auto">
             <div className="grid gap-4">
-              <h1 className="text-6xl md:text-8xl font-bold text-accent">500</h1>
+              <h1 className="text-6xl md:text-8xl font-bold text-orange">500</h1>
               <h2 className="text-2xl md:text-3xl font-bold font-heading text-primary">
-                Something went wrong!
+                Something went wrong
               </h2>
               <p className="text-lg text-muted-foreground">
                 {process.env.NODE_ENV === 'development'
@@ -38,11 +40,15 @@ export default function Error({
             </div>
 
             <div className="flex flex-col md:flex-row gap-4 justify-center items-center">
-              <button
+              <RegularBtn
+                size="lg"
+                text="Try Again"
                 onClick={reset}
-                className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium">
-                Try Again
-              </button>
+                LeftIcon={RefreshCw}
+                leftIconProps={{ className: 'w-5 h-5 mr-2' }}
+                className="group w-full sm:w-fit"
+                wrapClassName="w-full sm:w-fit"
+              />
               <Btns404Page />
             </div>
           </div>
