@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import {
   TableRowDetails,
   type ClickedRowDetails,
@@ -8,16 +9,37 @@ import { FileText, Hash, Store, Package, ShoppingCart } from 'lucide-react';
 import { InfoCard } from '@/components/general/InfoCard';
 import { DashboardThumbnail } from '@/components/general/DashboardThumbnail';
 import { DrawerMediaPreview } from '@/components/general/DrawerMediaPreview';
+import { RegularSelect } from '@/components/atoms/RegularSelect';
+import { RegularBtn } from '@/components/atoms/RegularBtn';
+import { toast } from 'sonner';
+import { callApi } from '@/lib/services/callApi';
 import type {
   IMarketplaceVendor,
   IMarketplaceProduct,
   PopulatedMarketplaceOrder,
+  IAdminPatchOrderPayload,
 } from '@/lib/constants/endpoints';
 import type { MarketplaceTabType } from './MarketplacePageClient';
 import {
   AdminProductFieldLink,
   AdminVendorFieldLink,
 } from '@/components/section/admin/shared/AdminEntityFieldLinks';
+
+const ORDER_STATUS_OPTIONS = [
+  { text: 'Pending', value: 'pending' },
+  { text: 'Confirmed', value: 'confirmed' },
+  { text: 'Processing', value: 'processing' },
+  { text: 'Shipped', value: 'shipped' },
+  { text: 'Delivered', value: 'delivered' },
+  { text: 'Cancelled', value: 'cancelled' },
+];
+
+const PAYMENT_STATUS_OPTIONS = [
+  { text: 'Pending', value: 'pending' },
+  { text: 'Paid', value: 'paid' },
+  { text: 'Failed', value: 'failed' },
+  { text: 'Refunded', value: 'refunded' },
+];
 
 function formatPrice(price: number) {
   return new Intl.NumberFormat('en-NG', {
@@ -128,13 +150,98 @@ function ProductDetails({ data }: { data: IMarketplaceProduct }) {
   );
 }
 
-function OrderDetails({ data }: { data: PopulatedMarketplaceOrder }) {
+function AdminOrderStatusControls({
+  data,
+  onOrderUpdated,
+}: {
+  data: PopulatedMarketplaceOrder;
+  onOrderUpdated: (order: PopulatedMarketplaceOrder) => void;
+}) {
+  const [status, setStatus] = useState(data.status);
+  const [paymentStatus, setPaymentStatus] = useState(data.paymentStatus);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    setStatus(data.status);
+    setPaymentStatus(data.paymentStatus);
+  }, [data._id, data.status, data.paymentStatus]);
+
+  const hasChanges = status !== data.status || paymentStatus !== data.paymentStatus;
+
+  const handleSave = async () => {
+    if (!hasChanges) return;
+
+    const payload: IAdminPatchOrderPayload = {};
+    if (status !== data.status) {
+      payload.status = status as IAdminPatchOrderPayload['status'];
+    }
+    if (paymentStatus !== data.paymentStatus) {
+      payload.paymentStatus = paymentStatus as IAdminPatchOrderPayload['paymentStatus'];
+    }
+
+    setSaving(true);
+    const {
+      data: responseData,
+      error,
+      message,
+    } = await callApi('ADMIN_ORDER_UPDATE', {
+      query: `/${data._id}` as `/${string}`,
+      payload,
+    });
+    setSaving(false);
+
+    if (error || !responseData?.order) {
+      toast.error(message || 'Could not update order.');
+      return;
+    }
+
+    onOrderUpdated(responseData.order);
+    toast.success('Order updated.');
+  };
+
+  return (
+    <div className="grid gap-4 rounded-lg border border-border/60 bg-muted/20 p-4">
+      <p className="text-sm font-medium text-foreground">Update order</p>
+      <RegularSelect
+        label="Order status"
+        value={status}
+        options={ORDER_STATUS_OPTIONS}
+        onSelectChange={value => setStatus(value)}
+      />
+      <RegularSelect
+        label="Payment status"
+        value={paymentStatus}
+        options={PAYMENT_STATUS_OPTIONS}
+        onSelectChange={value => setPaymentStatus(value)}
+      />
+      <RegularBtn
+        type="button"
+        text={saving ? 'Saving…' : 'Save changes'}
+        disabled={!hasChanges || saving}
+        loading={saving}
+        onClick={handleSave}
+        className="w-full sm:w-auto"
+      />
+    </div>
+  );
+}
+
+function OrderDetails({
+  data,
+  onOrderUpdated,
+}: {
+  data: PopulatedMarketplaceOrder;
+  onOrderUpdated?: (order: PopulatedMarketplaceOrder) => void;
+}) {
   const customer = data.customer;
   const customerName = customer?.name ?? '—';
   const customerEmail = customer?.email ?? '—';
   const customerPhone = customer?.phone ?? '—';
   return (
     <div className="grid gap-4 p-4">
+      {onOrderUpdated ? (
+        <AdminOrderStatusControls data={data} onOrderUpdated={onOrderUpdated} />
+      ) : null}
       <div className="grid gap-3">
         <InfoCard icon={ShoppingCart} label="Order Number" value={data.orderNumber} />
         <InfoCard icon={FileText} label="Status" value={data.status} />
@@ -234,11 +341,13 @@ function DetailsHeader({
 
 function DetailsContent({
   rowDetails,
+  onOrderUpdated,
 }: {
   rowDetails: ClickedRowDetails<
     IMarketplaceVendor | IMarketplaceProduct | PopulatedMarketplaceOrder,
     MarketplaceTabType
   >;
+  onOrderUpdated?: (order: PopulatedMarketplaceOrder) => void;
 }) {
   const { data, tab } = rowDetails;
 
@@ -249,7 +358,9 @@ function DetailsContent({
     return <ProductDetails data={data as IMarketplaceProduct} />;
   }
   if (tab === 'orders' && 'orderNumber' in data) {
-    return <OrderDetails data={data as PopulatedMarketplaceOrder} />;
+    return (
+      <OrderDetails data={data as PopulatedMarketplaceOrder} onOrderUpdated={onOrderUpdated} />
+    );
   }
 
   return (
@@ -269,11 +380,13 @@ export type MarketplaceClickedRowDetails = ClickedRowDetails<
 interface MarketplaceDetailsDrawerProps {
   clickedRowDetails: MarketplaceClickedRowDetails | undefined;
   setClickedRowDetails: (d: MarketplaceClickedRowDetails | undefined) => void;
+  onOrderUpdated?: (order: PopulatedMarketplaceOrder) => void;
 }
 
 export function MarketplaceDetailsDrawer({
   clickedRowDetails,
   setClickedRowDetails,
+  onOrderUpdated,
 }: MarketplaceDetailsDrawerProps) {
   const closeDrawer = () => setClickedRowDetails(undefined);
 
@@ -299,7 +412,7 @@ export function MarketplaceDetailsDrawer({
       footer={
         <div className="flex items-center justify-end gap-2 px-4 py-3 border-t border-foreground/7" />
       }>
-      <DetailsContent rowDetails={clickedRowDetails} />
+      <DetailsContent rowDetails={clickedRowDetails} onOrderUpdated={onOrderUpdated} />
     </TableRowDetails>
   );
 }
