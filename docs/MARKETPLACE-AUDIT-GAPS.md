@@ -51,8 +51,6 @@ Last updated: 2026-05-30. Tracks resolved and remaining marketplace gaps after t
 ## Minor follow-ups (optional)
 
 - `/marketplace/account` remains a backwards-compat redirect to `/account`
-- `?chat=1` on vendor store is still a no-op (direct WhatsApp links used elsewhere)
-- Legacy `getMockOrders` helpers in `lib/utils/marketplace.ts` (unused in live UI)
 
 ---
 

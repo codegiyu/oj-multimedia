@@ -43,26 +43,6 @@ export interface MarketplaceVendor {
   productCount?: number;
 }
 
-export interface MarketplaceOrderItem {
-  product: string;
-  productName?: string;
-  quantity: number;
-  price: number;
-}
-
-export interface MarketplaceOrder {
-  _id: string;
-  orderNumber: string;
-  customer: { name: string; email: string; phone: string; address?: string };
-  vendor: string;
-  vendorName?: string;
-  items: MarketplaceOrderItem[];
-  totalAmount: number;
-  status: string;
-  paymentStatus: string;
-  createdAt: string;
-}
-
 const CATEGORIES: { name: string; slug: ProductCategory; count: number }[] = [
   { name: 'Fashion', slug: 'fashion', count: 45 },
   { name: 'Food', slug: 'food', count: 32 },
@@ -251,46 +231,6 @@ export function getMockVendorBySlug(slug: string): MarketplaceVendor | null {
 
 export function getMockProductsByVendorId(vendorId: string): MarketplaceProduct[] {
   return MOCK_PRODUCTS.filter(p => p.vendor === vendorId && p.status === 'published');
-}
-
-export function getMockOrders(): MarketplaceOrder[] {
-  return [
-    {
-      _id: 'o1',
-      orderNumber: 'ORD-2024-001',
-      customer: {
-        name: 'John Doe',
-        email: 'john@example.com',
-        phone: '+2348012345678',
-        address: 'Lagos',
-      },
-      vendor: 'v1',
-      vendorName: 'Grace Fashion Co',
-      items: [{ product: 'p2', productName: 'Custom Artist Hoodie', quantity: 1, price: 5999 }],
-      totalAmount: 5999,
-      status: 'delivered',
-      paymentStatus: 'paid',
-      createdAt: '2024-02-15T10:00:00Z',
-    },
-    {
-      _id: 'o2',
-      orderNumber: 'ORD-2024-002',
-      customer: { name: 'Jane Smith', email: 'jane@example.com', phone: '+2348098765432' },
-      vendor: 'v1',
-      vendorName: 'Grace Fashion Co',
-      items: [
-        { product: 'p1', productName: 'Wireless Studio Headphones', quantity: 2, price: 14999 },
-      ],
-      totalAmount: 29998,
-      status: 'pending',
-      paymentStatus: 'pending',
-      createdAt: '2024-03-01T14:00:00Z',
-    },
-  ];
-}
-
-export function getMockOrdersByVendorId(vendorId: string): MarketplaceOrder[] {
-  return getMockOrders().filter(o => o.vendor === vendorId);
 }
 
 /** Format price for display (e.g. Naira) */

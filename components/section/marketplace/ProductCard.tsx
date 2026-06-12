@@ -98,7 +98,7 @@ export function ProductCard({
               ) : (
                 <Button variant="ghost" size="sm" className="flex-1 gap-1" asChild>
                   <AppLink
-                    href={`/marketplace/vendors/${product.vendorSlug ?? product.vendor}?chat=1`}
+                    href={`/marketplace/vendors/${product.vendorSlug ?? product.vendor}`}
                     onClick={e => e.stopPropagation()}>
                     <MessageCircle className="w-4 h-4" />
                     Chat
