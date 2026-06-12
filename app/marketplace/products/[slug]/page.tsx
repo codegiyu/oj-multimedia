@@ -7,6 +7,7 @@ import { ISR_PUBLIC_FETCH } from '@/lib/constants/isr';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { buildDetailShareMetadata } from '@/lib/utils/metadata';
 import { generateMarketplaceProductStaticParams } from '@/lib/services/isrPrebuildParams';
+import type { IMarketplaceProductDetailRes } from '@/lib/constants/endpoints';
 
 export const generateStaticParams = generateMarketplaceProductStaticParams;
 
@@ -26,9 +27,18 @@ async function fetchProductBySlug(slug: string) {
   return res.data;
 }
 
+function getProductFromDetailResponse(data: IMarketplaceProductDetailRes | null) {
+  return data?.product ?? null;
+}
+
+function getRelatedFromDetailResponse(data: IMarketplaceProductDetailRes | null) {
+  return data?.relatedProducts ?? [];
+}
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const product = await fetchProductBySlug(slug);
+  const detail = await fetchProductBySlug(slug);
+  const product = getProductFromDetailResponse(detail);
   if (!product) {
     return { title: 'Product not found - Marketplace' };
   }
@@ -47,12 +57,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function ProductDetailPage({ params }: PageProps) {
   const { slug } = await params;
-  const product = await fetchProductBySlug(slug);
+  const detail = await fetchProductBySlug(slug);
+  const product = getProductFromDetailResponse(detail);
+  const relatedProducts = getRelatedFromDetailResponse(detail);
 
   return (
     <MainLayout>
       <Suspense fallback={<ProductDetailSkeleton />}>
-        <ProductDetailClient product={product} />
+        <ProductDetailClient product={product} relatedProducts={relatedProducts} />
       </Suspense>
     </MainLayout>
   );
