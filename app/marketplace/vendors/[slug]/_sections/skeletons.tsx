@@ -6,7 +6,7 @@ import { SectionContainer } from '@/components/general/SectionContainer';
 
 export function VendorProfileSectionSkeleton() {
   return (
-    <SectionContainer className="py-16 md:py-20">
+    <SectionContainer className="marketplace-page-top">
       <div className="max-w-7xl mx-auto">
         <Skeleton className="h-4 w-64 mb-8" />
         <Skeleton className="h-48 w-full rounded-2xl" />

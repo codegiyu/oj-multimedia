@@ -7,7 +7,7 @@ import { PageSkeletonShell } from '@/components/skeletons';
 export function ProductDetailSkeleton() {
   return (
     <PageSkeletonShell label="Loading product">
-      <SectionContainer className="py-16 md:py-20">
+      <SectionContainer className="marketplace-page-top">
         <div className="max-w-7xl mx-auto">
           <Skeleton className="h-5 w-64 mb-8" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">

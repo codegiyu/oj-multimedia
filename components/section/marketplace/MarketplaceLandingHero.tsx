@@ -11,7 +11,7 @@ export function MarketplaceLandingHero() {
   const cartCount = actions.getCount();
 
   return (
-    <SectionContainer className="py-16 md:py-24 bg-gradient-to-br from-primary/5 to-primary/10">
+    <SectionContainer className="marketplace-page-top-hero bg-gradient-to-br from-primary/5 to-primary/10">
       <div className="max-w-4xl mx-auto text-center">
         <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-6">
           <ShoppingBag className="w-8 h-8 text-primary" />

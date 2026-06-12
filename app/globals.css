@@ -469,6 +469,31 @@
   .section-padding {
     @apply py-16 md:py-24 lg:py-[6.5rem];
   }
+
+  /* Marketplace first-section top offset (+100px above standard section padding-top) */
+  .marketplace-page-top {
+    padding-top: calc(4rem + 100px);
+    padding-bottom: 4rem;
+  }
+
+  @media (min-width: 768px) {
+    .marketplace-page-top {
+      padding-top: calc(5rem + 100px);
+      padding-bottom: 5rem;
+    }
+  }
+
+  .marketplace-page-top-hero {
+    padding-top: calc(4rem + 100px);
+    padding-bottom: 4rem;
+  }
+
+  @media (min-width: 768px) {
+    .marketplace-page-top-hero {
+      padding-top: calc(6rem + 100px);
+      padding-bottom: 6rem;
+    }
+  }
 }
 
 @layer components {
