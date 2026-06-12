@@ -13,14 +13,21 @@ export const metadata: Metadata = {
 
 const DEFAULT_LIMIT = 24;
 
-async function fetchVendorsData(params: { page?: string; limit?: string }): Promise<{
+async function fetchVendorsData(params: {
+  page?: string;
+  limit?: string;
+  featured?: string;
+}): Promise<{
   vendors: IMarketplaceVendor[];
   pagination: { page: number; limit: number; total: number; totalPages: number };
   error: string | null;
+  featuredOnly: boolean;
 }> {
   const page = Math.max(1, parseInt(params.page ?? '1', 10) || 1);
   const limit = Math.min(50, parseInt(params.limit ?? String(DEFAULT_LIMIT), 10) || DEFAULT_LIMIT);
-  const query = `?page=${page}&limit=${limit}`;
+  const featuredOnly = params.featured === 'true';
+  const featuredQuery = featuredOnly ? '&featured=true' : '';
+  const query = `?page=${page}&limit=${limit}${featuredQuery}`;
 
   try {
     const res = await callPublicServerApi('MARKETPLACE_GET_VENDORS', {
@@ -35,18 +42,19 @@ async function fetchVendorsData(params: { page?: string; limit?: string }): Prom
       total: 0,
       totalPages: 0,
     };
-    return { vendors, pagination, error: err };
+    return { vendors, pagination, error: err, featuredOnly };
   } catch {
     return {
       vendors: [],
       pagination: { page: 1, limit: DEFAULT_LIMIT, total: 0, totalPages: 0 },
       error: 'Failed to load vendors.',
+      featuredOnly,
     };
   }
 }
 
 interface PageProps {
-  searchParams: Promise<{ page?: string; limit?: string }>;
+  searchParams: Promise<{ page?: string; limit?: string; featured?: string }>;
 }
 
 export default async function MarketplaceVendorsPage({ searchParams }: PageProps) {

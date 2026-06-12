@@ -19,6 +19,7 @@ interface MarketplaceVendorsActionsMenuProps {
   onDelete: (vendor: IMarketplaceVendor) => void;
   onSuspend?: (vendor: IMarketplaceVendor) => void;
   onUnsuspend?: (vendor: IMarketplaceVendor) => void;
+  onToggleFeatured: (vendor: IMarketplaceVendor) => void;
 }
 
 export function MarketplaceVendorsActionsMenu({
@@ -28,11 +29,13 @@ export function MarketplaceVendorsActionsMenu({
   onDelete,
   onSuspend,
   onUnsuspend,
+  onToggleFeatured,
 }: MarketplaceVendorsActionsMenuProps) {
   const canApprove =
     vendor.status === 'pending' || vendor.status === 'rejected' || vendor.status === 'inactive';
   const isSuspended = vendor.status === 'suspended';
   const canSuspend = vendor.status === 'active';
+  const isFeatured = vendor.isFeatured === true;
 
   return (
     <DropdownMenu>
@@ -65,6 +68,11 @@ export function MarketplaceVendorsActionsMenu({
             Unsuspend
           </DropdownMenuActionItem>
         ) : null}
+        <DropdownMenuActionItem
+          icon={isFeatured ? actionMenuIcons.unfeature : actionMenuIcons.toggleFeatured}
+          onClick={() => onToggleFeatured(vendor)}>
+          {isFeatured ? 'Remove featured' : 'Mark featured'}
+        </DropdownMenuActionItem>
         <DropdownMenuSeparator />
         <DropdownMenuActionItem
           icon={actionMenuIcons.setInactive}

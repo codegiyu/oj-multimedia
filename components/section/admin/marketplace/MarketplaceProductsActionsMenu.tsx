@@ -17,6 +17,7 @@ interface MarketplaceProductsActionsMenuProps {
   onApprove: (product: IMarketplaceProduct) => void;
   onReject: (product: IMarketplaceProduct) => void;
   onDelete: (product: IMarketplaceProduct) => void;
+  onToggleFeatured: (product: IMarketplaceProduct) => void;
 }
 
 export function MarketplaceProductsActionsMenu({
@@ -24,8 +25,10 @@ export function MarketplaceProductsActionsMenu({
   onApprove,
   onReject,
   onDelete,
+  onToggleFeatured,
 }: MarketplaceProductsActionsMenuProps) {
   const canApprove = product.status === 'draft' || product.status === 'archived';
+  const isFeatured = product.isFeatured === true;
 
   return (
     <DropdownMenu>
@@ -46,6 +49,11 @@ export function MarketplaceProductsActionsMenu({
             Reject
           </DropdownMenuActionItem>
         ) : null}
+        <DropdownMenuActionItem
+          icon={isFeatured ? actionMenuIcons.unfeature : actionMenuIcons.toggleFeatured}
+          onClick={() => onToggleFeatured(product)}>
+          {isFeatured ? 'Remove featured' : 'Mark featured'}
+        </DropdownMenuActionItem>
         <DropdownMenuSeparator />
         <DropdownMenuActionItem
           icon={actionMenuIcons.delete}

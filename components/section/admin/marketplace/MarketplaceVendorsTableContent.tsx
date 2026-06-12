@@ -41,6 +41,7 @@ interface MarketplaceVendorsTableContentProps {
   onSuspend?: (vendor: IMarketplaceVendor) => void;
   onUnsuspend?: (vendor: IMarketplaceVendor) => void;
   onDelete: (vendor: IMarketplaceVendor) => void;
+  onToggleFeatured: (vendor: IMarketplaceVendor) => void;
 }
 
 export function MarketplaceVendorsTableContent({
@@ -59,6 +60,7 @@ export function MarketplaceVendorsTableContent({
   onSuspend,
   onUnsuspend,
   onDelete,
+  onToggleFeatured,
 }: MarketplaceVendorsTableContentProps) {
   const columns = useMemo<DataTableColumn<IMarketplaceVendor, unknown>[]>(
     () => [
@@ -98,6 +100,20 @@ export function MarketplaceVendorsTableContent({
           </DataTableCellWrapper>
         ),
       },
+      {
+        id: 'featured',
+        header: <DataTableColumnHeader title="Featured" />,
+        meta: { width: '6.25rem' },
+        cell: row => (
+          <DataTableCellWrapper>
+            {row.isFeatured ? (
+              <Badge variant="outline">Yes</Badge>
+            ) : (
+              <span className="text-muted-foreground">—</span>
+            )}
+          </DataTableCellWrapper>
+        ),
+      },
       dashboardTableDateColumn({
         id: 'createdAt',
         getValue: row => row.createdAt,
@@ -110,10 +126,11 @@ export function MarketplaceVendorsTableContent({
           onSuspend={onSuspend}
           onUnsuspend={onUnsuspend}
           onDelete={onDelete}
+          onToggleFeatured={onToggleFeatured}
         />
       )),
     ],
-    [onApprove, onReject, onSuspend, onUnsuspend, onDelete]
+    [onApprove, onReject, onSuspend, onUnsuspend, onDelete, onToggleFeatured]
   );
 
   return (
