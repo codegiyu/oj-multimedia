@@ -15,6 +15,12 @@ import { formatPrice } from '@/lib/utils/marketplace';
 import { toast } from 'sonner';
 import { callApi } from '@/lib/services/callApi';
 import type { ICartRes, IMarketplacePlaceOrderRes } from '@/lib/constants/endpoints';
+import {
+  buildWhatsappLinkEntriesFromOrders,
+  extractPlacedOrders,
+  openMarketplaceWhatsappLinks,
+  stashMarketplaceWhatsappLinks,
+} from '@/lib/utils/marketplaceWhatsapp';
 import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import { CreditCard, ShoppingCart } from 'lucide-react';
 import { useForm } from '@/lib/hooks/use-form';
@@ -92,44 +98,32 @@ export function CheckoutPageClient() {
 
         actions.clearCartAfterOrder();
         const orderData = data as IMarketplacePlaceOrderRes | undefined;
+        const placedOrders = extractPlacedOrders(orderData);
+        const whatsappEntries = buildWhatsappLinkEntriesFromOrders(placedOrders);
 
-        const links: string[] = [];
+        if (whatsappEntries.length > 0) {
+          const allOpened = openMarketplaceWhatsappLinks(whatsappEntries);
 
-        if (orderData?.orders && orderData.orders.length > 0) {
-          for (const order of orderData.orders) {
-            if (order.whatsappLink) {
-              links.push(order.whatsappLink);
-            }
+          if (!user || !allOpened) {
+            stashMarketplaceWhatsappLinks(whatsappEntries);
           }
-        } else if (orderData?.order) {
-          if (orderData.order.whatsappLink) {
-            links.push(orderData.order.whatsappLink);
-          } else if (orderData.whatsappLink) {
-            links.push(orderData.whatsappLink);
-          }
-        } else if (orderData?.whatsappLink) {
-          links.push(orderData.whatsappLink);
-        }
 
-        if (links.length > 0) {
           toast.success(
-            links.length === 1
-              ? 'Order placed! Opening WhatsApp to notify the vendor.'
-              : 'Order placed! Opening WhatsApp chats for your vendors.'
+            whatsappEntries.length === 1
+              ? 'Order placed! WhatsApp is opening — tap Send to notify the vendor.'
+              : 'Order placed! WhatsApp is opening — tap Send in each chat to notify your vendors.'
           );
-          links.forEach(link => {
-            window.open(link, '_blank');
-          });
-        } else {
-          toast.success('Order placed successfully! We will contact you for payment.');
-        }
 
-        const placedOrders =
-          orderData?.orders && orderData.orders.length > 0
-            ? orderData.orders
-            : orderData?.order
-              ? [orderData.order]
-              : [];
+          if (!allOpened) {
+            toast.message('WhatsApp could not open automatically', {
+              description: user
+                ? 'Use the WhatsApp button on your orders page to message the vendor.'
+                : 'Use the WhatsApp buttons on the next screen to message your vendor.',
+            });
+          }
+        } else {
+          toast.success('Order placed successfully! The vendor will contact you for payment.');
+        }
 
         if (user) {
           router.push('/account/orders');
@@ -144,6 +138,9 @@ export function CheckoutPageClient() {
         }
         if (orderIds.length > 0) {
           successParams.set('orderIds', orderIds.join(','));
+        }
+        if (whatsappEntries.length > 0) {
+          successParams.set('whatsapp', '1');
         }
         const successQuery = successParams.toString();
         router.push(
