@@ -70,6 +70,20 @@ const shouldSyncWithBackend = () => {
   return Boolean(auth.user);
 };
 
+type PersistedCartState = Pick<CartStore, 'items'>;
+
+function normalizePersistedItems(items: unknown): CartItem[] {
+  return Array.isArray(items) ? (items as CartItem[]) : [];
+}
+
+export function selectCartCount(state: Pick<CartStore, 'items'>): number {
+  return state.items.reduce((sum, item) => sum + item.quantity, 0);
+}
+
+export function selectCartTotal(state: Pick<CartStore, 'items'>): number {
+  return state.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+}
+
 export const useInitCartStore = create<CartStore>()(
   persist(
     (set, get) => ({
@@ -222,15 +236,24 @@ export const useInitCartStore = create<CartStore>()(
           const mapped = cart.items.map(mapBackendItemToCartItem);
           set({ items: mapped });
         },
-        getTotal: () => {
-          return get().items.reduce((sum, i) => sum + i.price * i.quantity, 0);
-        },
-        getCount: () => {
-          return get().items.reduce((sum, i) => sum + i.quantity, 0);
-        },
+        getTotal: () => selectCartTotal(get()),
+        getCount: () => selectCartCount(get()),
       },
     }),
-    { name: 'marketplace-cart' }
+    {
+      name: 'marketplace-cart',
+      version: 1,
+      partialize: state => ({ items: state.items }),
+      migrate: persisted => ({
+        items: normalizePersistedItems((persisted as PersistedCartState | undefined)?.items),
+      }),
+      merge: (persisted, current) => ({
+        ...current,
+        items: normalizePersistedItems((persisted as PersistedCartState | undefined)?.items),
+        mutationSeq: 0,
+        actions: current.actions,
+      }),
+    }
   )
 );
 
