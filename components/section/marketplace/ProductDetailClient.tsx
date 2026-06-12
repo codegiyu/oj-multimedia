@@ -6,7 +6,8 @@ import { Button } from '@/components/ui/button';
 import { MessageCircle, ShoppingCart, Store, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import type { MarketplaceProduct } from '@/lib/utils/marketplace';
-import { formatPrice, getProductVendorWhatsapp, buildWhatsappLink } from '@/lib/utils/marketplace';
+import { formatPrice, getProductVendorWhatsapp } from '@/lib/utils/marketplace';
+import { VendorProductWhatsAppModal } from '@/components/section/marketplace/VendorProductWhatsAppModal';
 import { useCartStore } from '@/lib/store/cartStore';
 import { MultilineText } from '@/components/general/MultilineText';
 import {
@@ -71,6 +72,8 @@ function ProductDetailContent({ product }: ProductDetailContentProps) {
     return { ...defaultVariant.options };
   });
 
+  const [whatsappOpen, setWhatsappOpen] = useState(false);
+
   const selectedVariant = useMemo<IMarketplaceProductVariant | undefined>(() => {
     if (variants.length === 0 || variationOptions.length === 0) return undefined;
     const keys = Object.keys(selectedOptions);
@@ -115,6 +118,18 @@ function ProductDetailContent({ product }: ProductDetailContentProps) {
   };
 
   const vendorWhatsapp = getProductVendorWhatsapp(product);
+
+  const variantLabel =
+    selectedVariant && Object.keys(selectedVariant.options).length > 0
+      ? Object.entries(selectedVariant.options)
+          .map(([key, value]) => `${key}: ${value}`)
+          .join(' • ')
+      : undefined;
+
+  const productPageUrl =
+    typeof window !== 'undefined'
+      ? `${window.location.origin}/marketplace/products/${product.slug}`
+      : `/marketplace/products/${product.slug}`;
 
   return (
     <>
@@ -278,14 +293,9 @@ function ProductDetailContent({ product }: ProductDetailContentProps) {
                   {isOutOfStock ? 'Out of stock' : inCart ? 'In cart' : 'Add to cart'}
                 </Button>
                 {vendorWhatsapp ? (
-                  <Button variant="outline" className="gap-2" asChild>
-                    <a
-                      href={buildWhatsappLink(vendorWhatsapp)}
-                      target="_blank"
-                      rel="noopener noreferrer">
-                      <MessageCircle className="w-4 h-4" />
-                      Chat with vendor
-                    </a>
+                  <Button variant="outline" className="gap-2" onClick={() => setWhatsappOpen(true)}>
+                    <MessageCircle className="w-4 h-4" />
+                    Chat with vendor
                   </Button>
                 ) : (
                   product.vendorSlug && (
@@ -298,6 +308,20 @@ function ProductDetailContent({ product }: ProductDetailContentProps) {
                   )
                 )}
               </div>
+              <VendorProductWhatsAppModal
+                open={whatsappOpen}
+                onOpenChange={setWhatsappOpen}
+                vendorWhatsapp={vendorWhatsapp}
+                vendorSlug={product.vendorSlug}
+                inquiry={{
+                  productName: product.name,
+                  price: effectivePrice,
+                  vendorName: product.vendorName,
+                  pageUrl: productPageUrl,
+                  variantLabel,
+                  sku: selectedVariant?.sku,
+                }}
+              />
               {!product.inStock && (
                 <p className="mt-4 text-destructive font-medium">Out of stock</p>
               )}
