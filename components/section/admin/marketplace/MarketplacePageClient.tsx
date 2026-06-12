@@ -71,7 +71,9 @@ const orderStatusOptions = [
   { text: 'All', value: 'all' },
   { text: 'Pending', value: 'pending' },
   { text: 'Confirmed', value: 'confirmed' },
-  { text: 'Completed', value: 'completed' },
+  { text: 'Processing', value: 'processing' },
+  { text: 'Shipped', value: 'shipped' },
+  { text: 'Delivered', value: 'delivered' },
   { text: 'Cancelled', value: 'cancelled' },
 ];
 
@@ -253,6 +255,17 @@ export function MarketplacePageClient({
   ]);
 
   const handleRefresh = () => router.refresh();
+
+  const handleOrderUpdated = (order: PopulatedMarketplaceOrder) => {
+    if (
+      clickedRowDetails &&
+      clickedRowDetails.tab === TAB_ORDERS &&
+      clickedRowDetails.data._id === order._id
+    ) {
+      setClickedRowDetails({ ...clickedRowDetails, data: order });
+    }
+    handleRefresh();
+  };
 
   const handleApprove = async () => {
     if (!approveTarget) return;
@@ -453,6 +466,7 @@ export function MarketplacePageClient({
           <MarketplaceDetailsDrawer
             clickedRowDetails={clickedRowDetails}
             setClickedRowDetails={setClickedRowDetails}
+            onOrderUpdated={handleOrderUpdated}
           />
 
           <CreateVendorModal

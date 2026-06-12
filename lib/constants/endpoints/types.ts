@@ -111,6 +111,8 @@ import {
   IVendorDashboardStatsRes,
   IVendorMeRes,
   IVendorOrdersRes,
+  IAdminPatchOrderPayload,
+  IAdminPatchOrderRes,
   IVendorPatchOrderPayload,
   IVendorPatchOrderRes,
   IVendorProductsRes,
@@ -1550,6 +1552,11 @@ export interface AllEndpoints {
   ADMIN_ORDER_ITEM: EndpointDefinition<
     undefined,
     { order: PopulatedMarketplaceOrder },
+    `/${string}`
+  >;
+  ADMIN_ORDER_UPDATE: EndpointDefinition<
+    IAdminPatchOrderPayload,
+    IAdminPatchOrderRes,
     `/${string}`
   >;
 

@@ -608,6 +608,13 @@ export interface IVendorPatchOrderPayload {
 export interface IVendorPatchOrderRes {
   order: PopulatedMarketplaceOrder;
 }
+export interface IAdminPatchOrderPayload {
+  status?: IVendorPatchOrderPayload['status'];
+  paymentStatus?: 'pending' | 'paid' | 'failed' | 'refunded';
+}
+export interface IAdminPatchOrderRes {
+  order: PopulatedMarketplaceOrder;
+}
 export interface IVendorUpdateSettingsPayload {
   storeName?: string;
   storeDescription?: string;

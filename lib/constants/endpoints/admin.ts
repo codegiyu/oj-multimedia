@@ -219,6 +219,7 @@ export const ADMIN_ENDPOINTS: Record<string, EndpointDetails> = {
 
   ADMIN_ORDERS_LIST: { path: '/api/v1/admin/orders', method: 'GET' },
   ADMIN_ORDER_ITEM: { path: '/api/v1/admin/orders', method: 'GET' },
+  ADMIN_ORDER_UPDATE: { path: '/api/v1/admin/orders', method: 'PATCH' },
 
   // Marketplace
   MARKETPLACE_GET_CATEGORIES: {
