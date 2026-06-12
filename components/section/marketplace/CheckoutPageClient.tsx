@@ -9,7 +9,7 @@ import { Card } from '@/components/ui/card';
 import { RegularBtn } from '@/components/atoms/RegularBtn';
 import { RegularInput } from '@/components/atoms/RegularInput';
 import { RegularTextarea } from '@/components/atoms/RegularTextarea';
-import { useCartStore, useInitCartStore } from '@/lib/store/cartStore';
+import { selectCartTotal, useCartStore, useInitCartStore } from '@/lib/store/cartStore';
 import { useAuthStore } from '@/lib/store/useAuthStore';
 import { formatPrice } from '@/lib/utils/marketplace';
 import { toast } from 'sonner';
@@ -23,7 +23,7 @@ import { checkoutSchema, type CheckoutFormValues } from '@/lib/schemas/checkoutS
 export function CheckoutPageClient() {
   const router = useRouter();
   const { items, actions } = useCartStore();
-  const total = actions.getTotal();
+  const total = selectCartTotal({ items });
   const user = useAuthStore(state => state.user);
 
   const {

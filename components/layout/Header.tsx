@@ -19,7 +19,7 @@ import { usePathname } from 'next/navigation';
 import { UserMenu, UserMobileMenu } from './UserMenu';
 import { Logo } from '@/components/atoms/Logo';
 import { SearchModalDynamic } from '../section/public/search/SearchModalDynamic';
-import { useCartStore } from '@/lib/store/cartStore';
+import { selectCartCount, useInitCartStore } from '@/lib/store/cartStore';
 
 const navItems = [
   { label: 'Music', icon: Music, href: '/music' },
@@ -38,8 +38,7 @@ export const Header = () => {
   const [mobileMenu, setMobileMenu] = useState({ open: false, path: '' });
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const pathname = usePathname();
-  const { actions } = useCartStore();
-  const cartCount = actions.getCount();
+  const cartCount = useInitCartStore(selectCartCount);
 
   const isMarketplace = pathname === '/marketplace' || pathname.startsWith('/marketplace/');
   const isMenuOpen = mobileMenu.open && mobileMenu.path === pathname;
