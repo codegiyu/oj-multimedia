@@ -8,7 +8,7 @@ import { Card } from '@/components/ui/card';
 export function CartCheckoutSkeleton() {
   return (
     <MainLayout>
-      <SectionContainer className="py-16 md:py-20">
+      <SectionContainer className="marketplace-page-top">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center gap-3 mb-8">
             <Skeleton className="w-12 h-12 rounded-lg" />

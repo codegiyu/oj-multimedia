@@ -28,7 +28,7 @@ export function MarketplaceVendorsPageClient({
   if (error && vendors.length === 0) {
     return (
       <>
-        <SectionContainer className="py-16 md:py-20">
+        <SectionContainer className="marketplace-page-top">
           <DataLoadError
             title="Unable to load vendors"
             message={error}
@@ -42,7 +42,7 @@ export function MarketplaceVendorsPageClient({
 
   return (
     <>
-      <SectionContainer className="py-16 md:py-20">
+      <SectionContainer className="marketplace-page-top">
         <div className="max-w-7xl mx-auto">
           <nav className="mb-6 flex items-center gap-2 text-sm text-muted-foreground">
             <Link href="/marketplace" className="hover:text-primary">

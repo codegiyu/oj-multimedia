@@ -5,7 +5,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 export default function OrderSuccessLoading() {
   return (
     <MainLayout>
-      <SectionContainer className="py-16 md:py-20">
+      <SectionContainer className="marketplace-page-top">
         <div className="max-w-xl mx-auto text-center">
           <Skeleton className="w-20 h-20 rounded-full mx-auto mb-6" />
           <Skeleton className="h-8 w-64 mx-auto mb-2" />

@@ -16,7 +16,7 @@ type VendorStoreProfileProps = {
 export function VendorStoreProfile({ vendor }: VendorStoreProfileProps) {
   if (!vendor) {
     return (
-      <SectionContainer className="py-16 md:py-20">
+      <SectionContainer className="marketplace-page-top">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-2xl font-bold text-foreground mb-4">
             This store does not currently exist
@@ -33,7 +33,7 @@ export function VendorStoreProfile({ vendor }: VendorStoreProfileProps) {
   }
 
   return (
-    <SectionContainer className="py-16 md:py-20">
+    <SectionContainer className="marketplace-page-top">
       <div className="max-w-7xl mx-auto">
         <nav className="mb-8 flex items-center gap-2 text-sm text-muted-foreground">
           <Link href="/marketplace" className="hover:text-primary">

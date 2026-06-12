@@ -24,7 +24,7 @@ function BecomeVendorContent() {
 
   if (submitted) {
     return (
-      <SectionContainer className="py-16 md:py-20">
+      <SectionContainer className="marketplace-page-top">
         <div className="max-w-xl mx-auto text-center">
           <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
             <CheckCircle className="w-8 h-8 text-primary" />
@@ -52,7 +52,7 @@ function BecomeVendorContent() {
   }
 
   return (
-    <SectionContainer className="py-16 md:py-20">
+    <SectionContainer className="marketplace-page-top">
       <div className="max-w-2xl mx-auto">
         <div className="text-center mb-10">
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-primary/10 mb-4">

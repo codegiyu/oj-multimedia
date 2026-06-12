@@ -537,7 +537,8 @@ export interface IMarketplaceBecomeVendorRes {
   message?: string;
 }
 export interface IMarketplacePlaceOrderPayload {
-  customer: { name: string; email: string; phone: string; address?: string; notes?: string };
+  customer: { name: string; email: string; phone: string; address: string };
+  notes?: string;
   items: Array<{
     productId: string;
     productName?: string;

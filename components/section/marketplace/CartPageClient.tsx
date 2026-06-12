@@ -83,7 +83,7 @@ export function CartPageClient() {
   if (items.length === 0) {
     return (
       <MainLayout>
-        <SectionContainer className="py-16 md:py-20">
+        <SectionContainer className="marketplace-page-top">
           <SectionEmptyState
             title="Your cart is empty"
             description={
@@ -100,7 +100,7 @@ export function CartPageClient() {
 
   return (
     <MainLayout>
-      <SectionContainer className="py-16 md:py-20">
+      <SectionContainer className="marketplace-page-top">
         <div className="max-w-4xl mx-auto">
           <SectionHeader
             icon={ShoppingCart}
