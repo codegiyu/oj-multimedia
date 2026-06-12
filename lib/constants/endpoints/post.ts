@@ -402,6 +402,9 @@ export interface IMarketplaceProduct {
   price: number;
   images: string[];
   inStock: boolean;
+  /** Simple products only; variants use variant.sku */
+  sku?: string;
+  inventoryMode?: 'unlimited';
   /** Optional; when present, product has variants and listing may show "from" price */
   variationOptions?: IMarketplaceVariationOption[];
   /** Optional; when present, one variant must have isDefault true */
@@ -521,7 +524,11 @@ export interface IMarketplaceSubCategoriesRes {
 export type IMarketplaceVendorsRes = GetListRes<IMarketplaceVendor, 'vendors'>;
 export type IMarketplaceVendorRes = IMarketplaceVendor;
 export type IMarketplaceProductsListRes = GetListRes<IMarketplaceProduct, 'products'>;
-export type IMarketplaceProductRes = IMarketplaceProduct;
+export interface IMarketplaceProductDetailRes {
+  product: IMarketplaceProduct;
+  relatedProducts: IMarketplaceProduct[];
+}
+export type IMarketplaceProductRes = IMarketplaceProductDetailRes;
 export interface IMarketplaceBecomeVendorPayload {
   storeName: string;
   storeDescription?: string;
