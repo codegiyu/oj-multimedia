@@ -7,23 +7,33 @@ import { FillImage } from '@/components/general/FillImage';
 import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import { SectionLoadError } from '@/components/general/SectionLoadError';
 import { callPublicServerApi } from '@/lib/services/serverApi';
+import { mergeFeaturedAndFallbackVendors } from '@/lib/utils/marketplaceVendorsStrip';
 import { marketplaceSectionEmptyIcon, marketplaceSectionHeaderIcon } from './sectionIcons';
 
-export async function MarketplaceVendorsStripSection() {
-  const res = await callPublicServerApi('MARKETPLACE_GET_VENDORS', {
-    query: `?limit=6` as `?${string}`,
-  });
+const STRIP_LIMIT = 3;
 
-  if (res.type === 'error') {
+export async function MarketplaceVendorsStripSection() {
+  const [featuredRes, allRes] = await Promise.all([
+    callPublicServerApi('MARKETPLACE_GET_VENDORS', {
+      query: `?featured=true&limit=${STRIP_LIMIT}` as `?${string}`,
+    }),
+    callPublicServerApi('MARKETPLACE_GET_VENDORS', {
+      query: `?limit=6` as `?${string}`,
+    }),
+  ]);
+
+  if (featuredRes.type === 'error' && allRes.type === 'error') {
     return (
       <SectionLoadError
         title="Vendor stores unavailable"
-        message={res.error?.message ?? 'Failed to load vendor stores'}
+        message={featuredRes.error?.message ?? 'Failed to load vendor stores'}
       />
     );
   }
 
-  const vendors = res.data?.vendors ?? [];
+  const featured = featuredRes.type === 'success' ? (featuredRes.data?.vendors ?? []) : [];
+  const all = allRes.type === 'success' ? (allRes.data?.vendors ?? []) : [];
+  const vendors = mergeFeaturedAndFallbackVendors(featured, all, STRIP_LIMIT);
 
   return (
     <SectionContainer className="py-16 md:py-20">
@@ -46,7 +56,7 @@ export async function MarketplaceVendorsStripSection() {
           />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {vendors.slice(0, 3).map(vendor => (
+            {vendors.map(vendor => (
               <Link key={vendor._id} href={`/marketplace/vendors/${vendor.slug}`}>
                 <Card className="group overflow-hidden hover:shadow-lg transition-shadow">
                   <div className="p-6 text-center">

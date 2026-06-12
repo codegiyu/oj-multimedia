@@ -50,6 +50,7 @@ interface MarketplaceProductsTableContentProps {
   onApprove: (product: IMarketplaceProduct) => void;
   onReject: (product: IMarketplaceProduct) => void;
   onDelete: (product: IMarketplaceProduct) => void;
+  onToggleFeatured: (product: IMarketplaceProduct) => void;
 }
 
 export function MarketplaceProductsTableContent({
@@ -66,6 +67,7 @@ export function MarketplaceProductsTableContent({
   onApprove,
   onReject,
   onDelete,
+  onToggleFeatured,
 }: MarketplaceProductsTableContentProps) {
   const columns = useMemo<DataTableColumn<IMarketplaceProduct, unknown>[]>(
     () => [
@@ -115,6 +117,20 @@ export function MarketplaceProductsTableContent({
           </DataTableCellWrapper>
         ),
       },
+      {
+        id: 'featured',
+        header: <DataTableColumnHeader title="Featured" />,
+        meta: { width: '6.25rem' },
+        cell: row => (
+          <DataTableCellWrapper>
+            {row.isFeatured ? (
+              <Badge variant="outline">Yes</Badge>
+            ) : (
+              <span className="text-muted-foreground">—</span>
+            )}
+          </DataTableCellWrapper>
+        ),
+      },
       dashboardTableDateColumn({
         id: 'createdAt',
         getValue: row => row.createdAt,
@@ -125,10 +141,11 @@ export function MarketplaceProductsTableContent({
           onApprove={onApprove}
           onReject={onReject}
           onDelete={onDelete}
+          onToggleFeatured={onToggleFeatured}
         />
       )),
     ],
-    []
+    [onApprove, onReject, onDelete, onToggleFeatured]
   );
 
   return (

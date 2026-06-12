@@ -256,6 +256,30 @@ export function MarketplacePageClient({
 
   const handleRefresh = () => router.refresh();
 
+  const patchProduct = async (row: IMarketplaceProduct, payload: { isFeatured: boolean }) => {
+    const { error, message } = await callApi('ADMIN_PRODUCT_UPDATE', {
+      query: `/${row._id}` as `/${string}`,
+      payload,
+    });
+    if (error) {
+      toast.error(error.message ?? message ?? 'Update failed');
+      return;
+    }
+    handleRefresh();
+  };
+
+  const patchVendor = async (row: IMarketplaceVendor, payload: { isFeatured: boolean }) => {
+    const { error, message } = await callApi('ADMIN_VENDOR_UPDATE', {
+      query: `/${row._id}` as `/${string}`,
+      payload,
+    });
+    if (error) {
+      toast.error(error.message ?? message ?? 'Update failed');
+      return;
+    }
+    handleRefresh();
+  };
+
   const handleOrderUpdated = (order: PopulatedMarketplaceOrder) => {
     if (
       clickedRowDetails &&
@@ -574,6 +598,7 @@ export function MarketplacePageClient({
           onSuspend={r => setSuspendTarget(r)}
           onUnsuspend={r => setUnsuspendTarget(r)}
           onDelete={r => setDeleteTarget(r)}
+          onToggleFeatured={row => patchVendor(row, { isFeatured: !row.isFeatured })}
         />
       )}
       {displayTab === TAB_PRODUCTS && (
@@ -591,6 +616,7 @@ export function MarketplacePageClient({
           onApprove={r => setApproveTarget(r)}
           onReject={r => setRejectTarget(r)}
           onDelete={r => setDeleteTarget(r)}
+          onToggleFeatured={row => patchProduct(row, { isFeatured: !row.isFeatured })}
         />
       )}
       {displayTab === TAB_ORDERS && (

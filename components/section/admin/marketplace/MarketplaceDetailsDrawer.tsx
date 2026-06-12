@@ -24,6 +24,7 @@ import {
   AdminProductFieldLink,
   AdminVendorFieldLink,
 } from '@/components/section/admin/shared/AdminEntityFieldLinks';
+import { Badge } from '@/components/ui/badge';
 
 const ORDER_STATUS_OPTIONS = [
   { text: 'Pending', value: 'pending' },
@@ -97,6 +98,11 @@ function VendorDetails({ data }: { data: IMarketplaceVendor }) {
       <DrawerMediaPreview src={data.logo} alt={data.storeName} size="sm" />
       <div className="grid gap-3">
         <InfoCard icon={Store} label="Store Name" value={data.storeName} />
+        {data.isFeatured ? (
+          <div>
+            <Badge variant="outline">Featured store</Badge>
+          </div>
+        ) : null}
         <InfoCard icon={FileText} label="Name" value={data.name} />
         <InfoCard icon={FileText} label="Status" value={data.status} />
         <ApprovalMetadataFields data={data} />
@@ -127,6 +133,11 @@ function ProductDetails({ data }: { data: IMarketplaceProduct }) {
       <DrawerMediaPreview src={data.images?.[0]} alt={data.name} images={data.images} />
       <div className="grid gap-3">
         <InfoCard icon={Package} label="Name" value={data.name} />
+        {data.isFeatured ? (
+          <div>
+            <Badge variant="outline">Featured product</Badge>
+          </div>
+        ) : null}
         <InfoCard icon={FileText} label="Vendor">
           <AdminVendorFieldLink
             vendor={data.vendorPopulated ?? data.vendor}

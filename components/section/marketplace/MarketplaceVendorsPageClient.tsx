@@ -1,13 +1,15 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { SectionContainer } from '@/components/general/SectionContainer';
 import { SectionHeader } from '@/components/general/SectionHeader';
 import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { DataLoadError } from '@/components/general/DataLoadError';
 import { ListPagination } from '@/components/general/ListPagination';
 import { Store } from 'lucide-react';
-import Link from 'next/link';
 import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import { FillImage } from '@/components/general/FillImage';
 import type { IMarketplaceVendor } from '@/lib/constants/endpoints';
@@ -16,12 +18,14 @@ export interface MarketplaceVendorsPageClientProps {
   vendors: IMarketplaceVendor[];
   pagination: { page: number; limit: number; total: number; totalPages: number };
   error: string | null;
+  featuredOnly: boolean;
 }
 
 export function MarketplaceVendorsPageClient({
   vendors = [],
   pagination,
   error = null,
+  featuredOnly = false,
 }: MarketplaceVendorsPageClientProps) {
   const router = useRouter();
 
@@ -56,16 +60,29 @@ export function MarketplaceVendorsPageClient({
             icon={Store}
             heading="Vendor Stores"
             subtext="Shop directly from individual vendor stores. Each store is run by verified sellers."
-            className="mb-10"
+            className="mb-6"
           />
+
+          <div className="mb-8 flex flex-wrap gap-2">
+            <Button variant={featuredOnly ? 'outline' : 'default'} size="sm" asChild>
+              <Link href="/marketplace/vendors">All stores</Link>
+            </Button>
+            <Button variant={featuredOnly ? 'default' : 'outline'} size="sm" asChild>
+              <Link href="/marketplace/vendors?featured=true">Featured</Link>
+            </Button>
+          </div>
 
           {vendors.length === 0 ? (
             <SectionEmptyState
-              title="No vendor stores yet"
-              description="Check back later for verified vendor stores to shop from."
+              title={featuredOnly ? 'No featured stores yet' : 'No vendor stores yet'}
+              description={
+                featuredOnly
+                  ? 'Browse all stores or check back later for featured picks.'
+                  : 'Check back later for verified vendor stores to shop from.'
+              }
               icon={Store}
-              actionLabel="Browse products"
-              actionHref="/marketplace/products"
+              actionLabel={featuredOnly ? 'View all stores' : 'Browse products'}
+              actionHref={featuredOnly ? '/marketplace/vendors' : '/marketplace/products'}
             />
           ) : (
             <>
@@ -93,11 +110,10 @@ export function MarketplaceVendorsPageClient({
                         <p className="text-sm text-muted-foreground text-center">
                           {vendor.productCount ?? 0} products
                         </p>
-                        {vendor.isVerified && (
-                          <p className="text-xs text-primary font-medium text-center mt-2">
-                            Verified
-                          </p>
-                        )}
+                        <div className="mt-2 flex flex-wrap items-center justify-center gap-2">
+                          {vendor.isFeatured ? <Badge variant="outline">Featured</Badge> : null}
+                          {vendor.isVerified ? <Badge variant="secondary">Verified</Badge> : null}
+                        </div>
                       </div>
                     </Card>
                   </Link>

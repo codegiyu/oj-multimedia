@@ -443,6 +443,7 @@ export interface IMarketplaceVendor {
   coverImage?: string;
   status: string;
   isVerified: boolean;
+  isFeatured?: boolean;
   productCount?: number;
   createdAt?: string;
   updatedAt?: string;
