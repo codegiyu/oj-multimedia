@@ -16,15 +16,17 @@ import {
   type IMarketplaceProduct,
   type IMarketplaceProductVariant,
 } from '@/lib/constants/endpoints';
+import { ProductCard } from '@/components/section/marketplace/ProductCard';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import { FillImage } from '@/components/general/FillImage';
 
 export interface ProductDetailClientProps {
   product: (MarketplaceProduct | IMarketplaceProduct) | null;
+  relatedProducts?: IMarketplaceProduct[];
 }
 
-export function ProductDetailClient({ product }: ProductDetailClientProps) {
+export function ProductDetailClient({ product, relatedProducts = [] }: ProductDetailClientProps) {
   if (!product) {
     return (
       <>
@@ -40,14 +42,20 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
     );
   }
 
-  return <ProductDetailContent product={product as IMarketplaceProduct} />;
+  return (
+    <ProductDetailContent
+      product={product as IMarketplaceProduct}
+      relatedProducts={relatedProducts}
+    />
+  );
 }
 
 interface ProductDetailContentProps {
   product: IMarketplaceProduct;
+  relatedProducts: IMarketplaceProduct[];
 }
 
-function ProductDetailContent({ product }: ProductDetailContentProps) {
+function ProductDetailContent({ product, relatedProducts }: ProductDetailContentProps) {
   const { items, actions } = useCartStore();
   const categoryLabel = getProductCategoryName(product);
   const categorySlug = getProductCategorySlug(product);
@@ -319,7 +327,7 @@ function ProductDetailContent({ product }: ProductDetailContentProps) {
                   vendorName: product.vendorName,
                   pageUrl: productPageUrl,
                   variantLabel,
-                  sku: selectedVariant?.sku,
+                  sku: selectedVariant?.sku ?? product.sku,
                 }}
               />
               {!product.inStock && (
@@ -329,6 +337,19 @@ function ProductDetailContent({ product }: ProductDetailContentProps) {
           </div>
         </div>
       </SectionContainer>
+
+      {relatedProducts.length > 0 ? (
+        <SectionContainer className="pb-16">
+          <div className="max-w-7xl mx-auto">
+            <h2 className="text-2xl font-bold text-foreground mb-6">Related products</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {relatedProducts.map(related => (
+                <ProductCard key={related._id} product={related} showChat={false} />
+              ))}
+            </div>
+          </div>
+        </SectionContainer>
+      ) : null}
     </>
   );
 }
