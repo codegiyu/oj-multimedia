@@ -44,7 +44,7 @@ Last updated: 2026-05-30. Tracks resolved and remaining marketplace gaps after t
 
 - Online payment gateway (Paystack, Stripe)
 - Numeric inventory (boolean `inStock` only)
-- Email/SMS notifications on order status change (future)
+- Email/SMS on every order **status** change (placement confirmation email is sent; status-change notifications remain future work)
 
 ---
 
