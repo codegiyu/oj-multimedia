@@ -6,7 +6,7 @@ import { SectionContainer } from '@/components/general/SectionContainer';
 import { SectionHeader } from '@/components/general/SectionHeader';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { useCartStore } from '@/lib/store/cartStore';
+import { selectCartTotal, useCartStore } from '@/lib/store/cartStore';
 import { formatPrice } from '@/lib/utils/marketplace';
 import { ShoppingCart, Minus, Plus, Trash2 } from 'lucide-react';
 import Link from 'next/link';
@@ -24,7 +24,7 @@ import { FillImage, FixedImage } from '@/components/general/FillImage';
 
 export function CartPageClient() {
   const { items, actions } = useCartStore();
-  const total = actions.getTotal();
+  const total = selectCartTotal({ items });
   const { user } = useAuthStore(state => state);
   const [loading, setLoading] = useState(false);
   const [syncError, setSyncError] = useState<string | null>(null);

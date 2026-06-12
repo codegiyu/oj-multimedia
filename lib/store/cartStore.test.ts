@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useInitAuthStore } from '@/lib/store/useAuthStore';
-import { useInitCartStore } from '@/lib/store/cartStore';
+import { selectCartCount, useInitCartStore } from '@/lib/store/cartStore';
 import { callApi } from '@/lib/services/callApi';
 
 vi.mock('@/lib/services/callApi', () => ({
@@ -112,5 +112,44 @@ describe('cartStore optimistic race handling', () => {
     expect(vi.mocked(callApi)).toHaveBeenNthCalledWith(2, 'USER_CART_ADD', {
       payload: { productId: 'p1', quantity: 2, sku: 'sku-1' },
     });
+  });
+});
+
+describe('cartStore persist rehydration', () => {
+  const sampleItem = {
+    productId: 'p1',
+    slug: 'product-one',
+    name: 'Product One',
+    image: 'https://example.com/image.jpg',
+    price: 1000,
+    quantity: 2,
+    sku: 'sku-1',
+  };
+
+  beforeEach(() => {
+    useInitCartStore.setState({ items: [], mutationSeq: 0 });
+    useInitCartStore.persist?.clearStorage();
+  });
+
+  it('keeps live cart actions after legacy persisted state without functions', async () => {
+    localStorage.setItem(
+      'marketplace-cart',
+      JSON.stringify({
+        state: {
+          items: [sampleItem],
+          actions: {},
+          mutationSeq: 3,
+        },
+        version: 0,
+      })
+    );
+
+    await useInitCartStore.persist.rehydrate();
+
+    const state = useInitCartStore.getState();
+    expect(typeof state.actions.getCount).toBe('function');
+    expect(state.actions.getCount()).toBe(2);
+    expect(selectCartCount(state)).toBe(2);
+    expect(state.mutationSeq).toBe(0);
   });
 });

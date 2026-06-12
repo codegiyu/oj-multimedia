@@ -4,11 +4,10 @@ import Link from 'next/link';
 import { ShoppingBag, Store, UserPlus, Package, ShoppingCart, Search } from 'lucide-react';
 import { SectionContainer } from '@/components/general/SectionContainer';
 import { Button } from '@/components/ui/button';
-import { useCartStore } from '@/lib/store/cartStore';
+import { selectCartCount, useInitCartStore } from '@/lib/store/cartStore';
 
 export function MarketplaceLandingHero() {
-  const { actions } = useCartStore();
-  const cartCount = actions.getCount();
+  const cartCount = useInitCartStore(selectCartCount);
 
   return (
     <SectionContainer className="marketplace-page-top-hero bg-gradient-to-br from-primary/5 to-primary/10">
