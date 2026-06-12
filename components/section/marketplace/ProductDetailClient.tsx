@@ -290,7 +290,7 @@ function ProductDetailContent({ product }: ProductDetailContentProps) {
                 ) : (
                   product.vendorSlug && (
                     <Button variant="outline" className="gap-2" asChild>
-                      <Link href={`/marketplace/vendors/${product.vendorSlug}?chat=1`}>
+                      <Link href={`/marketplace/vendors/${product.vendorSlug}`}>
                         <MessageCircle className="w-4 h-4" />
                         Chat with vendor
                       </Link>
