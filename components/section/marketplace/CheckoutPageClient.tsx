@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { SectionContainer } from '@/components/general/SectionContainer';
@@ -25,12 +25,146 @@ import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import { CreditCard, ShoppingCart } from 'lucide-react';
 import { useForm } from '@/lib/hooks/use-form';
 import { checkoutSchema, type CheckoutFormValues } from '@/lib/schemas/checkoutSchema';
+import {
+  CheckoutPlaceOrderModal,
+  type CheckoutVendorSummary,
+} from '@/components/section/marketplace/CheckoutPlaceOrderModal';
+import { hasVendorWhatsapp } from '@/lib/utils/marketplaceVendorContact';
 
 export function CheckoutPageClient() {
   const router = useRouter();
   const { items, actions } = useCartStore();
   const total = selectCartTotal({ items });
   const user = useAuthStore(state => state.user);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [pendingValues, setPendingValues] = useState<CheckoutFormValues | null>(null);
+
+  const vendors = useMemo<CheckoutVendorSummary[]>(() => {
+    const map = new Map<string, CheckoutVendorSummary>();
+
+    for (const item of items) {
+      const key = `${item.vendorSlug ?? item.vendorName ?? 'vendor'}::${item.vendorWhatsapp ?? ''}`;
+      const existing = map.get(key);
+
+      if (existing) {
+        existing.itemCount += item.quantity;
+        existing.subtotal += item.price * item.quantity;
+        continue;
+      }
+
+      map.set(key, {
+        vendorName: item.vendorName || 'Vendor',
+        vendorWhatsapp: item.vendorWhatsapp,
+        itemCount: item.quantity,
+        subtotal: item.price * item.quantity,
+      });
+    }
+
+    return Array.from(map.values());
+  }, [items]);
+
+  const placeOrder = async (values: CheckoutFormValues): Promise<boolean> => {
+    try {
+      let checkoutItems = items;
+
+      if (user) {
+        const {
+          data: cartData,
+          error: cartError,
+          message: cartMessage,
+        } = await callApi('USER_CART_GET', {});
+        if (cartError) {
+          toast.error(cartMessage ?? 'Could not sync your cart. Please try again.');
+          return false;
+        }
+        const cart = cartData as ICartRes | undefined;
+        if (cart?.items) {
+          actions.syncFromBackend(cart);
+          checkoutItems = useInitCartStore.getState().items;
+        }
+      }
+
+      const trimmedNotes = values.notes?.trim();
+      const payload = {
+        customer: {
+          name: values.name.trim(),
+          email: values.email.trim(),
+          phone: values.phone.trim(),
+          address: values.address.trim(),
+        },
+        ...(trimmedNotes ? { notes: trimmedNotes } : {}),
+        items: checkoutItems.map(item => ({
+          productId: item.productId,
+          productName: item.name,
+          quantity: item.quantity,
+          price: item.price,
+          ...(item.sku ? { sku: item.sku } : {}),
+        })),
+      };
+
+      const { data, error, message } = await callApi('MARKETPLACE_PLACE_ORDER', { payload });
+      if (error) {
+        toast.error(message ?? 'Failed to place order. Please try again.');
+        return false;
+      }
+
+      actions.clearCartAfterOrder();
+      const orderData = data as IMarketplacePlaceOrderRes | undefined;
+      const placedOrders = extractPlacedOrders(orderData);
+      const whatsappEntries = buildWhatsappLinkEntriesFromOrders(placedOrders);
+
+      if (whatsappEntries.length > 0) {
+        const allOpened = openMarketplaceWhatsappLinks(whatsappEntries);
+
+        if (!user || !allOpened) {
+          stashMarketplaceWhatsappLinks(whatsappEntries);
+        }
+
+        toast.success(
+          whatsappEntries.length === 1
+            ? 'Order placed! WhatsApp is opening — tap Send to notify the vendor.'
+            : 'Order placed! WhatsApp is opening — tap Send in each chat to notify your vendors.'
+        );
+
+        if (!allOpened) {
+          toast.message('WhatsApp could not open automatically', {
+            description: user
+              ? 'Use the WhatsApp button on your orders page to message the vendor.'
+              : 'Use the WhatsApp buttons on the next screen to message your vendor.',
+          });
+        }
+      } else {
+        toast.success('Order placed successfully! The vendor will contact you for payment.');
+      }
+
+      if (user) {
+        router.push('/account/orders');
+        return true;
+      }
+
+      const successParams = new URLSearchParams();
+      const orderNumbers = placedOrders.map(o => o.orderNumber).filter(Boolean);
+      const orderIds = placedOrders.map(o => o._id).filter(Boolean);
+      if (orderNumbers.length > 0) {
+        successParams.set('orderNumbers', orderNumbers.join(','));
+      }
+      if (orderIds.length > 0) {
+        successParams.set('orderIds', orderIds.join(','));
+      }
+      if (whatsappEntries.length > 0) {
+        successParams.set('whatsapp', '1');
+      }
+      const successQuery = successParams.toString();
+      router.push(
+        successQuery ? `/marketplace/order-success?${successQuery}` : '/marketplace/order-success'
+      );
+
+      return true;
+    } catch {
+      toast.error('Something went wrong. Please try again.');
+      return false;
+    }
+  };
 
   const {
     formValues,
@@ -42,6 +176,7 @@ export function CheckoutPageClient() {
     isValid,
     validateForm,
     setFormValues,
+    setLoading,
   } = useForm<typeof checkoutSchema>({
     formSchema: checkoutSchema,
     defaultFormValues: {
@@ -52,108 +187,24 @@ export function CheckoutPageClient() {
       notes: '',
     },
     onSubmit: async (values: CheckoutFormValues) => {
-      try {
-        let checkoutItems = items;
-
-        if (user) {
-          const {
-            data: cartData,
-            error: cartError,
-            message: cartMessage,
-          } = await callApi('USER_CART_GET', {});
-          if (cartError) {
-            toast.error(cartMessage ?? 'Could not sync your cart. Please try again.');
-            return false;
-          }
-          const cart = cartData as ICartRes | undefined;
-          if (cart?.items) {
-            actions.syncFromBackend(cart);
-            checkoutItems = useInitCartStore.getState().items;
-          }
-        }
-
-        const trimmedNotes = values.notes?.trim();
-        const payload = {
-          customer: {
-            name: values.name.trim(),
-            email: values.email.trim(),
-            phone: values.phone.trim(),
-            address: values.address.trim(),
-          },
-          ...(trimmedNotes ? { notes: trimmedNotes } : {}),
-          items: checkoutItems.map(item => ({
-            productId: item.productId,
-            productName: item.name,
-            quantity: item.quantity,
-            price: item.price,
-            ...(item.sku ? { sku: item.sku } : {}),
-          })),
-        };
-
-        const { data, error, message } = await callApi('MARKETPLACE_PLACE_ORDER', { payload });
-        if (error) {
-          toast.error(message ?? 'Failed to place order. Please try again.');
-          return false;
-        }
-
-        actions.clearCartAfterOrder();
-        const orderData = data as IMarketplacePlaceOrderRes | undefined;
-        const placedOrders = extractPlacedOrders(orderData);
-        const whatsappEntries = buildWhatsappLinkEntriesFromOrders(placedOrders);
-
-        if (whatsappEntries.length > 0) {
-          const allOpened = openMarketplaceWhatsappLinks(whatsappEntries);
-
-          if (!user || !allOpened) {
-            stashMarketplaceWhatsappLinks(whatsappEntries);
-          }
-
-          toast.success(
-            whatsappEntries.length === 1
-              ? 'Order placed! WhatsApp is opening — tap Send to notify the vendor.'
-              : 'Order placed! WhatsApp is opening — tap Send in each chat to notify your vendors.'
-          );
-
-          if (!allOpened) {
-            toast.message('WhatsApp could not open automatically', {
-              description: user
-                ? 'Use the WhatsApp button on your orders page to message the vendor.'
-                : 'Use the WhatsApp buttons on the next screen to message your vendor.',
-            });
-          }
-        } else {
-          toast.success('Order placed successfully! The vendor will contact you for payment.');
-        }
-
-        if (user) {
-          router.push('/account/orders');
-          return true;
-        }
-
-        const successParams = new URLSearchParams();
-        const orderNumbers = placedOrders.map(o => o.orderNumber).filter(Boolean);
-        const orderIds = placedOrders.map(o => o._id).filter(Boolean);
-        if (orderNumbers.length > 0) {
-          successParams.set('orderNumbers', orderNumbers.join(','));
-        }
-        if (orderIds.length > 0) {
-          successParams.set('orderIds', orderIds.join(','));
-        }
-        if (whatsappEntries.length > 0) {
-          successParams.set('whatsapp', '1');
-        }
-        const successQuery = successParams.toString();
-        router.push(
-          successQuery ? `/marketplace/order-success?${successQuery}` : '/marketplace/order-success'
-        );
-
-        return true;
-      } catch {
-        toast.error('Something went wrong. Please try again.');
-        return false;
-      }
+      setPendingValues(values);
+      setConfirmOpen(true);
+      return true;
     },
   });
+
+  const handleConfirmPlaceOrder = async () => {
+    if (!pendingValues) return;
+
+    setLoading(true);
+    const ok = await placeOrder(pendingValues);
+    setLoading(false);
+
+    if (ok) {
+      setConfirmOpen(false);
+      setPendingValues(null);
+    }
+  };
 
   useEffect(() => {
     if (!user) return;
@@ -187,6 +238,8 @@ export function CheckoutPageClient() {
       </MainLayout>
     );
   }
+
+  const vendorsWithWhatsapp = vendors.filter(v => hasVendorWhatsapp(v.vendorWhatsapp));
 
   return (
     <MainLayout>
@@ -285,13 +338,19 @@ export function CheckoutPageClient() {
                     What happens when you place your order
                   </p>
                   <ol className="list-decimal list-inside space-y-1">
+                    <li>You review and confirm your order on the next step.</li>
                     <li>
                       Your order is created with status &quot;Pending&quot; (payment offline).
                     </li>
                     <li>
                       If items are from multiple vendors, separate orders are created per vendor.
                     </li>
-                    <li>WhatsApp may open so you can notify the vendor(s) immediately.</li>
+                    {vendorsWithWhatsapp.length > 0 && (
+                      <li>
+                        WhatsApp opens after confirmation so you can notify{' '}
+                        {vendorsWithWhatsapp.length === 1 ? 'the vendor' : 'your vendors'}.
+                      </li>
+                    )}
                     <li>The vendor will contact you to arrange payment (bank transfer, etc.).</li>
                     <li>
                       You&apos;ll be redirected to your orders (signed in) or an order confirmation
@@ -330,6 +389,16 @@ export function CheckoutPageClient() {
           </form>
         </div>
       </SectionContainer>
+
+      <CheckoutPlaceOrderModal
+        open={confirmOpen}
+        onOpenChange={setConfirmOpen}
+        items={items}
+        total={total}
+        vendors={vendors}
+        loading={submitting}
+        onConfirm={() => void handleConfirmPlaceOrder()}
+      />
     </MainLayout>
   );
 }
