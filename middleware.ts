@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import {
-  hasSessionAuthCookie,
+  hasValidSessionAuthCookie,
   resolveProtectedRouteRedirect,
   shouldEnforceSessionCookie,
 } from '@/lib/middleware/sessionGate';
@@ -12,7 +12,7 @@ export function middleware(request: NextRequest): NextResponse {
     return NextResponse.next();
   }
 
-  if (hasSessionAuthCookie(request.headers.get('cookie'))) {
+  if (hasValidSessionAuthCookie(request.headers.get('cookie'))) {
     return NextResponse.next();
   }
 

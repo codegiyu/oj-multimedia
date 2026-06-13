@@ -47,6 +47,40 @@ export function hasSessionAuthCookie(cookieHeader: string | null | undefined): b
   return access.length > 0 || refresh.length > 0;
 }
 
+function decodeJwtPayload(token: string): { exp?: number } | null {
+  const parts = token.split('.');
+  if (parts.length < 2) return null;
+
+  try {
+    const padded = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+    const json = Buffer.from(padded, 'base64').toString('utf8');
+
+    return JSON.parse(json) as { exp?: number };
+  } catch {
+    return null;
+  }
+}
+
+function isJwtNotExpired(token: string): boolean {
+  const payload = decodeJwtPayload(token);
+  if (!payload?.exp) return false;
+
+  return payload.exp * 1000 > Date.now();
+}
+
+/** Edge UX gate: checks JWT exp claim without signature verification (API still verifies). */
+export function hasValidSessionAuthCookie(cookieHeader: string | null | undefined): boolean {
+  const access = readCookieValue(cookieHeader, AUTH_CLIENT_COOKIES.access);
+
+  if (access.length > 0 && isJwtNotExpired(access)) return true;
+
+  const refresh = readCookieValue(cookieHeader, AUTH_CLIENT_COOKIES.refresh);
+
+  if (refresh.length > 0 && isJwtNotExpired(refresh)) return true;
+
+  return false;
+}
+
 export function resolveProtectedRouteRedirect(pathname: string): string | null {
   const encodedPath = encodeURIComponent(base64UrlEncode(pathname));
 
