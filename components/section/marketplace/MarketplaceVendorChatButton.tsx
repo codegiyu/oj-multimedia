@@ -20,6 +20,8 @@ export interface MarketplaceVendorChatButtonProps {
   onChatClick?: () => void;
   children?: ReactNode;
   'aria-label'?: string;
+  /** When set, overrides vendorWhatsapp digit check (e.g. order has whatsappLink only). */
+  chatAvailable?: boolean;
 }
 
 export function MarketplaceVendorChatButton({
@@ -33,8 +35,9 @@ export function MarketplaceVendorChatButton({
   onChatClick,
   children,
   'aria-label': ariaLabel,
+  chatAvailable,
 }: MarketplaceVendorChatButtonProps) {
-  const whatsappAvailable = hasVendorWhatsapp(vendorWhatsapp);
+  const whatsappAvailable = chatAvailable ?? hasVendorWhatsapp(vendorWhatsapp);
 
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     if (stopPropagation) {
