@@ -4,15 +4,14 @@ import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { SectionContainer } from '@/components/general/SectionContainer';
-import { RegularBtn } from '@/components/atoms/RegularBtn';
-import { CheckCircle, MessageCircle } from 'lucide-react';
+import { CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import {
   type MarketplaceWhatsappLinkEntry,
-  openWhatsAppLink,
   readMarketplaceWhatsappLinks,
 } from '@/lib/utils/marketplaceWhatsapp';
+import { MarketplaceOrderWhatsAppButton } from '@/components/section/marketplace/MarketplaceOrderWhatsAppButton';
 
 export function OrderSuccessPageClient() {
   const searchParams = useSearchParams();
@@ -73,16 +72,17 @@ export function OrderSuccessPageClient() {
           )}
           {whatsappLinks.length > 0 && (
             <div className="mb-8 flex flex-col items-center gap-3">
-              {whatsappLinks.map(entry => (
-                <RegularBtn
+              {whatsappLinks.map((entry, index) => (
+                <MarketplaceOrderWhatsAppButton
                   key={`${entry.orderNumber}-${entry.link}`}
+                  orderId={orderIds[index] ?? entry.orderNumber}
+                  orderNumber={entry.orderNumber}
+                  vendorName={entry.vendorName}
+                  whatsappLink={entry.link}
+                  label={`Message ${entry.vendorName} on WhatsApp`}
+                  variant="default"
                   size="lg"
-                  text={`Message ${entry.vendorName} on WhatsApp`}
-                  onClick={() => openWhatsAppLink(entry.link)}
-                  LeftIcon={MessageCircle}
-                  leftIconProps={{ className: 'w-5 h-5 mr-2' }}
-                  className="group w-full sm:w-fit"
-                  wrapClassName="w-full sm:w-fit"
+                  className="group w-full sm:w-fit rounded-full bg-primary hover:bg-primary/90"
                 />
               ))}
               <p className="text-sm text-muted-foreground">

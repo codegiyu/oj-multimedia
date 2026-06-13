@@ -6,7 +6,7 @@ import { SectionContainer } from '@/components/general/SectionContainer';
 import { SectionHeader } from '@/components/general/SectionHeader';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { selectCartTotal, useCartStore } from '@/lib/store/cartStore';
+import { selectCartTotal, useCartStore, type CartItem } from '@/lib/store/cartStore';
 import { formatPrice } from '@/lib/utils/marketplace';
 import { ShoppingCart, Minus, Plus, Trash2 } from 'lucide-react';
 import Link from 'next/link';
@@ -21,6 +21,36 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import { FillImage, FixedImage } from '@/components/general/FillImage';
+import { MarketplaceVendorChatButton } from '@/components/section/marketplace/MarketplaceVendorChatButton';
+import { VendorProductWhatsAppModal } from '@/components/section/marketplace/VendorProductWhatsAppModal';
+import {
+  hasVendorWhatsapp,
+  notifyVendorWhatsappUnavailable,
+} from '@/lib/utils/marketplaceVendorContact';
+import type { ProductInquiryMessageParams } from '@/lib/utils/marketplaceProductInquiry';
+
+type CartVendorGroup = {
+  key: string;
+  vendorName: string;
+  vendorWhatsapp?: string;
+  images: string[];
+  sampleItem: CartItem;
+};
+
+function buildCartInquiry(item: CartItem): ProductInquiryMessageParams {
+  const pageUrl =
+    typeof window !== 'undefined'
+      ? `${window.location.origin}/marketplace/products/${item.slug}`
+      : `/marketplace/products/${item.slug}`;
+
+  return {
+    productName: item.name,
+    price: item.price,
+    vendorName: item.vendorName,
+    pageUrl,
+    sku: item.sku,
+  };
+}
 
 export function CartPageClient() {
   const { items, actions } = useCartStore();
@@ -28,34 +58,49 @@ export function CartPageClient() {
   const { user } = useAuthStore(state => state);
   const [loading, setLoading] = useState(false);
   const [syncError, setSyncError] = useState<string | null>(null);
+  const [whatsappOpen, setWhatsappOpen] = useState(false);
+  const [activeInquiry, setActiveInquiry] = useState<ProductInquiryMessageParams | null>(null);
+  const [activeWhatsapp, setActiveWhatsapp] = useState<string | undefined>();
 
-  const vendors = items
-    .filter(item => item.vendorWhatsapp)
-    .reduce<
-      Array<{
-        vendorName: string;
-        vendorWhatsapp: string;
-        images: string[];
-      }>
-    >((acc, item) => {
-      const key = item.vendorWhatsapp as string;
-      const existing = acc.find(v => v.vendorWhatsapp === key);
-      const image = item.image;
-      if (existing) {
-        if (image && !existing.images.includes(image)) {
-          existing.images.push(image);
-        }
-        return acc;
+  const vendors = items.reduce<CartVendorGroup[]>((acc, item) => {
+    const key = item.vendorSlug ?? item.vendorName ?? item.productId;
+    const existing = acc.find(v => v.key === key);
+
+    if (existing) {
+      if (item.image && !existing.images.includes(item.image)) {
+        existing.images.push(item.image);
       }
-      return [
-        ...acc,
-        {
-          vendorName: item.vendorName || 'Vendor',
-          vendorWhatsapp: key,
-          images: image ? [image] : [],
-        },
-      ];
-    }, []);
+      return acc;
+    }
+
+    return [
+      ...acc,
+      {
+        key,
+        vendorName: item.vendorName || 'Vendor',
+        vendorWhatsapp: item.vendorWhatsapp,
+        images: item.image ? [item.image] : [],
+        sampleItem: item,
+      },
+    ];
+  }, []);
+
+  const openItemChat = (item: CartItem) => {
+    setActiveWhatsapp(item.vendorWhatsapp);
+    setActiveInquiry(buildCartInquiry(item));
+    setWhatsappOpen(true);
+  };
+
+  const openVendorChat = (vendor: CartVendorGroup) => {
+    if (!hasVendorWhatsapp(vendor.vendorWhatsapp)) {
+      notifyVendorWhatsappUnavailable();
+      return;
+    }
+
+    setActiveWhatsapp(vendor.vendorWhatsapp);
+    setActiveInquiry(buildCartInquiry(vendor.sampleItem));
+    setWhatsappOpen(true);
+  };
 
   useEffect(() => {
     if (!user) return;
@@ -148,15 +193,14 @@ export function CartPageClient() {
                     </p>
                   )}
                   <p className="text-primary font-bold mt-1">{formatPrice(item.price)}</p>
-                  {item.vendorWhatsapp && (
-                    <a
-                      href={`https://wa.me/${item.vendorWhatsapp.replace(/\D/g, '')}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mt-1 inline-flex items-center gap-1 text-xs text-primary hover:underline">
-                      Contact vendor on WhatsApp
-                    </a>
-                  )}
+                  <MarketplaceVendorChatButton
+                    vendorWhatsapp={item.vendorWhatsapp}
+                    label="Contact vendor on WhatsApp"
+                    variant="link"
+                    size="sm"
+                    className="mt-1 h-auto p-0 text-xs text-primary"
+                    onChatClick={() => openItemChat(item)}
+                  />
                 </div>
                 <div className="flex items-center gap-2">
                   <Button
@@ -195,43 +239,49 @@ export function CartPageClient() {
               <p className="text-xl font-bold text-foreground">Total: {formatPrice(total)}</p>
               {vendors.length > 0 && (
                 <div className="flex items-center gap-2">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="outline" size="sm">
-                        Chat with vendor
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="start" side="top">
-                      {vendors.map(vendor => (
-                        <DropdownMenuItem
-                          key={vendor.vendorWhatsapp}
-                          className="flex items-center gap-2"
-                          onClick={() => {
-                            const digits = vendor.vendorWhatsapp.replace(/\D/g, '');
-                            const url = `https://wa.me/${digits}`;
-                            window.open(url, '_blank');
-                          }}>
-                          <div className="flex -space-x-2">
-                            {vendor.images.slice(0, 3).map(src => (
-                              <span
-                                key={src}
-                                className="relative inline-block h-6 w-6 rounded-full overflow-hidden border border-border bg-muted">
-                                <FixedImage
-                                  src={src}
-                                  alt={vendor.vendorName}
-                                  width={24}
-                                  height={24}
-                                  imageContext="public"
-                                  className="h-full w-full object-cover"
-                                />
-                              </span>
-                            ))}
-                          </div>
-                          <span className="truncate">{vendor.vendorName}</span>
-                        </DropdownMenuItem>
-                      ))}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  {vendors.length === 1 ? (
+                    <MarketplaceVendorChatButton
+                      vendorWhatsapp={vendors[0]?.vendorWhatsapp}
+                      label="Chat with vendor"
+                      variant="outline"
+                      size="sm"
+                      onChatClick={() => vendors[0] && openVendorChat(vendors[0])}
+                    />
+                  ) : (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline" size="sm">
+                          Chat with vendor
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="start" side="top">
+                        {vendors.map(vendor => (
+                          <DropdownMenuItem
+                            key={vendor.key}
+                            className="flex items-center gap-2"
+                            onClick={() => openVendorChat(vendor)}>
+                            <div className="flex -space-x-2">
+                              {vendor.images.slice(0, 3).map(src => (
+                                <span
+                                  key={src}
+                                  className="relative inline-block h-6 w-6 rounded-full overflow-hidden border border-border bg-muted">
+                                  <FixedImage
+                                    src={src}
+                                    alt={vendor.vendorName}
+                                    width={24}
+                                    height={24}
+                                    imageContext="public"
+                                    className="h-full w-full object-cover"
+                                  />
+                                </span>
+                              ))}
+                            </div>
+                            <span className="truncate">{vendor.vendorName}</span>
+                          </DropdownMenuItem>
+                        ))}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  )}
                 </div>
               )}
             </div>
@@ -246,6 +296,15 @@ export function CartPageClient() {
           </div>
         </div>
       </SectionContainer>
+
+      {activeInquiry && (
+        <VendorProductWhatsAppModal
+          open={whatsappOpen}
+          onOpenChange={setWhatsappOpen}
+          vendorWhatsapp={activeWhatsapp}
+          inquiry={activeInquiry}
+        />
+      )}
     </MainLayout>
   );
 }

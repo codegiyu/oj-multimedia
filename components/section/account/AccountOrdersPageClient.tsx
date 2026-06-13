@@ -6,18 +6,18 @@ import { useQueryState, parseAsInteger, parseAsString } from 'nuqs';
 import { DashboardPageHeader, DashboardStatCard } from '@/components/layout/user-dashboard';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { MessageCircle, Package } from 'lucide-react';
+import { Package } from 'lucide-react';
 import Link from 'next/link';
 import { callApi } from '@/lib/services/callApi';
 import type { PopulatedMarketplaceOrder } from '@/lib/constants/endpoints';
 import { formatPrice } from '@/lib/utils/marketplace';
-import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { Loader2 } from 'lucide-react';
 import { FillImage } from '@/components/general/FillImage';
 import { FilterableDataPage } from '@/components/general/FilterableDataPage';
 import { buildAccountOrdersQuery, isAccountListUnfiltered } from '@/lib/account/accountListFilters';
 import { useAccountListSearch } from '@/lib/hooks/useAccountListSearch';
+import { MarketplaceOrderWhatsAppButton } from '@/components/section/marketplace/MarketplaceOrderWhatsAppButton';
 
 const STATUS_OPTIONS = [
   { value: '', label: 'All' },
@@ -278,31 +278,16 @@ export function AccountOrdersPageClient({
                         View vendor
                       </Link>
                     </Button>
-                    {(order.whatsappLink || order.vendor?.whatsapp) && (
-                      <Button
-                        variant="default"
-                        size="sm"
-                        className="rounded-full bg-primary hover:bg-primary/90"
-                        onClick={async () => {
-                          if (order.whatsappLink) {
-                            window.open(order.whatsappLink, '_blank');
-                            return;
-                          }
-                          const { data, error, message } = await callApi(
-                            'MARKETPLACE_ORDER_WHATSAPP_LINK',
-                            { query: `/${order._id}/whatsapp-link` as `/${string}` }
-                          );
-                          if (error || !data) {
-                            toast.error(message || 'Unable to open WhatsApp for this order.');
-                            return;
-                          }
-                          if (data.whatsappLink) window.open(data.whatsappLink, '_blank');
-                          else toast.error('Vendor has no WhatsApp configured.');
-                        }}>
-                        <MessageCircle className="mr-1 h-4 w-4" />
-                        WhatsApp
-                      </Button>
-                    )}
+                    <MarketplaceOrderWhatsAppButton
+                      orderId={order._id}
+                      orderNumber={order.orderNumber}
+                      vendorName={order.vendor?.storeName ?? order.vendor?.name}
+                      whatsappLink={order.whatsappLink}
+                      vendorWhatsapp={order.vendor?.whatsapp}
+                      variant="default"
+                      size="sm"
+                      className="rounded-full bg-primary hover:bg-primary/90"
+                    />
                   </div>
                 </div>
               </Card>
