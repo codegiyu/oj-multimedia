@@ -1,6 +1,7 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
 import { Video, Upload } from 'lucide-react';
 import { useQueryState, parseAsString } from 'nuqs';
 import { Button } from '@/components/ui/button';
@@ -43,18 +44,19 @@ export const TrendingVideosSection = ({
     PUBLIC_URL_KEYS.VIDEO_CATEGORY,
     parseAsString.withDefault(ALL_CATEGORY_ID).withOptions({ shallow: true, history: 'replace' })
   );
-  const {
-    items: trendingVideos,
-    isLoading,
-    loadCategory,
-  } = useHomeTrendingVideoRail(initialVideos);
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+  const { items: trendingVideos } = useHomeTrendingVideoRail(initialVideos);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const tabs = categoryOptions.map(opt => ({ id: opt.id, label: opt.label }));
 
-  const handleTabChange = async (tabId: string) => {
-    await setVideoCategory(tabId === ALL_CATEGORY_ID ? null : tabId);
-    loadCategory(tabId);
+  const handleTabChange = (tabId: string) => {
+    startTransition(() => {
+      void setVideoCategory(tabId === ALL_CATEGORY_ID ? null : tabId).then(() => {
+        router.refresh();
+      });
+    });
   };
 
   const scroll = (direction: 'left' | 'right') => {
@@ -99,7 +101,7 @@ export const TrendingVideosSection = ({
           className: '',
           enableAnimation: false,
         }}>
-        {trendingVideos.length === 0 && !isLoading ? (
+        {trendingVideos.length === 0 && !isPending ? (
           <SectionEmptyState
             title="No trending videos in this category"
             description="Try a different filter or check back later for new content."
@@ -112,7 +114,7 @@ export const TrendingVideosSection = ({
             ref={scrollRef}
             className={cn(
               'flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory transition-opacity',
-              isLoading && 'opacity-60 pointer-events-none'
+              isPending && 'opacity-60 pointer-events-none'
             )}>
             {trendingVideos.map((video, index) => (
               <motion.div

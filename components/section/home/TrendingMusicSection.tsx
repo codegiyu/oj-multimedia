@@ -1,6 +1,7 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
 import { Flame } from 'lucide-react';
 import { useQueryState, parseAsString } from 'nuqs';
 import { MusicCard } from '@/components/cards/MusicCard';
@@ -37,14 +38,19 @@ export const TrendingMusicSection = ({
     PUBLIC_URL_KEYS.MUSIC_CATEGORY,
     parseAsString.withDefault(ALL_CATEGORY_ID).withOptions({ shallow: true, history: 'replace' })
   );
-  const { items: trendingMusic, isLoading, loadCategory } = useHomeTrendingMusicRail(initialMusic);
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+  const { items: trendingMusic } = useHomeTrendingMusicRail(initialMusic);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const tabs = categoryOptions.map(opt => ({ id: opt.id, label: opt.label }));
 
-  const handleTabChange = async (tabId: string) => {
-    await setMusicCategory(tabId === ALL_CATEGORY_ID ? null : tabId);
-    loadCategory(tabId);
+  const handleTabChange = (tabId: string) => {
+    startTransition(() => {
+      void setMusicCategory(tabId === ALL_CATEGORY_ID ? null : tabId).then(() => {
+        router.refresh();
+      });
+    });
   };
 
   const scroll = (direction: 'left' | 'right') => {
@@ -76,7 +82,7 @@ export const TrendingMusicSection = ({
         className: '',
         enableAnimation: false,
       }}>
-      {trendingMusic.length === 0 && !isLoading ? (
+      {trendingMusic.length === 0 && !isPending ? (
         <SectionEmptyState
           title="No trending music in this genre"
           description="Try a different genre or check back soon for new releases."
@@ -89,7 +95,7 @@ export const TrendingMusicSection = ({
           ref={scrollRef}
           className={cn(
             'flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory transition-opacity',
-            isLoading && 'opacity-60 pointer-events-none'
+            isPending && 'opacity-60 pointer-events-none'
           )}>
           {trendingMusic.map((track, index) => (
             <motion.div
