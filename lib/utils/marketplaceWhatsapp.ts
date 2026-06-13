@@ -93,3 +93,16 @@ export function openMarketplaceWhatsappLinks(entries: MarketplaceWhatsappLinkEnt
 
   return allOpened;
 }
+
+export function decodeWhatsappLinkMessage(link: string): string | null {
+  try {
+    const url = new URL(link);
+    const text = url.searchParams.get('text');
+
+    if (!text) return null;
+
+    return decodeURIComponent(text);
+  } catch {
+    return null;
+  }
+}
