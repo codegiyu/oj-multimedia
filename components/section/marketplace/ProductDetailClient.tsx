@@ -320,7 +320,6 @@ function ProductDetailContent({ product, relatedProducts }: ProductDetailContent
                 open={whatsappOpen}
                 onOpenChange={setWhatsappOpen}
                 vendorWhatsapp={vendorWhatsapp}
-                vendorSlug={product.vendorSlug}
                 inquiry={{
                   productName: product.name,
                   price: effectivePrice,
