@@ -28,7 +28,7 @@
     "checks:performance": "node scripts/verify-bundle-budget.mjs && node scripts/lighthouse-budget.mjs",
     "lighthouse:budget": "node scripts/lighthouse-budget.mjs",
     "checks": "npm run lint && npm run format:check && npm run test:unit && rm -rf .next && npm run build && npm run checks:performance",
-    "release:check": "npm run checks && npm run test:integration && npm run test:phase:integration && npm run test:e2e:smoke && npm run audit:ci",
+    "release:check": "npm run checks && npm run test:integration && npm run test:phase:integration && npm run test:e2e:smoke && npm run test:e2e:a11y && npm run audit:ci",
     "audit": "npm audit",
     "audit:ci": "npm audit --audit-level=high",
     "generate:icons": "npx @svgr/cli --out-dir components/icons --ignore-existing --typescript --replace-attr-values #fff=currentColor,#000=currentColor --jsx-runtime automatic --icon -- public/icons",

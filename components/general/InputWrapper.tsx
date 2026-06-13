@@ -12,8 +12,21 @@ import {
 
 const InputFieldIdContext = createContext<string | undefined>(undefined);
 
+export type InputFieldA11yState = {
+  fieldId: string;
+  errorId: string;
+  hasError: boolean;
+  describedBy: string | undefined;
+};
+
+const InputFieldA11yContext = createContext<InputFieldA11yState | undefined>(undefined);
+
 export function useInputFieldId(): string | undefined {
   return useContext(InputFieldIdContext);
+}
+
+export function useInputFieldA11y(): InputFieldA11yState | undefined {
+  return useContext(InputFieldA11yContext);
 }
 
 export type InputWrapperProps = PropsWithChildren<{
@@ -40,6 +53,15 @@ export const InputWrapper = ({
 }: InputWrapperProps) => {
   const generatedId = useId();
   const fieldId = fieldIdProp ?? generatedId;
+  const errorId = `${fieldId}-error`;
+  const hasError = errors.length > 0;
+
+  const a11yState: InputFieldA11yState = {
+    fieldId,
+    errorId,
+    hasError,
+    describedBy: hasError ? errorId : undefined,
+  };
 
   return (
     <div className={cn(`w-full`, wrapClassName)}>
@@ -61,10 +83,14 @@ export const InputWrapper = ({
         </div>
       )}
       <InputFieldIdContext.Provider value={fieldId}>
-        <div className="relative w-full">{children}</div>
+        <InputFieldA11yContext.Provider value={a11yState}>
+          <div className="relative w-full">{children}</div>
+        </InputFieldA11yContext.Provider>
       </InputFieldIdContext.Provider>
-      {errors.length > 0 && (
-        <p className={cn('text-xs md:text-sm text-red-500 mt-1')}>{errors[0]}</p>
+      {hasError && (
+        <p id={errorId} role="alert" className={cn('text-xs md:text-sm text-red-500 mt-1')}>
+          {errors[0]}
+        </p>
       )}
     </div>
   );
