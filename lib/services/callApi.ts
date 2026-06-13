@@ -2,12 +2,7 @@ import axios, { type AxiosRequestConfig, type AxiosResponse } from 'axios';
 import type { ApiErrorResponse, ApiSuccessResponse, ResponseMessage } from '../types/http';
 import { getDataFromRequest } from '../utils/general';
 import { type AllEndpoints, ENDPOINTS } from '../constants/endpoints';
-import { useInitAuthStore } from '../store/useAuthStore';
-import {
-  buildAuthRequestHeaders,
-  clearClientAuthTokens,
-  syncClientAuthTokensFromHeaders,
-} from './clientAuthTokens';
+import { buildAuthRequestHeaders, syncClientAuthTokensFromHeaders } from './clientAuthTokens';
 
 // Base URL for API routes - using relative path since we're using Next.js API routes
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://api.ojmultimedia.com';
@@ -106,14 +101,6 @@ export const callApi = async <T extends keyof AllEndpoints>(
       await syncClientAuthTokensFromHeaders(error.response.headers);
       apiError = error.response.data as ApiErrorResponse;
 
-      if (error.response.status === 401) {
-        try {
-          useInitAuthStore.getState().actions.clearSession();
-          clearClientAuthTokens();
-        } catch {
-          // Auth store not available, continue
-        }
-      }
       if (error.response.status === 429) {
         // Rate limit exceeded - could be handled by a modal/store
       }

@@ -11,7 +11,7 @@ import {
   SelectValue,
 } from '../ui/select';
 import { cn } from '@/lib/utils';
-import { InputWrapper, useInputFieldId } from '../general/InputWrapper';
+import { InputWrapper, useInputFieldA11y, useInputFieldId } from '../general/InputWrapper';
 import { ComponentPropsWithRef, FocusEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import {
@@ -86,6 +86,7 @@ function RegularSelectControl({
   ...props
 }: RegularSelectControlProps) {
   const fieldId = useInputFieldId();
+  const a11y = useInputFieldA11y();
   const sentinelRef = useRef<HTMLDivElement>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -159,6 +160,8 @@ function RegularSelectControl({
           id={fieldId}
           disabled={disabled || loading}
           hidecaretifdisabled={hideCaretIfDisabled}
+          aria-invalid={a11y?.hasError ? true : undefined}
+          aria-describedby={a11y?.describedBy}
           className={cn(``, triggerClassName)}>
           <SelectValue
             className={cn('', valueClassName)}

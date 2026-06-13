@@ -3,7 +3,7 @@
 import { cn } from '@/lib/utils';
 import { Input, type InputProps } from '../ui/input';
 import { FocusEvent, ReactNode, useImperativeHandle, useRef } from 'react';
-import { InputWrapper, useInputFieldId } from '../general/InputWrapper';
+import { InputWrapper, useInputFieldA11y, useInputFieldId } from '../general/InputWrapper';
 import { GhostBtn } from './GhostBtn';
 import { Calendar } from 'lucide-react';
 
@@ -43,6 +43,7 @@ function RegularInputField({
 }: RegularInputFieldProps) {
   const localRef = useRef<HTMLInputElement>(null);
   const fieldId = useInputFieldId();
+  const a11y = useInputFieldA11y();
 
   useImperativeHandle(ref, () => localRef.current!);
 
@@ -60,6 +61,8 @@ function RegularInputField({
         type={type}
         className={cn('', className)}
         ref={localRef}
+        aria-invalid={a11y?.hasError ? true : undefined}
+        aria-describedby={a11y?.describedBy}
         {...props}
         onFocus={(e: FocusEvent<HTMLInputElement>) => {
           if (onFocus) onFocus(e);

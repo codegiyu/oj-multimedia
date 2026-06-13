@@ -25,5 +25,5 @@ jobs:
       - name: Release check
         run: npm run release:check
         env:
-          NEXT_PUBLIC_BASE_URL: http://localhost:4400/api/v1
-          NEXT_SERVER_BASE_URL: http://localhost:4400/api/v1
+          NEXT_PUBLIC_BASE_URL: http://localhost:4400
+          NEXT_SERVER_BASE_URL: http://localhost:4400

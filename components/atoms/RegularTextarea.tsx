@@ -3,7 +3,7 @@
 import { cn } from '@/lib/utils';
 import { Textarea, type TextareaProps } from '../ui/textarea';
 import { FocusEvent } from 'react';
-import { InputWrapper, useInputFieldId } from '../general/InputWrapper';
+import { InputWrapper, useInputFieldA11y, useInputFieldId } from '../general/InputWrapper';
 
 export interface RegularTextareaProps extends TextareaProps {
   label?: string;
@@ -23,6 +23,7 @@ function RegularTextareaField({
   ...props
 }: TextareaProps) {
   const fieldId = useInputFieldId();
+  const a11y = useInputFieldA11y();
 
   return (
     <Textarea
@@ -30,6 +31,8 @@ function RegularTextareaField({
       placeholder={placeholder}
       className={cn('', className)}
       ref={ref}
+      aria-invalid={a11y?.hasError ? true : undefined}
+      aria-describedby={a11y?.describedBy}
       {...props}
       onFocus={(e: FocusEvent<HTMLTextAreaElement>) => {
         if (onFocus) onFocus(e);
