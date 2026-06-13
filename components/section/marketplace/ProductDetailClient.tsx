@@ -3,7 +3,8 @@
 import { useMemo, useState } from 'react';
 import { SectionContainer } from '@/components/general/SectionContainer';
 import { Button } from '@/components/ui/button';
-import { MessageCircle, ShoppingCart, Store, ChevronRight } from 'lucide-react';
+import { MarketplaceVendorChatButton } from '@/components/section/marketplace/MarketplaceVendorChatButton';
+import { ShoppingCart, Store, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import type { MarketplaceProduct } from '@/lib/utils/marketplace';
 import { formatPrice, getProductVendorWhatsapp } from '@/lib/utils/marketplace';
@@ -300,21 +301,14 @@ function ProductDetailContent({ product, relatedProducts }: ProductDetailContent
                   <ShoppingCart className="w-4 h-4" />
                   {isOutOfStock ? 'Out of stock' : inCart ? 'In cart' : 'Add to cart'}
                 </Button>
-                {vendorWhatsapp ? (
-                  <Button variant="outline" className="gap-2" onClick={() => setWhatsappOpen(true)}>
-                    <MessageCircle className="w-4 h-4" />
-                    Chat with vendor
-                  </Button>
-                ) : (
-                  product.vendorSlug && (
-                    <Button variant="outline" className="gap-2" asChild>
-                      <Link href={`/marketplace/vendors/${product.vendorSlug}`}>
-                        <MessageCircle className="w-4 h-4" />
-                        Chat with vendor
-                      </Link>
-                    </Button>
-                  )
-                )}
+                <MarketplaceVendorChatButton
+                  vendorWhatsapp={vendorWhatsapp}
+                  label="Chat with vendor"
+                  variant="outline"
+                  size="default"
+                  className="gap-2"
+                  onChatClick={() => setWhatsappOpen(true)}
+                />
               </div>
               <VendorProductWhatsAppModal
                 open={whatsappOpen}

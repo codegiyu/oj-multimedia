@@ -46,6 +46,7 @@ export async function MarketplaceSectionServer({
       currency: 'NGN',
       maximumFractionDigits: 0,
     }).format(product.price),
+    priceAmount: product.price,
     seller: product.vendorName ?? product.vendorPopulated?.storeName ?? 'Vendor',
     image: product.images?.[0] ?? '',
     vendorWhatsapp: product.vendorWhatsapp ?? product.vendorPopulated?.whatsapp,

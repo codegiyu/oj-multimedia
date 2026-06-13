@@ -19,6 +19,7 @@ export interface MarketplaceVendorChatButtonProps {
   stopPropagation?: boolean;
   onChatClick?: () => void;
   children?: ReactNode;
+  'aria-label'?: string;
 }
 
 export function MarketplaceVendorChatButton({
@@ -31,6 +32,7 @@ export function MarketplaceVendorChatButton({
   stopPropagation = false,
   onChatClick,
   children,
+  'aria-label': ariaLabel,
 }: MarketplaceVendorChatButtonProps) {
   const whatsappAvailable = hasVendorWhatsapp(vendorWhatsapp);
 
@@ -54,6 +56,7 @@ export function MarketplaceVendorChatButton({
       variant={variant}
       size={size}
       aria-disabled={!whatsappAvailable}
+      aria-label={ariaLabel}
       className={cn(
         !whatsappAvailable && 'opacity-50 cursor-not-allowed',
         iconOnly && 'gap-0',

@@ -1,19 +1,24 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
-import { ChevronRight, MessageCircle } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import { SectionContainer } from '@/components/general/SectionContainer';
 import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { FillImage } from '@/components/general/FillImage';
 import { MultilineText } from '@/components/general/MultilineText';
 import type { IMarketplaceVendor } from '@/lib/constants/endpoints';
+import { MarketplaceVendorChatButton } from '@/components/section/marketplace/MarketplaceVendorChatButton';
+import { MarketplaceVendorWhatsAppModal } from '@/components/section/marketplace/MarketplaceVendorWhatsAppModal';
+import { buildVendorStoreInquiryHref } from '@/lib/utils/marketplaceVendorStoreInquiry';
 
 type VendorStoreProfileProps = {
   vendor: IMarketplaceVendor | null;
 };
 
 export function VendorStoreProfile({ vendor }: VendorStoreProfileProps) {
+  const [whatsappOpen, setWhatsappOpen] = useState(false);
+
   if (!vendor) {
     return (
       <SectionContainer className="marketplace-page-top">
@@ -31,6 +36,16 @@ export function VendorStoreProfile({ vendor }: VendorStoreProfileProps) {
       </SectionContainer>
     );
   }
+
+  const storeUrl =
+    typeof window !== 'undefined'
+      ? `${window.location.origin}/marketplace/vendors/${vendor.slug}`
+      : `/marketplace/vendors/${vendor.slug}`;
+
+  const waHref = buildVendorStoreInquiryHref(vendor.whatsapp, {
+    vendorName: vendor.storeName,
+    storeUrl,
+  });
 
   return (
     <SectionContainer className="marketplace-page-top">
@@ -74,22 +89,27 @@ export function VendorStoreProfile({ vendor }: VendorStoreProfileProps) {
                     Verified vendor
                   </span>
                 )}
-                {vendor.whatsapp && (
-                  <Button variant="outline" size="sm" className="gap-2" asChild>
-                    <a
-                      href={`https://wa.me/${vendor.whatsapp.replace(/\D/g, '')}`}
-                      target="_blank"
-                      rel="noopener noreferrer">
-                      <MessageCircle className="w-4 h-4" />
-                      Chat on WhatsApp
-                    </a>
-                  </Button>
-                )}
+                <MarketplaceVendorChatButton
+                  vendorWhatsapp={vendor.whatsapp}
+                  label="Chat on WhatsApp"
+                  variant="outline"
+                  size="sm"
+                  className="gap-2"
+                  onChatClick={() => setWhatsappOpen(true)}
+                />
               </div>
             </div>
           </div>
         </Card>
       </div>
+
+      <MarketplaceVendorWhatsAppModal
+        open={whatsappOpen}
+        onOpenChange={setWhatsappOpen}
+        title="Chat with vendor on WhatsApp"
+        summaryLines={[{ label: 'Store', value: vendor.storeName }]}
+        waHref={waHref}
+      />
     </SectionContainer>
   );
 }
