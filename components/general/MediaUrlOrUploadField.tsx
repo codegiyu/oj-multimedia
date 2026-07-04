@@ -9,6 +9,7 @@ import { Switch } from '@/components/ui/switch';
 import { RegularInput } from '@/components/atoms/RegularInput';
 import { useFileUpload } from '@/lib/hooks/use-file-upload';
 import type { EntityType, UploadIntent } from '@/lib/types/server-models';
+import { getUploadMaxBytesForFile } from '@/lib/constants/uploadLimits';
 import { FillImage } from '@/components/general/FillImage';
 import {
   File as FileIcon,
@@ -78,6 +79,7 @@ export function MediaUrlOrUploadField({
     [fallbackEntityIdPrefix]
   );
   const resolvedEntityId = entityId?.trim() || generatedEntityId;
+  const resolvedMaxFileSizeBytes = maxFileSizeBytes ?? getUploadMaxBytesForFile('', intent);
   const { loading, progress, uploadFile, clearFile } = useFileUpload({
     entityType,
     entityId: resolvedEntityId,
@@ -88,7 +90,8 @@ export function MediaUrlOrUploadField({
   });
 
   const acceptedTypesText = useMemo(() => humanizeAccept(accept), [accept]);
-  const fileSizeText = fileSizeLabel || (maxFileSizeBytes ? formatBytes(maxFileSizeBytes) : null);
+  const fileSizeText =
+    fileSizeLabel || (resolvedMaxFileSizeBytes ? formatBytes(resolvedMaxFileSizeBytes) : null);
   const previewKind = getPreviewKind(selectedFile, accept);
   const valuePreviewKind = getPreviewKindFromUrl(value, accept);
   const fileName = selectedFile?.name ?? '';
@@ -107,8 +110,8 @@ export function MediaUrlOrUploadField({
       clearFile();
       return;
     }
-    if (maxFileSizeBytes && file.size > maxFileSizeBytes) {
-      setLocalError(`File is too large. Max allowed: ${formatBytes(maxFileSizeBytes)}.`);
+    if (resolvedMaxFileSizeBytes && file.size > resolvedMaxFileSizeBytes) {
+      setLocalError(`File is too large. Max allowed: ${formatBytes(resolvedMaxFileSizeBytes)}.`);
       return;
     }
 
