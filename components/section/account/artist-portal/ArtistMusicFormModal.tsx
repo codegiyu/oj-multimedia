@@ -21,6 +21,7 @@ import type {
   IArtistUpdateMusicPayload,
 } from '@/lib/constants/endpoints';
 import { MediaUrlOrUploadField } from '@/components/general/MediaUrlOrUploadField';
+import { ArtistMediaUploadGateNotice } from '@/components/section/account/artist-portal/ArtistMediaUploadGateNotice';
 import { ensureSelectContainsSlug } from '@/lib/utils/adminContentCategorySelect';
 import {
   assertMonetizationPriceClient,
@@ -31,7 +32,6 @@ import {
   resolveMonetizationFormPrice,
 } from '@/lib/utils/adminFormValidation';
 import { MonetizationFormFields } from '@/components/section/admin/shared/MonetizationFormFields';
-import { useFileUpload } from '@/lib/hooks/use-file-upload';
 import { useContentCategoryOptions } from '@/lib/hooks/useContentCategoryOptions';
 import {
   PUBLISHABLE_STATUS_SELECT_OPTIONS,
@@ -75,8 +75,6 @@ export function ArtistMusicFormModal({
   const [loading, setLoading] = useState(false);
   const [detailLoading, setDetailLoading] = useState(false);
   const [editStatus, setEditStatus] = useState<'draft' | 'published' | 'archived'>('draft');
-  const [pendingCover, setPendingCover] = useState<File | null>(null);
-  const [pendingAudio, setPendingAudio] = useState<File | null>(null);
   const [durationParts, setDurationParts] = useState<MediaDurationParts>(
     EMPTY_MEDIA_DURATION_PARTS
   );
@@ -91,17 +89,6 @@ export function ArtistMusicFormModal({
     () => [{ text: 'None', value: '' }, ...rawCategoryOptions],
     [rawCategoryOptions]
   );
-
-  const coverUpload = useFileUpload({
-    entityType: 'music',
-    entityId: editId ?? 'artist-music-pending',
-    intent: 'image',
-  });
-  const audioUpload = useFileUpload({
-    entityType: 'music',
-    entityId: editId ?? 'artist-music-pending',
-    intent: 'other',
-  });
 
   useEffect(() => {
     if (!open) {
@@ -172,30 +159,15 @@ export function ArtistMusicFormModal({
       const isMonetizable = Boolean(form.isMonetizable);
       const price = resolveMonetizationFormPrice(isMonetizable, form.price);
 
-      let finalCoverImage = coverImage;
-      let finalAudioUrl = audioUrl;
-      const finalVideoUrl = videoUrl;
-
       if (editId) {
-        if (pendingCover) {
-          const upload = await coverUpload.uploadFile({ file: pendingCover, entityId: editId });
-          if (!upload?.url) throw new Error('Cover upload failed');
-          finalCoverImage = upload.url;
-        }
-        if (pendingAudio) {
-          const upload = await audioUpload.uploadFile({ file: pendingAudio, entityId: editId });
-          if (!upload?.url) throw new Error('Audio upload failed');
-          finalAudioUrl = upload.url;
-        }
-
         const payload: IArtistUpdateMusicPayload = {
           title,
           description: description || undefined,
           lyrics: lyrics || undefined,
           category,
-          coverImage: finalCoverImage,
-          audioUrl: finalAudioUrl,
-          videoUrl: finalVideoUrl,
+          coverImage,
+          audioUrl,
+          videoUrl,
           isMonetizable,
           price,
           status: editStatus,
@@ -213,9 +185,9 @@ export function ArtistMusicFormModal({
           description,
           lyrics,
           category,
-          coverImage: finalCoverImage || undefined,
-          audioUrl: finalAudioUrl || undefined,
-          videoUrl: finalVideoUrl || undefined,
+          coverImage: coverImage || undefined,
+          audioUrl: audioUrl || undefined,
+          videoUrl: videoUrl || undefined,
           isMonetizable,
           price,
           ...metadataPayload,
@@ -223,41 +195,6 @@ export function ArtistMusicFormModal({
 
         const res = await callApi('ARTIST_CREATE_MUSIC', { payload });
         if (res.type !== 'success') throw new Error(res.error?.message ?? 'Create failed');
-
-        const createdId =
-          (res.data as { music?: { _id?: string } } | undefined)?.music?._id ??
-          (res.data as { _id?: string } | undefined)?._id;
-
-        if (createdId && (pendingCover || pendingAudio || metadataPayload.metadata)) {
-          if (pendingCover) {
-            const upload = await coverUpload.uploadFile({
-              file: pendingCover,
-              entityId: createdId,
-            });
-            if (!upload?.url) throw new Error('Cover upload failed');
-            finalCoverImage = upload.url;
-          }
-          if (pendingAudio) {
-            const upload = await audioUpload.uploadFile({
-              file: pendingAudio,
-              entityId: createdId,
-            });
-            if (!upload?.url) throw new Error('Audio upload failed');
-            finalAudioUrl = upload.url;
-          }
-
-          const patchRes = await callApi('ARTIST_UPDATE_MUSIC', {
-            query: `/${createdId}` as `/${string}`,
-            payload: {
-              coverImage: finalCoverImage,
-              audioUrl: finalAudioUrl,
-              ...metadataPayload,
-            },
-          });
-          if (patchRes.type !== 'success') {
-            throw new Error(patchRes.error?.message ?? 'Post-create media update failed');
-          }
-        }
       }
 
       setForm(defaultForm);
@@ -333,6 +270,7 @@ export function ArtistMusicFormModal({
               placeholder="Optional lyrics"
               rows={4}
             />
+            <ArtistMediaUploadGateNotice />
             <MediaUrlOrUploadField
               label="Cover image"
               value={form.coverImage ?? ''}
@@ -342,8 +280,8 @@ export function ArtistMusicFormModal({
               fallbackEntityIdPrefix="artist-music-cover"
               intent="image"
               accept="image/*"
-              defaultMode="upload"
-              onPendingFileChange={setPendingCover}
+              defaultMode="url"
+              disableFileUpload
             />
             <MediaUrlOrUploadField
               label="Audio file"
@@ -354,7 +292,8 @@ export function ArtistMusicFormModal({
               fallbackEntityIdPrefix="artist-music-audio"
               intent="other"
               accept="audio/*"
-              onPendingFileChange={setPendingAudio}
+              defaultMode="url"
+              disableFileUpload
             />
             <MediaMetadataFields
               idPrefix="artist-music"

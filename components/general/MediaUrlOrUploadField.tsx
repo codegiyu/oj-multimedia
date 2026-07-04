@@ -41,6 +41,8 @@ type MediaUrlOrUploadFieldProps = {
   maxFileSizeBytes?: number;
   fileSizeLabel?: string;
   onPendingFileChange?: (file: File | null) => void;
+  /** When true, only URL entry is allowed (e.g. artist portal). */
+  disableFileUpload?: boolean;
 };
 
 export function MediaUrlOrUploadField({
@@ -60,10 +62,13 @@ export function MediaUrlOrUploadField({
   maxFileSizeBytes,
   fileSizeLabel,
   onPendingFileChange,
+  disableFileUpload = false,
 }: MediaUrlOrUploadFieldProps) {
-  const [mode, setMode] = useState<MediaMode>(
-    defaultMode ?? (accept.includes('image/') ? 'upload' : 'url')
-  );
+  const [mode, setMode] = useState<MediaMode>(() => {
+    if (disableFileUpload) return 'url';
+
+    return defaultMode ?? (accept.includes('image/') ? 'upload' : 'url');
+  });
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedFilePreviewUrl, setSelectedFilePreviewUrl] = useState<string | null>(null);
   const [localError, setLocalError] = useState<string | null>(null);
@@ -226,24 +231,26 @@ export function MediaUrlOrUploadField({
         </div>
       )}
 
-      <div className="pt-1">
-        <div className="flex items-center justify-between gap-3">
-          <div>
-            <p className="text-xs text-muted-foreground">Source</p>
-            <p className="text-xs font-medium">{mode === 'upload' ? 'Upload file' : 'Use URL'}</p>
-          </div>
-          <div className="inline-flex items-center gap-2 text-xs">
-            <span id="media-source-upload-label" className="text-muted-foreground">
-              Use upload
-            </span>
-            <Switch
-              checked={mode === 'upload'}
-              onCheckedChange={checked => setMode(checked ? 'upload' : 'url')}
-              aria-labelledby="media-source-upload-label"
-            />
+      {!disableFileUpload ? (
+        <div className="pt-1">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-xs text-muted-foreground">Source</p>
+              <p className="text-xs font-medium">{mode === 'upload' ? 'Upload file' : 'Use URL'}</p>
+            </div>
+            <div className="inline-flex items-center gap-2 text-xs">
+              <span id="media-source-upload-label" className="text-muted-foreground">
+                Use upload
+              </span>
+              <Switch
+                checked={mode === 'upload'}
+                onCheckedChange={checked => setMode(checked ? 'upload' : 'url')}
+                aria-labelledby="media-source-upload-label"
+              />
+            </div>
           </div>
         </div>
-      </div>
+      ) : null}
     </div>
   );
 }
