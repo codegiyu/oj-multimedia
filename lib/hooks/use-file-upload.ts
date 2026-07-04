@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { callApi } from '../services/callApi';
 import { uploadFileWithProgress } from '../utils/general';
+import { resolveUploadContentType } from '../utils/uploadContentType';
 import type { EntityType, UploadIntent } from '@/lib/types/server-models';
 import { toast } from 'sonner';
 import { useInitAuthStore } from '../store/useAuthStore';
@@ -134,7 +135,7 @@ export const useFileUpload = ({
     setProgress(0);
 
     const fileExtension = getFileExtension(fileToUpload.name);
-    const contentType = fileToUpload.type || 'application/octet-stream';
+    const contentType = resolveUploadContentType(fileToUpload);
 
     const presignedKey = resolvePresignedEndpoint();
 
@@ -157,12 +158,25 @@ export const useFileUpload = ({
 
     // Handle single file response
     if ('uploadUrl' in data && data.uploadUrl && 'publicUrl' in data && data.publicUrl) {
-      const { uploadUrl, publicUrl, key, intent: responseIntent } = data;
+      const {
+        uploadUrl,
+        publicUrl,
+        key,
+        intent: responseIntent,
+        contentType: signedContentType,
+      } = data;
+
+      const putContentType = signedContentType?.trim() || contentType;
 
       try {
-        await uploadFileWithProgress(fileToUpload, uploadUrl, (progressPercentage: number) => {
-          setProgress(progressPercentage);
-        });
+        await uploadFileWithProgress(
+          fileToUpload,
+          uploadUrl,
+          (progressPercentage: number) => {
+            setProgress(progressPercentage);
+          },
+          putContentType
+        );
       } catch {
         setLoading(false);
         setProgress(0);

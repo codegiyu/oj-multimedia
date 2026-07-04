@@ -84,6 +84,7 @@ export interface IUploadPresignedUrlResBase {
   key?: string;
   intent?: string;
   publicUrl?: string;
+  contentType?: string;
   documentId?: string;
   filename?: string;
   expiresIn?: number;
@@ -110,6 +111,7 @@ export type IUploadPresignedUrlRes =
       expiresAt?: string;
       intent: string;
       publicUrl: string;
+      contentType?: string;
       documentId?: string;
       expiresIn: number;
       uploads?: never;

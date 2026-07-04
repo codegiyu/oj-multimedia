@@ -213,13 +213,15 @@ export function formatFileSize(bytes: number): { filesize: number; unit: 'KB' | 
 export const uploadFileWithProgress = (
   file: File,
   uploadUrl: string,
-  onProgress: (percentage: number) => void
+  onProgress: (percentage: number) => void,
+  contentType?: string
 ) => {
   return new Promise<string>((resolve, reject) => {
     const xhr = new XMLHttpRequest();
     xhr.open('PUT', uploadUrl);
 
-    xhr.setRequestHeader('Content-Type', file.type);
+    const resolvedType = contentType?.trim() || file.type?.trim() || 'application/octet-stream';
+    xhr.setRequestHeader('Content-Type', resolvedType);
 
     xhr.upload.onprogress = event => {
       if (event.lengthComputable) {
