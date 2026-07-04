@@ -4,6 +4,11 @@ import { useState } from 'react';
 import { callApi } from '../services/callApi';
 import { uploadFileWithProgress } from '../utils/general';
 import { resolveUploadContentType } from '../utils/uploadContentType';
+import {
+  getUploadMaxBytesForFile,
+  getUploadTimeoutMsForFile,
+  formatUploadBytes,
+} from '../constants/uploadLimits';
 import type { EntityType, UploadIntent } from '@/lib/types/server-models';
 import { toast } from 'sonner';
 import { useInitAuthStore } from '../store/useAuthStore';
@@ -14,6 +19,57 @@ function resolvePresignedEndpoint(): 'GENERATE_PRESIGNED_URL' | 'ADMIN_GENERATE_
   const u = useInitAuthStore.getState().user;
   if (u && typeof u === 'object' && 'kyc' in u) return 'GENERATE_PRESIGNED_URL';
   return 'ADMIN_GENERATE_PRESIGNED_URL';
+}
+
+function resolveVerifyEndpoint(): 'DOCUMENTS_VERIFY' | 'ADMIN_DOCUMENTS_VERIFY' {
+  return resolvePresignedEndpoint() === 'GENERATE_PRESIGNED_URL'
+    ? 'DOCUMENTS_VERIFY'
+    : 'ADMIN_DOCUMENTS_VERIFY';
+}
+
+async function verifyUploadedDocument(documentId: string): Promise<boolean> {
+  const verifyKey = resolveVerifyEndpoint();
+
+  if (verifyKey === 'ADMIN_DOCUMENTS_VERIFY') {
+    const { data, error } = await callApi('ADMIN_DOCUMENTS_VERIFY', {
+      query: `/${documentId}` as `/${string}`,
+    });
+
+    if (error) {
+      toast.error(error.message || 'Upload verification failed');
+      return false;
+    }
+
+    const status = (data?.document as { status?: string } | undefined)?.status;
+    if (status === 'verified') return true;
+
+    toast.error(
+      status === 'failed'
+        ? 'Upload verification failed — file not found in storage'
+        : 'Upload verification failed — please try again'
+    );
+    return false;
+  }
+
+  const { data, error } = await callApi('DOCUMENTS_VERIFY', {
+    payload: { documentId },
+  });
+
+  if (error) {
+    toast.error(error.message || 'Upload verification failed');
+    return false;
+  }
+
+  const status = (data?.document as { status?: string } | undefined)?.status;
+  if (status === 'verified') return true;
+
+  toast.error(
+    status === 'failed'
+      ? 'Upload verification failed — file not found in storage'
+      : 'Upload verification failed — please try again'
+  );
+
+  return false;
 }
 
 function isVendorOrProductImage(entityType: EntityType, intent: UploadIntent): boolean {
@@ -131,6 +187,12 @@ export const useFileUpload = ({
       return null;
     }
 
+    const maxBytes = getUploadMaxBytesForFile(fileToUpload.name, targetIntent);
+    if (maxBytes && fileToUpload.size > maxBytes) {
+      toast.error(`File is too large. Max allowed: ${formatUploadBytes(maxBytes)}.`);
+      return null;
+    }
+
     setLoading(true);
     setProgress(0);
 
@@ -168,6 +230,7 @@ export const useFileUpload = ({
       } = data;
 
       const putContentType = signedContentType?.trim() || contentType;
+      const timeoutMs = getUploadTimeoutMsForFile(fileToUpload.name, targetIntent);
 
       try {
         await uploadFileWithProgress(
@@ -176,7 +239,7 @@ export const useFileUpload = ({
           (progressPercentage: number) => {
             setProgress(progressPercentage);
           },
-          { contentType: putContentType }
+          { contentType: putContentType, timeoutMs }
         );
       } catch (uploadErr) {
         setLoading(false);
@@ -186,13 +249,22 @@ export const useFileUpload = ({
             ? uploadErr.message
             : 'Storage upload failed — please try again';
         toast.error(
-          message.startsWith('Upload failed') ? message : `Storage upload failed: ${message}`
+          message.startsWith('Upload failed') || message.startsWith('Upload timed out')
+            ? message
+            : `Storage upload failed: ${message}`
         );
         return null;
       }
 
       if (documentId) {
-        console.info('[upload] file stored', { documentId, publicUrl, key });
+        const verified = await verifyUploadedDocument(documentId);
+        if (!verified) {
+          setLoading(false);
+          setProgress(0);
+          return null;
+        }
+
+        console.info('[upload] verified', { documentId, publicUrl, key });
       }
 
       setUploadedUrl(publicUrl);
