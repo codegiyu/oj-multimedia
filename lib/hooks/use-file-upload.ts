@@ -152,7 +152,7 @@ export const useFileUpload = ({
     if (error || !data) {
       setLoading(false);
       setProgress(0);
-      toast.error(error?.message || 'Failed to get upload URL');
+      toast.error(error?.message || 'Could not prepare upload — please try again');
       return null;
     }
 
@@ -164,6 +164,7 @@ export const useFileUpload = ({
         key,
         intent: responseIntent,
         contentType: signedContentType,
+        documentId,
       } = data;
 
       const putContentType = signedContentType?.trim() || contentType;
@@ -175,13 +176,23 @@ export const useFileUpload = ({
           (progressPercentage: number) => {
             setProgress(progressPercentage);
           },
-          putContentType
+          { contentType: putContentType }
         );
-      } catch {
+      } catch (uploadErr) {
         setLoading(false);
         setProgress(0);
-        toast.error('Failed to upload file. Please try again');
+        const message =
+          uploadErr instanceof Error
+            ? uploadErr.message
+            : 'Storage upload failed — please try again';
+        toast.error(
+          message.startsWith('Upload failed') ? message : `Storage upload failed: ${message}`
+        );
         return null;
+      }
+
+      if (documentId) {
+        console.info('[upload] file stored', { documentId, publicUrl, key });
       }
 
       setUploadedUrl(publicUrl);

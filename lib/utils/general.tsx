@@ -210,18 +210,31 @@ export function formatFileSize(bytes: number): { filesize: number; unit: 'KB' | 
   }
 }
 
+export type UploadFileWithProgressOptions = {
+  contentType?: string;
+  timeoutMs?: number;
+};
+
 export const uploadFileWithProgress = (
   file: File,
   uploadUrl: string,
   onProgress: (percentage: number) => void,
-  contentType?: string
+  options?: UploadFileWithProgressOptions | string
 ) => {
+  const normalizedOptions: UploadFileWithProgressOptions =
+    typeof options === 'string' ? { contentType: options } : (options ?? {});
+
   return new Promise<string>((resolve, reject) => {
     const xhr = new XMLHttpRequest();
     xhr.open('PUT', uploadUrl);
 
-    const resolvedType = contentType?.trim() || file.type?.trim() || 'application/octet-stream';
+    const resolvedType =
+      normalizedOptions.contentType?.trim() || file.type?.trim() || 'application/octet-stream';
     xhr.setRequestHeader('Content-Type', resolvedType);
+
+    if (normalizedOptions.timeoutMs && normalizedOptions.timeoutMs > 0) {
+      xhr.timeout = normalizedOptions.timeoutMs;
+    }
 
     xhr.upload.onprogress = event => {
       if (event.lengthComputable) {
@@ -231,14 +244,17 @@ export const uploadFileWithProgress = (
     };
 
     xhr.onload = () => {
-      if (xhr.status === 200) {
-        resolve('Image successfully uploaded');
-      } else {
-        reject(new Error('Upload failed'));
+      if (xhr.status === 200 || xhr.status === 204) {
+        resolve('File successfully uploaded');
+        return;
       }
+
+      reject(new Error(`Upload failed (${xhr.status})`));
     };
 
-    xhr.onerror = () => reject(new Error('Upload failed'));
+    xhr.onerror = () => reject(new Error('Upload failed (network error)'));
+    xhr.ontimeout = () =>
+      reject(new Error('Upload timed out — check connection or use a smaller file'));
 
     xhr.send(file);
   });
