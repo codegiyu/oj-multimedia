@@ -21,6 +21,7 @@ import type {
   IArtistUpdateVideoPayload,
 } from '@/lib/constants/endpoints';
 import { MediaUrlOrUploadField } from '@/components/general/MediaUrlOrUploadField';
+import { ArtistMediaUploadGateNotice } from '@/components/section/account/artist-portal/ArtistMediaUploadGateNotice';
 import { ensureSelectContainsSlug } from '@/lib/utils/adminContentCategorySelect';
 import {
   assertMonetizationPriceClient,
@@ -31,7 +32,6 @@ import {
   resolveMonetizationFormPrice,
 } from '@/lib/utils/adminFormValidation';
 import { MonetizationFormFields } from '@/components/section/admin/shared/MonetizationFormFields';
-import { useFileUpload } from '@/lib/hooks/use-file-upload';
 import { useContentCategoryOptions } from '@/lib/hooks/useContentCategoryOptions';
 import {
   PUBLISHABLE_STATUS_SELECT_OPTIONS,
@@ -75,8 +75,6 @@ export function ArtistVideoFormModal({
   const [loading, setLoading] = useState(false);
   const [detailLoading, setDetailLoading] = useState(false);
   const [editStatus, setEditStatus] = useState<'draft' | 'published' | 'archived'>('draft');
-  const [pendingThumbnail, setPendingThumbnail] = useState<File | null>(null);
-  const [pendingVideoFile, setPendingVideoFile] = useState<File | null>(null);
   const [durationParts, setDurationParts] = useState<MediaDurationParts>(
     EMPTY_MEDIA_DURATION_PARTS
   );
@@ -91,17 +89,6 @@ export function ArtistVideoFormModal({
     () => [{ text: 'None', value: '' }, ...rawCategoryOptions],
     [rawCategoryOptions]
   );
-
-  const thumbnailUpload = useFileUpload({
-    entityType: 'resource',
-    entityId: editId ?? 'artist-video-pending',
-    intent: 'image',
-  });
-  const videoFileUpload = useFileUpload({
-    entityType: 'resource',
-    entityId: editId ?? 'artist-video-pending',
-    intent: 'other',
-  });
 
   useEffect(() => {
     if (!open) {
@@ -172,35 +159,14 @@ export function ArtistVideoFormModal({
       const isMonetizable = Boolean(form.isMonetizable);
       const price = resolveMonetizationFormPrice(isMonetizable, form.price);
 
-      let finalThumbnail = thumbnail;
-      let finalVideoFileUrl = videoFileUrl;
-      const finalVideoUrl = videoUrl;
-
       if (editId) {
-        if (pendingThumbnail) {
-          const upload = await thumbnailUpload.uploadFile({
-            file: pendingThumbnail,
-            entityId: editId,
-          });
-          if (!upload?.url) throw new Error('Thumbnail upload failed');
-          finalThumbnail = upload.url;
-        }
-        if (pendingVideoFile) {
-          const upload = await videoFileUpload.uploadFile({
-            file: pendingVideoFile,
-            entityId: editId,
-          });
-          if (!upload?.url) throw new Error('Video file upload failed');
-          finalVideoFileUrl = upload.url;
-        }
-
         const payload: IArtistUpdateVideoPayload = {
           title,
           description: description || undefined,
-          thumbnail: finalThumbnail,
-          videoFileUrl: finalVideoFileUrl,
+          thumbnail,
+          videoFileUrl,
           embedUrl,
-          videoUrl: finalVideoUrl,
+          videoUrl,
           category,
           isMonetizable,
           price,
@@ -217,8 +183,8 @@ export function ArtistVideoFormModal({
         const payload: IArtistCreateVideoPayload = {
           title,
           description,
-          thumbnail: finalThumbnail || '',
-          videoFileUrl: finalVideoFileUrl || '',
+          thumbnail: thumbnail || '',
+          videoFileUrl: videoFileUrl || '',
           embedUrl,
           category,
           isMonetizable,
@@ -228,39 +194,6 @@ export function ArtistVideoFormModal({
 
         const res = await callApi('ARTIST_CREATE_VIDEO', { payload });
         if (res.type !== 'success') throw new Error(res.error?.message ?? 'Create failed');
-
-        const createdId =
-          (res.data as { video?: { _id?: string } } | undefined)?.video?._id ??
-          (res.data as { _id?: string } | undefined)?._id;
-
-        if (createdId && (pendingThumbnail || pendingVideoFile || metadataPayload.metadata)) {
-          if (pendingThumbnail) {
-            const upload = await thumbnailUpload.uploadFile({
-              file: pendingThumbnail,
-              entityId: createdId,
-            });
-            if (upload?.url) finalThumbnail = upload.url;
-          }
-          if (pendingVideoFile) {
-            const upload = await videoFileUpload.uploadFile({
-              file: pendingVideoFile,
-              entityId: createdId,
-            });
-            if (upload?.url) finalVideoFileUrl = upload.url;
-          }
-
-          const patchRes = await callApi('ARTIST_UPDATE_VIDEO', {
-            query: `/${createdId}` as `/${string}`,
-            payload: {
-              thumbnail: finalThumbnail,
-              videoFileUrl: finalVideoFileUrl,
-              ...metadataPayload,
-            },
-          });
-          if (patchRes.type !== 'success') {
-            throw new Error(patchRes.error?.message ?? 'Post-create media update failed');
-          }
-        }
       }
 
       setForm(defaultForm);
@@ -329,6 +262,7 @@ export function ArtistVideoFormModal({
               placeholder="Optional description"
               rows={3}
             />
+            <ArtistMediaUploadGateNotice />
             <MediaUrlOrUploadField
               label="Thumbnail"
               value={form.thumbnail ?? ''}
@@ -338,8 +272,8 @@ export function ArtistVideoFormModal({
               fallbackEntityIdPrefix="artist-video-thumb"
               intent="image"
               accept="image/*"
-              defaultMode="upload"
-              onPendingFileChange={setPendingThumbnail}
+              defaultMode="url"
+              disableFileUpload
             />
             <MediaUrlOrUploadField
               label="Video file"
@@ -350,7 +284,8 @@ export function ArtistVideoFormModal({
               fallbackEntityIdPrefix="artist-video-file"
               intent="other"
               accept="video/*"
-              onPendingFileChange={setPendingVideoFile}
+              defaultMode="url"
+              disableFileUpload
             />
             <RegularInput
               label="Embed URL (YouTube / Vimeo)"
