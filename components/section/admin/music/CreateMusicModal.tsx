@@ -383,7 +383,8 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
               entityId: createdId,
             });
 
-            if (upload?.url) finalCoverImage = upload.url;
+            if (!upload?.url) throw new Error('Cover upload failed');
+            finalCoverImage = upload.url;
           }
 
           if (pendingAudio) {
@@ -392,7 +393,8 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
               entityId: createdId,
             });
 
-            if (upload?.url) finalAudioUrl = upload.url;
+            if (!upload?.url) throw new Error('Audio upload failed');
+            finalAudioUrl = upload.url;
           }
 
           if (pendingCover || pendingAudio || metadataPayload.metadata) {

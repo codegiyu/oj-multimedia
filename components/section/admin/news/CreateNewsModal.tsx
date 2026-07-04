@@ -247,21 +247,24 @@ export function CreateNewsModal({ open, onOpenChange, editId, onSuccess }: Creat
               file: pendingCoverImage,
               entityId: createdId,
             });
-            if (upload?.url) finalCoverImage = upload.url;
+            if (!upload?.url) throw new Error('Cover image upload failed');
+            finalCoverImage = upload.url;
           }
           if (pendingAudio) {
             const upload = await audioUpload.uploadFile({
               file: pendingAudio,
               entityId: createdId,
             });
-            if (upload?.url) finalAudioUrl = upload.url;
+            if (!upload?.url) throw new Error('Audio upload failed');
+            finalAudioUrl = upload.url;
           }
           if (pendingVideoFile) {
             const upload = await videoUpload.uploadFile({
               file: pendingVideoFile,
               entityId: createdId,
             });
-            if (upload?.url) finalVideoFileUrl = upload.url;
+            if (!upload?.url) throw new Error('Video upload failed');
+            finalVideoFileUrl = upload.url;
           }
           if (pendingCoverImage || pendingAudio || pendingVideoFile) {
             const patchRes = await callApi('ADMIN_NEWS_UPDATE', {

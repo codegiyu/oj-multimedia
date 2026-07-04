@@ -234,14 +234,16 @@ export function ArtistMusicFormModal({
               file: pendingCover,
               entityId: createdId,
             });
-            if (upload?.url) finalCoverImage = upload.url;
+            if (!upload?.url) throw new Error('Cover upload failed');
+            finalCoverImage = upload.url;
           }
           if (pendingAudio) {
             const upload = await audioUpload.uploadFile({
               file: pendingAudio,
               entityId: createdId,
             });
-            if (upload?.url) finalAudioUrl = upload.url;
+            if (!upload?.url) throw new Error('Audio upload failed');
+            finalAudioUrl = upload.url;
           }
 
           const patchRes = await callApi('ARTIST_UPDATE_MUSIC', {
