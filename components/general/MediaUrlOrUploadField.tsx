@@ -130,6 +130,14 @@ export function MediaUrlOrUploadField({
     }
   };
 
+  const handleSourceModeChange = (useUpload: boolean) => {
+    if (!useUpload) {
+      void selectFile(null);
+    }
+
+    setMode(useUpload ? 'upload' : 'url');
+  };
+
   return (
     <div className="space-y-2 rounded-md border border-border/60 p-3">
       {mode === 'url' ? (
@@ -247,7 +255,7 @@ export function MediaUrlOrUploadField({
               </span>
               <Switch
                 checked={mode === 'upload'}
-                onCheckedChange={checked => setMode(checked ? 'upload' : 'url')}
+                onCheckedChange={handleSourceModeChange}
                 aria-labelledby="media-source-upload-label"
               />
             </div>

@@ -174,7 +174,7 @@ export function CreateNewsModal({ open, onOpenChange, editId, onSuccess }: Creat
       const finalDownloadUrl = downloadUrl;
 
       if (editId) {
-        if (pendingCoverImage) {
+        if (pendingCoverImage?.size) {
           const upload = await coverUpload.uploadFile({
             file: pendingCoverImage,
             entityId: editId,
@@ -182,12 +182,12 @@ export function CreateNewsModal({ open, onOpenChange, editId, onSuccess }: Creat
           if (!upload?.url) throw new Error('Cover image upload failed');
           finalCoverImage = upload.url;
         }
-        if (pendingAudio) {
+        if (pendingAudio?.size) {
           const upload = await audioUpload.uploadFile({ file: pendingAudio, entityId: editId });
           if (!upload?.url) throw new Error('Audio upload failed');
           finalAudioUrl = upload.url;
         }
-        if (pendingVideoFile) {
+        if (pendingVideoFile?.size) {
           const upload = await videoUpload.uploadFile({ file: pendingVideoFile, entityId: editId });
           if (!upload?.url) throw new Error('Video upload failed');
           finalVideoFileUrl = upload.url;
@@ -242,7 +242,7 @@ export function CreateNewsModal({ open, onOpenChange, editId, onSuccess }: Creat
           (createRes.data as { article?: { _id?: string } } | undefined)?.article?._id ??
           (createRes.data as { _id?: string } | undefined)?._id;
         if (createdId) {
-          if (pendingCoverImage) {
+          if (pendingCoverImage?.size) {
             const upload = await coverUpload.uploadFile({
               file: pendingCoverImage,
               entityId: createdId,
@@ -250,7 +250,7 @@ export function CreateNewsModal({ open, onOpenChange, editId, onSuccess }: Creat
             if (!upload?.url) throw new Error('Cover image upload failed');
             finalCoverImage = upload.url;
           }
-          if (pendingAudio) {
+          if (pendingAudio?.size) {
             const upload = await audioUpload.uploadFile({
               file: pendingAudio,
               entityId: createdId,
@@ -258,7 +258,7 @@ export function CreateNewsModal({ open, onOpenChange, editId, onSuccess }: Creat
             if (!upload?.url) throw new Error('Audio upload failed');
             finalAudioUrl = upload.url;
           }
-          if (pendingVideoFile) {
+          if (pendingVideoFile?.size) {
             const upload = await videoUpload.uploadFile({
               file: pendingVideoFile,
               entityId: createdId,
@@ -266,7 +266,7 @@ export function CreateNewsModal({ open, onOpenChange, editId, onSuccess }: Creat
             if (!upload?.url) throw new Error('Video upload failed');
             finalVideoFileUrl = upload.url;
           }
-          if (pendingCoverImage || pendingAudio || pendingVideoFile) {
+          if (pendingCoverImage?.size || pendingAudio?.size || pendingVideoFile?.size) {
             const patchRes = await callApi('ADMIN_NEWS_UPDATE', {
               query: `/${createdId}` as `/${string}`,
               payload: {
@@ -293,7 +293,12 @@ export function CreateNewsModal({ open, onOpenChange, editId, onSuccess }: Creat
   };
 
   const handleOpenChange = (val: boolean) => {
-    if (!val) setForm(defaultForm);
+    if (!val) {
+      setForm(defaultForm);
+      setPendingCoverImage(null);
+      setPendingAudio(null);
+      setPendingVideoFile(null);
+    }
     onOpenChange(val);
   };
 
