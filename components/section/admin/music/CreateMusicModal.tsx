@@ -301,13 +301,13 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
       const finalDownloadUrl = downloadUrl;
 
       if (editId) {
-        if (pendingCover) {
+        if (pendingCover?.size) {
           const upload = await coverUpload.uploadFile({ file: pendingCover, entityId: editId });
           if (!upload?.url) throw new Error('Cover upload failed');
           finalCoverImage = upload.url;
         }
 
-        if (pendingAudio) {
+        if (pendingAudio?.size) {
           const upload = await audioUpload.uploadFile({ file: pendingAudio, entityId: editId });
           if (!upload?.url) throw new Error('Audio upload failed');
           finalAudioUrl = upload.url;
@@ -377,7 +377,7 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
           (res.data as { _id?: string } | undefined)?._id;
 
         if (createdId) {
-          if (pendingCover) {
+          if (pendingCover?.size) {
             const upload = await coverUpload.uploadFile({
               file: pendingCover,
               entityId: createdId,
@@ -387,7 +387,7 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
             finalCoverImage = upload.url;
           }
 
-          if (pendingAudio) {
+          if (pendingAudio?.size) {
             const upload = await audioUpload.uploadFile({
               file: pendingAudio,
               entityId: createdId,
@@ -397,7 +397,7 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
             finalAudioUrl = upload.url;
           }
 
-          if (pendingCover || pendingAudio || metadataPayload.metadata) {
+          if (pendingCover?.size || pendingAudio?.size || metadataPayload.metadata) {
             const patchRes = await callApi('ADMIN_MUSIC_UPDATE', {
               query: `/${createdId}` as `/${string}`,
               payload: {
@@ -431,6 +431,8 @@ export function CreateMusicModal({ open, onOpenChange, editId, onSuccess }: Crea
     if (!val) {
       setForm(defaultForm);
       setDurationParts(EMPTY_MEDIA_DURATION_PARTS);
+      setPendingCover(null);
+      setPendingAudio(null);
     }
     onOpenChange(val);
   };

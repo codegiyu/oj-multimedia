@@ -33,4 +33,14 @@ describe('upload flow contract', () => {
     expect(xhr).toContain('contentType?: string');
     expect(xhr).toContain('timeoutMs');
   });
+
+  it('clears pending file when switching media field back to URL mode', () => {
+    const field = readFileSync(
+      join(process.cwd(), 'components/general/MediaUrlOrUploadField.tsx'),
+      'utf8'
+    );
+
+    expect(field).toContain('handleSourceModeChange');
+    expect(field).toContain('void selectFile(null)');
+  });
 });
