@@ -1,7 +1,9 @@
 import { Suspense } from 'react';
 import { ArtistPortalSettingsPageClient } from '@/components/section/account/artist-portal/ArtistPortalSettingsPageClient';
 import { ArtistPortalSettingsPageSkeleton } from '@/components/section/account/skeletons';
+import { DashboardPortalForbiddenFallback } from '@/components/section/account/shared/DashboardPortalForbiddenFallback';
 import type { Metadata } from 'next';
+import { isPortalForbiddenCode } from '@/lib/account/rolePortalAccess';
 import { callServerApi } from '@/lib/services/serverApi';
 import type { ApiErrorResponse } from '@/lib/types/http';
 
@@ -24,8 +26,12 @@ async function ArtistSettingsPageClientServer() {
   if (res.error || !res.data) {
     const responseCode = (res.error as ApiErrorResponse | undefined)?.responseCode;
 
-    if (responseCode === 403 || responseCode === 404) {
-      return null;
+    if (isPortalForbiddenCode(responseCode)) {
+      return (
+        <DashboardPortalForbiddenFallback
+          message={res.message || "We couldn't load your artist profile."}
+        />
+      );
     }
 
     return (

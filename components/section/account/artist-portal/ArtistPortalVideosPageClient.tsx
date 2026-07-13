@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { callApi } from '@/lib/services/callApi';
 import type { ArtistVideoListItem } from '@/lib/constants/endpoints';
-import type { ApiErrorResponse } from '@/lib/types/http';
 import { Video, Loader2, MessageCircle, Plus, Pencil } from 'lucide-react';
 import { ArtistVideoFormModalDynamic } from './ArtistVideoFormModalDynamic';
 import { ArtistContentMonetizationBadge } from './ArtistContentMonetizationBadge';
@@ -93,12 +92,7 @@ export function ArtistPortalVideosPageClient({
       if (error || !data) {
         setVideos([]);
         setTotalPages(1);
-        const responseCode = (error as ApiErrorResponse | undefined)?.responseCode;
-        if (responseCode === 403 || responseCode === 404) {
-          setErrorMessage(null);
-        } else {
-          setErrorMessage(message || 'Unable to load videos.');
-        }
+        setErrorMessage(message || 'Unable to load videos.');
       } else {
         setVideos(data.videos);
         setTotalPages(data.pagination?.totalPages ?? 1);

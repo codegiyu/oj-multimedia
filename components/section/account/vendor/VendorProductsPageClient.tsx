@@ -12,7 +12,6 @@ import Link from 'next/link';
 import { callApi } from '@/lib/services/callApi';
 import type { IVendorProductsRes } from '@/lib/constants/endpoints';
 import { getProductCategoryName, getProductSubCategoryName } from '@/lib/constants/endpoints';
-import type { ApiErrorResponse } from '@/lib/types/http';
 import { toast } from 'sonner';
 import { SectionEmptyState } from '@/components/general/SectionEmptyState';
 import { FillImage } from '@/components/general/FillImage';
@@ -313,14 +312,7 @@ export function VendorProductsPageClient({
       if (error || !data) {
         setProducts([]);
         setTotalPages(1);
-
-        const responseCode = (error as ApiErrorResponse | undefined)?.responseCode;
-
-        if (responseCode === 403 || responseCode === 404) {
-          setErrorMessage(null);
-        } else {
-          setErrorMessage(message || 'Unable to load products.');
-        }
+        setErrorMessage(message || 'Unable to load products.');
       } else {
         setProducts(data.products);
         setTotalPages(data.pagination.totalPages || 1);

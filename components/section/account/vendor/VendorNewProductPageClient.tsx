@@ -238,7 +238,11 @@ export function VendorNewProductPageClient() {
       if (error || !data) {
         const responseCode = (error as ApiErrorResponse | undefined)?.responseCode;
         if (responseCode === 403 || responseCode === 404) {
-          toast.error('You need a vendor store to add products.');
+          toast.error(
+            message ||
+              (error as ApiErrorResponse | undefined)?.message ||
+              'You cannot add products right now. Your store may be pending approval or not linked.'
+          );
           router.push('/account/vendor');
           return false;
         }
