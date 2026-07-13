@@ -3,7 +3,18 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { LogIn, User, Heart, Settings, LogOut, ChevronDown, Mail } from 'lucide-react';
+import {
+  LogIn,
+  User,
+  Heart,
+  Settings,
+  LogOut,
+  ChevronDown,
+  Mail,
+  Store,
+  Mic2,
+  BookOpen,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuthStore } from '@/lib/store/useAuthStore';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -149,6 +160,33 @@ export function UserMenu() {
                 <Settings className="w-4 h-4 text-muted-foreground" />
                 <span>Settings</span>
               </Link>
+              {user && 'vendor' in user && user.vendor ? (
+                <Link
+                  href="/account/vendor"
+                  className="flex items-center gap-3 px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors"
+                  onClick={() => setIsOpen(false)}>
+                  <Store className="w-4 h-4 text-muted-foreground" />
+                  <span>Vendor dashboard</span>
+                </Link>
+              ) : null}
+              {user && 'artist' in user && user.artist ? (
+                <Link
+                  href="/account/artist-portal"
+                  className="flex items-center gap-3 px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors"
+                  onClick={() => setIsOpen(false)}>
+                  <Mic2 className="w-4 h-4 text-muted-foreground" />
+                  <span>Artist portal</span>
+                </Link>
+              ) : null}
+              {user && 'pastor' in user && user.pastor ? (
+                <Link
+                  href="/account/pastor-portal"
+                  className="flex items-center gap-3 px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors"
+                  onClick={() => setIsOpen(false)}>
+                  <BookOpen className="w-4 h-4 text-muted-foreground" />
+                  <span>Pastor portal</span>
+                </Link>
+              ) : null}
               <div className="border-t border-border my-1" />
               <button
                 onClick={handleLogout}
@@ -292,6 +330,42 @@ export function UserMobileMenu({ onMenuClose }: { onMenuClose: () => void }) {
             <Settings className="w-4 h-4" />
             <span>Settings</span>
           </Link>
+          {user && 'vendor' in user && user.vendor ? (
+            <Link
+              href="/account/vendor"
+              className="flex items-center gap-3 px-3 py-2 text-sm text-foreground hover:bg-muted rounded-md transition-colors"
+              onClick={() => {
+                setIsUserMenuOpen(false);
+                onMenuClose();
+              }}>
+              <Store className="w-4 h-4" />
+              <span>Vendor dashboard</span>
+            </Link>
+          ) : null}
+          {user && 'artist' in user && user.artist ? (
+            <Link
+              href="/account/artist-portal"
+              className="flex items-center gap-3 px-3 py-2 text-sm text-foreground hover:bg-muted rounded-md transition-colors"
+              onClick={() => {
+                setIsUserMenuOpen(false);
+                onMenuClose();
+              }}>
+              <Mic2 className="w-4 h-4" />
+              <span>Artist portal</span>
+            </Link>
+          ) : null}
+          {user && 'pastor' in user && user.pastor ? (
+            <Link
+              href="/account/pastor-portal"
+              className="flex items-center gap-3 px-3 py-2 text-sm text-foreground hover:bg-muted rounded-md transition-colors"
+              onClick={() => {
+                setIsUserMenuOpen(false);
+                onMenuClose();
+              }}>
+              <BookOpen className="w-4 h-4" />
+              <span>Pastor portal</span>
+            </Link>
+          ) : null}
           <div className="border-t border-border my-1" />
           <button
             onClick={handleLogout}

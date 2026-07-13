@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { DashboardPageHeader, DashboardStatCard } from '@/components/layout/user-dashboard';
 import { Card } from '@/components/ui/card';
-import { Package, Heart, Store, ShoppingBag, Settings, Mic2 } from 'lucide-react';
+import { Package, Heart, Store, ShoppingBag, Settings, Mic2, BookOpen } from 'lucide-react';
 
 export function AccountHubQuickLinks() {
   return (
@@ -36,6 +36,12 @@ export function AccountHubQuickLinks() {
             title: 'Vendor dashboard',
             desc: 'Store & orders',
             icon: Store,
+          },
+          {
+            href: '/account/pastor-portal',
+            title: 'Pastor portal',
+            desc: 'Ask a Pastor inbox',
+            icon: BookOpen,
           },
           { href: '/marketplace', title: 'Marketplace', desc: 'Shop', icon: ShoppingBag },
         ].map(item => {

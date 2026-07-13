@@ -27,8 +27,16 @@ export function VendorPageClient({ vendor, stats, errorMessage }: VendorPageClie
     <div className="max-w-6xl space-y-8">
       <DashboardPageHeader
         title="Overview"
-        description="Sales and orders at a glance for your store."
-      />
+        description="Sales and orders at a glance for your store.">
+        {vendor?.slug ? (
+          <Button asChild variant="outline" className="rounded-full px-5">
+            <Link href={`/marketplace/vendors/${vendor.slug}`} className="gap-2">
+              View public store
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </Button>
+        ) : null}
+      </DashboardPageHeader>
 
       {errorMessage && (
         <div className="rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
