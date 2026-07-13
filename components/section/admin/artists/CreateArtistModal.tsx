@@ -13,6 +13,7 @@ import { RegularBtn } from '@/components/atoms/RegularBtn';
 import { RegularInput } from '@/components/atoms/RegularInput';
 import { RegularTextarea } from '@/components/atoms/RegularTextarea';
 import { MediaUrlOrUploadField } from '@/components/general/MediaUrlOrUploadField';
+import { AdminUserAccountPicker } from '@/components/section/admin/shared/AdminUserAccountPicker';
 import { callApi } from '@/lib/services/callApi';
 import { useFileUpload } from '@/lib/hooks/use-file-upload';
 import { normalizeOptionalHttpUrl } from '@/lib/utils/adminFormValidation';
@@ -31,6 +32,7 @@ const defaultForm = {
   genre: '',
   image: '',
   coverImage: '',
+  ownerUserId: '',
 };
 
 export function CreateArtistModal({
@@ -85,6 +87,7 @@ export function CreateArtistModal({
           genre: a.genre ?? '',
           image: a.image ?? '',
           coverImage: a.coverImage ?? '',
+          ownerUserId: '',
         });
       } finally {
         if (!cancelled) setDetailLoading(false);
@@ -138,6 +141,7 @@ export function CreateArtistModal({
             genre: form.genre?.trim() ?? '',
             image: finalImage || undefined,
             coverImage: finalCoverImage || undefined,
+            ...(form.ownerUserId ? { ownerUserId: form.ownerUserId } : {}),
           },
         });
         if (res.type !== 'success') throw new Error(res.error?.message ?? 'Create failed');
@@ -256,6 +260,14 @@ export function CreateArtistModal({
               defaultMode="upload"
               onPendingFileChange={setPendingCoverImage}
             />
+            {!isEdit ? (
+              <AdminUserAccountPicker
+                label="Link user account (optional)"
+                value={form.ownerUserId}
+                onChange={userId => setForm(f => ({ ...f, ownerUserId: userId }))}
+                description="Link an existing user as the artist portal owner."
+              />
+            ) : null}
             <DialogFooter>
               <RegularBtn
                 type="button"
