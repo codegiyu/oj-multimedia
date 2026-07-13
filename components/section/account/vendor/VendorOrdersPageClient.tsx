@@ -21,7 +21,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { formatPrice } from '@/lib/utils/marketplace';
-import type { ApiErrorResponse } from '@/lib/types/http';
 import { cn } from '@/lib/utils';
 import { FilterableDataPage } from '@/components/general/FilterableDataPage';
 import { buildAccountOrdersQuery, isAccountListUnfiltered } from '@/lib/account/accountListFilters';
@@ -362,14 +361,7 @@ export function VendorOrdersPageClient({
       if (error || !data) {
         setOrders([]);
         setTotalPages(1);
-
-        const responseCode = (error as ApiErrorResponse | undefined)?.responseCode;
-
-        if (responseCode === 403 || responseCode === 404) {
-          setErrorMessage(null);
-        } else {
-          setErrorMessage(message || 'Unable to load orders.');
-        }
+        setErrorMessage(message || 'Unable to load orders.');
       } else {
         setOrders(data.orders);
         setTotalPages(data.pagination.totalPages || 1);

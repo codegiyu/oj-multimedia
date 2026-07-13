@@ -1,8 +1,10 @@
 import { Suspense } from 'react';
 import { VendorProductsPageClient } from '@/components/section/account/vendor/VendorProductsPageClient';
 import { VendorProductsPageSkeleton } from '@/components/section/account/skeletons';
+import { DashboardPortalForbiddenFallback } from '@/components/section/account/shared/DashboardPortalForbiddenFallback';
 import type { Metadata } from 'next';
 import { buildAccountVendorProductsQuery } from '@/lib/account/accountListFilters';
+import { isPortalForbiddenCode } from '@/lib/account/rolePortalAccess';
 import { callServerApi } from '@/lib/services/serverApi';
 import type { ApiErrorResponse } from '@/lib/types/http';
 import { parseAccountVendorProductsPageParams } from '@/lib/utils/accountSearchParams';
@@ -38,8 +40,10 @@ async function VendorProductsPageClientServer({
   if (res.error || !res.data) {
     const responseCode = (res.error as ApiErrorResponse | undefined)?.responseCode;
 
-    if (responseCode === 403 || responseCode === 404) {
-      return null;
+    if (isPortalForbiddenCode(responseCode)) {
+      return (
+        <DashboardPortalForbiddenFallback message={res.message || 'Unable to load products.'} />
+      );
     }
 
     return (

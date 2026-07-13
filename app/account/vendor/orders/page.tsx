@@ -1,8 +1,10 @@
 import { Suspense } from 'react';
 import { VendorOrdersPageClient } from '@/components/section/account/vendor/VendorOrdersPageClient';
 import { VendorOrdersPageSkeleton } from '@/components/section/account/skeletons';
+import { DashboardPortalForbiddenFallback } from '@/components/section/account/shared/DashboardPortalForbiddenFallback';
 import type { Metadata } from 'next';
 import { buildAccountOrdersQuery } from '@/lib/account/accountListFilters';
+import { isPortalForbiddenCode } from '@/lib/account/rolePortalAccess';
 import { callServerApi } from '@/lib/services/serverApi';
 import type { ApiErrorResponse } from '@/lib/types/http';
 import { parseAccountListPageParams } from '@/lib/utils/accountSearchParams';
@@ -38,8 +40,8 @@ async function VendorOrdersPageClientServer({
   if (res.error || !res.data) {
     const responseCode = (res.error as ApiErrorResponse | undefined)?.responseCode;
 
-    if (responseCode === 403 || responseCode === 404) {
-      return null;
+    if (isPortalForbiddenCode(responseCode)) {
+      return <DashboardPortalForbiddenFallback message={res.message || 'Unable to load orders.'} />;
     }
 
     return (

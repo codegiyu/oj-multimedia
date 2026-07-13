@@ -108,7 +108,11 @@ export function ArtistPortalSettingsPageClient({
       if (error || !data) {
         const responseCode = (error as ApiErrorResponse | undefined)?.responseCode;
         if (responseCode === 403 || responseCode === 404) {
-          toast.error('You need an artist profile to save settings.');
+          toast.error(
+            message ||
+              (error as ApiErrorResponse | undefined)?.message ||
+              'You cannot save settings right now.'
+          );
           return false;
         }
         toast.error(message || 'Failed to save artist profile.');

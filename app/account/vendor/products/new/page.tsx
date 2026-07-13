@@ -2,6 +2,8 @@ import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { VendorNewProductPageClient } from '@/components/section/account/vendor/VendorNewProductPageClient';
 import { VendorProductFormPageSkeleton } from '@/components/section/account/skeletons';
+import { DashboardPortalForbiddenFallback } from '@/components/section/account/shared/DashboardPortalForbiddenFallback';
+import { isPortalForbiddenCode } from '@/lib/account/rolePortalAccess';
 import { callServerApi } from '@/lib/services/serverApi';
 import type { ApiErrorResponse } from '@/lib/types/http';
 
@@ -23,8 +25,13 @@ async function NewVendorProductPageServer() {
 
   if (res.error || !res.data) {
     const responseCode = (res.error as ApiErrorResponse | undefined)?.responseCode;
-    if (responseCode === 403 || responseCode === 404) {
-      return null;
+
+    if (isPortalForbiddenCode(responseCode)) {
+      return (
+        <DashboardPortalForbiddenFallback
+          message={res.message || 'Unable to load vendor profile.'}
+        />
+      );
     }
   }
 

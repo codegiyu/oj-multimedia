@@ -2,6 +2,8 @@ import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { ArtistPortalAlbumsPageClient } from '@/components/section/account/artist-portal/ArtistPortalAlbumsPageClient';
 import { ArtistPortalAlbumsPageSkeleton } from '@/components/section/account/skeletons';
+import { DashboardPortalForbiddenFallback } from '@/components/section/account/shared/DashboardPortalForbiddenFallback';
+import { isPortalForbiddenCode } from '@/lib/account/rolePortalAccess';
 import { callServerApi, callPublicServerApi } from '@/lib/services/serverApi';
 import { filterPublicAlbumList, mapPublicAlbumToCard } from '@/lib/utils/publicApiMappers';
 import type { IPublicAlbumsListRes } from '@/lib/constants/endpoints';
@@ -26,8 +28,12 @@ async function ArtistPortalAlbumsPageServer() {
   if (meRes.type === 'error' || !meRes.data?.artist) {
     const responseCode = (meRes.error as ApiErrorResponse | undefined)?.responseCode;
 
-    if (responseCode === 403 || responseCode === 404) {
-      return null;
+    if (isPortalForbiddenCode(responseCode)) {
+      return (
+        <DashboardPortalForbiddenFallback
+          message={meRes.message ?? 'Unable to load your artist profile.'}
+        />
+      );
     }
 
     return (

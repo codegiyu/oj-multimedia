@@ -1,7 +1,9 @@
 import { Suspense } from 'react';
 import { VendorPageClient } from '@/components/section/account/vendor/VendorPageClient';
 import { VendorDashboardPageSkeleton } from '@/components/section/account/skeletons';
+import { DashboardPortalForbiddenFallback } from '@/components/section/account/shared/DashboardPortalForbiddenFallback';
 import type { Metadata } from 'next';
+import { isPortalForbiddenCode } from '@/lib/account/rolePortalAccess';
 import { callServerApi } from '@/lib/services/serverApi';
 import type { IVendorDashboardStatsRes, IVendorMeRes } from '@/lib/constants/endpoints';
 
@@ -24,8 +26,12 @@ async function VendorPageClientServer() {
   if (meRes.type === 'error') {
     const responseCode = meRes.error?.responseCode;
 
-    if (responseCode === 403 || responseCode === 404) {
-      return null;
+    if (isPortalForbiddenCode(responseCode)) {
+      return (
+        <DashboardPortalForbiddenFallback
+          message={meRes.message || 'Unable to load vendor profile.'}
+        />
+      );
     }
 
     return (

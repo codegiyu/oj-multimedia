@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { callApi } from '@/lib/services/callApi';
 import type { ArtistMusicListItem } from '@/lib/constants/endpoints';
-import type { ApiErrorResponse } from '@/lib/types/http';
 import { Loader2, MessageCircle, Plus, Pencil } from 'lucide-react';
 import { ArtistMusicFormModalDynamic } from './ArtistMusicFormModalDynamic';
 import { ArtistContentMonetizationBadge } from './ArtistContentMonetizationBadge';
@@ -81,12 +80,7 @@ export function ArtistPortalMusicPageClient({
     if (error || !data) {
       setMusic([]);
       setTotalPages(1);
-      const responseCode = (error as ApiErrorResponse | undefined)?.responseCode;
-      if (responseCode === 403 || responseCode === 404) {
-        setErrorMessage(null);
-      } else {
-        setErrorMessage(message || 'Unable to load music.');
-      }
+      setErrorMessage(message || 'Unable to load music.');
     } else {
       setMusic(data.music);
       setTotalPages(data.pagination?.totalPages ?? 1);

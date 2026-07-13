@@ -1,7 +1,9 @@
 import { Suspense } from 'react';
 import { ArtistPortalUploadPageClient } from '@/components/section/account/artist-portal/ArtistPortalUploadPageClient';
 import { ArtistPortalUploadPageSkeleton } from '@/components/section/account/skeletons';
+import { DashboardPortalForbiddenFallback } from '@/components/section/account/shared/DashboardPortalForbiddenFallback';
 import type { Metadata } from 'next';
+import { isPortalForbiddenCode } from '@/lib/account/rolePortalAccess';
 import { callServerApi } from '@/lib/services/serverApi';
 import type { ApiErrorResponse } from '@/lib/types/http';
 
@@ -23,9 +25,15 @@ async function ArtistUploadPageServer() {
 
   if (meRes.type === 'error' || !meRes.data) {
     const responseCode = (meRes.error as ApiErrorResponse | undefined)?.responseCode;
-    if (responseCode === 403 || responseCode === 404) {
-      return null;
+
+    if (isPortalForbiddenCode(responseCode)) {
+      return (
+        <DashboardPortalForbiddenFallback
+          message={meRes.error?.message ?? 'Unable to load artist profile.'}
+        />
+      );
     }
+
     return (
       <ArtistPortalUploadPageClient
         initialLoadError={meRes.error?.message ?? 'Unable to load artist profile.'}

@@ -2,8 +2,9 @@
 
 import { useEffect, useState, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
-import { Store } from 'lucide-react';
+import { Clock, Store, ShieldAlert } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { DashboardProfileRequiredPanel } from '@/components/section/account/shared/DashboardProfileRequiredPanel';
 import { VendorApplicationModal } from '@/components/section/account/shared/VendorApplicationModal';
 import { DashboardRoleAccountStatusPanel } from '@/components/section/account/shared/DashboardRoleAccountStatusPanel';
@@ -11,6 +12,12 @@ import type { IMarketplaceVendor } from '@/lib/constants/endpoints';
 import type { IRolePortalMeta, RolePortalStatus } from '@/lib/types/rolePortal';
 import { callApi } from '@/lib/services/callApi';
 import { toast } from 'sonner';
+import {
+  isRolePortalInactiveOrRejected,
+  isRolePortalLifecycleBlocked,
+  isRolePortalOperational,
+  isRolePortalPending,
+} from '@/lib/account/rolePortalAccess';
 
 export interface VendorPortalRouteGateProps {
   initialProfileMissing: boolean;
@@ -35,8 +42,6 @@ export function VendorPortalRouteGate({
   useEffect(() => {
     setMissing(initialProfileMissing);
   }, [initialProfileMissing]);
-
-  const blocked = initialPortalStatus === 'deactivated' || initialPortalStatus === 'suspended';
 
   if (initialLoadError && !initialProfileMissing) {
     return (
@@ -69,7 +74,7 @@ export function VendorPortalRouteGate({
     );
   }
 
-  if (blocked) {
+  if (isRolePortalLifecycleBlocked(initialPortalStatus)) {
     return (
       <DashboardRoleAccountStatusPanel
         profileLabel="vendor store"
@@ -90,6 +95,54 @@ export function VendorPortalRouteGate({
           router.refresh();
         }}
       />
+    );
+  }
+
+  if (isRolePortalPending(initialPortalStatus)) {
+    return (
+      <Card className="mx-auto max-w-xl border-amber-500/30 bg-amber-500/5">
+        <CardContent className="space-y-4 p-8 text-center">
+          <Clock className="mx-auto h-10 w-10 text-amber-600" />
+          <h2 className="text-lg font-semibold">Application under review</h2>
+          <p className="text-sm text-muted-foreground">
+            Your vendor application is pending approval. You can prepare your store story with our
+            team, but product listings and orders unlock after an admin approves your account.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (isRolePortalInactiveOrRejected(initialPortalStatus)) {
+    return (
+      <Card className="mx-auto max-w-xl border-destructive/30 bg-destructive/5">
+        <CardContent className="space-y-4 p-8 text-center">
+          <ShieldAlert className="mx-auto h-10 w-10 text-destructive" />
+          <h2 className="text-lg font-semibold">Store not active</h2>
+          <p className="text-sm text-muted-foreground">
+            This vendor store is inactive or was not approved. Contact support or re-apply after
+            reviewing any feedback from our team.
+          </p>
+          <Button type="button" variant="outline" onClick={() => router.push('/account')}>
+            Back to account
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!isRolePortalOperational(initialPortalStatus)) {
+    return (
+      <Card className="mx-auto max-w-xl">
+        <CardContent className="space-y-4 p-8 text-center">
+          <p className="text-sm text-muted-foreground">
+            Your vendor store is not ready for dashboard tools yet.
+          </p>
+          <Button type="button" variant="outline" onClick={() => router.refresh()}>
+            Retry
+          </Button>
+        </CardContent>
+      </Card>
     );
   }
 
