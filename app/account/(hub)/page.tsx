@@ -56,8 +56,8 @@ export default function AccountPage() {
         />
         <DashboardStatCard
           label="Portals"
-          value="2"
-          hint="Artist & vendor"
+          value="3"
+          hint="Artist, vendor & pastor"
           iconSlot={dashboardStatIconSlot(Store)}
         />
       </div>

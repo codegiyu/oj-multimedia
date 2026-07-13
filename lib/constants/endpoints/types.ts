@@ -184,9 +184,19 @@ export type PopulatedVendorSummary = {
   whatsapp?: string;
 };
 
+export type PopulatedPastorSummary = {
+  _id: string;
+  name: string;
+  slug?: string;
+  image?: string;
+  title?: string;
+  church?: string;
+};
+
 export type PopulatedUser = ClientUser & {
   artist?: PopulatedArtistSummary;
   vendor?: PopulatedVendorSummary;
+  pastor?: PopulatedPastorSummary;
 };
 
 // User account & wishlist types

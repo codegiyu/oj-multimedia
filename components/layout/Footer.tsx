@@ -23,7 +23,8 @@ const footerLinks = {
     { label: 'Upload Video', href: '/community/promote-your-content' },
     // { label: 'Start Podcast', href: '/community/promote-your-content' },
     { label: 'Become a Vendor', href: '/marketplace/become-vendor' },
-    { label: 'Artist Portal', href: '/community/artists' },
+    { label: 'Artist Portal', href: '/account/artist-portal' },
+    { label: 'Pastor Portal', href: '/account/pastor-portal' },
   ],
   resources: [
     { label: 'Daily Devotionals', href: '/community/devotionals' },
