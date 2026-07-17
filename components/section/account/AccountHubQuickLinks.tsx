@@ -4,8 +4,14 @@ import Link from 'next/link';
 import { DashboardPageHeader, DashboardStatCard } from '@/components/layout/user-dashboard';
 import { Card } from '@/components/ui/card';
 import { Package, Heart, Store, ShoppingBag, Settings, Mic2, BookOpen } from 'lucide-react';
+import { useAuthStore } from '@/lib/store/useAuthStore';
+import type { PopulatedUser } from '@/lib/constants/endpoints';
+import { vendorAccountNavTarget } from '@/lib/account/accountHubPortalCtas';
 
 export function AccountHubQuickLinks() {
+  const user = useAuthStore(s => s.user) as PopulatedUser | null;
+  const vendorNav = vendorAccountNavTarget(Boolean(user?.vendor));
+
   return (
     <div>
       <DashboardPageHeader title="Quick links" description="Jump to a section of your account." />
@@ -32,9 +38,12 @@ export function AccountHubQuickLinks() {
             icon: Mic2,
           },
           {
-            href: '/account/vendor',
-            title: 'Vendor dashboard',
-            desc: 'Store & orders',
+            href: vendorNav.href,
+            title: vendorNav.label === 'Vendor Dashboard' ? 'Vendor dashboard' : 'Open a store',
+            desc:
+              vendorNav.href === '/account/vendor'
+                ? 'Store & orders'
+                : 'Apply to sell on the marketplace',
             icon: Store,
           },
           {
