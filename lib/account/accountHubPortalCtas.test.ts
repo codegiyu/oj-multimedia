@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { buildAccountHubPortalCtas, vendorAccountNavTarget } from './accountHubPortalCtas';
+import {
+  buildAccountHubPortalCtas,
+  vendorAccountNavTarget,
+  withVendorAwareNavItems,
+} from './accountHubPortalCtas';
 
 describe('buildAccountHubPortalCtas', () => {
   it('defaults users with no portals to Open a store become-vendor CTA', () => {
@@ -53,5 +57,23 @@ describe('vendorAccountNavTarget', () => {
       href: '/account/vendor',
       label: 'Vendor Dashboard',
     });
+  });
+});
+
+describe('withVendorAwareNavItems', () => {
+  it('rewrites vendor dashboard entries for non-vendors', () => {
+    const items = withVendorAwareNavItems(
+      [
+        { href: '/account', label: 'Overview' },
+        { href: '/account/vendor', label: 'Vendor Dashboard' },
+      ],
+      false
+    );
+
+    expect(items[1]).toEqual({
+      href: '/marketplace/become-vendor',
+      label: 'Open a store',
+    });
+    expect(items[0].href).toBe('/account');
   });
 });
