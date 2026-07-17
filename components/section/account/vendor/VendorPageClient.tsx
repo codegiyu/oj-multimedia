@@ -25,7 +25,7 @@ export function VendorPageClient({ vendor, stats, errorMessage }: VendorPageClie
       : 'Unknown';
 
   return (
-    <div className="max-w-6xl space-y-8">
+    <div className="space-y-8">
       <DashboardPageHeader
         title="Overview"
         description="Sales and orders at a glance for your store.">

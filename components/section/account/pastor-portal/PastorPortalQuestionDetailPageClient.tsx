@@ -63,7 +63,7 @@ export function PastorPortalQuestionDetailPageClient({
   };
 
   return (
-    <div className="space-y-6 max-w-3xl">
+    <div className="space-y-6">
       <Button variant="ghost" size="sm" asChild className="gap-2 -ml-2">
         <Link href="/account/pastor-portal/questions">
           <ArrowLeft className="h-4 w-4" />
