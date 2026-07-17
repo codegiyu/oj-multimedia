@@ -3,6 +3,10 @@ export function isDeferredPortalAuthResponse(responseCode: number | undefined): 
   return responseCode === 204;
 }
 
+/**
+ * User-facing portal load error. Never leak 5xx / unknown upstream messages —
+ * those use `fallback`. Client/4xx messages (except 403/404/204) may pass through.
+ */
 export function portalLayoutLoadError(
   isError: boolean,
   responseCode: number | undefined,
@@ -14,10 +18,17 @@ export function portalLayoutLoadError(
     return null;
   }
 
+  if (responseCode == null || responseCode >= 500) {
+    return fallback;
+  }
+
   return message ?? fallback;
 }
 
-/** Message for unexpected throws in portal layout gates — never rethrow to parent error.tsx. */
+/**
+ * Message for unexpected throws in portal layout gates — use only for logging.
+ * UI must use a generic fallback, not this helper's return value.
+ */
 export function portalLayoutCaughtErrorMessage(error: unknown, fallback: string): string {
   if (error instanceof Error && error.message.trim()) {
     return error.message;
@@ -25,3 +36,6 @@ export function portalLayoutCaughtErrorMessage(error: unknown, fallback: string)
 
   return fallback;
 }
+
+/** Stable copy for vendor portal load failures shown to users. */
+export const VENDOR_PORTAL_LOAD_ERROR_FALLBACK = 'Unable to load vendor profile.';

@@ -8,6 +8,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { DashboardProfileRequiredPanel } from '@/components/section/account/shared/DashboardProfileRequiredPanel';
 import { VendorApplicationModal } from '@/components/section/account/shared/VendorApplicationModal';
 import { DashboardRoleAccountStatusPanel } from '@/components/section/account/shared/DashboardRoleAccountStatusPanel';
+import { DashboardMainSkeleton } from '@/components/section/account/skeletons';
 import type { IRolePortalMeta, RolePortalStatus } from '@/lib/types/rolePortal';
 import { callApi } from '@/lib/services/callApi';
 import { toast } from 'sonner';
@@ -23,6 +24,7 @@ export { vendorPortalMetaFromApi } from '@/lib/account/vendorPortalLayoutState';
 export interface VendorPortalRouteGateProps {
   initialProfileMissing: boolean;
   initialLoadError: string | null;
+  initialAuthDeferred?: boolean;
   initialPortalStatus: RolePortalStatus;
   initialMeta: IRolePortalMeta;
   children: ReactNode;
@@ -31,6 +33,7 @@ export interface VendorPortalRouteGateProps {
 export function VendorPortalRouteGate({
   initialProfileMissing,
   initialLoadError,
+  initialAuthDeferred = false,
   initialPortalStatus,
   initialMeta,
   children,
@@ -43,6 +46,10 @@ export function VendorPortalRouteGate({
   useEffect(() => {
     setMissing(initialProfileMissing);
   }, [initialProfileMissing]);
+
+  if (initialAuthDeferred) {
+    return <DashboardMainSkeleton />;
+  }
 
   if (initialLoadError && !initialProfileMissing) {
     return (
