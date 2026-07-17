@@ -8,7 +8,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { DashboardProfileRequiredPanel } from '@/components/section/account/shared/DashboardProfileRequiredPanel';
 import { BecomeArtistModal } from '@/components/section/account/shared/BecomeArtistModal';
 import { DashboardRoleAccountStatusPanel } from '@/components/section/account/shared/DashboardRoleAccountStatusPanel';
-import type { IArtistMeRes } from '@/lib/constants/endpoints';
+import { DashboardMainSkeleton } from '@/components/section/account/skeletons';
 import type { IRolePortalMeta, RolePortalStatus } from '@/lib/types/rolePortal';
 import { callApi } from '@/lib/services/callApi';
 import { toast } from 'sonner';
@@ -18,35 +18,21 @@ import {
   isRolePortalOperational,
 } from '@/lib/account/rolePortalAccess';
 
+export { artistPortalMetaFromMe } from '@/lib/account/artistPortalLayoutState';
+
 export interface ArtistPortalRouteGateProps {
   initialProfileMissing: boolean;
   initialLoadError: string | null;
+  initialAuthDeferred?: boolean;
   initialPortalStatus: RolePortalStatus;
   initialMeta: IRolePortalMeta;
   children: ReactNode;
 }
 
-export function artistPortalMetaFromMe(data: IArtistMeRes | undefined): {
-  portalStatus: RolePortalStatus;
-  meta: IRolePortalMeta;
-} {
-  const portalStatus = (data?.portalStatus ?? 'active') as RolePortalStatus;
-
-  return {
-    portalStatus,
-    meta: {
-      portalStatus,
-      statusChangedAt: data?.statusChangedAt,
-      suspensionReason: data?.suspensionReason,
-      openAppeal: data?.openAppeal ?? null,
-      lastRejectedAppeal: data?.lastRejectedAppeal ?? null,
-    },
-  };
-}
-
 export function ArtistPortalRouteGate({
   initialProfileMissing,
   initialLoadError,
+  initialAuthDeferred = false,
   initialPortalStatus,
   initialMeta,
   children,
@@ -59,6 +45,10 @@ export function ArtistPortalRouteGate({
   useEffect(() => {
     setMissing(initialProfileMissing);
   }, [initialProfileMissing]);
+
+  if (initialAuthDeferred) {
+    return <DashboardMainSkeleton />;
+  }
 
   if (initialLoadError && !initialProfileMissing) {
     return (

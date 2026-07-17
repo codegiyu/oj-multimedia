@@ -41,6 +41,32 @@ describe('phase portal discoverability', () => {
     expect(layout).toContain('<Suspense');
   });
 
+  it('artist layout catches unexpected errors instead of rethrowing to account error', () => {
+    const layout = readFileSync(
+      join(process.cwd(), 'app/account/artist-portal/layout.tsx'),
+      'utf8'
+    );
+
+    expect(layout).toContain('artistPortalLayoutCatchState');
+    expect(layout).toContain('try {');
+    expect(layout).toContain('ArtistPortalLayoutClient');
+    expect(layout).toContain('ArtistPortalLayoutGate');
+    expect(layout).toContain('<Suspense');
+  });
+
+  it('pastor layout catches unexpected errors instead of rethrowing to account error', () => {
+    const layout = readFileSync(
+      join(process.cwd(), 'app/account/pastor-portal/layout.tsx'),
+      'utf8'
+    );
+
+    expect(layout).toContain('pastorPortalLayoutCatchState');
+    expect(layout).toContain('try {');
+    expect(layout).toContain('PastorPortalLayoutClient');
+    expect(layout).toContain('PastorPortalLayoutGate');
+    expect(layout).toContain('<Suspense');
+  });
+
   it('hub CTAs offer Open a store when user has artist/pastor but no vendor', () => {
     const ctas = readFileSync(join(process.cwd(), 'lib/account/accountHubPortalCtas.ts'), 'utf8');
 

@@ -9,6 +9,7 @@ import type { IPastorApplication, PastorPortalState } from '@/lib/constants/endp
 import { DashboardProfileRequiredPanel } from '@/components/section/account/shared/DashboardProfileRequiredPanel';
 import { PastorApplicationModal } from '@/components/section/account/shared/PastorApplicationModal';
 import { DashboardRoleAccountStatusPanel } from '@/components/section/account/shared/DashboardRoleAccountStatusPanel';
+import { DashboardMainSkeleton } from '@/components/section/account/skeletons';
 import type { IRolePortalMeta } from '@/lib/types/rolePortal';
 import { callApi } from '@/lib/services/callApi';
 import { toast } from 'sonner';
@@ -32,6 +33,7 @@ export interface PastorPortalRouteGateProps {
   initialPortalState: PastorPortalState;
   initialApplication: IPastorApplication | null;
   initialLoadError: string | null;
+  initialAuthDeferred?: boolean;
   initialMeta: IRolePortalMeta;
   children: ReactNode;
 }
@@ -40,6 +42,7 @@ export function PastorPortalRouteGate({
   initialPortalState,
   initialApplication,
   initialLoadError,
+  initialAuthDeferred = false,
   initialMeta,
   children,
 }: PastorPortalRouteGateProps) {
@@ -51,6 +54,10 @@ export function PastorPortalRouteGate({
   useEffect(() => {
     setPortalState(normalizePortalState(initialPortalState));
   }, [initialPortalState]);
+
+  if (initialAuthDeferred) {
+    return <DashboardMainSkeleton />;
+  }
 
   if (initialLoadError) {
     return (
@@ -93,8 +100,8 @@ export function PastorPortalRouteGate({
 
   if (portalState === 'pending') {
     return (
-      <Card className="max-w-xl mx-auto border-amber-500/30 bg-amber-500/5">
-        <CardContent className="p-8 text-center space-y-4">
+      <Card className="mx-auto max-w-xl border-amber-500/30 bg-amber-500/5">
+        <CardContent className="space-y-4 p-8 text-center">
           <Clock className="mx-auto h-10 w-10 text-amber-600" />
           <h2 className="text-lg font-semibold">Application under review</h2>
           <p className="text-sm text-muted-foreground">
@@ -114,9 +121,9 @@ export function PastorPortalRouteGate({
     const cooldownDays = initialApplication?.cooldownDaysRemaining ?? 0;
 
     return (
-      <div className="max-w-xl mx-auto space-y-6">
+      <div className="mx-auto max-w-xl space-y-6">
         <Card className="border-destructive/30 bg-destructive/5">
-          <CardContent className="p-8 space-y-4">
+          <CardContent className="space-y-4 p-8">
             <ShieldAlert className="h-10 w-10 text-destructive" />
             <h2 className="text-lg font-semibold">Application not approved</h2>
             {initialApplication?.rejectionReason ? (
