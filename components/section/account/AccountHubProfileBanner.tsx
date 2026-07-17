@@ -5,35 +5,25 @@ import { DashboardBanner } from '@/components/layout/user-dashboard';
 import { Button } from '@/components/ui/button';
 import { Store, ArrowRight, Mic2, BookOpen } from 'lucide-react';
 import type { PopulatedUser } from '@/lib/constants/endpoints';
+import {
+  buildAccountHubPortalCtas,
+  type AccountHubPortalCtaKind,
+} from '@/lib/account/accountHubPortalCtas';
 
 interface AccountHubProfileBannerProps {
   user: PopulatedUser | null;
 }
 
+const CTA_ICONS: Record<AccountHubPortalCtaKind, typeof Store> = {
+  vendor: Store,
+  artist: Mic2,
+  pastor: BookOpen,
+  'become-vendor': Store,
+};
+
 export function AccountHubProfileBanner({ user }: AccountHubProfileBannerProps) {
   const firstName = user?.firstName?.trim() || '';
-
-  const portalCtas: { href: string; label: string; icon: typeof Store }[] = [];
-
-  if (user?.vendor) {
-    portalCtas.push({ href: '/account/vendor', label: 'View vendor dashboard', icon: Store });
-  }
-
-  if (user?.artist) {
-    portalCtas.push({ href: '/account/artist-portal', label: 'View artist portal', icon: Mic2 });
-  }
-
-  if (user?.pastor) {
-    portalCtas.push({
-      href: '/account/pastor-portal',
-      label: 'View pastor portal',
-      icon: BookOpen,
-    });
-  }
-
-  if (portalCtas.length === 0) {
-    portalCtas.push({ href: '/account/vendor', label: 'View vendor dashboard', icon: Store });
-  }
+  const portalCtas = buildAccountHubPortalCtas(user);
 
   return (
     <DashboardBanner
@@ -42,11 +32,11 @@ export function AccountHubProfileBanner({ user }: AccountHubProfileBannerProps) 
       className="rounded-2xl">
       <div className="flex flex-wrap gap-2">
         {portalCtas.map(cta => {
-          const Icon = cta.icon;
+          const Icon = CTA_ICONS[cta.kind];
 
           return (
             <Button
-              key={cta.href}
+              key={`${cta.kind}-${cta.href}`}
               className="rounded-full bg-primary px-5 text-primary-foreground hover:bg-primary/90"
               asChild>
               <Link href={cta.href} className="gap-2">

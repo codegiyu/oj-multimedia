@@ -17,4 +17,17 @@ describe('phase portal discoverability', () => {
     expect(hub).toContain('value="3"');
     expect(hub).toContain('Artist, vendor & pastor');
   });
+
+  it('hub banner defaults non-vendors to become-vendor, not vendor dashboard', () => {
+    const banner = readFileSync(
+      join(process.cwd(), 'components/section/account/AccountHubProfileBanner.tsx'),
+      'utf8'
+    );
+    const ctas = readFileSync(join(process.cwd(), 'lib/account/accountHubPortalCtas.ts'), 'utf8');
+
+    expect(ctas).toContain("href: '/marketplace/become-vendor'");
+    expect(ctas).toContain("label: 'Open a store'");
+    expect(banner).toContain('buildAccountHubPortalCtas');
+    expect(banner).not.toContain("portalCtas.push({ href: '/account/vendor'");
+  });
 });
