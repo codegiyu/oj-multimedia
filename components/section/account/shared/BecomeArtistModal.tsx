@@ -18,7 +18,7 @@ import { ImageUploadField } from '@/components/general/MediaUploadField';
 import { toast } from 'sonner';
 import { useForm } from '@/lib/hooks/use-form';
 import { callApi } from '@/lib/services/callApi';
-import { useAuthStore } from '@/lib/store/useAuthStore';
+import { useAuthStore, useInitAuthStore } from '@/lib/store/useAuthStore';
 import type { ApiErrorResponse } from '@/lib/types/http';
 
 const optionalStoredImageUrl = z
@@ -95,6 +95,7 @@ export function BecomeArtistModal({ open, onOpenChange }: BecomeArtistModalProps
 
       toast.success('Artist profile saved. Welcome to the portal!');
       onOpenChange(false);
+      await useInitAuthStore.getState().actions.initSession();
       router.refresh();
       return true;
     },

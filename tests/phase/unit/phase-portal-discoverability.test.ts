@@ -67,10 +67,38 @@ describe('phase portal discoverability', () => {
     expect(layout).toContain('<Suspense');
   });
 
+  it('pastor route gate refreshes session after successful apply', () => {
+    const gate = readFileSync(
+      join(process.cwd(), 'components/section/account/pastor-portal/PastorPortalRouteGate.tsx'),
+      'utf8'
+    );
+
+    expect(gate).toContain('refreshAfterPastorApply');
+    expect(gate).toContain('initSession');
+  });
+
   it('hub CTAs offer Open a store when user has artist/pastor but no vendor', () => {
     const ctas = readFileSync(join(process.cwd(), 'lib/account/accountHubPortalCtas.ts'), 'utf8');
 
     expect(ctas).toContain('if (!user?.vendor)');
     expect(ctas).toContain("kind: 'become-vendor'");
+  });
+
+  it('account error boundary offers hub escape alongside try again', () => {
+    const errorBoundary = readFileSync(join(process.cwd(), 'app/account/error.tsx'), 'utf8');
+
+    expect(errorBoundary).toContain('Try again');
+    expect(errorBoundary).toContain('Back to account hub');
+    expect(errorBoundary).toContain('href="/account"');
+  });
+
+  it('become artist refreshes session after successful create', () => {
+    const modal = readFileSync(
+      join(process.cwd(), 'components/section/account/shared/BecomeArtistModal.tsx'),
+      'utf8'
+    );
+
+    expect(modal).toContain('initSession');
+    expect(modal).toContain('useInitAuthStore');
   });
 });
