@@ -8,7 +8,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { DashboardProfileRequiredPanel } from '@/components/section/account/shared/DashboardProfileRequiredPanel';
 import { VendorApplicationModal } from '@/components/section/account/shared/VendorApplicationModal';
 import { DashboardRoleAccountStatusPanel } from '@/components/section/account/shared/DashboardRoleAccountStatusPanel';
-import type { IMarketplaceVendor } from '@/lib/constants/endpoints';
 import type { IRolePortalMeta, RolePortalStatus } from '@/lib/types/rolePortal';
 import { callApi } from '@/lib/services/callApi';
 import { toast } from 'sonner';
@@ -18,6 +17,8 @@ import {
   isRolePortalOperational,
   isRolePortalPending,
 } from '@/lib/account/rolePortalAccess';
+
+export { vendorPortalMetaFromApi } from '@/lib/account/vendorPortalLayoutState';
 
 export interface VendorPortalRouteGateProps {
   initialProfileMissing: boolean;
@@ -147,22 +148,4 @@ export function VendorPortalRouteGate({
   }
 
   return <>{children}</>;
-}
-
-export function vendorPortalMetaFromApi(vendor: IMarketplaceVendor | undefined): {
-  portalStatus: RolePortalStatus;
-  meta: IRolePortalMeta;
-} {
-  const portalStatus = (vendor?.portalStatus ?? vendor?.status ?? 'active') as RolePortalStatus;
-
-  return {
-    portalStatus,
-    meta: {
-      portalStatus,
-      statusChangedAt: vendor?.statusChangedAt,
-      suspensionReason: vendor?.suspensionReason,
-      openAppeal: vendor?.openAppeal ?? null,
-      lastRejectedAppeal: vendor?.lastRejectedAppeal ?? null,
-    },
-  };
 }

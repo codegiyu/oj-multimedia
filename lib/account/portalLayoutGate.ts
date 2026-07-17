@@ -16,3 +16,12 @@ export function portalLayoutLoadError(
 
   return message ?? fallback;
 }
+
+/** Message for unexpected throws in portal layout gates — never rethrow to parent error.tsx. */
+export function portalLayoutCaughtErrorMessage(error: unknown, fallback: string): string {
+  if (error instanceof Error && error.message.trim()) {
+    return error.message;
+  }
+
+  return fallback;
+}

@@ -4,10 +4,7 @@ import { describe, expect, it } from 'vitest';
 
 describe('phase portal discoverability', () => {
   it('footer creators links point at account portals, not public directories', () => {
-    const footer = readFileSync(
-      join(process.cwd(), 'components/layout/Footer.tsx'),
-      'utf8'
-    );
+    const footer = readFileSync(join(process.cwd(), 'components/layout/Footer.tsx'), 'utf8');
 
     expect(footer).toContain("label: 'Artist Portal', href: '/account/artist-portal'");
     expect(footer).toContain("label: 'Pastor Portal', href: '/account/pastor-portal'");
