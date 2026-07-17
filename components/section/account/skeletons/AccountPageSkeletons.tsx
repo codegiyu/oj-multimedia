@@ -139,7 +139,7 @@ export function ArtistPortalSettingsPageSkeleton() {
 
 export function VendorDashboardPageSkeleton() {
   return (
-    <AccountPageShell label="Loading vendor dashboard" className="max-w-6xl space-y-8">
+    <AccountPageShell label="Loading vendor dashboard" className="space-y-8">
       <DashboardPageHeaderSkeleton />
       <DashboardStatGridSkeleton count={4} />
       <VendorChartSkeleton />
@@ -214,7 +214,7 @@ export function PastorPortalSettingsPageSkeleton() {
 
 export function DashboardQuestionDetailSkeleton() {
   return (
-    <AccountPageShell label="Loading question" className="max-w-3xl space-y-6">
+    <AccountPageShell label="Loading question" className="space-y-6">
       <Skeleton className="h-9 w-32" />
       <DashboardPageHeaderSkeleton />
       <div className="rounded-xl border border-border/50 bg-card p-6 space-y-4">
