@@ -12,6 +12,7 @@ import { DashboardRoleAccountStatusPanel } from '@/components/section/account/sh
 import { DashboardMainSkeleton } from '@/components/section/account/skeletons';
 import type { IRolePortalMeta } from '@/lib/types/rolePortal';
 import { callApi } from '@/lib/services/callApi';
+import { useInitAuthStore } from '@/lib/store/useAuthStore';
 import { toast } from 'sonner';
 
 export type PastorPortalGateState =
@@ -27,6 +28,13 @@ function normalizePortalState(state: PastorPortalState): PastorPortalGateState {
   if (state === 'deactivated' || state === 'suspended') return state;
   if (state === 'pending' || state === 'rejected' || state === 'none') return state;
   return 'none';
+}
+
+function refreshAfterPastorApply(router: { refresh: () => void }) {
+  void useInitAuthStore
+    .getState()
+    .actions.initSession()
+    .then(() => router.refresh());
 }
 
 export interface PastorPortalRouteGateProps {
@@ -160,7 +168,7 @@ export function PastorPortalRouteGate({
               open={modalOpen}
               onOpenChange={setModalOpen}
               initialApplication={initialApplication}
-              onApplied={() => router.refresh()}
+              onApplied={() => refreshAfterPastorApply(router)}
             />
           </>
         ) : null}
@@ -181,7 +189,7 @@ export function PastorPortalRouteGate({
       <PastorApplicationModal
         open={modalOpen}
         onOpenChange={setModalOpen}
-        onApplied={() => router.refresh()}
+        onApplied={() => refreshAfterPastorApply(router)}
       />
     </>
   );
