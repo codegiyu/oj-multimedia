@@ -25,6 +25,7 @@ async function VendorPortalLayoutGate({ children }: { children: ReactNode }) {
     <VendorPortalRouteGate
       initialProfileMissing={gateState.profileMissing}
       initialLoadError={gateState.loadError}
+      initialAuthDeferred={gateState.authDeferred}
       initialPortalStatus={gateState.portalStatus}
       initialMeta={gateState.meta}>
       {children}

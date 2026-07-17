@@ -15,8 +15,13 @@ describe('portalLayoutGate', () => {
     expect(portalLayoutLoadError(true, 204, 'Skipped prefetch', 'fallback')).toBeNull();
   });
 
-  it('returns message for real errors', () => {
-    expect(portalLayoutLoadError(true, 500, 'Server error', 'fallback')).toBe('Server error');
+  it('returns fallback for 5xx errors without leaking upstream message', () => {
+    expect(portalLayoutLoadError(true, 500, 'Server error', 'fallback')).toBe('fallback');
+    expect(portalLayoutLoadError(true, undefined, 'Unknown', 'fallback')).toBe('fallback');
+  });
+
+  it('returns message for client errors', () => {
+    expect(portalLayoutLoadError(true, 401, 'Unauthorized', 'fallback')).toBe('Unauthorized');
   });
 
   it('returns null for profile-missing codes', () => {
@@ -40,9 +45,23 @@ describe('buildVendorPortalLayoutGateState', () => {
 
     expect(state.profileMissing).toBe(true);
     expect(state.loadError).toBeNull();
+    expect(state.authDeferred).toBe(false);
   });
 
-  it('surfaces 500 as load error, not profile missing', () => {
+  it('treats prefetch 204 as auth deferred without operational status', () => {
+    const state = buildVendorPortalLayoutGateState({
+      type: 'error',
+      message: 'Skipped auth upstream call during speculative prefetch',
+      error: { responseCode: 204 },
+    });
+
+    expect(state.authDeferred).toBe(true);
+    expect(state.loadError).toBeNull();
+    expect(state.profileMissing).toBe(false);
+    expect(state.portalStatus).toBe('none');
+  });
+
+  it('surfaces 500 as generic load error, not profile missing', () => {
     const state = buildVendorPortalLayoutGateState({
       type: 'error',
       message: 'Upstream failed',
@@ -50,7 +69,8 @@ describe('buildVendorPortalLayoutGateState', () => {
     });
 
     expect(state.profileMissing).toBe(false);
-    expect(state.loadError).toBe('Upstream failed');
+    expect(state.loadError).toBe('Unable to load vendor profile.');
+    expect(state.authDeferred).toBe(false);
   });
 
   it('maps successful vendor me payload', () => {
@@ -68,14 +88,17 @@ describe('buildVendorPortalLayoutGateState', () => {
 
     expect(state.profileMissing).toBe(false);
     expect(state.loadError).toBeNull();
+    expect(state.authDeferred).toBe(false);
     expect(state.portalStatus).toBe('pending');
     expect(state.vendorStatus).toBe('pending');
+    expect(state.storeName).toBe('Store');
   });
 
-  it('vendorPortalLayoutCatchState never marks profile missing', () => {
+  it('vendorPortalLayoutCatchState never marks profile missing or leaks error text', () => {
     const state = vendorPortalLayoutCatchState(new Error('RSC exploded'));
 
     expect(state.profileMissing).toBe(false);
-    expect(state.loadError).toBe('RSC exploded');
+    expect(state.loadError).toBe('Unable to load vendor profile.');
+    expect(state.authDeferred).toBe(false);
   });
 });
