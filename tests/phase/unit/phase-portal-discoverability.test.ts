@@ -37,6 +37,14 @@ describe('phase portal discoverability', () => {
     expect(layout).toContain('vendorPortalLayoutCatchState');
     expect(layout).toContain('try {');
     expect(layout).toContain('VendorDashboardLayoutClient');
+    expect(layout).toContain('VendorPortalShellAndGate');
     expect(layout).toContain('<Suspense');
+  });
+
+  it('hub CTAs offer Open a store when user has artist/pastor but no vendor', () => {
+    const ctas = readFileSync(join(process.cwd(), 'lib/account/accountHubPortalCtas.ts'), 'utf8');
+
+    expect(ctas).toContain('if (!user?.vendor)');
+    expect(ctas).toContain("kind: 'become-vendor'");
   });
 });

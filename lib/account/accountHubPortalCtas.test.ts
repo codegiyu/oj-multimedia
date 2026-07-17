@@ -34,13 +34,13 @@ describe('buildAccountHubPortalCtas', () => {
     expect(ctas.some(c => c.kind === 'become-vendor')).toBe(false);
   });
 
-  it('includes artist and pastor when present without forcing vendor', () => {
+  it('includes artist and pastor when present and still offers Open a store without vendor', () => {
     const ctas = buildAccountHubPortalCtas({
       artist: { _id: 'a1' },
       pastor: { _id: 'p1' },
     });
 
-    expect(ctas.map(c => c.kind)).toEqual(['artist', 'pastor']);
+    expect(ctas.map(c => c.kind)).toEqual(['artist', 'pastor', 'become-vendor']);
   });
 });
 
@@ -75,5 +75,11 @@ describe('withVendorAwareNavItems', () => {
       label: 'Open a store',
     });
     expect(items[0].href).toBe('/account');
+  });
+
+  it('does not rewrite vendor overview nav by href alone', () => {
+    const items = withVendorAwareNavItems([{ href: '/account/vendor', label: 'Overview' }], false);
+
+    expect(items[0]).toEqual({ href: '/account/vendor', label: 'Overview' });
   });
 });
