@@ -30,4 +30,13 @@ describe('phase portal discoverability', () => {
     expect(banner).toContain('buildAccountHubPortalCtas');
     expect(banner).not.toContain("portalCtas.push({ href: '/account/vendor'");
   });
+
+  it('vendor layout catches unexpected errors instead of rethrowing to account error', () => {
+    const layout = readFileSync(join(process.cwd(), 'app/account/vendor/layout.tsx'), 'utf8');
+
+    expect(layout).toContain('vendorPortalLayoutCatchState');
+    expect(layout).toContain('try {');
+    expect(layout).toContain('VendorDashboardLayoutClient');
+    expect(layout).toContain('<Suspense');
+  });
 });

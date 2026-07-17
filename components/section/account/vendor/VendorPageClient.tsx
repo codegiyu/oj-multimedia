@@ -18,10 +18,11 @@ export interface VendorPageClientProps {
 export function VendorPageClient({ vendor, stats, errorMessage }: VendorPageClientProps) {
   const productsCount = stats?.productsCount ?? 0;
   const pendingOrdersCount = stats?.pendingOrdersCount ?? 0;
-  const revenue = stats?.totalPaidRevenue ?? 0;
-  const storeStatus = vendor?.status
-    ? vendor.status.charAt(0).toUpperCase() + vendor.status.slice(1)
-    : 'Unknown';
+  const revenue = typeof stats?.totalPaidRevenue === 'number' ? stats.totalPaidRevenue : 0;
+  const storeStatus =
+    typeof vendor?.status === 'string' && vendor.status.length > 0
+      ? vendor.status.charAt(0).toUpperCase() + vendor.status.slice(1)
+      : 'Unknown';
 
   return (
     <div className="max-w-6xl space-y-8">

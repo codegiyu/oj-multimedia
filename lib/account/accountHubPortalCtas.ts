@@ -58,3 +58,19 @@ export function vendorAccountNavTarget(hasVendor: boolean): { href: string; labe
 
   return { href: '/marketplace/become-vendor', label: 'Open a store' };
 }
+
+/** Rewrite static "Vendor Dashboard" nav entries based on whether the user has a store. */
+export function withVendorAwareNavItems<T extends { href: string; label: string }>(
+  items: T[],
+  hasVendor: boolean
+): T[] {
+  const vendorNav = vendorAccountNavTarget(hasVendor);
+
+  return items.map(item => {
+    if (item.href !== '/account/vendor' && item.label !== 'Vendor Dashboard') {
+      return item;
+    }
+
+    return { ...item, href: vendorNav.href, label: vendorNav.label };
+  });
+}
