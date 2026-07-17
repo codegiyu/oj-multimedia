@@ -10,15 +10,19 @@ import { useAuthStore } from '@/lib/store/useAuthStore';
 export function VendorDashboardLayoutClient({
   children,
   vendorStatus: vendorStatusProp,
+  storeName: storeNameProp,
   skipMeFetch = false,
 }: {
   children: ReactNode;
   vendorStatus?: string;
-  /** When true (error boundaries), skip VENDOR_GET_ME so a failing fetch cannot re-crash the shell. */
+  storeName?: string;
+  /** When true, skip VENDOR_GET_ME so a failing fetch cannot re-crash the shell. */
   skipMeFetch?: boolean;
 }) {
   const user = useAuthStore(s => s.user) as PopulatedUser | null;
-  const [storeName, setStoreName] = useState<string | null>(null);
+  const [storeName, setStoreName] = useState<string | null>(
+    storeNameProp?.trim() ? storeNameProp : null
+  );
   const [fetchedStatus, setFetchedStatus] = useState<string | undefined>(undefined);
 
   useEffect(() => {
@@ -44,7 +48,7 @@ export function VendorDashboardLayoutClient({
     [user?.firstName, user?.lastName].filter(Boolean).join(' ').trim() ||
     user?.email ||
     'Your store';
-  const subtitle = storeName || fallbackName;
+  const subtitle = storeNameProp?.trim() || storeName || fallbackName;
   const vendorStatus = vendorStatusProp ?? fetchedStatus;
 
   return (

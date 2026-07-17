@@ -11,7 +11,7 @@ import {
 
 export const dynamic = 'force-dynamic';
 
-async function VendorPortalLayoutGate({ children }: { children: ReactNode }) {
+async function VendorPortalShellAndGate({ children }: { children: ReactNode }) {
   let gateState;
 
   try {
@@ -22,23 +22,31 @@ async function VendorPortalLayoutGate({ children }: { children: ReactNode }) {
   }
 
   return (
-    <VendorPortalRouteGate
-      initialProfileMissing={gateState.profileMissing}
-      initialLoadError={gateState.loadError}
-      initialAuthDeferred={gateState.authDeferred}
-      initialPortalStatus={gateState.portalStatus}
-      initialMeta={gateState.meta}>
-      {children}
-    </VendorPortalRouteGate>
+    <VendorDashboardLayoutClient
+      vendorStatus={gateState.vendorStatus}
+      storeName={gateState.storeName}
+      skipMeFetch>
+      <VendorPortalRouteGate
+        initialProfileMissing={gateState.profileMissing}
+        initialLoadError={gateState.loadError}
+        initialAuthDeferred={gateState.authDeferred}
+        initialPortalStatus={gateState.portalStatus}
+        initialMeta={gateState.meta}>
+        {children}
+      </VendorPortalRouteGate>
+    </VendorDashboardLayoutClient>
   );
 }
 
 export default function VendorLayout({ children }: { children: ReactNode }) {
   return (
-    <VendorDashboardLayoutClient>
-      <Suspense fallback={<DashboardMainSkeleton />}>
-        <VendorPortalLayoutGate>{children}</VendorPortalLayoutGate>
-      </Suspense>
-    </VendorDashboardLayoutClient>
+    <Suspense
+      fallback={
+        <VendorDashboardLayoutClient skipMeFetch>
+          <DashboardMainSkeleton />
+        </VendorDashboardLayoutClient>
+      }>
+      <VendorPortalShellAndGate>{children}</VendorPortalShellAndGate>
+    </Suspense>
   );
 }

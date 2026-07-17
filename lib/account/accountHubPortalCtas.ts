@@ -40,7 +40,7 @@ export function buildAccountHubPortalCtas(user: PortalUserFlags): AccountHubPort
     });
   }
 
-  if (portalCtas.length === 0) {
+  if (!user?.vendor) {
     portalCtas.push({
       href: '/marketplace/become-vendor',
       label: 'Open a store',
@@ -67,7 +67,7 @@ export function withVendorAwareNavItems<T extends { href: string; label: string 
   const vendorNav = vendorAccountNavTarget(hasVendor);
 
   return items.map(item => {
-    if (item.href !== '/account/vendor' && item.label !== 'Vendor Dashboard') {
+    if (item.href !== '/account/vendor' || item.label !== 'Vendor Dashboard') {
       return item;
     }
 

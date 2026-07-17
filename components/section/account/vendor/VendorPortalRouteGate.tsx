@@ -12,6 +12,7 @@ import { DashboardMainSkeleton } from '@/components/section/account/skeletons';
 import type { IRolePortalMeta, RolePortalStatus } from '@/lib/types/rolePortal';
 import { callApi } from '@/lib/services/callApi';
 import { toast } from 'sonner';
+import { useInitAuthStore } from '@/lib/store/useAuthStore';
 import {
   isRolePortalInactiveOrRejected,
   isRolePortalLifecycleBlocked,
@@ -76,7 +77,12 @@ export function VendorPortalRouteGate({
         <VendorApplicationModal
           open={modalOpen}
           onOpenChange={setModalOpen}
-          onApplied={() => router.refresh()}
+          onApplied={() => {
+            void useInitAuthStore
+              .getState()
+              .actions.initSession()
+              .then(() => router.refresh());
+          }}
         />
       </>
     );
