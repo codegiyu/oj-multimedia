@@ -1,4 +1,5 @@
 import { parsePhoneNumberFromString, type CountryCode } from 'libphonenumber-js';
+import { z } from 'zod';
 
 /**
  * Normalize a stored phone/WhatsApp string to digits for wa.me/{digits}.
@@ -45,3 +46,19 @@ export function toWhatsAppE164(
 
   return digits ? `+${digits}` : null;
 }
+
+export const WHATSAPP_INVALID_MESSAGE =
+  'Enter a valid WhatsApp number with country code (Nigeria numbers can start with 0)';
+
+/** Required WhatsApp field that must normalize to E.164. */
+export const requiredWhatsAppSchema = z
+  .string()
+  .trim()
+  .min(1, 'WhatsApp number is required')
+  .refine(value => toWhatsAppMeDigits(value) !== null, WHATSAPP_INVALID_MESSAGE);
+
+/** Optional WhatsApp: empty OK, otherwise must normalize. */
+export const optionalWhatsAppSchema = z
+  .string()
+  .optional()
+  .refine(value => !value?.trim() || toWhatsAppMeDigits(value) !== null, WHATSAPP_INVALID_MESSAGE);
