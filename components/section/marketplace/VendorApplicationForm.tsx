@@ -4,19 +4,21 @@ import { z } from 'zod';
 import { Card } from '@/components/ui/card';
 import { RegularBtn } from '@/components/atoms/RegularBtn';
 import { RegularInput } from '@/components/atoms/RegularInput';
+import { PhoneInput } from '@/components/atoms/PhoneInput';
 import { RegularTextarea } from '@/components/atoms/RegularTextarea';
 import { toast } from 'sonner';
 import { callApi } from '@/lib/services/callApi';
 import { useForm } from '@/lib/hooks/use-form';
 import { cn } from '@/lib/utils';
 import type { ApiErrorResponse } from '@/lib/types/http';
+import { optionalWhatsAppSchema, toWhatsAppE164 } from '@/lib/utils/whatsappPhone';
 
 const vendorApplicationSchema = z.object({
   storeName: z.string().min(1, 'Store name is required'),
   storeDescription: z.string().optional(),
   email: z.string().min(1, 'Email is required').email('Enter a valid email'),
   phone: z.string().min(1, 'Phone is required'),
-  whatsapp: z.string().optional(),
+  whatsapp: optionalWhatsAppSchema,
   address: z.string().optional(),
   bankAccountName: z.string().optional(),
   bankAccountNumber: z.string().optional(),
@@ -34,50 +36,57 @@ export interface VendorApplicationFormProps {
 }
 
 export function VendorApplicationForm({ onSuccess, bare, className }: VendorApplicationFormProps) {
-  const { formValues, formErrors, loading, handleInputChange, handleSubmit, errorsVisible } =
-    useForm<typeof vendorApplicationSchema>({
-      formSchema: vendorApplicationSchema,
-      defaultFormValues: {
-        storeName: '',
-        storeDescription: '',
-        email: '',
-        phone: '',
-        whatsapp: '',
-        address: '',
-        bankAccountName: '',
-        bankAccountNumber: '',
-        bankName: '',
-      },
-      async onSubmit(values: VendorApplicationValues) {
-        const payload = {
-          storeName: values.storeName.trim(),
-          storeDescription: values.storeDescription?.trim() || undefined,
-          email: values.email.trim(),
-          phone: values.phone.trim(),
-          whatsapp: values.whatsapp?.trim() || undefined,
-          address: values.address?.trim() || undefined,
-          bankAccountName: values.bankAccountName?.trim() || undefined,
-          bankAccountNumber: values.bankAccountNumber?.trim() || undefined,
-          bankName: values.bankName?.trim() || undefined,
-        };
+  const {
+    formValues,
+    formErrors,
+    loading,
+    handleInputChange,
+    onChange,
+    handleSubmit,
+    errorsVisible,
+  } = useForm<typeof vendorApplicationSchema>({
+    formSchema: vendorApplicationSchema,
+    defaultFormValues: {
+      storeName: '',
+      storeDescription: '',
+      email: '',
+      phone: '',
+      whatsapp: '',
+      address: '',
+      bankAccountName: '',
+      bankAccountNumber: '',
+      bankName: '',
+    },
+    async onSubmit(values: VendorApplicationValues) {
+      const payload = {
+        storeName: values.storeName.trim(),
+        storeDescription: values.storeDescription?.trim() || undefined,
+        email: values.email.trim(),
+        phone: values.phone.trim(),
+        whatsapp: toWhatsAppE164(values.whatsapp) || undefined,
+        address: values.address?.trim() || undefined,
+        bankAccountName: values.bankAccountName?.trim() || undefined,
+        bankAccountNumber: values.bankAccountNumber?.trim() || undefined,
+        bankName: values.bankName?.trim() || undefined,
+      };
 
-        const { error, message } = await callApi('MARKETPLACE_BECOME_VENDOR', { payload });
+      const { error, message } = await callApi('MARKETPLACE_BECOME_VENDOR', { payload });
 
-        if (error) {
-          const code = (error as ApiErrorResponse | undefined)?.responseCode;
-          if (code === 409) {
-            toast.error(message || 'You already have a vendor application linked to your account.');
-            return false;
-          }
-          toast.error(message ?? 'Failed to submit application. Please check your details.');
+      if (error) {
+        const code = (error as ApiErrorResponse | undefined)?.responseCode;
+        if (code === 409) {
+          toast.error(message || 'You already have a vendor application linked to your account.');
           return false;
         }
+        toast.error(message ?? 'Failed to submit application. Please check your details.');
+        return false;
+      }
 
-        toast.success('Application received! We will review and get back to you soon.');
-        onSuccess?.();
-        return true;
-      },
-    });
+      toast.success('Application received! We will review and get back to you soon.');
+      onSuccess?.();
+      return true;
+    },
+  });
 
   const formInner = (
     <form onSubmit={handleSubmit} className={cn('space-y-8 pt-2', className)}>
@@ -131,15 +140,16 @@ export function VendorApplicationForm({ onSuccess, bare, className }: VendorAppl
             disabled={loading}
             errors={errorsVisible ? (formErrors.phone ?? []) : []}
           />
-          <RegularInput
+          <PhoneInput
             label="WhatsApp (optional)"
             name="whatsapp"
-            type="tel"
             value={formValues.whatsapp ?? ''}
-            onChange={handleInputChange}
+            onChange={e => onChange('whatsapp', e.target.value)}
             placeholder="Enter WhatsApp number"
+            subtext="Include country code. Nigeria numbers can start with 0."
             disabled={loading}
             wrapClassName="md:col-span-2"
+            errors={errorsVisible ? (formErrors.whatsapp ?? []) : []}
           />
           <RegularTextarea
             label="Address (optional)"

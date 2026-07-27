@@ -11,12 +11,14 @@ import {
 } from '@/components/ui/dialog';
 import { RegularBtn } from '@/components/atoms/RegularBtn';
 import { RegularInput } from '@/components/atoms/RegularInput';
+import { PhoneInput } from '@/components/atoms/PhoneInput';
 import { RegularTextarea } from '@/components/atoms/RegularTextarea';
 import { MediaUrlOrUploadField } from '@/components/general/MediaUrlOrUploadField';
 import { AdminUserAccountPicker } from '@/components/section/admin/shared/AdminUserAccountPicker';
 import { callApi } from '@/lib/services/callApi';
 import { useFileUpload } from '@/lib/hooks/use-file-upload';
 import { normalizeOptionalHttpUrl } from '@/lib/utils/adminFormValidation';
+import { toWhatsAppE164, toWhatsAppMeDigits } from '@/lib/utils/whatsappPhone';
 import { toast } from 'sonner';
 
 interface CreateVendorModalProps {
@@ -29,6 +31,7 @@ const defaultForm = {
   name: '',
   email: '',
   phone: '',
+  whatsapp: '',
   storeName: '',
   storeDescription: '',
   logo: '',
@@ -49,6 +52,12 @@ export function CreateVendorModal({ open, onOpenChange, onSuccess }: CreateVendo
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name.trim() || !form.storeName.trim()) return;
+
+    if (form.whatsapp.trim() && !toWhatsAppMeDigits(form.whatsapp)) {
+      toast.error('Enter a valid WhatsApp number with country code.');
+      return;
+    }
+
     setLoading(true);
     try {
       let finalLogo = normalizeOptionalHttpUrl(form.logo, 'Logo URL');
@@ -58,6 +67,7 @@ export function CreateVendorModal({ open, onOpenChange, onSuccess }: CreateVendo
           name: form.name.trim(),
           email: form.email.trim() || undefined,
           phone: form.phone.trim() || undefined,
+          whatsapp: toWhatsAppE164(form.whatsapp) || undefined,
           storeName: form.storeName.trim(),
           storeDescription: form.storeDescription?.trim() ?? undefined,
           logo: finalLogo || undefined,
@@ -132,6 +142,13 @@ export function CreateVendorModal({ open, onOpenChange, onSuccess }: CreateVendo
             value={form.phone}
             onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
             placeholder="Enter phone"
+          />
+          <PhoneInput
+            label="WhatsApp (optional)"
+            value={form.whatsapp}
+            onChange={e => setForm(f => ({ ...f, whatsapp: e.target.value }))}
+            placeholder="Enter WhatsApp number"
+            subtext="Include country code. Nigeria numbers can start with 0."
           />
           <RegularInput
             label="Store Name"

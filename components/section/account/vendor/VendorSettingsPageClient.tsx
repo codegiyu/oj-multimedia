@@ -11,6 +11,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { RegularBtn } from '@/components/atoms/RegularBtn';
 import { RegularInput } from '@/components/atoms/RegularInput';
+import { PhoneInput } from '@/components/atoms/PhoneInput';
 import { RegularTextarea } from '@/components/atoms/RegularTextarea';
 import { Store, Landmark, Phone, Eye } from 'lucide-react';
 import { toast } from 'sonner';
@@ -19,6 +20,7 @@ import { callApi } from '@/lib/services/callApi';
 import { ImageUploadField } from '@/components/general/MediaUploadField';
 import type { IVendorMeRes, IVendorUpdateSettingsPayload } from '@/lib/constants/endpoints';
 import { RoleAccountDeactivateSection } from '@/components/section/account/shared/RoleAccountDeactivateSection';
+import { requiredWhatsAppSchema, toWhatsAppE164 } from '@/lib/utils/whatsappPhone';
 
 const optionalStoredImageUrl = z
   .string()
@@ -30,7 +32,7 @@ const vendorSettingsSchema = z.object({
   storeDescription: z.string().optional(),
   email: z.string().email('Please enter a valid email'),
   phone: z.string().min(1, 'Phone is required'),
-  whatsapp: z.string().min(1, 'WhatsApp number is required'),
+  whatsapp: requiredWhatsAppSchema,
   address: z.string().optional(),
   bankAccountName: z.string().optional(),
   bankAccountNumber: z.string().optional(),
@@ -105,6 +107,7 @@ export function VendorSettingsPageClient({
     formErrors,
     loading: submitting,
     handleInputChange,
+    onChange,
     handleSubmit,
     errorsVisible,
     setFormValues,
@@ -118,7 +121,7 @@ export function VendorSettingsPageClient({
         storeDescription: values.storeDescription || undefined,
         email: values.email || undefined,
         phone: values.phone || undefined,
-        whatsapp: values.whatsapp || undefined,
+        whatsapp: toWhatsAppE164(values.whatsapp) || undefined,
         address: values.address || undefined,
         bankAccountName: values.bankAccountName || undefined,
         bankAccountNumber: values.bankAccountNumber || undefined,
@@ -280,14 +283,14 @@ export function VendorSettingsPageClient({
                   disabled={initialLoading || submitting}
                   errors={errorsVisible ? (formErrors.phone ?? []) : []}
                 />
-                <RegularInput
+                <PhoneInput
                   label="WhatsApp"
                   name="whatsapp"
-                  type="tel"
                   required
                   value={formValues.whatsapp}
-                  onChange={handleInputChange}
+                  onChange={e => onChange('whatsapp', e.target.value)}
                   placeholder="Enter WhatsApp number"
+                  subtext="Include country code. Nigeria numbers can start with 0."
                   disabled={initialLoading || submitting}
                   errors={errorsVisible ? (formErrors.whatsapp ?? []) : []}
                 />

@@ -7,14 +7,16 @@ import { ClientSiteSettings } from '@/lib/constants/endpoints';
 import { useSiteSettingsStore } from '@/lib/store/useSiteSettingsStore';
 import { useForm } from '@/lib/hooks/use-form';
 import { RegularInput } from '@/components/atoms/RegularInput';
+import { PhoneInput } from '@/components/atoms/PhoneInput';
 import { RegularBtn } from '@/components/atoms/RegularBtn';
 import { callApi } from '@/lib/services/callApi';
 import { toast } from 'sonner';
 import { Save, Plus, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { optionalWhatsAppSchema, toWhatsAppE164 } from '@/lib/utils/whatsappPhone';
 
 const contactInfoSchema = z.object({
-  whatsapp: z.string(),
+  whatsapp: optionalWhatsAppSchema,
   locationUrl: z.string().url('Invalid URL').or(z.literal('')),
 });
 
@@ -40,6 +42,7 @@ export const ContactInfoTab = ({ settings }: ContactInfoTabProps) => {
     errorsVisible,
     loading,
     handleInputChange,
+    onChange,
     handleSubmit,
     setFormErrors,
     setFormValues,
@@ -56,7 +59,7 @@ export const ContactInfoTab = ({ settings }: ContactInfoTabProps) => {
           address: addresses.filter(a => a.trim()),
           tel: phones.filter(t => t.trim()),
           email: emails.filter(e => e.trim()),
-          whatsapp: values.whatsapp,
+          whatsapp: toWhatsAppE164(values.whatsapp) || '',
           locationUrl: values.locationUrl,
           officeHours: settings.contactInfo?.officeHours || {
             monday: null,
@@ -249,13 +252,14 @@ export const ContactInfoTab = ({ settings }: ContactInfoTabProps) => {
           ))}
         </div>
 
-        <RegularInput
+        <PhoneInput
           label="WhatsApp Number"
           name="whatsapp"
-          value={formValues.whatsapp}
-          onChange={handleInputChange}
+          value={formValues.whatsapp ?? ''}
+          onChange={e => onChange('whatsapp', e.target.value)}
           placeholder="Enter WhatsApp number"
-          errors={errorsVisible ? formErrors.whatsapp : []}
+          subtext="Include country code. Nigeria numbers can start with 0."
+          errors={errorsVisible ? (formErrors.whatsapp ?? []) : []}
         />
 
         <RegularInput

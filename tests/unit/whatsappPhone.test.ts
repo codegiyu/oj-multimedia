@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { toWhatsAppE164, toWhatsAppMeDigits } from '@/lib/utils/whatsappPhone';
+import {
+  optionalWhatsAppSchema,
+  requiredWhatsAppSchema,
+  toWhatsAppE164,
+  toWhatsAppMeDigits,
+} from '@/lib/utils/whatsappPhone';
 
 describe('toWhatsAppMeDigits', () => {
   it('normalizes Nigerian local numbers with leading 0', () => {
@@ -33,5 +38,23 @@ describe('toWhatsAppE164', () => {
 
   it('returns null when digits cannot be normalized', () => {
     expect(toWhatsAppE164('abc')).toBeNull();
+  });
+});
+
+describe('whatsapp zod schemas', () => {
+  it('requiredWhatsAppSchema accepts local NG numbers', () => {
+    expect(requiredWhatsAppSchema.safeParse('08031234567').success).toBe(true);
+  });
+
+  it('requiredWhatsAppSchema rejects empty and impossible values', () => {
+    expect(requiredWhatsAppSchema.safeParse('').success).toBe(false);
+    expect(requiredWhatsAppSchema.safeParse('12').success).toBe(false);
+  });
+
+  it('optionalWhatsAppSchema allows empty and rejects impossible values', () => {
+    expect(optionalWhatsAppSchema.safeParse('').success).toBe(true);
+    expect(optionalWhatsAppSchema.safeParse(undefined).success).toBe(true);
+    expect(optionalWhatsAppSchema.safeParse('12').success).toBe(false);
+    expect(optionalWhatsAppSchema.safeParse('08031234567').success).toBe(true);
   });
 });
