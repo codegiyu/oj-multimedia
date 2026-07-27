@@ -180,5 +180,13 @@ describe('whatsappMessaging.service', () => {
       expect(href).toMatch(/^https:\/\/wa\.me\/2349136670466\?text=/);
       expect(decodeURIComponent(href!.split('text=')[1]!)).toContain('submit music or video');
     });
+
+    it('normalizes Nigerian local WhatsApp numbers', () => {
+      const href = buildWhatsAppHref('08031234567', {
+        type: 'artist_content_submit',
+      });
+
+      expect(href).toMatch(/^https:\/\/wa\.me\/2348031234567\?text=/);
+    });
   });
 });

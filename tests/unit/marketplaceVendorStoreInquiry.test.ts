@@ -25,6 +25,12 @@ describe('marketplaceVendorStoreInquiry', () => {
     expect(href).toContain(encodeURIComponent('Ada Fashion'));
   });
 
+  it('normalizes Nigerian local WhatsApp numbers before building href', () => {
+    const href = buildVendorStoreInquiryHref('08031234567', base);
+
+    expect(href).toMatch(/^https:\/\/wa\.me\/2348031234567\?text=/);
+  });
+
   it('returns null when whatsapp number is missing', () => {
     expect(buildVendorStoreInquiryHref(undefined, base)).toBeNull();
     expect(buildVendorStoreInquiryHref('', base)).toBeNull();

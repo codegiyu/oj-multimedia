@@ -3,6 +3,8 @@
  * Aligned with backend IProduct, IVendor, IOrder for easy API swap later.
  */
 
+import { toWhatsAppMeDigits } from '@/lib/utils/whatsappPhone';
+
 export type ProductCategory =
   | 'fashion'
   | 'food'
@@ -246,7 +248,9 @@ export function getProductVendorWhatsapp(product: {
   return product.vendorWhatsapp ?? product.vendorPopulated?.whatsapp;
 }
 
-/** Build wa.me link from a WhatsApp number */
+/** Build wa.me link from a WhatsApp number; empty string if number cannot be normalized */
 export function buildWhatsappLink(number: string): string {
-  return `https://wa.me/${number.replace(/\D/g, '')}`;
+  const digits = toWhatsAppMeDigits(number);
+
+  return digits ? `https://wa.me/${digits}` : '';
 }

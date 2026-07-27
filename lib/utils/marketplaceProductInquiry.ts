@@ -1,5 +1,7 @@
 import { formatPrice } from '@/lib/utils/marketplace';
 
+import { toWhatsAppMeDigits } from '@/lib/utils/whatsappPhone';
+
 export interface ProductInquiryMessageParams {
   productName: string;
   price: number;
@@ -41,10 +43,9 @@ export function buildVendorProductInquiryHref(
   whatsappRaw: string | undefined,
   params: ProductInquiryMessageParams
 ): string | null {
-  if (!whatsappRaw?.trim()) return null;
+  const digits = toWhatsAppMeDigits(whatsappRaw);
 
-  const digits = whatsappRaw.replace(/\D/g, '');
-  if (!digits.length) return null;
+  if (!digits) return null;
 
   const message = formatProductInquiryMessage(params);
 
