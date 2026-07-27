@@ -1,5 +1,6 @@
 import type { FeaturedOption, PromotionPricingOption } from '@/lib/types/promotion';
 import { formatPrice } from '@/lib/utils/marketplace';
+import { toWhatsAppMeDigits } from '@/lib/utils/whatsappPhone';
 
 export type PaidDownloadContentType = 'music' | 'video' | 'resource' | 'news';
 
@@ -232,10 +233,9 @@ export function buildWhatsAppHref(
   whatsappRaw: string | undefined,
   payload: WhatsAppMessagePayload
 ): string | null {
-  if (!whatsappRaw?.trim()) return null;
+  const digits = toWhatsAppMeDigits(whatsappRaw);
 
-  const digits = whatsappRaw.replace(/\D/g, '');
-  if (!digits.length) return null;
+  if (!digits) return null;
 
   const message = buildWhatsAppMessage(payload);
 
@@ -247,10 +247,9 @@ export function buildWhatsAppHrefFromMessage(
   whatsappRaw: string | undefined,
   message: string
 ): string | null {
-  if (!whatsappRaw?.trim()) return null;
+  const digits = toWhatsAppMeDigits(whatsappRaw);
 
-  const digits = whatsappRaw.replace(/\D/g, '');
-  if (!digits.length) return null;
+  if (!digits) return null;
 
   return `https://wa.me/${digits}?text=${encodeURIComponent(message)}`;
 }

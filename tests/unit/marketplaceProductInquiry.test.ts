@@ -39,6 +39,12 @@ describe('marketplaceProductInquiry', () => {
     expect(href).toContain(encodeURIComponent('Blue Denim Jacket'));
   });
 
+  it('normalizes Nigerian local WhatsApp numbers before building href', () => {
+    const href = buildVendorProductInquiryHref('08031234567', base);
+
+    expect(href).toMatch(/^https:\/\/wa\.me\/2348031234567\?text=/);
+  });
+
   it('returns null when whatsapp number is missing', () => {
     expect(buildVendorProductInquiryHref(undefined, base)).toBeNull();
     expect(buildVendorProductInquiryHref('', base)).toBeNull();

@@ -4,10 +4,11 @@ import Link from 'next/link';
 import { MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { AccountSuspendedPayload } from '@/lib/types/rolePortal';
+import { toWhatsAppMeDigits } from '@/lib/utils/whatsappPhone';
 
 function whatsappHref(raw: string | null | undefined): string | null {
-  if (!raw?.trim()) return null;
-  const digits = raw.replace(/\D/g, '');
+  const digits = toWhatsAppMeDigits(raw);
+
   return digits ? `https://wa.me/${digits}` : null;
 }
 

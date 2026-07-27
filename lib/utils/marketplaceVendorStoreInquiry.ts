@@ -1,3 +1,5 @@
+import { toWhatsAppMeDigits } from '@/lib/utils/whatsappPhone';
+
 export interface VendorStoreInquiryMessageParams {
   vendorName: string;
   storeUrl: string;
@@ -22,10 +24,9 @@ export function buildVendorStoreInquiryHref(
   whatsappRaw: string | undefined,
   params: VendorStoreInquiryMessageParams
 ): string | null {
-  if (!whatsappRaw?.trim()) return null;
+  const digits = toWhatsAppMeDigits(whatsappRaw);
 
-  const digits = whatsappRaw.replace(/\D/g, '');
-  if (!digits.length) return null;
+  if (!digits) return null;
 
   const message = formatVendorStoreInquiryMessage(params);
 
