@@ -159,6 +159,8 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
       setOwnerMeta({ ownerLocked: false, ownerUserId: '', hasArtist: false });
       setEditListRow(null);
       setDurationParts(EMPTY_MEDIA_DURATION_PARTS);
+      setPendingThumbnail(null);
+      setPendingVideoFile(null);
       return;
     }
     if (!editId) {
@@ -168,6 +170,8 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
       setOwnerMeta({ ownerLocked: false, ownerUserId: '', hasArtist: false });
       setEditListRow(null);
       setDurationParts(EMPTY_MEDIA_DURATION_PARTS);
+      setPendingThumbnail(null);
+      setPendingVideoFile(null);
       return;
     }
     let cancelled = false;
@@ -406,6 +410,8 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
       }
       setForm(defaultForm);
       setDurationParts(EMPTY_MEDIA_DURATION_PARTS);
+      setPendingThumbnail(null);
+      setPendingVideoFile(null);
       onOpenChange(false);
       onSuccess();
       toast.success(isEdit ? 'Video updated.' : 'Video created.');
@@ -421,6 +427,8 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
     if (!val) {
       setForm(defaultForm);
       setDurationParts(EMPTY_MEDIA_DURATION_PARTS);
+      setPendingThumbnail(null);
+      setPendingVideoFile(null);
     }
     onOpenChange(val);
   };

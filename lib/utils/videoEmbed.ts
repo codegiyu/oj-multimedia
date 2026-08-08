@@ -12,13 +12,18 @@ const YOUTUBE_HOSTS = new Set([
   'music.youtube.com',
   'youtu.be',
   'www.youtu.be',
+  'youtube-nocookie.com',
+  'www.youtube-nocookie.com',
 ]);
 
 function isYoutubeHost(host: string): boolean {
   const normalized = host.replace(/^www\./, '');
 
   return (
-    YOUTUBE_HOSTS.has(host) || YOUTUBE_HOSTS.has(normalized) || normalized.endsWith('youtube.com')
+    YOUTUBE_HOSTS.has(host) ||
+    YOUTUBE_HOSTS.has(normalized) ||
+    normalized.endsWith('youtube.com') ||
+    normalized.endsWith('youtube-nocookie.com')
   );
 }
 
@@ -59,7 +64,7 @@ export function parseYoutubeId(input: string | undefined | null): string | null 
     }
   } catch {
     const m = trimmed.match(
-      /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/|live\/)|youtu\.be\/)([\w-]{11})/
+      /(?:youtube(?:-nocookie)?\.com\/(?:watch\?v=|embed\/|shorts\/|live\/)|youtu\.be\/)([\w-]{11})/
     );
 
     return m?.[1] ?? null;
@@ -94,39 +99,35 @@ export type ResolvedVideoMediaFields = {
 
 /**
  * Resolve hosted file vs YouTube embed fields for form submit.
- * YouTube pasted into videoFileUrl moves into embedUrl.
+ * Parseable YouTube in file/legacy wins over a non-YouTube embedUrl.
  */
 export function resolveVideoMediaFields(input: VideoMediaFieldsInput): ResolvedVideoMediaFields {
   const fileIn = (input.videoFileUrl ?? '').trim();
   const embedIn = (input.embedUrl ?? '').trim();
   const legacyIn = (input.videoUrl ?? '').trim();
 
+  const fileIsYt = isLikelyYoutubeUrl(fileIn);
+  const embedIsYt = isLikelyYoutubeUrl(embedIn);
+  const legacyIsYt = isLikelyYoutubeUrl(legacyIn);
+
   let videoFileUrl = '';
   let embedUrl = '';
   let movedYoutubeFromFile = false;
 
-  if (embedIn) {
+  if (embedIsYt) {
+    embedUrl = embedIn;
+  } else if (fileIsYt) {
+    embedUrl = fileIn;
+    movedYoutubeFromFile = true;
+  } else if (legacyIsYt) {
+    embedUrl = legacyIn;
+  } else if (embedIn) {
     embedUrl = embedIn;
   }
 
-  if (fileIn) {
-    if (isLikelyYoutubeUrl(fileIn)) {
-      if (!embedUrl) embedUrl = fileIn;
-      movedYoutubeFromFile = true;
-    } else {
-      videoFileUrl = fileIn;
-    }
-  }
-
-  if (!videoFileUrl && !embedUrl && legacyIn) {
-    if (isLikelyYoutubeUrl(legacyIn)) {
-      embedUrl = legacyIn;
-    } else {
-      videoFileUrl = legacyIn;
-    }
-  } else if (!embedUrl && legacyIn && isLikelyYoutubeUrl(legacyIn)) {
-    embedUrl = legacyIn;
-  } else if (!videoFileUrl && legacyIn && !isLikelyYoutubeUrl(legacyIn) && !fileIn) {
+  if (fileIn && !fileIsYt) {
+    videoFileUrl = fileIn;
+  } else if (!fileIn && legacyIn && !legacyIsYt) {
     videoFileUrl = legacyIn;
   }
 
