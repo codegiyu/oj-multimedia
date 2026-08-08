@@ -42,6 +42,7 @@ import {
   resolveVideoMediaFields,
   youtubeEmbedUrlFromInput,
 } from '@/lib/utils/videoEmbed';
+import { resolveDeferredCreateStatus } from '@/lib/utils/adminVideoCreateOrder';
 import { MonetizationFormFields } from '@/components/section/admin/shared/MonetizationFormFields';
 import { useFileUpload } from '@/lib/hooks/use-file-upload';
 import {
@@ -320,6 +321,11 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
         });
         if (res.type !== 'success') throw new Error(res.error?.message ?? 'Update failed');
       } else {
+        const { createStatus: initialStatus, publishAfterMedia } = resolveDeferredCreateStatus({
+          requestedStatus: createStatus,
+          hasPendingMediaUpload: Boolean(pendingVideoFile || pendingThumbnail),
+        });
+
         const payload: IAdminCreateVideoPayload = {
           title,
           description,
@@ -332,7 +338,7 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
           ...metadataPayload,
           isMonetizable,
           price,
-          status: createStatus,
+          status: initialStatus,
         };
         if (form.artistId) payload.artistId = form.artistId;
         if (form.ownerUserId) payload.ownerUserId = form.ownerUserId;
@@ -341,6 +347,12 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
         const createdId =
           (res.data as { video?: { _id?: string }; _id?: string } | undefined)?.video?._id ??
           (res.data as { _id?: string } | undefined)?._id;
+
+        const needsMediaAttach = Boolean(pendingThumbnail || pendingVideoFile);
+        if (needsMediaAttach && !createdId) {
+          throw new Error('Video created but id was missing; cannot attach media.');
+        }
+
         if (createdId) {
           if (pendingThumbnail) {
             const upload = await thumbnailUpload.uploadFile({
@@ -349,7 +361,7 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
             });
             if (!upload?.url) {
               throw new Error(
-                'Thumbnail upload failed after create. Check file size (images max 10MB) and try again.'
+                'Thumbnail upload failed after create. A draft may exist — open edit and retry. Check file size (images max 10MB).'
               );
             }
             finalThumbnail = upload.url;
@@ -361,23 +373,34 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
             });
             if (!upload?.url) {
               throw new Error(
-                `Video file upload failed after create. Max size ${formatUploadBytes(AUDIO_UPLOAD_MAX_BYTES)}; confirm storage is available and retry.`
+                `Video file upload failed after create. A draft may exist — open edit and retry. Max size ${formatUploadBytes(AUDIO_UPLOAD_MAX_BYTES)}.`
               );
             }
             finalVideoFileUrl = upload.url;
           }
-          if (pendingThumbnail || pendingVideoFile || metadataPayload.metadata) {
+          if (
+            pendingThumbnail ||
+            pendingVideoFile ||
+            metadataPayload.metadata ||
+            publishAfterMedia
+          ) {
+            const patchPayload: IAdminUpdateVideoPayload = {
+              thumbnail: finalThumbnail,
+              videoFileUrl: finalVideoFileUrl,
+              embedUrl,
+              ...metadataPayload,
+            };
+            if (publishAfterMedia) patchPayload.status = 'published';
+
             const patchRes = await callApi('ADMIN_VIDEO_UPDATE', {
               query: `/${createdId}` as `/${string}`,
-              payload: {
-                thumbnail: finalThumbnail,
-                videoFileUrl: finalVideoFileUrl,
-                embedUrl,
-                ...metadataPayload,
-              },
+              payload: patchPayload,
             });
             if (patchRes.type !== 'success')
-              throw new Error(patchRes.error?.message ?? 'Post-create media update failed');
+              throw new Error(
+                patchRes.error?.message ??
+                  'Post-create media update failed. A draft may exist — open edit and retry.'
+              );
           }
         }
       }
