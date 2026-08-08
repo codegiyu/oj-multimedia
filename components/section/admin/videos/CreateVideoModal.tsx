@@ -277,7 +277,11 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
             file: pendingThumbnail,
             entityId: editId,
           });
-          if (!upload?.url) throw new Error('Thumbnail upload failed');
+          if (!upload?.url) {
+            throw new Error(
+              'Thumbnail upload failed. Check file size (images max 10MB) and try again.'
+            );
+          }
           finalThumbnail = upload.url;
         }
         if (pendingVideoFile) {
@@ -285,7 +289,11 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
             file: pendingVideoFile,
             entityId: editId,
           });
-          if (!upload?.url) throw new Error('Video file upload failed');
+          if (!upload?.url) {
+            throw new Error(
+              `Video file upload failed. Max size ${formatUploadBytes(AUDIO_UPLOAD_MAX_BYTES)}; confirm storage is available and retry.`
+            );
+          }
           finalVideoFileUrl = upload.url;
         }
         const payload: IAdminUpdateVideoPayload = {
@@ -339,14 +347,24 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
               file: pendingThumbnail,
               entityId: createdId,
             });
-            if (upload?.url) finalThumbnail = upload.url;
+            if (!upload?.url) {
+              throw new Error(
+                'Thumbnail upload failed after create. Check file size (images max 10MB) and try again.'
+              );
+            }
+            finalThumbnail = upload.url;
           }
           if (pendingVideoFile) {
             const upload = await videoFileUpload.uploadFile({
               file: pendingVideoFile,
               entityId: createdId,
             });
-            if (upload?.url) finalVideoFileUrl = upload.url;
+            if (!upload?.url) {
+              throw new Error(
+                `Video file upload failed after create. Max size ${formatUploadBytes(AUDIO_UPLOAD_MAX_BYTES)}; confirm storage is available and retry.`
+              );
+            }
+            finalVideoFileUrl = upload.url;
           }
           if (pendingThumbnail || pendingVideoFile || metadataPayload.metadata) {
             const patchRes = await callApi('ADMIN_VIDEO_UPDATE', {
