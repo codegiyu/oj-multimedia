@@ -6,31 +6,44 @@ import { mapPublicVideoToHomeTrending } from '@/lib/utils/homeTrendingMappers';
 import { HOME_ISR } from './shared';
 
 export async function LatestVideosSection() {
-  const query = new URLSearchParams({
+  const recentQuery = new URLSearchParams({
     limit: '12',
     page: '1',
     status: 'published',
     type: 'recent',
   });
+  const trendingQuery = new URLSearchParams({
+    limit: '12',
+    page: '1',
+    status: 'published',
+    type: 'trending',
+  });
 
-  const res = await callPublicServerApi(
-    'PUBLIC_GET_VIDEOS',
-    { query: `?${query.toString()}` },
-    HOME_ISR
-  );
+  const [recentRes, trendingRes] = await Promise.all([
+    callPublicServerApi('PUBLIC_GET_VIDEOS', { query: `?${recentQuery.toString()}` }, HOME_ISR),
+    callPublicServerApi('PUBLIC_GET_VIDEOS', { query: `?${trendingQuery.toString()}` }, HOME_ISR),
+  ]);
 
-  if (res.type === 'error') {
+  if (recentRes.type === 'error') {
     return (
       <SectionLoadError
         title="Latest videos unavailable"
-        message={res.error?.message ?? 'Failed to load latest videos'}
+        message={recentRes.error?.message ?? 'Failed to load latest videos'}
       />
     );
   }
 
-  const videos = ((res.data as IPublicVideosListRes | undefined)?.videos ?? []).map(
-    mapPublicVideoToHomeTrending
+  const trendingIds = new Set(
+    (
+      (trendingRes.type === 'success' ? trendingRes.data : undefined) as
+        | IPublicVideosListRes
+        | undefined
+    )?.videos?.map(v => v._id) ?? []
   );
+
+  const videos = ((recentRes.data as IPublicVideosListRes | undefined)?.videos ?? [])
+    .filter(video => !trendingIds.has(video._id))
+    .map(mapPublicVideoToHomeTrending);
 
   return (
     <SimpleVideoRail
