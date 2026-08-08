@@ -31,7 +31,14 @@ import {
   requireText,
   resolveMonetizationFormPrice,
 } from '@/lib/utils/adminFormValidation';
+import {
+  assertOptionalYoutubeEmbedUrl,
+  assertVideoHasPlayableMedia,
+  resolveVideoMediaFields,
+  youtubeEmbedUrlFromInput,
+} from '@/lib/utils/videoEmbed';
 import { MonetizationFormFields } from '@/components/section/admin/shared/MonetizationFormFields';
+import { AUDIO_UPLOAD_MAX_BYTES, formatUploadBytes } from '@/lib/constants/uploadLimits';
 import { useContentCategoryOptions } from '@/lib/hooks/useContentCategoryOptions';
 import {
   PUBLISHABLE_STATUS_SELECT_OPTIONS,
@@ -147,10 +154,30 @@ export function ArtistVideoFormModal({
       const title = requireText(form.title, 'Title');
       const description = normalizeOptionalText(form.description ?? '');
       const thumbnail = normalizeOptionalHttpUrl(form.thumbnail ?? '', 'Thumbnail URL');
-      const videoFileUrl = normalizeOptionalHttpUrl(form.videoFileUrl ?? '', 'Video file URL');
-      const embedUrl = normalizeOptionalHttpUrl(form.embedUrl ?? '', 'Embed URL');
+      const videoFileUrlRaw = normalizeOptionalHttpUrl(form.videoFileUrl ?? '', 'Video file URL');
+      const embedUrlRaw = normalizeOptionalHttpUrl(form.embedUrl ?? '', 'Embed URL');
       const category = normalizeOptionalText(form.category ?? '');
       const videoUrl = normalizeOptionalHttpUrl(form.videoUrl ?? '', 'Video URL');
+
+      const resolvedMedia = resolveVideoMediaFields({
+        videoFileUrl: videoFileUrlRaw,
+        embedUrl: embedUrlRaw,
+        videoUrl,
+      });
+      const embedUrl = assertOptionalYoutubeEmbedUrl(resolvedMedia.embedUrl, 'Embed URL');
+      const videoFileUrl = resolvedMedia.videoFileUrl;
+      const resolvedVideoUrl = resolvedMedia.videoUrl;
+
+      if (resolvedMedia.movedYoutubeFromFile) {
+        toast.message('YouTube link moved to Embed URL', {
+          description: 'Hosted file URLs belong in Video file; YouTube links use Embed URL.',
+        });
+        setForm(f => ({
+          ...f,
+          videoFileUrl: '',
+          embedUrl,
+        }));
+      }
 
       assertMonetizationPriceClient(form.isMonetizable, form.price);
       const durationError = validateMediaDurationParts(durationParts);
@@ -159,6 +186,12 @@ export function ArtistVideoFormModal({
       const isMonetizable = Boolean(form.isMonetizable);
       const price = resolveMonetizationFormPrice(isMonetizable, form.price);
 
+      assertVideoHasPlayableMedia({
+        videoFileUrl,
+        embedUrl,
+        requireForPublish: isEdit && editStatus === 'published',
+      });
+
       if (editId) {
         const payload: IArtistUpdateVideoPayload = {
           title,
@@ -166,7 +199,7 @@ export function ArtistVideoFormModal({
           thumbnail,
           videoFileUrl,
           embedUrl,
-          videoUrl,
+          videoUrl: resolvedVideoUrl,
           category,
           isMonetizable,
           price,
@@ -278,7 +311,26 @@ export function ArtistVideoFormModal({
             <MediaUrlOrUploadField
               label="Video file"
               value={form.videoFileUrl ?? ''}
-              onChange={value => setForm(f => ({ ...f, videoFileUrl: value }))}
+              onChange={value => {
+                const resolved = resolveVideoMediaFields({
+                  videoFileUrl: value,
+                  embedUrl: form.embedUrl,
+                  videoUrl: form.videoUrl,
+                });
+
+                if (resolved.movedYoutubeFromFile) {
+                  toast.message('YouTube link moved to Embed URL');
+                  setForm(f => ({
+                    ...f,
+                    videoFileUrl: '',
+                    embedUrl: resolved.embedUrl,
+                  }));
+
+                  return;
+                }
+
+                setForm(f => ({ ...f, videoFileUrl: value }));
+              }}
               entityType="resource"
               entityId={editId}
               fallbackEntityIdPrefix="artist-video-file"
@@ -286,13 +338,26 @@ export function ArtistVideoFormModal({
               accept="video/*"
               defaultMode="url"
               disableFileUpload
+              helperText={`Hosted file URL only. Max ${formatUploadBytes(AUDIO_UPLOAD_MAX_BYTES)} when uploads are enabled. Use Embed URL for YouTube.`}
             />
             <RegularInput
-              label="Embed URL (YouTube / Vimeo)"
+              label="Embed URL (YouTube)"
               value={form.embedUrl ?? ''}
               onChange={e => setForm(f => ({ ...f, embedUrl: e.target.value }))}
               placeholder="https://www.youtube.com/watch?v=..."
+              bottomText="YouTube watch, shorts, live, or youtu.be links only. Vimeo is not supported."
             />
+            {youtubeEmbedUrlFromInput(form.embedUrl) && (
+              <div className="rounded-xl overflow-hidden border border-border/50 bg-black aspect-video">
+                <iframe
+                  src={youtubeEmbedUrlFromInput(form.embedUrl) ?? undefined}
+                  title="YouTube preview"
+                  className="w-full h-full"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+            )}
             <MediaMetadataFields
               idPrefix="artist-video"
               value={durationParts}
