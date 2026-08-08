@@ -32,6 +32,7 @@ import { HomeAdvertsBeforeCtaSection } from './_sections/HomeAdvertsBeforeCtaSec
 import { LatestMusicSection } from './_sections/LatestMusicSection';
 import { LatestSermonsSection } from './_sections/LatestSermonsSection';
 import { LatestMoviesSection } from './_sections/LatestMoviesSection';
+import { LatestVideosSection } from './_sections/LatestVideosSection';
 import { TrendingMusicSectionServer } from './_sections/TrendingMusicSectionServer';
 import { TrendingVideosSectionServer } from './_sections/TrendingVideosSectionServer';
 import { DevotionalsRailSection } from './_sections/DevotionalsRailSection';
@@ -107,6 +108,10 @@ export default async function Home({ searchParams }: HomeProps) {
 
       <Suspense fallback={<TrendingVideosSectionSkeleton />}>
         <TrendingVideosSectionServer videoCategorySlug={videoCategorySlug} />
+      </Suspense>
+
+      <Suspense fallback={<SimpleVideoRailSkeleton />}>
+        <LatestVideosSection />
       </Suspense>
 
       <Suspense fallback={<SimpleVideoRailSkeleton />}>
