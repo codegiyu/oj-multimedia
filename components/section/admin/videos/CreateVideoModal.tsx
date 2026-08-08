@@ -40,9 +40,9 @@ import {
   assertOptionalYoutubeEmbedUrl,
   assertVideoHasPlayableMedia,
   resolveVideoMediaFields,
-  youtubeEmbedUrlFromInput,
 } from '@/lib/utils/videoEmbed';
 import { resolveDeferredCreateStatus } from '@/lib/utils/adminVideoCreateOrder';
+import { YoutubeEmbedPreview } from '@/components/general/YoutubeEmbedPreview';
 import { MonetizationFormFields } from '@/components/section/admin/shared/MonetizationFormFields';
 import { useFileUpload } from '@/lib/hooks/use-file-upload';
 import {
@@ -558,17 +558,7 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
               placeholder="https://www.youtube.com/watch?v=..."
               bottomText="YouTube watch, shorts, live, or youtu.be links only."
             />
-            {youtubeEmbedUrlFromInput(form.embedUrl) && (
-              <div className="rounded-xl overflow-hidden border border-border/50 bg-black aspect-video">
-                <iframe
-                  src={youtubeEmbedUrlFromInput(form.embedUrl) ?? undefined}
-                  title="YouTube preview"
-                  className="w-full h-full"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-              </div>
-            )}
+            <YoutubeEmbedPreview embedUrl={form.embedUrl} title="YouTube preview" />
             <MediaMetadataFields
               idPrefix="admin-video"
               value={durationParts}

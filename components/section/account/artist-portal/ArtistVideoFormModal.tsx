@@ -35,8 +35,8 @@ import {
   assertOptionalYoutubeEmbedUrl,
   assertVideoHasPlayableMedia,
   resolveVideoMediaFields,
-  youtubeEmbedUrlFromInput,
 } from '@/lib/utils/videoEmbed';
+import { YoutubeEmbedPreview } from '@/components/general/YoutubeEmbedPreview';
 import { MonetizationFormFields } from '@/components/section/admin/shared/MonetizationFormFields';
 import { AUDIO_UPLOAD_MAX_BYTES, formatUploadBytes } from '@/lib/constants/uploadLimits';
 import { useContentCategoryOptions } from '@/lib/hooks/useContentCategoryOptions';
@@ -219,6 +219,7 @@ export function ArtistVideoFormModal({
           thumbnail: thumbnail || '',
           videoFileUrl: videoFileUrl || '',
           embedUrl,
+          videoUrl: resolvedVideoUrl || '',
           category,
           isMonetizable,
           price,
@@ -347,17 +348,7 @@ export function ArtistVideoFormModal({
               placeholder="https://www.youtube.com/watch?v=..."
               bottomText="YouTube watch, shorts, live, or youtu.be links only. Vimeo is not supported."
             />
-            {youtubeEmbedUrlFromInput(form.embedUrl) && (
-              <div className="rounded-xl overflow-hidden border border-border/50 bg-black aspect-video">
-                <iframe
-                  src={youtubeEmbedUrlFromInput(form.embedUrl) ?? undefined}
-                  title="YouTube preview"
-                  className="w-full h-full"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-              </div>
-            )}
+            <YoutubeEmbedPreview embedUrl={form.embedUrl} title="YouTube preview" />
             <MediaMetadataFields
               idPrefix="artist-video"
               value={durationParts}
