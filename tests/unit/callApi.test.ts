@@ -113,7 +113,7 @@ describe('callApi 401 handling', () => {
     syncClientAuthTokensFromHeadersMock.mockReset();
   });
 
-  it('clears session on 401 without redirecting from the utility', async () => {
+  it('returns 401 errors without handling auth state in the utility', async () => {
     const axiosError = new axios.AxiosError(
       'Unauthorized',
       axios.AxiosError.ERR_BAD_REQUEST,
@@ -134,8 +134,8 @@ describe('callApi 401 handling', () => {
 
     expect(result.type).toBe('error');
     expect(result.error?.responseCode).toBe(401);
-    expect(clearSessionMock).toHaveBeenCalledTimes(1);
-    expect(clearClientAuthTokensMock).toHaveBeenCalledTimes(1);
+    expect(clearSessionMock).not.toHaveBeenCalled();
+    expect(clearClientAuthTokensMock).not.toHaveBeenCalled();
 
     requestSpy.mockRestore();
   });
