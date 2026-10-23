@@ -34,6 +34,7 @@ describe('handleUnauthorizedResponse', () => {
   beforeEach(() => {
     resetUnauthorizedHandlingForTests();
     replaceMock.mockClear();
+    window.history.replaceState({}, '', '/artists');
   });
 
   it('clears session and redirects once when called repeatedly', () => {
@@ -41,6 +42,6 @@ describe('handleUnauthorizedResponse', () => {
     handleUnauthorizedResponse();
 
     expect(replaceMock).toHaveBeenCalledTimes(1);
-    expect(replaceMock).toHaveBeenCalledWith('/auth/login');
+    expect(replaceMock).toHaveBeenCalledWith('/auth/login?redirectTo=%2Fartists');
   });
 });
