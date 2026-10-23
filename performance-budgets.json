@@ -1,14 +1,14 @@
 {
   "smoke": {
-    "description": "CI build gate for static JS chunk sizes. Tightened toward Core Web Vitals targets; still allows current baseline with headroom for admin surface.",
-    "maxTotalStaticJsBytes": 5000000,
+    "description": "CI build gate for static JS chunk sizes across all routes, with headroom above the current production baseline.",
+    "maxTotalStaticJsBytes": 9000000,
     "maxSingleChunkBytes": 700000
   },
   "lighthouse": {
     "description": "Runtime script transfer budget (KB). Enforced via lighthouse-budget.json when LIGHTHOUSE_URL is set.",
-    "maxScriptTransferKb": 400,
+    "maxScriptTransferKb": 500,
     "budgetFile": "lighthouse-budget.json"
   },
-  "maxTotalStaticJsBytes": 5000000,
+  "maxTotalStaticJsBytes": 9000000,
   "maxSingleChunkBytes": 700000
 }

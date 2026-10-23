@@ -13,6 +13,7 @@ const eslintConfig = [
       'build/**',
       'next-env.d.ts',
       'node_modules/**',
+      'oj-backend/**',
       'public/sw.js',
       'public/sw.js.map',
       'public/workbox-*.js',
