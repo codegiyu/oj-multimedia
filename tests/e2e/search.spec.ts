@@ -19,7 +19,10 @@ describeWithWebServer('search page @smoke', () => {
     await page.goto('/search');
 
     await page.getByPlaceholder(/search music, news, videos, community/i).fill('gospel');
-    await page.getByRole('button', { name: /^search$/i }).click();
+    await page
+      .getByRole('main')
+      .getByRole('button', { name: /^search$/i })
+      .click();
 
     await expect(page).toHaveURL(/[?&]q=gospel/);
   });
