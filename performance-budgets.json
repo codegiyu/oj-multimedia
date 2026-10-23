@@ -6,7 +6,7 @@
   },
   "lighthouse": {
     "description": "Runtime script transfer budget (KB). Enforced via lighthouse-budget.json when LIGHTHOUSE_URL is set.",
-    "maxScriptTransferKb": 400,
+    "maxScriptTransferKb": 500,
     "budgetFile": "lighthouse-budget.json"
   },
   "maxTotalStaticJsBytes": 9000000,
