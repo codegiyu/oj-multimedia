@@ -17,7 +17,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: codegiyu/oj-backend
-          path: oj-backend
+          path: ../oj-backend
 
       - uses: actions/setup-node@v4
         with:
