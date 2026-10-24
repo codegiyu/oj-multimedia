@@ -3,8 +3,9 @@ FROM node:22-slim AS deps
 WORKDIR /app
 COPY package*.json ./
 
-# Install all dependencies (dev + prod) once
-RUN npm ci
+# Build tools such as @tailwindcss/postcss are dev dependencies. Explicitly
+# include them because the build environment may set NODE_ENV=production.
+RUN npm ci --include=dev
 
 # ---- Build Stage ----
 FROM deps AS builder
