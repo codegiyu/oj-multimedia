@@ -15,8 +15,8 @@ function isSplashEnabled(): boolean {
   if (flag === 'true') return true;
   if (flag === 'false') return false;
 
-  // Production defaults off to protect LCP/INP; dev keeps the branded splash unless opted out.
-  return process.env.NODE_ENV !== 'production';
+  // Only enable the development splash by default; unknown environment values should stay off.
+  return process.env.NODE_ENV === 'development';
 }
 
 function ClearSiteLoadingOnMount() {
