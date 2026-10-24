@@ -32,7 +32,7 @@ describe('NFR performance contract', () => {
     expect(ADMIN_LIST_API_P95_TARGET_MS).toBe(300);
   });
 
-  it('lazy-loads the root splash screen and gates it in production', () => {
+  it('lazy-loads the root splash screen and enables it by default only in development', () => {
     const layout = readFileSync(join(process.cwd(), 'app/layout.tsx'), 'utf8');
     const splashDynamic = readFileSync(
       join(process.cwd(), 'components/general/LoadAnimationScreenDynamic.tsx'),
@@ -44,7 +44,7 @@ describe('NFR performance contract', () => {
     expect(splashDynamic).toContain("from 'next/dynamic'");
     expect(splashDynamic).toContain('ssr: false');
     expect(splashDynamic).toContain('NEXT_PUBLIC_ENABLE_SPLASH');
-    expect(splashDynamic).toContain("process.env.NODE_ENV !== 'production'");
+    expect(splashDynamic).toContain("process.env.NODE_ENV === 'development'");
   });
 
   it('uses low fetch priority on non-LCP FillImage instances', () => {
