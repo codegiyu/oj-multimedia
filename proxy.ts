@@ -5,7 +5,7 @@ import {
   shouldEnforceSessionCookie,
 } from '@/lib/middleware/sessionGate';
 
-export function middleware(request: NextRequest): NextResponse {
+export function proxy(request: NextRequest): NextResponse {
   const { pathname } = request.nextUrl;
 
   if (!shouldEnforceSessionCookie(pathname)) {
