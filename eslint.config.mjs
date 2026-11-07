@@ -1,9 +1,15 @@
+import { FlatCompat } from '@eslint/eslintrc';
 import js from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import prettier from 'eslint-plugin-prettier';
 import prettierConfig from 'eslint-config-prettier';
 import reactHooks from 'eslint-plugin-react-hooks';
-import nextCoreWebVitals from 'eslint-config-next/core-web-vitals.js';
+import { fileURLToPath } from 'url';
+import path from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const compat = new FlatCompat({ baseDirectory: __dirname });
 
 const eslintConfig = [
   {
@@ -27,7 +33,7 @@ const eslintConfig = [
       'scripts/**',
     ],
   },
-  ...nextCoreWebVitals,
+  ...compat.extends('next/core-web-vitals'),
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
