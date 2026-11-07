@@ -2,6 +2,8 @@ import type { NextConfig } from 'next';
 import { IMAGE_REMOTE_PATTERNS } from './lib/config/imageRemotePatterns';
 
 const nextConfig: NextConfig = {
+  output: 'standalone',
+
   images: {
     remotePatterns: IMAGE_REMOTE_PATTERNS,
   },
