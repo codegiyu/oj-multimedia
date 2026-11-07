@@ -3,7 +3,7 @@ import tseslint from 'typescript-eslint';
 import prettier from 'eslint-plugin-prettier';
 import prettierConfig from 'eslint-config-prettier';
 import reactHooks from 'eslint-plugin-react-hooks';
-import nextCoreWebVitals from 'eslint-config-next/core-web-vitals';
+import nextCoreWebVitals from 'eslint-config-next/core-web-vitals.js';
 
 const eslintConfig = [
   {
