@@ -6,10 +6,7 @@ import {
 } from '@/lib/services/onDemandRevalidation';
 
 function readRevalidationSecret(request: NextRequest): string | null {
-  const headerSecret = request.headers.get('x-revalidate-secret')?.trim();
-  if (headerSecret) return headerSecret;
-
-  return request.nextUrl.searchParams.get('secret')?.trim() || null;
+  return request.headers.get('x-revalidate-secret')?.trim() || null;
 }
 
 export async function POST(request: NextRequest): Promise<NextResponse> {

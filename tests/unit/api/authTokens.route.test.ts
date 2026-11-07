@@ -13,7 +13,7 @@ describe('POST /api/auth/tokens', () => {
 
     const request = new NextRequest('http://localhost/api/auth/tokens', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', origin: 'http://localhost:3000' },
       body: JSON.stringify({ access: 'access-token', refresh: 'refresh-token' }),
     });
 
@@ -31,10 +31,11 @@ describe('POST /api/auth/tokens', () => {
 
   it('marks cookies secure in production', async () => {
     vi.stubEnv('NODE_ENV', 'production');
+    vi.stubEnv('NEXT_PUBLIC_BASE_URL', 'https://example.com');
 
     const request = new NextRequest('http://localhost/api/auth/tokens', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', origin: 'https://example.com' },
       body: JSON.stringify({ access: 'access-token' }),
     });
 
