@@ -12,7 +12,22 @@ type TokenBody = {
   refresh?: string;
 };
 
+function isTrustedOrigin(origin: string | null): boolean {
+  const trusted = [
+    process.env.NEXT_PUBLIC_BASE_URL,
+    process.env.NEXT_SERVER_BASE_URL,
+    // Allow localhost in non-production environments
+    process.env.NODE_ENV !== 'production' ? 'http://localhost:3000' : null,
+  ].filter(Boolean) as string[];
+  return origin !== null && trusted.some(t => origin === t.replace(/\/$/, ''));
+}
+
 export async function POST(request: NextRequest): Promise<NextResponse> {
+  const origin = request.headers.get('origin');
+  if (!isTrustedOrigin(origin)) {
+    return NextResponse.json({ ok: false, message: 'Forbidden' }, { status: 403 });
+  }
+
   const body = (await request.json().catch(() => ({}))) as TokenBody;
   const access = (body.access ?? '').trim();
   const refresh = (body.refresh ?? '').trim();
