@@ -72,12 +72,15 @@ export async function syncClientAuthTokensFromHeaders(headers: unknown): Promise
   tokenCache = { access, refresh };
 
   try {
-    await fetch('/api/auth/tokens', {
+    const res = await fetch('/api/auth/tokens', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
       body: JSON.stringify({ access: tokenCache.access, refresh: tokenCache.refresh }),
     });
+    if (!res.ok) {
+      console.warn('[auth] /api/auth/tokens responded', res.status, '— server-side auth may be unavailable this session');
+    }
   } catch {
     // Non-fatal; header-based flow can still proceed via in-memory cache this session.
   }
