@@ -30,8 +30,7 @@ function isStructuredProseContent(value: unknown): value is StructuredProseConte
 }
 
 type AnimatedBlock =
-  | { kind: 'heading'; text: string }
-  | { kind: 'paragraph'; text: string; className?: string };
+  { kind: 'heading'; text: string } | { kind: 'paragraph'; text: string; className?: string };
 
 function collectAnimatedBlocks(
   content: StructuredProseContentData,

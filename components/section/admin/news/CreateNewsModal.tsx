@@ -236,8 +236,7 @@ export function CreateNewsModal({ open, onOpenChange, editId, onSuccess }: Creat
         const createdId =
           (
             createRes.data as
-              | { news?: { _id?: string }; article?: { _id?: string }; _id?: string }
-              | undefined
+              { news?: { _id?: string }; article?: { _id?: string }; _id?: string } | undefined
           )?.news?._id ??
           (createRes.data as { article?: { _id?: string } } | undefined)?.article?._id ??
           (createRes.data as { _id?: string } | undefined)?._id;

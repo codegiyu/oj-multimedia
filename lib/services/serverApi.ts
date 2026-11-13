@@ -138,9 +138,7 @@ async function runServerFetch<T extends keyof AllEndpoints>(
     });
 
     const json = (await response.json().catch(() => null)) as
-      | CallApiResponse<T>['data']
-      | ApiErrorResponse
-      | null;
+      CallApiResponse<T>['data'] | ApiErrorResponse | null;
 
     if (!json) {
       const error: ApiErrorResponse = {

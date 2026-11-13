@@ -36,8 +36,7 @@ export async function LatestVideosSection() {
   const trendingIds = new Set(
     (
       (trendingRes.type === 'success' ? trendingRes.data : undefined) as
-        | IPublicVideosListRes
-        | undefined
+        IPublicVideosListRes | undefined
     )?.videos?.map(v => v._id) ?? []
   );
 

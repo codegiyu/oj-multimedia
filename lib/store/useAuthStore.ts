@@ -153,8 +153,7 @@ export const useInitAuthStore = create<AuthStore>()((set, get) => ({
 
         if (error || !data) {
           const payload = error?.data as
-            | import('@/lib/types/rolePortal').AccountSuspendedPayload
-            | undefined;
+            import('@/lib/types/rolePortal').AccountSuspendedPayload | undefined;
           if (payload?.code === 'ACCOUNT_SUSPENDED') {
             return {
               success: false,

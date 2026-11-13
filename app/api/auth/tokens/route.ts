@@ -12,11 +12,7 @@ type TokenBody = {
   refresh?: string;
 };
 
-function isTrustedOrigin(
-  origin: string | null,
-  ownOrigin: string,
-  isProduction: boolean
-): boolean {
+function isTrustedOrigin(origin: string | null, ownOrigin: string, isProduction: boolean): boolean {
   // Browsers may omit Origin for same-origin fetches, but in production we require
   // an explicit Origin so non-browser callers (curl, Postman) cannot inject tokens.
   if (origin === null) return !isProduction;

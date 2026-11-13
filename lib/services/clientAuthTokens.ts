@@ -79,7 +79,11 @@ export async function syncClientAuthTokensFromHeaders(headers: unknown): Promise
       body: JSON.stringify({ access: tokenCache.access, refresh: tokenCache.refresh }),
     });
     if (!res.ok) {
-      console.warn('[auth] /api/auth/tokens responded', res.status, '— server-side auth may be unavailable this session');
+      console.warn(
+        '[auth] /api/auth/tokens responded',
+        res.status,
+        '— server-side auth may be unavailable this session'
+      );
     }
   } catch {
     // Non-fatal; header-based flow can still proceed via in-memory cache this session.

@@ -4,13 +4,7 @@ import { pick } from '@/lib/utils/object';
 import { generateOptionsFromArray } from '../utils/general';
 
 type FormSchemaField =
-  | 'fullName'
-  | 'firstName'
-  | 'lastName'
-  | 'email'
-  | 'phoneNumber'
-  | 'message'
-  | 'inquiryType';
+  'fullName' | 'firstName' | 'lastName' | 'email' | 'phoneNumber' | 'message' | 'inquiryType';
 
 export const ALL_FIELDS_SCHEMA: Record<FormSchemaField, StringOrStringArraySchema> = {
   fullName: z.string().min(3, { error: 'Please enter at least 3 characters' }),

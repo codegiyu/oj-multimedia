@@ -545,12 +545,7 @@ export interface IArtistUpdateVideoPayload extends Partial<IArtistCreateVideoPay
 
 // Pastor dashboard types
 export type PastorPortalState =
-  | 'none'
-  | 'pending'
-  | 'rejected'
-  | 'active'
-  | 'deactivated'
-  | 'suspended';
+  'none' | 'pending' | 'rejected' | 'active' | 'deactivated' | 'suspended';
 
 export interface ClientPastorProfile {
   _id: string;

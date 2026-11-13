@@ -79,9 +79,7 @@ const orderStatusOptions = [
 
 export type MarketplaceTabType = typeof TAB_VENDORS | typeof TAB_PRODUCTS | typeof TAB_ORDERS;
 export type MarketplaceRowData =
-  | IMarketplaceVendor
-  | IMarketplaceProduct
-  | PopulatedMarketplaceOrder;
+  IMarketplaceVendor | IMarketplaceProduct | PopulatedMarketplaceOrder;
 
 export interface MarketplacePageClientProps {
   pageTitle: string;

@@ -1,11 +1,5 @@
 export type RolePortalStatus =
-  | 'active'
-  | 'deactivated'
-  | 'suspended'
-  | 'pending'
-  | 'inactive'
-  | 'none'
-  | 'rejected';
+  'active' | 'deactivated' | 'suspended' | 'pending' | 'inactive' | 'none' | 'rejected';
 
 export interface IRoleProfileAppealSummary {
   _id: string;
