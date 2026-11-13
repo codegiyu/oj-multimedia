@@ -70,6 +70,42 @@ describe('POST /api/auth/tokens', () => {
     expect(accessCookie?.secure).toBe(true);
   });
 
+  it('accepts the public origin when nextUrl is the internal container address', async () => {
+    vi.stubEnv('NODE_ENV', 'production');
+
+    const request = new NextRequest('http://0.0.0.0:3000/api/auth/tokens', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        origin: 'https://ojmultimedia.com',
+        host: 'ojmultimedia.com',
+        'x-forwarded-host': 'ojmultimedia.com',
+        'x-forwarded-proto': 'https',
+      },
+      body: JSON.stringify({ access: 'access-token' }),
+    });
+
+    const response = await POST(request);
+    expect(response.status).toBe(200);
+  });
+
+  it('rejects a foreign origin behind the proxy', async () => {
+    vi.stubEnv('NODE_ENV', 'production');
+
+    const request = new NextRequest('http://0.0.0.0:3000/api/auth/tokens', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        origin: 'https://evil.com',
+        'x-forwarded-host': 'ojmultimedia.com',
+      },
+      body: JSON.stringify({ access: 'stolen-token' }),
+    });
+
+    const response = await POST(request);
+    expect(response.status).toBe(403);
+  });
+
   it('rejects requests with no Origin header in production', async () => {
     vi.stubEnv('NODE_ENV', 'production');
 

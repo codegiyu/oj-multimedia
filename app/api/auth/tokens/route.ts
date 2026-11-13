@@ -12,16 +12,31 @@ type TokenBody = {
   refresh?: string;
 };
 
-function isTrustedOrigin(origin: string | null, ownOrigin: string, isProduction: boolean): boolean {
+// Behind a proxy the standalone server sees its internal address (HOSTNAME=0.0.0.0) in
+// nextUrl, so the public host must come from the forwarded/Host headers.
+function getPublicHost(request: NextRequest): string {
+  const forwarded = request.headers.get('x-forwarded-host')?.split(',')[0]?.trim();
+  return forwarded || request.headers.get('host') || request.nextUrl.host;
+}
+
+function isTrustedOrigin(
+  origin: string | null,
+  publicHost: string,
+  isProduction: boolean
+): boolean {
   // Browsers may omit Origin for same-origin fetches, but in production we require
   // an explicit Origin so non-browser callers (curl, Postman) cannot inject tokens.
   if (origin === null) return !isProduction;
-  return origin === ownOrigin;
+  try {
+    return new URL(origin).host === publicHost;
+  } catch {
+    return false;
+  }
 }
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   const origin = request.headers.get('origin');
-  if (!isTrustedOrigin(origin, request.nextUrl.origin, process.env.NODE_ENV === 'production')) {
+  if (!isTrustedOrigin(origin, getPublicHost(request), process.env.NODE_ENV === 'production')) {
     return NextResponse.json({ ok: false, message: 'Forbidden' }, { status: 403 });
   }
 

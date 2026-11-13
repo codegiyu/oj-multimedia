@@ -14,6 +14,15 @@ export type A11yScanOptions = {
 };
 
 export async function expectNoCriticalA11yViolations(page: Page, options: A11yScanOptions = {}) {
+  // Entrance animations (framer-motion fade-ins, up to ~1s) make axe measure color-contrast
+  // against partially transparent elements, so let them finish before scanning.
+  await page
+    .waitForFunction(() => document.getAnimations().length === 0, undefined, {
+      timeout: 5_000,
+    })
+    .catch(() => undefined);
+  await page.waitForTimeout(1_500);
+
   const builder = new AxeBuilder({ page });
 
   if (options.disabledRules?.length) {
