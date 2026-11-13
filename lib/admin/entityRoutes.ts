@@ -56,12 +56,7 @@ export const ADMIN_ENTITY_RECORD_ROUTES: Record<AdminEntityRecordType, EntityRec
 
 /** List pages filtered by a related entity id (not record deep link). */
 export type AdminEntityFilterTarget =
-  | 'music'
-  | 'albums'
-  | 'videos'
-  | 'devotionals'
-  | 'marketplace-products'
-  | 'marketplace-orders';
+  'music' | 'albums' | 'videos' | 'devotionals' | 'marketplace-products' | 'marketplace-orders';
 
 type EntityFilterRoute = {
   pathname: string;

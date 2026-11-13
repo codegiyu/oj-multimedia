@@ -7,13 +7,7 @@
 
 /** Icon identifier for featured options. Maps to Lucide icons on the frontend. */
 export type FeaturedOptionIconId =
-  | 'home'
-  | 'trending-up'
-  | 'mail'
-  | 'star'
-  | 'music'
-  | 'video'
-  | 'megaphone';
+  'home' | 'trending-up' | 'mail' | 'star' | 'music' | 'video' | 'megaphone';
 
 export interface FeaturedOption {
   _id: string;

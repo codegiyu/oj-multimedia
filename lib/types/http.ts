@@ -25,8 +25,7 @@ export interface ApiError {
 }
 
 export type CallApiResponse<T extends keyof AllEndpoints> =
-  | { data?: never; error?: ApiErrorResponse }
-  | { data?: ApiSuccessResponse<T>; error?: never };
+  { data?: never; error?: ApiErrorResponse } | { data?: ApiSuccessResponse<T>; error?: never };
 
 export interface BaseResponseMessage<T extends keyof AllEndpoints> {
   message: string;
@@ -47,5 +46,4 @@ export type SuccessResponseMessage<T extends keyof AllEndpoints> = BaseResponseM
 };
 
 export type ResponseMessage<T extends keyof AllEndpoints> =
-  | ErrorResponseMessage<T>
-  | SuccessResponseMessage<T>;
+  ErrorResponseMessage<T> | SuccessResponseMessage<T>;

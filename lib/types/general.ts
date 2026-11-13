@@ -62,9 +62,7 @@ interface JustVideoURL extends BaseImageOrVideoUrl {
 export type ImageOrVideoURL = JustImageURL | JustVideoURL;
 
 type ObjectIdLike =
-  | { _bsontype: 'ObjectId' }
-  | { _bsontype: 'ObjectID' }
-  | { toHexString(): string };
+  { _bsontype: 'ObjectId' } | { _bsontype: 'ObjectID' } | { toHexString(): string };
 
 export type MongooseToFrontend<T> = T extends ObjectIdLike
   ? string

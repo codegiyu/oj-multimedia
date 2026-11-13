@@ -15,10 +15,7 @@ import { ClientAdmin, ClientUser, PopulatedUser, PopulatedVendorSummary } from '
 
 // Pagination Query Type
 export type PageAndSizeQuery =
-  | `?page=${number}&limit=${number}`
-  | `?page=${number}`
-  | `?limit=${number}`
-  | `?${string}`;
+  `?page=${number}&limit=${number}` | `?page=${number}` | `?limit=${number}` | `?${string}`;
 
 // List Response Types
 export type GetListRes<T, Name extends string> = {
@@ -360,13 +357,7 @@ export type ProductSubCategoryRef = {
 
 /** @deprecated Use IMarketplaceCategory from API; kept for backward compatibility where slug union is used */
 export type ProductCategory =
-  | 'fashion'
-  | 'food'
-  | 'health-beauty'
-  | 'accessories'
-  | 'electronics'
-  | 'books'
-  | 'other';
+  'fashion' | 'food' | 'health-beauty' | 'accessories' | 'electronics' | 'books' | 'other';
 
 /** Variation option (e.g. Colour with values [Red, Blue]) */
 export interface IMarketplaceVariationOption {

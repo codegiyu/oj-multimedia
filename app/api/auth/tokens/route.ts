@@ -12,19 +12,16 @@ type TokenBody = {
   refresh?: string;
 };
 
-function isTrustedOrigin(origin: string | null): boolean {
-  const trusted = [
-    process.env.NEXT_PUBLIC_BASE_URL,
-    process.env.NEXT_SERVER_BASE_URL,
-    // Allow localhost in non-production environments
-    process.env.NODE_ENV !== 'production' ? 'http://localhost:3000' : null,
-  ].filter(Boolean) as string[];
-  return origin !== null && trusted.some(t => origin === t.replace(/\/$/, ''));
+function isTrustedOrigin(origin: string | null, ownOrigin: string, isProduction: boolean): boolean {
+  // Browsers may omit Origin for same-origin fetches, but in production we require
+  // an explicit Origin so non-browser callers (curl, Postman) cannot inject tokens.
+  if (origin === null) return !isProduction;
+  return origin === ownOrigin;
 }
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   const origin = request.headers.get('origin');
-  if (!isTrustedOrigin(origin)) {
+  if (!isTrustedOrigin(origin, request.nextUrl.origin, process.env.NODE_ENV === 'production')) {
     return NextResponse.json({ ok: false, message: 'Forbidden' }, { status: 403 });
   }
 

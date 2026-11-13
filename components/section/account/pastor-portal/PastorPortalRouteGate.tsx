@@ -16,12 +16,7 @@ import { useInitAuthStore } from '@/lib/store/useAuthStore';
 import { toast } from 'sonner';
 
 export type PastorPortalGateState =
-  | 'none'
-  | 'pending'
-  | 'rejected'
-  | 'approved'
-  | 'deactivated'
-  | 'suspended';
+  'none' | 'pending' | 'rejected' | 'approved' | 'deactivated' | 'suspended';
 
 function normalizePortalState(state: PastorPortalState): PastorPortalGateState {
   if (state === 'active') return 'approved';

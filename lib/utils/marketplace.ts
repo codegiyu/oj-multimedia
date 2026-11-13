@@ -6,13 +6,7 @@
 import { toWhatsAppMeDigits } from '@/lib/utils/whatsappPhone';
 
 export type ProductCategory =
-  | 'fashion'
-  | 'food'
-  | 'health-beauty'
-  | 'accessories'
-  | 'electronics'
-  | 'books'
-  | 'other';
+  'fashion' | 'food' | 'health-beauty' | 'accessories' | 'electronics' | 'books' | 'other';
 
 export interface MarketplaceProduct {
   _id: string;

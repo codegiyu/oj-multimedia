@@ -1,12 +1,7 @@
 /** Admin console staff (platform admins), distinct from platform users. */
 
 export type StaffAccountStatus =
-  | 'unverified'
-  | 'invited'
-  | 'active'
-  | 'suspended'
-  | 'deleted'
-  | 'blacklisted';
+  'unverified' | 'invited' | 'active' | 'suspended' | 'deleted' | 'blacklisted';
 
 export interface StaffListItem {
   _id: string;
