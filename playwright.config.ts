@@ -28,6 +28,11 @@ export default defineConfig({
           url: baseURL,
           reuseExistingServer: !process.env.CI,
           timeout: 120_000,
+          // The Google login journey needs a client id; the GSI script itself is stubbed in tests.
+          env: {
+            NEXT_PUBLIC_GOOGLE_CLIENT_ID:
+              process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || 'e2e-google-client-id',
+          },
         }
       : undefined,
 });
