@@ -118,12 +118,12 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
   const isEdit = Boolean(editId);
   const canPublish = Boolean((form.category ?? '').trim());
   const thumbnailUpload = useFileUpload({
-    entityType: 'resource',
+    entityType: 'video',
     entityId: editId ?? 'video-pending',
     intent: 'image',
   });
   const videoFileUpload = useFileUpload({
-    entityType: 'resource',
+    entityType: 'video',
     entityId: editId ?? 'video-pending',
     intent: 'other',
   });
@@ -510,7 +510,7 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
               label="Thumbnail URL"
               value={form.thumbnail ?? ''}
               onChange={value => setForm(f => ({ ...f, thumbnail: value }))}
-              entityType="resource"
+              entityType="video"
               entityId={editId}
               fallbackEntityIdPrefix="video-thumbnail"
               intent="image"
@@ -541,7 +541,7 @@ export function CreateVideoModal({ open, onOpenChange, editId, onSuccess }: Crea
 
                 setForm(f => ({ ...f, videoFileUrl: value }));
               }}
-              entityType="resource"
+              entityType="video"
               entityId={editId}
               fallbackEntityIdPrefix="video-file"
               intent="other"
