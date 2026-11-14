@@ -66,11 +66,6 @@ export function SessionGate({
 
   useEffect(() => {
     const checkAuth = async () => {
-      if (unprotectedRoutes?.has(pathname)) {
-        setIsChecking(false);
-        return;
-      }
-
       if (!sessionInitializedRef.current && !user && !initLoading) {
         sessionInitializedRef.current = true;
         await initSession();
@@ -80,7 +75,7 @@ export function SessionGate({
     };
 
     void checkAuth();
-  }, [pathname, user, initLoading, unprotectedRoutes]);
+  }, [pathname, user, initLoading]);
 
   useEffect(() => {
     if (isChecking || initLoading) return;

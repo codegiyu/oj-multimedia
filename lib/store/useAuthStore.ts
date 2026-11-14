@@ -127,6 +127,10 @@ export const useInitAuthStore = create<AuthStore>()((set, get) => ({
           };
         }
 
+        if (!data.user) {
+          return { success: false, error: 'Login failed — please try again' };
+        }
+
         setUser(data.user, {
           pauseNavigatingAwayFromAuth: false,
         });
