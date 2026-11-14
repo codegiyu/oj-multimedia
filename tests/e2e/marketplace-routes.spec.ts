@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { describeWithWebServer } from './helpers';
+import { describeWithWebServer, waitForHydration } from './helpers';
 import { expectSmokePage } from './fixtures/expectSmokePage';
 import { MARKETPLACE_ROUTES } from './fixtures/smokeRoutes';
 
@@ -22,10 +22,14 @@ describeWithWebServer('marketplace routes', () => {
     await expect(page).toHaveURL(/\/auth\/login/);
   });
 
-  test('marketplace orders route redirects to account orders', async ({ page }) => {
+  test('marketplace orders route redirects to account orders (via login when signed out)', async ({
+    page,
+  }) => {
     await page.goto('/marketplace/orders');
 
-    await expect(page).toHaveURL(/\/account\/orders/);
+    await expect(page).toHaveURL(/\/auth\/login\?redirectTo=/);
+    const redirectTo = new URL(page.url()).searchParams.get('redirectTo') ?? '';
+    expect(Buffer.from(redirectTo, 'base64url').toString('utf8')).toBe('/account/orders');
   });
 
   test('checkout shows empty cart state by default', async ({ page }) => {
@@ -62,13 +66,20 @@ describeWithWebServer('marketplace routes', () => {
 
     await expect(page.getByRole('heading', { name: /^checkout$/i })).toBeVisible();
     await expect(page.getByText(/what happens when you place your order/i)).toBeVisible();
-    await expect(page.getByRole('button', { name: /place order/i })).toBeDisabled();
+    // A tooltip wrapper also has role="button", so target the real submit button.
+    const placeOrder = page.locator('button[type="submit"][aria-label="Place order"]');
+    await expect(placeOrder).toBeDisabled();
 
-    await page.getByLabel(/full name/i).fill('E2E Buyer');
-    await page.getByLabel(/^email$/i).fill('e2e-buyer@example.com');
-    await page.getByLabel(/^phone$/i).fill('+2348012345678');
-    await page.getByLabel(/delivery address/i).fill('12 Test Street, Lagos');
+    const fullName = page.getByLabel(/full name/i);
+    await waitForHydration(fullName);
+    await fullName.fill('E2E Buyer');
+    // Required fields render their label as "Email *", so allow the trailing marker.
+    await page.getByLabel(/^email\s*\*?$/i).fill('e2e-buyer@example.com');
+    await page.getByLabel(/^phone\s*\*?$/i).fill('+2348012345678');
+    // Type (not fill) the last field: useForm validates against the previous render's values,
+    // so a single input event leaves isValid one change behind. Real typing catches up.
+    await page.getByLabel(/delivery address/i).pressSequentially('12 Test Street, Lagos');
 
-    await expect(page.getByRole('button', { name: /place order/i })).toBeEnabled();
+    await expect(placeOrder).toBeEnabled();
   });
 });

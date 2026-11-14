@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { describeWithWebServer } from './helpers';
+import { describeWithWebServer, waitForHydration } from './helpers';
 
 describeWithWebServer('search page @smoke', () => {
   test('renders the search page shell', async ({ page }) => {
@@ -18,7 +18,9 @@ describeWithWebServer('search page @smoke', () => {
   test('updates the URL when the search form is submitted @smoke', async ({ page }) => {
     await page.goto('/search');
 
-    await page.getByPlaceholder(/search music, news, videos, community/i).fill('gospel');
+    const searchInput = page.getByPlaceholder(/search music, news, videos, community/i);
+    await waitForHydration(searchInput);
+    await searchInput.fill('gospel');
     await page
       .getByRole('main')
       .getByRole('button', { name: /^search$/i })
