@@ -33,6 +33,14 @@ const nextConfig: NextConfig = {
   },
 
   async headers() {
+    // Production only talks to the API over https. Outside production the API may be a plain-http
+    // loopback address (local backend, CI's http://localhost:4400), which `https:` does not cover.
+    const connectSrc = [
+      "'self'",
+      'https:',
+      ...(process.env.NODE_ENV === 'production' ? [] : ['http://localhost:*', 'http://127.0.0.1:*']),
+    ].join(' ');
+
     return [
       {
         source: '/(.*)',
@@ -54,7 +62,7 @@ const nextConfig: NextConfig = {
               "font-src 'self' https://fonts.gstatic.com",
               "img-src 'self' data: blob: https:",
               "media-src 'self' https:",
-              "connect-src 'self' https:",
+              `connect-src ${connectSrc}`,
               "frame-src https://accounts.google.com",
               "frame-ancestors 'none'",
             ].join('; '),
