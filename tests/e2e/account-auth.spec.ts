@@ -14,7 +14,14 @@ describeWithWebServer('client auth routes', () => {
     await page.goto('/auth/login', { waitUntil: 'domcontentloaded' });
 
     await expect(page.getByRole('heading', { name: /sign in/i }).first()).toBeVisible();
-    await expect(page.getByRole('link', { name: /back to home/i })).toBeVisible();
+
+    // The back-to-home link is `md:hidden`, so it only exists on small viewports.
+    const isSmallViewport = (page.viewportSize()?.width ?? Infinity) < 768;
+    if (isSmallViewport) {
+      await expect(page.getByRole('link', { name: /back to home/i })).toBeVisible();
+    } else {
+      await expect(page.getByRole('link', { name: /back to home/i })).toBeHidden();
+    }
   });
 });
 

@@ -9,7 +9,7 @@ const ALBUM_LIST_ROUTE = {
 
 const ALBUM_DETAIL_NOT_FOUND = {
   path: '/music/albums/e2e-smoke-missing-id',
-  titlePattern: /Page Not Found/i,
+  titlePattern: /Album Not Found/i,
 } as const;
 
 describeWithWebServer('public album routes', () => {
