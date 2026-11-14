@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { describeWithWebServer } from './helpers';
+import { describeWithWebServer, waitForHydration } from './helpers';
 import { mockAuthBackend } from './fixtures/mockAuthBackend';
 
 const ACCESS_COOKIE = 'oj-acc-client';
@@ -14,7 +14,9 @@ function waitForTokenSync(page: Page) {
 
 async function submitAdminLogin(page: Page, email: string, password: string): Promise<void> {
   await page.goto('/admin/auth/login', { waitUntil: 'domcontentloaded' });
-  await page.getByLabel(/email or username/i).fill(email);
+  const emailInput = page.getByLabel(/email or username/i);
+  await waitForHydration(emailInput);
+  await emailInput.fill(email);
   // Type the last field: useForm validates against the previous render, so one fill() event
   // would leave the submit button disabled.
   await page.locator('input[name="password"]').pressSequentially(password);

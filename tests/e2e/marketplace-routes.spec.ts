@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { describeWithWebServer } from './helpers';
+import { describeWithWebServer, waitForHydration } from './helpers';
 import { expectSmokePage } from './fixtures/expectSmokePage';
 import { MARKETPLACE_ROUTES } from './fixtures/smokeRoutes';
 
@@ -70,7 +70,9 @@ describeWithWebServer('marketplace routes', () => {
     const placeOrder = page.locator('button[type="submit"][aria-label="Place order"]');
     await expect(placeOrder).toBeDisabled();
 
-    await page.getByLabel(/full name/i).fill('E2E Buyer');
+    const fullName = page.getByLabel(/full name/i);
+    await waitForHydration(fullName);
+    await fullName.fill('E2E Buyer');
     // Required fields render their label as "Email *", so allow the trailing marker.
     await page.getByLabel(/^email\s*\*?$/i).fill('e2e-buyer@example.com');
     await page.getByLabel(/^phone\s*\*?$/i).fill('+2348012345678');
