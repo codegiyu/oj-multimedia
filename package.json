@@ -69,7 +69,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.4.0",
-    "libphonenumber-js": "^1.13.6",
+    "libphonenumber-js": "^1.13.16",
     "lucide-react": "^0.544.0",
     "media-chrome": "^4.19.4",
     "motion": "^12.40.0",
